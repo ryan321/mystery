@@ -1,0 +1,101 @@
+.auth {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+}
+
+.card {
+  width: 100%;
+  max-width: 24rem;
+  background: var(--glass);
+  border: 1px solid rgba(200, 165, 110, 0.2);
+  border-radius: 6px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.cardHeader {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(200, 165, 110, 0.15);
+  background: rgba(8, 12, 20, 0.5);
+}
+
+.cardTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--paper);
+}
+
+.cardBody {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--candle);
+}
+
+.input {
+  padding: 0.65rem 0.85rem;
+  font-size: 0.95rem;
+  color: var(--paper);
+  background: rgba(8, 12, 18, 0.9);
+  border: 1px solid rgba(154, 175, 196, 0.25);
+  border-radius: 4px;
+  outline: none;
+}
+
+.input:focus {
+  border-color: rgba(212, 181, 106, 0.55);
+}
+
+.input::placeholder {
+  color: var(--ink-soft);
+}
+
+.btnPrimary {
+  padding: 0.7rem 1rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #fff;
+  background: linear-gradient(180deg, #c94a4a, #a83030);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.btnPrimary:hover {
+  filter: brightness(1.1);
+}
+
+.switch {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--fog);
+  text-align: center;
+}
+
+.switch a {
+  color: var(--candle);
+}

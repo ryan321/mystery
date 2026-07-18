@@ -1,0 +1,159 @@
+.account {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  padding: 2rem 1.5rem;
+}
+
+.inner {
+  width: min(720px, 100%);
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--candle);
+}
+
+.title {
+  margin: 0.25rem 0 0;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--paper);
+}
+
+.section {
+  margin-bottom: 1.5rem;
+  background: var(--glass);
+  border: 1px solid rgba(200, 165, 110, 0.15);
+  border-radius: 6px;
+  backdrop-filter: blur(12px);
+  overflow: hidden;
+}
+
+.sectionHeader {
+  padding: 0.85rem 1.1rem;
+  border-bottom: 1px solid rgba(200, 165, 110, 0.12);
+  background: rgba(8, 12, 20, 0.5);
+}
+
+.sectionTitle {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--candle);
+}
+
+.sectionBody {
+  padding: 1.1rem;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.avatar {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: rgba(212, 181, 106, 0.15);
+  border: 1px solid rgba(212, 181, 106, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--candle);
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.name {
+  font-weight: 600;
+  color: var(--paper);
+}
+
+.email {
+  font-size: 0.85rem;
+  color: var(--fog);
+}
+
+.mysteryList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mysteryItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: rgba(8, 12, 18, 0.5);
+  border: 1px solid rgba(154, 175, 196, 0.12);
+  border-radius: 4px;
+}
+
+.mysteryTitle {
+  font-weight: 600;
+  color: var(--paper);
+}
+
+.mysteryMeta {
+  font-size: 0.8rem;
+  color: var(--fog);
+}
+
+.status {
+  padding: 0.2rem 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 3px;
+  border: 1px solid;
+}
+
+.statusActive {
+  color: var(--candle);
+  border-color: rgba(212, 181, 106, 0.4);
+  background: rgba(212, 181, 106, 0.08);
+}
+
+.statusSolved {
+  color: #8fb98f;
+  border-color: rgba(143, 185, 143, 0.4);
+  background: rgba(143, 185, 143, 0.08);
+}
+
+.statusFailed {
+  color: #e08a8a;
+  border-color: rgba(224, 138, 138, 0.4);
+  background: rgba(224, 138, 138, 0.08);
+}
+
+.empty {
+  margin: 0;
+  color: var(--ink-soft);
+  font-style: italic;
+}

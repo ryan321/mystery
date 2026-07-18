@@ -206,7 +206,7 @@ export default function PlaythroughPage() {
             className={styles.linkBtn}
             onClick={() => setDrawer("evidence")}
           >
-            Evidence ({playthrough?.evidenceIds.length ?? 0})
+            Evidence
           </button>
         </div>
         <StatusBar

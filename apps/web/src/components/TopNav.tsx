@@ -198,6 +198,13 @@ export default function TopNav() {
                 Settings
               </Link>
               <hr />
+              <Link href="/signin" onClick={() => setOpen(false)}>
+                Sign in
+              </Link>
+              <Link href="/signup" onClick={() => setOpen(false)}>
+                Sign up
+              </Link>
+              <hr />
               <button type="button" onClick={() => setOpen(false)}>
                 Sign out
               </button>
