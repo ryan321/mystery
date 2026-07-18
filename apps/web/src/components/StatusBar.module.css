@@ -3,9 +3,11 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 0.5rem 1rem;
-  padding: 0.6rem 1rem;
-  background: rgba(8, 12, 20, 0.6);
-  border-bottom: 1px solid rgba(154, 175, 196, 0.12);
+  padding: 0.55rem 0.85rem;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(200, 165, 110, 0.15);
+  border-left: 3px solid var(--candle);
+  border-radius: 0 3px 3px 0;
 }
 
 .location {

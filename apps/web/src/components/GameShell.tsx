@@ -15,7 +15,13 @@ export default function GameShell({
       <div className={styles.shellInner}>
         <div className={styles.desk}>
           {left ? <aside className={styles.leftRail}>{left}</aside> : null}
-          <section className={styles.center}>{center}</section>
+          <section className={styles.center}>
+            <span className={`${styles.corner} ${styles.cornerTl}`} aria-hidden="true" />
+            <span className={`${styles.corner} ${styles.cornerTr}`} aria-hidden="true" />
+            <span className={`${styles.corner} ${styles.cornerBl}`} aria-hidden="true" />
+            <span className={`${styles.corner} ${styles.cornerBr}`} aria-hidden="true" />
+            <div className={styles.centerInner}>{center}</div>
+          </section>
           {right ? <aside className={styles.rightRail}>{right}</aside> : null}
         </div>
       </div>
