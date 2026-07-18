@@ -676,6 +676,16 @@ a:hover {
   text-align: center;
 }
 
+.section-headline {
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .section-headline {
+    white-space: normal;
+  }
+}
+
 .section h2 {
   margin: 0 0 0.75rem;
   font-family: var(--font-display);
