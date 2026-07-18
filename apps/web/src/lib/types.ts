@@ -115,8 +115,18 @@ export type PlaythroughState = {
       willingness: CharacterState["willingness"];
       stance: string;
       pressure: number;
+      name?: string;
+      portrait?: string;
+      portraitUrl?: string;
     }
   >;
+  cast?: {
+    id: string;
+    name: string;
+    shortBio?: string;
+    portrait?: string;
+    portraitUrl?: string;
+  }[];
 };
 
 export type TurnLogEntry = {

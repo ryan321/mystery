@@ -13,7 +13,7 @@ import SideDrawer from "../../../components/SideDrawer";
 import EvidencePanel, {
   type EvidenceItem,
 } from "../../../components/EvidencePanel";
-import { getPlaythrough, sendTurn } from "../../../lib/api";
+import { assetUrl, getPlaythrough, sendTurn } from "../../../lib/api";
 import type {
   DialogueLine,
   PlaythroughState,
@@ -27,9 +27,22 @@ import styles from "./page.module.css";
 
 type Drawer = "evidence" | null;
 
+function portraitFor(
+  playthrough: PlaythroughState | null | undefined,
+  characterId: string
+): string | undefined {
+  if (!playthrough) return undefined;
+  const fromState = playthrough.characters[characterId]?.portraitUrl;
+  if (fromState) return assetUrl(fromState);
+  const fromCast = playthrough.cast?.find((c) => c.id === characterId)
+    ?.portraitUrl;
+  return assetUrl(fromCast);
+}
+
 function buildLog(
   opening: string | undefined,
-  turns: TurnLogEntry[] | undefined
+  turns: TurnLogEntry[] | undefined,
+  playthrough?: PlaythroughState | null
 ): LogItem[] {
   const items: LogItem[] = [];
   if (opening) {
@@ -43,6 +56,7 @@ function buildLog(
         kind: "npc",
         name: d.characterName ?? d.characterId,
         text: d.text,
+        avatarUrl: portraitFor(playthrough, d.characterId),
       });
     }
     if (t.evidenceAdded?.length) {
@@ -77,7 +91,7 @@ export default function PlaythroughPage() {
           sessionStorage.getItem(`mystery:opening:${id}`) ??
           data.openingNarration ??
           "";
-        setLog(buildLog(opening, data.turns));
+        setLog(buildLog(opening, data.turns, data.playthrough));
       } catch {
         if (!cancelled) setError("Playthrough not found");
       }
@@ -88,7 +102,10 @@ export default function PlaythroughPage() {
   }, [id]);
 
   const appendDialogue = useCallback(
-    (dialogue: DialogueLine[] | undefined) => {
+    (
+      dialogue: DialogueLine[] | undefined,
+      pt?: PlaythroughState | null
+    ) => {
       if (!dialogue?.length) return;
       setLog((prev) => [
         ...prev,
@@ -96,10 +113,11 @@ export default function PlaythroughPage() {
           kind: "npc" as const,
           name: d.characterName ?? d.characterId,
           text: d.text,
+          avatarUrl: portraitFor(pt ?? playthrough, d.characterId),
         })),
       ]);
     },
-    []
+    [playthrough]
   );
 
   const send = useCallback(
@@ -113,7 +131,7 @@ export default function PlaythroughPage() {
         setPlaythrough(data.playthrough);
         setLocationName(data.locationName ?? data.playthrough.locationId);
         setLog((prev) => [...prev, { kind: "narration", text: data.narration }]);
-        appendDialogue(data.dialogue);
+        appendDialogue(data.dialogue, data.playthrough);
         if (data.evidenceAdded?.length) {
           setLog((prev) => [
             ...prev,
@@ -210,7 +228,7 @@ export default function PlaythroughPage() {
       </header>
 
       <div className={styles.logWrap}>
-        <Log items={log} />
+        <Log items={log} busy={busy} />
       </div>
 
       {error ? <p className={styles.error}>{error}</p> : null}

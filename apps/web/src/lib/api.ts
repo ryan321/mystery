@@ -5,7 +5,16 @@ import type {
   StartCaseResponse,
 } from "./types";
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
+export const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
+
+/** Resolve API-relative portrait path to absolute URL for <img src>. */
+export function assetUrl(path?: string | null): string | undefined {
+  if (!path) return undefined;
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  const base = API.replace(/\/$/, "");
+  const p = path.startsWith("/") ? path : `/${path}`;
+  return `${base}${p}`;
+}
 
 async function json<T>(res: Response): Promise<T> {
   const data = (await res.json()) as T & { error?: string; message?: string };

@@ -26,8 +26,8 @@
 
 .avatar {
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -37,6 +37,18 @@
   background: rgba(8, 12, 20, 0.7);
   border: 1px solid rgba(212, 181, 106, 0.35);
   border-radius: 50%;
+}
+
+.portrait {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 181, 106, 0.45);
+  background: rgba(8, 12, 20, 0.7);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
 }
 
 .info {

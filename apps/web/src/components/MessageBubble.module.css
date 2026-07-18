@@ -64,8 +64,8 @@
 
 .avatar {
   flex-shrink: 0;
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -76,6 +76,7 @@
   border: 1px solid rgba(212, 181, 106, 0.35);
   border-radius: 50%;
   object-fit: cover;
+  object-position: center top;
 }
 
 .rowPlayer .avatar {

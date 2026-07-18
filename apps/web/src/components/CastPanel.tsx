@@ -7,6 +7,7 @@ export type CastCharacter = {
   willingness: string;
   stance: string;
   pressure: number;
+  portraitUrl?: string;
 };
 
 const PRESSURE_BARS = 5;
@@ -30,9 +31,20 @@ export default function CastPanel({
         const wClass = willingnessClass(c.willingness);
         return (
           <li key={c.id} className={styles.character}>
-            <span className={styles.avatar} aria-hidden="true">
-              {c.name.trim().charAt(0).toUpperCase() || "?"}
-            </span>
+            {c.portraitUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                className={styles.portrait}
+                src={c.portraitUrl}
+                alt=""
+                width={40}
+                height={40}
+              />
+            ) : (
+              <span className={styles.avatar} aria-hidden="true">
+                {c.name.trim().charAt(0).toUpperCase() || "?"}
+              </span>
+            )}
             <div className={styles.info}>
               <div className={styles.topRow}>
                 <span className={styles.name}>{c.name}</span>
