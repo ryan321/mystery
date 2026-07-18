@@ -2001,6 +2001,27 @@ a:hover {
   background: rgba(224, 138, 138, 0.1);
 }
 
+.case-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.85rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.case-tags li {
+  padding: 0.15rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fog);
+  background: rgba(154, 175, 196, 0.1);
+  border: 1px solid rgba(154, 175, 196, 0.2);
+  border-radius: var(--radius);
+}
+
 .case-card h3 {
   margin: 0 0 0.65rem;
   font-family: var(--font-display);
