@@ -1,0 +1,96 @@
+.help {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  padding: 2rem 1.5rem;
+  overflow-y: auto;
+  max-height: calc(100vh - 3.5rem);
+}
+
+.inner {
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--candle);
+}
+
+.title {
+  margin: 0.25rem 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 600;
+  color: var(--paper);
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--fog);
+  font-size: 1rem;
+}
+
+.section {
+  margin-bottom: 1.5rem;
+  background: var(--glass);
+  border: 1px solid rgba(200, 165, 110, 0.15);
+  border-radius: 6px;
+  backdrop-filter: blur(12px);
+  padding: 1.25rem;
+}
+
+.sectionTitle {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--paper);
+}
+
+.section p {
+  margin: 0 0 0.75rem;
+  color: var(--fog);
+  line-height: 1.65;
+}
+
+.section p:last-child {
+  margin-bottom: 0;
+}
+
+.section ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--fog);
+  line-height: 1.65;
+}
+
+.section li {
+  margin-bottom: 0.4rem;
+}
+
+.example {
+  padding: 0.75rem;
+  background: rgba(8, 12, 18, 0.6);
+  border-left: 3px solid var(--candle);
+  border-radius: 0 3px 3px 0;
+  font-style: italic;
+  color: var(--paper);
+}
+
+.kbd {
+  padding: 0.1rem 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  background: rgba(154, 175, 196, 0.15);
+  border: 1px solid rgba(154, 175, 196, 0.25);
+  border-radius: 3px;
+}

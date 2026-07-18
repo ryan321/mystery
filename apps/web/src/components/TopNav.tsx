@@ -109,6 +109,12 @@ export default function TopNav() {
         >
           Shelf
         </Link>
+        <Link
+          href="/help"
+          className={`${styles.link} ${isActive("/help") ? styles.active : ""}`}
+        >
+          Help
+        </Link>
 
         <div className={styles.avatarWrap} ref={themeRef}>
           <button
