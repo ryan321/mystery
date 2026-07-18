@@ -55,7 +55,7 @@ export default function AccountPage() {
               <h2 className={styles.sectionTitle}>Completed</h2>
             </div>
             <div className={styles.sectionBody}>
-              <p className={styles.empty}>No cases closed yet.</p>
+              <p className={styles.empty}>No mysteries closed yet.</p>
             </div>
           </section>
         </div>

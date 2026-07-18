@@ -68,7 +68,7 @@ export default function HomePage() {
             <p className={styles.eyebrow}>Mystery</p>
             <h1 className={styles.title}>What will you investigate?</h1>
             <p className={styles.subtitle}>
-              Handcrafted cases with real solutions. Search the shelf or
+              Handcrafted mysteries with real solutions. Search the shelf or
               continue where you left off.
             </p>
           </header>
@@ -93,7 +93,7 @@ export default function HomePage() {
             {loading ? (
               <p className={styles.subtitle}>Loading cases…</p>
             ) : filtered.length === 0 ? (
-              <p className={styles.empty}>No cases match your search.</p>
+              <p className={styles.empty}>No mysteries match your search.</p>
             ) : (
               <div className={styles.caseGrid}>
                 {filtered.map((c) => (
@@ -135,7 +135,7 @@ export default function HomePage() {
 
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>Completed</h2>
-            <p className={styles.empty}>No cases closed yet.</p>
+            <p className={styles.empty}>No mysteries closed yet.</p>
           </section>
         </div>
       </main>

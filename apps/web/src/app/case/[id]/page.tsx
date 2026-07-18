@@ -89,7 +89,7 @@ export default function CaseDetailPage() {
             />
             <div className={styles.heroOverlay} />
             <div className={styles.heroContent}>
-              <p className={styles.eyebrow}>Case file</p>
+              <p className={styles.eyebrow}>Mystery</p>
               <h1 className={styles.title}>{detail.meta.title}</h1>
               <div className={styles.metaRow}>
                 <span className={`${styles.badge} ${difficultyClass}`}>
@@ -115,25 +115,19 @@ export default function CaseDetailPage() {
                 <h2 className={styles.sectionTitle}>About this case</h2>
                 <p className={styles.description}>
                   You are a detective called to investigate. Question the
-                  household, search the scene, and find the truth. The case has
-                  a fixed solution — the AI performs the characters and world,
-                  but the truth is already written.
+                  household, search the scene, and find the truth. The mystery
+                  has a fixed solution — the AI performs the characters and
+                  world, but the truth is already written.
                 </p>
               </section>
 
-              {detail.meta.contentWarnings.length > 0 ? (
-                <div className={styles.warning}>
-                  <strong>Content warnings:</strong>{" "}
-                  {detail.meta.contentWarnings.join(", ")}
-                </div>
-              ) : null}
             </div>
 
             <aside className={styles.sidebar}>
               <div className={styles.playCard}>
                 <h2 className={styles.playTitle}>Start investigating</h2>
                 <p className={styles.playMeta}>
-                  Free case · Plays in your browser · No download
+                  Free mystery · Plays in your browser · No download
                 </p>
                 <button
                   type="button"

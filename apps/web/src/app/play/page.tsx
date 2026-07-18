@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Atmosphere from "../../components/Atmosphere";
 import { listCases } from "../../lib/api";
@@ -10,11 +10,21 @@ import styles from "./page.module.css";
 
 const CASE_IMAGES: Record<string, string> = {
   "blackwood-inheritance": "/images/cases/blackwood-inheritance.jpg",
+  "pier-at-low-tide": "/images/cases/pier-at-low-tide.jpg",
+  "last-broadcast": "/images/cases/last-broadcast.jpg",
+  "dead-air": "/images/cases/dead-air.jpg",
+  "london-1888": "/images/cases/london-1888.jpg",
+  "snowbound-lodge": "/images/cases/snowbound-lodge.jpg",
+  "the-white-room": "/images/cases/the-white-room.jpg",
+  "hostile-takeover": "/images/cases/hostile-takeover.jpg",
+  "cant-trick-rick": "/images/cases/cant-trick-rick.jpg",
 };
 
-export default function PlayLobbyPage() {
+export default function ShelfPage() {
   const [cases, setCases] = useState<CaseSummary[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [activeTag, setActiveTag] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -49,25 +59,78 @@ export default function PlayLobbyPage() {
     };
   }, []);
 
+  const allTags = useMemo(() => {
+    const tags = new Set<string>();
+    for (const c of cases) {
+      for (const t of c.meta.tags) tags.add(t);
+    }
+    return [...tags].sort();
+  }, [cases]);
+
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase();
+    return cases.filter((c) => {
+      const matchesSearch =
+        c.meta.title.toLowerCase().includes(q) ||
+        c.meta.premise.toLowerCase().includes(q) ||
+        c.meta.tags.some((t) => t.toLowerCase().includes(q));
+      const matchesTag = !activeTag || c.meta.tags.includes(activeTag);
+      return matchesSearch && matchesTag;
+    });
+  }, [cases, search, activeTag]);
+
   return (
     <>
       <Atmosphere />
       <main className={styles.lobby}>
         <div className={styles.lobbyInner}>
           <header className={styles.header}>
-            <p className={styles.eyebrow}>The case files</p>
-            <h1 className={styles.title}>Choose your investigation</h1>
+            <p className={styles.eyebrow}>The shelf</p>
+            <h1 className={styles.title}>Choose your mystery</h1>
             <p className={styles.subtitle}>
-              Each case is an authored mystery with a fixed solution. Question
+              Each mystery is authored with a fixed solution. Question
               suspects, explore the scene, and find the truth.
             </p>
           </header>
 
+          <div className={styles.filters}>
+            <input
+              type="search"
+              className={styles.searchInput}
+              placeholder="Search mysteries, tags, or themes…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            {allTags.length > 0 ? (
+              <div className={styles.tagFilters}>
+                <button
+                  type="button"
+                  className={`${styles.tagFilter} ${activeTag === null ? styles.tagFilterActive : ""}`}
+                  onClick={() => setActiveTag(null)}
+                >
+                  All
+                </button>
+                {allTags.map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    className={`${styles.tagFilter} ${activeTag === t ? styles.tagFilterActive : ""}`}
+                    onClick={() => setActiveTag(activeTag === t ? null : t)}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
+
           {loading ? (
-            <p className={styles.subtitle}>Loading cases…</p>
+            <p className={styles.subtitle}>Loading mysteries…</p>
+          ) : filtered.length === 0 ? (
+            <p className={styles.empty}>No mysteries match your search.</p>
           ) : (
             <div className={styles.caseGrid}>
-              {cases.map((c) => (
+              {filtered.map((c) => (
                 <Link key={c.id} href={`/case/${c.id}`} className={styles.caseCardLink}>
                   <article className={styles.caseCard}>
                     <div className={styles.caseImage}>

@@ -11,7 +11,7 @@ export default function HelpPage() {
             <p className={styles.eyebrow}>Help</p>
             <h1 className={styles.title}>How to play</h1>
             <p className={styles.subtitle}>
-              Everything you need to investigate a case.
+              Everything you need to investigate a mystery.
             </p>
           </header>
 
@@ -68,13 +68,13 @@ export default function HelpPage() {
               </li>
               <li>
                 Evidence matters for pacing and endings, but a correct accusation
-                can solve the case even without it.
+                can solve the mystery even without it.
               </li>
               <li>
                 Wrong accusations have consequences. The house remembers.
               </li>
               <li>
-                Some cases can be lost — by running out of time, pushing the
+                Some mysteries can be lost — by running out of time, pushing the
                 wrong person, or letting the killer act.
               </li>
             </ul>
