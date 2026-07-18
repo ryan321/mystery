@@ -5,6 +5,7 @@ import Link from "next/link";
 import Atmosphere from "../../components/Atmosphere";
 import { listCases } from "../../lib/api";
 import { difficultyClass, difficultyLabel } from "../../lib/format";
+import { getAllPlayStates } from "../../lib/playState";
 import type { CaseSummary } from "../../lib/types";
 import styles from "./page.module.css";
 
@@ -20,11 +21,15 @@ const CASE_IMAGES: Record<string, string> = {
   "cant-trick-rick": "/images/cases/cant-trick-rick.jpg",
 };
 
+type StatusFilter = "all" | "being_played" | "completed" | "not_started";
+
 export default function ShelfPage() {
   const [cases, setCases] = useState<CaseSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [playStates, setPlayStates] = useState<Record<string, { status: string }>>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -59,6 +64,10 @@ export default function ShelfPage() {
     };
   }, []);
 
+  useEffect(() => {
+    setPlayStates(getAllPlayStates());
+  }, []);
+
   const allTags = useMemo(() => {
     const tags = new Set<string>();
     for (const c of cases) {
@@ -75,9 +84,17 @@ export default function ShelfPage() {
         c.meta.premise.toLowerCase().includes(q) ||
         c.meta.tags.some((t) => t.toLowerCase().includes(q));
       const matchesTag = !activeTag || c.meta.tags.includes(activeTag);
-      return matchesSearch && matchesTag;
+
+      const status = playStates[c.id]?.status;
+      const matchesStatus =
+        statusFilter === "all" ||
+        (statusFilter === "being_played" && status === "being_played") ||
+        (statusFilter === "completed" && status === "completed") ||
+        (statusFilter === "not_started" && !status);
+
+      return matchesSearch && matchesTag && matchesStatus;
     });
-  }, [cases, search, activeTag]);
+  }, [cases, search, activeTag, statusFilter, playStates]);
 
   return (
     <>
@@ -101,15 +118,38 @@ export default function ShelfPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
+            <div className={styles.tagFilters}>
+              <button
+                type="button"
+                className={`${styles.tagFilter} ${statusFilter === "all" ? styles.tagFilterActive : ""}`}
+                onClick={() => setStatusFilter("all")}
+              >
+                All
+              </button>
+              <button
+                type="button"
+                className={`${styles.tagFilter} ${statusFilter === "being_played" ? styles.tagFilterActive : ""}`}
+                onClick={() => setStatusFilter(statusFilter === "being_played" ? "all" : "being_played")}
+              >
+                Being played
+              </button>
+              <button
+                type="button"
+                className={`${styles.tagFilter} ${statusFilter === "completed" ? styles.tagFilterActive : ""}`}
+                onClick={() => setStatusFilter(statusFilter === "completed" ? "all" : "completed")}
+              >
+                Completed
+              </button>
+              <button
+                type="button"
+                className={`${styles.tagFilter} ${statusFilter === "not_started" ? styles.tagFilterActive : ""}`}
+                onClick={() => setStatusFilter(statusFilter === "not_started" ? "all" : "not_started")}
+              >
+                Not started
+              </button>
+            </div>
             {allTags.length > 0 ? (
               <div className={styles.tagFilters}>
-                <button
-                  type="button"
-                  className={`${styles.tagFilter} ${activeTag === null ? styles.tagFilterActive : ""}`}
-                  onClick={() => setActiveTag(null)}
-                >
-                  All
-                </button>
                 {allTags.map((t) => (
                   <button
                     key={t}
@@ -130,36 +170,48 @@ export default function ShelfPage() {
             <p className={styles.empty}>No mysteries match your search.</p>
           ) : (
             <div className={styles.caseGrid}>
-              {filtered.map((c) => (
-                <Link key={c.id} href={`/case/${c.id}`} className={styles.caseCardLink}>
-                  <article className={styles.caseCard}>
-                    <div className={styles.caseImage}>
-                      <img
-                        src={CASE_IMAGES[c.id] ?? "/images/cases/blackwood-inheritance.jpg"}
-                        alt=""
-                      />
-                    </div>
-                    <div className={styles.caseBody}>
-                      <div className={styles.caseTitleRow}>
-                        <h2 className={styles.caseTitle}>{c.meta.title}</h2>
-                        <span
-                          className={`${styles.difficulty} ${difficultyClass(c.meta.difficulty)}`}
-                        >
-                          {difficultyLabel(c.meta.difficulty)}
+              {filtered.map((c) => {
+                const status = playStates[c.id]?.status;
+                return (
+                  <Link key={c.id} href={`/case/${c.id}`} className={styles.caseCardLink}>
+                    <article className={styles.caseCard}>
+                      {status === "being_played" ? (
+                        <span className={`${styles.statusBanner} ${styles.statusBeingPlayed}`}>
+                          Being played
                         </span>
+                      ) : status === "completed" ? (
+                        <span className={`${styles.statusBanner} ${styles.statusCompleted}`}>
+                          Completed
+                        </span>
+                      ) : null}
+                      <div className={styles.caseImage}>
+                        <img
+                          src={CASE_IMAGES[c.id] ?? "/images/cases/blackwood-inheritance.jpg"}
+                          alt=""
+                        />
                       </div>
-                      <p className={styles.premise}>{c.meta.premise}</p>
-                      <div className={styles.meta}>
-                        {c.meta.tags.map((t) => (
-                          <span key={t} className={styles.tag}>
-                            {t}
+                      <div className={styles.caseBody}>
+                        <div className={styles.caseTitleRow}>
+                          <h2 className={styles.caseTitle}>{c.meta.title}</h2>
+                          <span
+                            className={`${styles.difficulty} ${difficultyClass(c.meta.difficulty)}`}
+                          >
+                            {difficultyLabel(c.meta.difficulty)}
                           </span>
-                        ))}
+                        </div>
+                        <p className={styles.premise}>{c.meta.premise}</p>
+                        <div className={styles.meta}>
+                          {c.meta.tags.map((t) => (
+                            <span key={t} className={styles.tag}>
+                              {t}
+                            </span>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  </article>
-                </Link>
-              ))}
+                    </article>
+                  </Link>
+                );
+              })}
             </div>
           )}
         </div>

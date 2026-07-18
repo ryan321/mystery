@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import Atmosphere from "../../../components/Atmosphere";
 import { assetUrl, getCase, startCase } from "../../../lib/api";
 import { difficultyLabel } from "../../../lib/format";
+import { markBeingPlayed } from "../../../lib/playState";
 import type { CaseDetail } from "../../../lib/types";
 import styles from "./page.module.css";
 
@@ -54,6 +55,7 @@ export default function CaseDetailPage() {
     setError(null);
     try {
       const data = await startCase(id);
+      markBeingPlayed(id, data.playthrough.id);
       sessionStorage.setItem(
         `mystery:opening:${data.playthrough.id}`,
         data.openingNarration ?? ""

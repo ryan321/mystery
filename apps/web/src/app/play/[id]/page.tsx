@@ -14,6 +14,7 @@ import EvidencePanel, {
   type EvidenceItem,
 } from "../../../components/EvidencePanel";
 import { assetUrl, getPlaythrough, sendTurn } from "../../../lib/api";
+import { markCompleted } from "../../../lib/playState";
 import type {
   DialogueLine,
   PlaythroughState,
@@ -100,6 +101,13 @@ export default function PlaythroughPage() {
       cancelled = true;
     };
   }, [id]);
+
+  useEffect(() => {
+    if (!playthrough) return;
+    if (playthrough.status === "solved" || playthrough.status === "failed") {
+      markCompleted(playthrough.caseId, playthrough.id);
+    }
+  }, [playthrough]);
 
   const appendDialogue = useCallback(
     (
