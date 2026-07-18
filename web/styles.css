@@ -1198,10 +1198,12 @@ a:hover {
 }
 
 .sample-caption {
-  margin: 0.9rem 0 0;
+  margin: 1.25rem 0 0;
   text-align: center;
-  font-size: 0.85rem;
-  color: var(--fog);
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #f0f4f8;
 }
 
 @media (max-width: 520px) {
