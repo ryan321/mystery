@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./Composer.module.css";
 
 export default function Composer({
@@ -15,8 +15,17 @@ export default function Composer({
   onSend: (text: string) => void;
 }) {
   const [input, setInput] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const disabled = busy || closed;
   const canSend = !disabled && input.trim().length > 0;
+
+  // Auto-resize textarea to fit content
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
+  }, [input]);
 
   const submit = () => {
     const text = input.trim();
@@ -34,13 +43,21 @@ export default function Composer({
       }}
     >
       <div className={styles.frame}>
-        <input
+        <textarea
+          ref={textareaRef}
           className={styles.input}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={closed ? "The case is closed." : placeholder}
           disabled={disabled}
           aria-label="What do you say or do?"
+          rows={1}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              submit();
+            }
+          }}
         />
         <button
           type="submit"
