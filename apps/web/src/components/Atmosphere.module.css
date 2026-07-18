@@ -1,0 +1,144 @@
+.atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 100% 60% at 50% 100%, #121c2a 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 70% 20%, #1a1528 0%, transparent 50%),
+    linear-gradient(180deg, #060a12 0%, #0a101a 45%, #080c14 100%);
+}
+
+.glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 40% 30% at 48% 42%, rgba(212, 181, 106, 0.04), transparent 70%),
+    radial-gradient(ellipse 80% 50% at 50% 110%, rgba(40, 60, 90, 0.35), transparent 50%);
+}
+
+.fog {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  height: 40%;
+  bottom: 0;
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 100%,
+    rgba(90, 110, 140, 0.18),
+    transparent 70%
+  );
+  filter: blur(20px);
+}
+
+.fogA {
+  animation: fog-drift 28s ease-in-out infinite alternate;
+  opacity: 0.7;
+}
+
+.fogB {
+  height: 50%;
+  opacity: 0.45;
+  animation: fog-drift 38s ease-in-out infinite alternate-reverse;
+  background: radial-gradient(
+    ellipse 90% 50% at 40% 100%,
+    rgba(70, 90, 120, 0.2),
+    transparent 65%
+  );
+}
+
+@keyframes fog-drift {
+  from {
+    transform: translateX(-3%);
+  }
+  to {
+    transform: translateX(3%);
+  }
+}
+
+.manor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  width: 100%;
+  height: min(88vh, 720px);
+  object-fit: cover;
+  object-position: 80% 30%;
+  mask-image: linear-gradient(to bottom, black 0%, black 65%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 65%, transparent 100%);
+  opacity: 0.55;
+}
+
+.rain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.7;
+}
+
+.lightning {
+  position: absolute;
+  inset: 0;
+  background: #cfd8ff;
+  opacity: 0;
+  mix-blend-mode: overlay;
+  animation: lightning-flash 14s infinite;
+}
+
+@keyframes lightning-flash {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  2% {
+    opacity: 0.35;
+  }
+  3% {
+    opacity: 0.05;
+  }
+  4% {
+    opacity: 0.25;
+  }
+  5% {
+    opacity: 0;
+  }
+  42% {
+    opacity: 0;
+  }
+  43% {
+    opacity: 0.3;
+  }
+  44% {
+    opacity: 0.08;
+  }
+  45% {
+    opacity: 0.18;
+  }
+  46% {
+    opacity: 0;
+  }
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, transparent 0%, rgba(3, 5, 10, 0.4) 100%);
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.18'/%3E%3C/svg%3E");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fog,
+  .lightning {
+    animation: none !important;
+  }
+  .rain {
+    opacity: 0.2;
+  }
+}

@@ -1,0 +1,137 @@
+.errorPage {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.errorText {
+  color: #ff8a7a;
+  font-size: 1rem;
+}
+
+.chrome {
+  padding: clamp(0.85rem, 2vw, 1.25rem);
+  border-bottom: 1px solid rgba(154, 175, 196, 0.12);
+  background: rgba(8, 12, 20, 0.55);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.caseEyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--candle);
+}
+
+.logWrap {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: clamp(0.85rem, 2vw, 1.25rem);
+}
+
+.error {
+  margin: 0 1rem 0.5rem;
+  color: #ff8a7a;
+  font-size: 0.9rem;
+}
+
+.linkBtn {
+  background: none;
+  border: none;
+  color: var(--candle);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+}
+
+.linkBtn:hover {
+  color: var(--paper);
+}
+
+.caseInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.caseTitle {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--paper);
+  line-height: 1.3;
+}
+
+.caseMeta {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--fog);
+}
+
+.miniList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--fog);
+}
+
+.miniItem {
+  padding-left: 0.5rem;
+  border-left: 2px solid rgba(212, 181, 106, 0.35);
+}
+
+.miniEmpty {
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+.mobileBar {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .mobileBar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    display: flex;
+    justify-content: space-around;
+    padding: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom));
+    background: rgba(8, 12, 20, 0.9);
+    border-top: 1px solid rgba(154, 175, 196, 0.15);
+    backdrop-filter: blur(12px);
+  }
+
+  .mobileBar button {
+    background: none;
+    border: none;
+    color: var(--fog);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.6rem;
+    border-radius: var(--radius);
+  }
+
+  .mobileBar button:hover,
+  .mobileBar button.mobileBarActive {
+    color: var(--candle);
+    background: rgba(212, 181, 106, 0.1);
+  }
+}

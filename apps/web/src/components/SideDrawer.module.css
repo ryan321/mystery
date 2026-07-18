@@ -1,0 +1,112 @@
+.scrim {
+  display: none;
+}
+
+.drawer {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--glass);
+  border: 1px solid rgba(154, 175, 196, 0.15);
+  border-radius: 6px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.left:not(.open) {
+  transform: translateX(-0.75rem);
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  visibility: hidden;
+}
+
+.right:not(.open) {
+  transform: translateX(0.75rem);
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  visibility: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(154, 175, 196, 0.12);
+  background: rgba(8, 12, 20, 0.5);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--candle);
+}
+
+.close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--fog);
+  background: transparent;
+  border: 1px solid rgba(154, 175, 196, 0.25);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.close:hover {
+  color: var(--paper);
+  border-color: var(--candle-dim);
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0.85rem 1rem;
+  font-size: 0.9rem;
+  color: var(--fog);
+}
+
+@media (max-width: 860px) {
+  .scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 39;
+    padding: 0;
+    background: rgba(3, 5, 9, 0.6);
+    border: none;
+    cursor: default;
+  }
+
+  .drawer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    max-height: 70vh;
+    border-radius: 10px 10px 0 0;
+    transform: translateY(105%);
+    opacity: 1;
+  }
+
+  .drawer.open {
+    transform: translateY(0);
+  }
+}

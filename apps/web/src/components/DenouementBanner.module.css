@@ -1,0 +1,38 @@
+.banner {
+  padding: 0.65rem 1rem;
+  background: linear-gradient(
+    180deg,
+    rgba(212, 181, 106, 0.14),
+    rgba(212, 181, 106, 0.06)
+  );
+  border-bottom: 1px solid rgba(212, 181, 106, 0.35);
+}
+
+.topRow {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.6rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  color: var(--candle);
+}
+
+.meta {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--candle-dim);
+}
+
+.hint {
+  margin-top: 0.25rem;
+  font-size: 0.78rem;
+  color: var(--fog);
+  opacity: 0.8;
+}

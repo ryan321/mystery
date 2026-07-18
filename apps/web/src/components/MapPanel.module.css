@@ -1,0 +1,59 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.empty {
+  margin: 0;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+.location {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  color: var(--fog);
+}
+
+.current {
+  background: rgba(212, 181, 106, 0.08);
+  border-color: rgba(212, 181, 106, 0.35);
+  color: var(--paper);
+}
+
+.marker {
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+}
+
+.current .marker {
+  color: var(--candle);
+}
+
+.name {
+  font-size: 0.88rem;
+}
+
+.current .name {
+  font-family: var(--font-display);
+  letter-spacing: 0.03em;
+}
+
+.here {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--candle);
+}

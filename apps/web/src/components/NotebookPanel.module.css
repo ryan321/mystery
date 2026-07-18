@@ -1,0 +1,57 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: note;
+}
+
+.empty {
+  margin: 0;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+.entry {
+  padding: 0.5rem 0.7rem;
+  background: rgba(8, 12, 20, 0.5);
+  border: 1px solid rgba(154, 175, 196, 0.12);
+  border-left: 2px solid rgba(154, 175, 196, 0.35);
+  border-radius: var(--radius);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.source {
+  font-size: 0.65rem;
+}
+
+.auto {
+  color: var(--candle);
+}
+
+.player {
+  color: var(--blood-bright);
+}
+
+.time {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.text {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--fog);
+}

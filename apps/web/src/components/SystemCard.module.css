@@ -1,0 +1,31 @@
+.wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.9rem;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: min(85%, 30rem);
+  padding: 0.4rem 0.8rem;
+  background: rgba(8, 12, 20, 0.55);
+  border: 1px solid rgba(154, 175, 196, 0.14);
+  border-left: 2px solid var(--candle);
+  border-radius: var(--radius);
+}
+
+.icon {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  color: var(--candle);
+}
+
+.text {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+  color: var(--fog);
+}

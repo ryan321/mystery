@@ -1,31 +1,63 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Atmosphere from "../../components/Atmosphere";
+import { listCases, startCase } from "../../lib/api";
+import { difficultyClass, difficultyLabel } from "../../lib/format";
+import type { CaseSummary } from "../../lib/types";
+import styles from "./page.module.css";
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
+const CASE_IMAGES: Record<string, string> = {
+  "blackwood-inheritance": "/images/cases/blackwood-inheritance.jpg",
+};
 
 export default function PlayLobbyPage() {
   const router = useRouter();
+  const [cases, setCases] = useState<CaseSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [starting, setStarting] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
 
-  async function startCase() {
-    setLoading(true);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const list = await listCases();
+        if (!cancelled) setCases(list);
+      } catch {
+        if (!cancelled) {
+          setCases([
+            {
+              id: "blackwood-inheritance",
+              contentVersion: "0.8.0",
+              meta: {
+                title: "The Blackwood Inheritance",
+                premise:
+                  "A stormy night, a locked manor, and a body at the foot of the stairs. The family was already at each other’s throats.",
+                tone: "gothic manor whodunit, tense and formal",
+                estimatedMinutes: 40,
+                tags: ["Manor", "Family", "Storm", "Classic"],
+                difficulty: "easy",
+                contentWarnings: ["murder", "violence"],
+              },
+            },
+          ]);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function handleStart(caseId: string) {
+    setStarting(caseId);
     setError(null);
     try {
-      const res = await fetch(`${API}/v1/playthroughs`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ caseId: "blackwood-inheritance" }),
-      });
-      if (!res.ok) {
-        throw new Error(`API ${res.status}`);
-      }
-      const data = (await res.json()) as {
-        playthrough: { id: string };
-        openingNarration?: string;
-      };
+      const data = await startCase(caseId);
       sessionStorage.setItem(
         `mystery:opening:${data.playthrough.id}`,
         data.openingNarration ?? ""
@@ -33,37 +65,77 @@ export default function PlayLobbyPage() {
       router.push(`/play/${data.playthrough.id}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to start");
-      setLoading(false);
+      setStarting(null);
     }
   }
 
   return (
-    <main style={{ maxWidth: 640, margin: "3rem auto", padding: "0 1.25rem" }}>
-      <h1>Case files</h1>
-      <p style={{ color: "#9aafc4" }}>
-        Free case: <strong>The Blackwood Inheritance</strong>
-      </p>
-      <button
-        type="button"
-        onClick={startCase}
-        disabled={loading}
-        style={{
-          background: "#b83a3a",
-          color: "#fff",
-          border: "none",
-          padding: "0.75rem 1.25rem",
-          borderRadius: 4,
-          fontWeight: 600,
-          cursor: "pointer",
-        }}
-      >
-        {loading ? "Starting…" : "Play free case"}
-      </button>
-      {error ? (
-        <p style={{ color: "#ff8a7a" }}>
-          {error}. Is the API running on {API}?
-        </p>
-      ) : null}
-    </main>
+    <>
+      <Atmosphere />
+      <main className={styles.lobby}>
+        <div className={styles.lobbyInner}>
+          <header className={styles.header}>
+            <p className={styles.eyebrow}>The case files</p>
+            <h1 className={styles.title}>Choose your investigation</h1>
+            <p className={styles.subtitle}>
+              Each case is an authored mystery with a fixed solution. Question
+              suspects, explore the scene, and find the truth.
+            </p>
+          </header>
+
+          {loading ? (
+            <p className={styles.subtitle}>Loading cases…</p>
+          ) : (
+            <div className={styles.caseGrid}>
+              {cases.map((c) => (
+                <article key={c.id} className={styles.caseCard}>
+                  <div className={styles.caseImage}>
+                    <img
+                      src={CASE_IMAGES[c.id] ?? "/images/cases/blackwood-inheritance.jpg"}
+                      alt=""
+                    />
+                  </div>
+                  <div className={styles.caseBody}>
+                    <div className={styles.caseTitleRow}>
+                      <h2 className={styles.caseTitle}>{c.meta.title}</h2>
+                      <span
+                        className={`${styles.difficulty} ${difficultyClass(c.meta.difficulty)}`}
+                      >
+                        {difficultyLabel(c.meta.difficulty)}
+                      </span>
+                    </div>
+                    <p className={styles.premise}>{c.meta.premise}</p>
+                    <div className={styles.meta}>
+                      {c.meta.tags.map((t) => (
+                        <span key={t} className={styles.tag}>
+                          {t}
+                        </span>
+                      ))}
+                      {c.meta.estimatedMinutes ? (
+                        <span className={styles.tag}>
+                          ~{c.meta.estimatedMinutes} min
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className={styles.actions}>
+                      <button
+                        type="button"
+                        className={styles.btnPrimary}
+                        onClick={() => handleStart(c.id)}
+                        disabled={starting !== null}
+                      >
+                        {starting === c.id ? "Starting…" : "Play free case"}
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+
+          {error ? <p className={styles.error}>{error}</p> : null}
+        </div>
+      </main>
+    </>
   );
 }

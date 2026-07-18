@@ -1,398 +1,414 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
+import Atmosphere from "../../../components/Atmosphere";
+import GameShell, { Panel } from "../../../components/GameShell";
+import StatusBar from "../../../components/StatusBar";
+import Log, { type LogItem } from "../../../components/Log";
+import Composer from "../../../components/Composer";
+import DenouementBanner from "../../../components/DenouementBanner";
+import EndingOverlay from "../../../components/EndingOverlay";
+import SideDrawer from "../../../components/SideDrawer";
+import EvidencePanel, {
+  type EvidenceItem,
+} from "../../../components/EvidencePanel";
+import NotebookPanel from "../../../components/NotebookPanel";
+import MapPanel from "../../../components/MapPanel";
+import CastPanel, {
+  type CastCharacter,
+} from "../../../components/CastPanel";
+import { getPlaythrough, sendTurn } from "../../../lib/api";
+import type {
+  DialogueLine,
+  PlaythroughState,
+  TurnLogEntry,
+} from "../../../lib/types";
+import {
+  CASE_TITLES,
+  CHARACTER_NAMES,
+  EVIDENCE_DESCRIPTIONS,
+  LOCATION_NAMES,
+} from "../../../lib/content";
+import styles from "./page.module.css";
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
+type Drawer = "evidence" | "notebook" | "map" | "cast" | null;
 
-type LogItem =
-  | { kind: "narration"; text: string }
-  | { kind: "you"; text: string }
-  | { kind: "npc"; name: string; text: string }
-  | { kind: "system"; text: string };
-
-type Playthrough = {
-  id: string;
-  caseId: string;
-  status: string;
-  locationId: string;
-  evidenceIds: string[];
-  turnCount: number;
-  phaseId?: string;
-  endingId?: string;
-  ending?: {
-    id: string;
-    when: string;
-    kind?: string;
-    title?: string;
-    templateNotes?: string;
-  };
-  resolution?: {
-    outcome?: string;
-    endingId?: string;
-    kind?: string;
-    path?: string;
-    title?: string;
-  };
-  denouement?: {
-    turnsRemaining?: number | null;
-    maxTurns?: number;
-  };
-  interactive?: boolean;
-  clocks?: Record<string, number>;
-  playerStatus?: {
-    threat?: string;
-    safeHavenCompromised?: boolean;
-    tags?: string[];
-  };
-  time?: { slotId: string; minutesFromStart: number };
-  environment?: {
-    weather?: string;
-    light?: string;
-    crowd?: string;
-    ambient?: string;
-  };
-};
+function buildLog(
+  opening: string | undefined,
+  turns: TurnLogEntry[] | undefined
+): LogItem[] {
+  const items: LogItem[] = [];
+  if (opening) {
+    items.push({ kind: "narration", text: opening });
+  }
+  for (const t of turns ?? []) {
+    items.push({ kind: "you", text: t.playerInput });
+    items.push({ kind: "narration", text: t.narration });
+    for (const d of t.dialogue ?? []) {
+      items.push({
+        kind: "npc",
+        name: d.characterName ?? d.characterId,
+        text: d.text,
+      });
+    }
+    if (t.evidenceAdded?.length) {
+      items.push({
+        kind: "system",
+        text: `Evidence added: ${t.evidenceAdded.join(", ")}`,
+      });
+    }
+  }
+  return items;
+}
 
 export default function PlaythroughPage() {
   const params = useParams();
   const id = String(params.id);
-  const [locationName, setLocationName] = useState("");
-  const [playthrough, setPlaythrough] = useState<Playthrough | null>(null);
+  const [playthrough, setPlaythrough] = useState<PlaythroughState | null>(null);
   const [log, setLog] = useState<LogItem[]>([]);
-  const [input, setInput] = useState("");
+  const [locationName, setLocationName] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [narratorMode, setNarratorMode] = useState<string | null>(null);
+  const [drawer, setDrawer] = useState<Drawer>(null);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const res = await fetch(`${API}/v1/playthroughs/${id}`);
-      if (!res.ok) {
-        setError("Playthrough not found");
-        return;
+      try {
+        const data = await getPlaythrough(id);
+        if (cancelled) return;
+        setPlaythrough(data.playthrough);
+        setLocationName(data.locationName ?? data.playthrough.locationId);
+        const opening =
+          sessionStorage.getItem(`mystery:opening:${id}`) ??
+          data.openingNarration ??
+          "";
+        setLog(buildLog(opening, data.turns));
+      } catch {
+        if (!cancelled) setError("Playthrough not found");
       }
-      const data = await res.json();
-      if (cancelled) return;
-      setPlaythrough(data.playthrough);
-      setLocationName(data.locationName ?? data.playthrough.locationId);
-      const items: LogItem[] = [];
-      const opening =
-        sessionStorage.getItem(`mystery:opening:${id}`) ??
-        data.openingNarration ??
-        "";
-      if (opening) {
-        items.push({ kind: "narration", text: opening });
-      }
-      for (const t of data.turns ?? []) {
-        items.push({ kind: "you", text: t.playerInput });
-        items.push({ kind: "narration", text: t.narration });
-        for (const d of t.dialogue ?? []) {
-          items.push({
-            kind: "npc",
-            name: d.characterName ?? d.characterId,
-            text: d.text,
-          });
-        }
-        if (t.evidenceAdded?.length) {
-          items.push({
-            kind: "system",
-            text: `Evidence added: ${t.evidenceAdded.join(", ")}`,
-          });
-        }
-      }
-      setLog(items);
     })();
     return () => {
       cancelled = true;
     };
   }, [id]);
 
-  const send = useCallback(async () => {
-    const text = input.trim();
-    if (!text || busy || !playthrough) return;
-    setBusy(true);
-    setError(null);
-    setInput("");
-    setLog((prev) => [...prev, { kind: "you", text }]);
-    try {
-      const res = await fetch(`${API}/v1/playthroughs/${id}/turns`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input: text }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error ?? `API ${res.status}`);
-      }
-      setPlaythrough(data.playthrough);
-      setLocationName(data.locationName ?? data.playthrough.locationId);
-      if (data._debug?.model) setNarratorMode(data._debug.model);
-      setLog((prev) => {
-        const next: LogItem[] = [
-          ...prev,
-          { kind: "narration", text: data.narration },
-        ];
-        for (const d of data.dialogue ?? []) {
-          next.push({
-            kind: "npc",
-            name: d.characterName ?? d.characterId,
-            text: d.text,
-          });
-        }
+  const appendDialogue = useCallback(
+    (dialogue: DialogueLine[] | undefined) => {
+      if (!dialogue?.length) return;
+      setLog((prev) => [
+        ...prev,
+        ...dialogue.map((d) => ({
+          kind: "npc" as const,
+          name: d.characterName ?? d.characterId,
+          text: d.text,
+        })),
+      ]);
+    },
+    []
+  );
+
+  const send = useCallback(
+    async (text: string) => {
+      if (busy || !playthrough) return;
+      setBusy(true);
+      setError(null);
+      setLog((prev) => [...prev, { kind: "you", text }]);
+      try {
+        const data = await sendTurn(id, text);
+        setPlaythrough(data.playthrough);
+        setLocationName(data.locationName ?? data.playthrough.locationId);
+        setLog((prev) => [...prev, { kind: "narration", text: data.narration }]);
+        appendDialogue(data.dialogue);
         if (data.evidenceAdded?.length) {
-          next.push({
-            kind: "system",
-            text: `Evidence added: ${data.evidenceAdded.join(", ")}`,
-          });
+          setLog((prev) => [
+            ...prev,
+            {
+              kind: "system",
+              text: `Evidence added: ${data.evidenceAdded.join(", ")}`,
+            },
+          ]);
         }
         if (data.justHappened?.length) {
           for (const j of data.justHappened) {
-            if (j.id?.startsWith("pulse_") || j.id === "ending" || j.id === "midnight_strikes" || j.summary?.includes("Phase")) {
-              next.push({
-                kind: "system",
-                text: j.narrationHints ?? j.summary,
-              });
+            if (
+              j.id?.startsWith("pulse_") ||
+              j.id === "ending" ||
+              j.id === "midnight_strikes" ||
+              j.summary?.includes("Phase")
+            ) {
+              setLog((prev) => [
+                ...prev,
+                { kind: "system", text: j.narrationHints ?? j.summary },
+              ]);
             }
           }
         }
-        if (data.playthrough?.status === "denouement") {
-          const end = data.playthrough.ending;
-          const title = end?.title ?? data.playthrough.resolution?.title ?? "Judgment";
-          next.push({
-            kind: "system",
-            text: `— ${title} — Aftermath (you may still talk, look around, or leave)`,
-          });
-        } else if (
-          data.playthrough?.status === "solved" ||
-          data.playthrough?.status === "failed"
-        ) {
-          const end = data.playthrough.ending;
-          const title =
-            end?.title ??
-            (data.playthrough.status === "solved"
-              ? "Case closed"
-              : "Case failed");
-          const kind = end?.kind ? ` (${end.kind})` : "";
-          next.push({
-            kind: "system",
-            text: `— ${title}${kind} — Fully closed`,
-          });
-        }
-        return next;
-      });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Turn failed");
-    } finally {
-      setBusy(false);
-    }
-  }, [busy, id, input, playthrough]);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Turn failed");
+      } finally {
+        setBusy(false);
+      }
+    },
+    [busy, id, playthrough, appendDialogue]
+  );
+
+  const evidenceItems = useMemo<EvidenceItem[]>(() => {
+    if (!playthrough) return [];
+    return playthrough.evidenceIds.map((eid) => ({
+      id: eid,
+      name:
+        EVIDENCE_DESCRIPTIONS[eid]?.name ??
+        eid
+          .split("-")
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(" "),
+      description: EVIDENCE_DESCRIPTIONS[eid]?.description,
+    }));
+  }, [playthrough]);
+
+  const castHere = useMemo<CastCharacter[]>(() => {
+    if (!playthrough) return [];
+    return Object.entries(playthrough.characters)
+      .filter(([, cs]) => cs.locationId === playthrough.locationId)
+      .map(([cid, cs]) => ({
+        id: cid,
+        name:
+          CHARACTER_NAMES[cid] ??
+          cid
+            .split("-")
+            .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+            .join(" "),
+        willingness: cs.willingness,
+        stance: cs.stance,
+        pressure: cs.pressure,
+      }));
+  }, [playthrough]);
+
+  const closed = playthrough
+    ? playthrough.status !== "active" && playthrough.status !== "denouement"
+    : true;
 
   if (error && !playthrough) {
     return (
-      <main style={{ padding: "2rem" }}>
-        <p style={{ color: "#ff8a7a" }}>{error}</p>
-      </main>
+      <>
+        <Atmosphere />
+        <main className={styles.errorPage}>
+          <p className={styles.errorText}>{error}</p>
+        </main>
+      </>
     );
   }
 
-  return (
-    <main
-      style={{
-        maxWidth: 720,
-        margin: "0 auto",
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        padding: "1rem",
-      }}
-    >
-      <header
-        style={{
-          borderBottom: "1px solid #2a3a4a",
-          paddingBottom: "0.75rem",
-          marginBottom: "1rem",
-        }}
+  const left = (
+    <>
+      <Panel
+        title="Case"
+        action={
+          <button
+            type="button"
+            className={styles.linkBtn}
+            onClick={() => setDrawer("evidence")}
+          >
+            Open
+          </button>
+        }
       >
-        <div style={{ fontSize: 12, letterSpacing: "0.08em", color: "#9aafc4" }}>
-          THE BLACKWOOD INHERITANCE
-        </div>
-        <div>
-          <span style={{ color: "#d4b56a", fontSize: 12, marginRight: 8 }}>
-            LOCATION
-          </span>
-          {locationName}
-        </div>
-        {playthrough ? (
-          <div style={{ fontSize: 13, color: "#9aafc4" }}>
-            Evidence:{" "}
-            {playthrough.evidenceIds.length
-              ? playthrough.evidenceIds.join(", ")
-              : "none yet"}{" "}
-            · Turns: {playthrough.turnCount} · {playthrough.status}
-            {playthrough.phaseId ? ` · phase: ${playthrough.phaseId}` : ""}
-            {playthrough.time?.slotId
-              ? ` · time: ${playthrough.time.slotId}`
-              : ""}
-            {playthrough.environment?.weather
-              ? ` · ${playthrough.environment.weather}`
-              : ""}
-            {playthrough.playerStatus?.threat &&
-            playthrough.playerStatus.threat !== "none"
-              ? ` · threat: ${playthrough.playerStatus.threat}`
-              : ""}
-            {playthrough.clocks && Object.keys(playthrough.clocks).length
-              ? ` · clocks: ${Object.entries(playthrough.clocks)
-                  .map(([k, v]) => `${k}:${v}`)
-                  .join(", ")}`
-              : ""}
+        <div className={styles.caseInfo}>
+          <div className={styles.caseTitle}>
+            {CASE_TITLES[playthrough?.caseId ?? ""] ?? "Case"}
           </div>
-        ) : null}
-        {playthrough?.status === "denouement" ? (
-          <div
-            style={{
-              marginTop: 8,
-              padding: "0.6rem 0.75rem",
-              borderRadius: 6,
-              background: "#2a2410",
-              color: "#e8d090",
-              fontSize: 14,
-            }}
+          <div className={styles.caseMeta}>
+            Evidence: {playthrough?.evidenceIds.length ?? 0} · Turns:{" "}
+            {playthrough?.turnCount ?? 0}
+          </div>
+        </div>
+      </Panel>
+
+      <Panel
+        title="Notebook"
+        action={
+          <button
+            type="button"
+            className={styles.linkBtn}
+            onClick={() => setDrawer("notebook")}
           >
-            <strong>
-              {playthrough.ending?.title ??
-                playthrough.resolution?.title ??
-                "Aftermath"}
-            </strong>
-            <span style={{ opacity: 0.85 }}>
-              {" "}
-              · wrap-up
-              {playthrough.denouement?.turnsRemaining != null
-                ? ` · ${playthrough.denouement.turnsRemaining} turns left`
-                : ""}
-              {" · still interactive"}
-            </span>
-            <div style={{ fontSize: 12, opacity: 0.75, marginTop: 4 }}>
-              Talk to people, witness the fallout, or type “I leave” / goodbye
-              to end.
+            Open
+          </button>
+        }
+      >
+        <div className={styles.miniList}>
+          {playthrough?.notebook.slice(-3).map((n) => (
+            <div key={n.id} className={styles.miniItem}>
+              {n.text}
             </div>
-          </div>
-        ) : null}
-        {playthrough?.status === "failed" || playthrough?.status === "solved" ? (
-          <div
-            style={{
-              marginTop: 8,
-              padding: "0.6rem 0.75rem",
-              borderRadius: 6,
-              background:
-                playthrough.status === "failed" ? "#3a1a1a" : "#1a2a1a",
-              color: playthrough.status === "failed" ? "#ffb0a0" : "#b0e0b0",
-              fontSize: 14,
-            }}
+          ))}
+          {playthrough?.notebook.length === 0 ? (
+            <div className={styles.miniEmpty}>Empty</div>
+          ) : null}
+        </div>
+      </Panel>
+
+      <Panel
+        title="Map"
+        action={
+          <button
+            type="button"
+            className={styles.linkBtn}
+            onClick={() => setDrawer("map")}
           >
-            <strong>
-              {playthrough.ending?.title ??
-                (playthrough.status === "failed" ? "Failed" : "Solved")}
-            </strong>
-            {playthrough.ending?.kind ? (
-              <span style={{ opacity: 0.8 }}> · {playthrough.ending.kind}</span>
-            ) : null}
-            <span style={{ opacity: 0.7 }}> · closed</span>
-          </div>
+            Open
+          </button>
+        }
+      >
+        <MapPanel
+          visitedLocationIds={playthrough?.visitedLocationIds ?? []}
+          currentLocationId={playthrough?.locationId ?? ""}
+          locationNames={LOCATION_NAMES}
+        />
+      </Panel>
+    </>
+  );
+
+  const right = (
+    <Panel
+      title="Present"
+      action={
+        <button
+          type="button"
+          className={styles.linkBtn}
+          onClick={() => setDrawer("cast")}
+        >
+          All
+        </button>
+      }
+    >
+      <CastPanel characters={castHere} />
+    </Panel>
+  );
+
+  const center = (
+    <>
+      <header className={styles.chrome}>
+        <div className={styles.caseEyebrow}>
+          {CASE_TITLES[playthrough?.caseId ?? ""] ?? "Case"}
+        </div>
+        <StatusBar
+          locationName={locationName}
+          phaseId={playthrough?.phaseId}
+          time={playthrough?.time}
+          environment={playthrough?.environment}
+          playerStatus={playthrough?.playerStatus}
+          clocks={playthrough?.clocks}
+          turnCount={playthrough?.turnCount ?? 0}
+        />
+        {playthrough?.status === "denouement" ? (
+          <DenouementBanner
+            ending={playthrough.ending}
+            resolution={playthrough.resolution}
+            denouement={playthrough.denouement}
+          />
         ) : null}
       </header>
 
-      <div style={{ flex: 1, overflowY: "auto", marginBottom: "1rem" }}>
-        {log.map((item, i) => (
-          <div
-            key={i}
-            style={{
-              marginBottom: "0.85rem",
-              color:
-                item.kind === "you"
-                  ? "#f0c0c0"
-                  : item.kind === "npc"
-                    ? "#e6eef6"
-                    : item.kind === "system"
-                      ? "#d4b56a"
-                      : "#c5d0de",
-              lineHeight: 1.55,
-            }}
-          >
-            {item.kind === "you" ? (
-              <strong style={{ display: "block", fontSize: 11, opacity: 0.8 }}>
-                YOU
-              </strong>
-            ) : null}
-            {item.kind === "npc" ? (
-              <strong
-                style={{
-                  display: "block",
-                  fontSize: 11,
-                  opacity: 0.8,
-                  color: "#d4b56a",
-                }}
-              >
-                {item.name.toUpperCase()}
-              </strong>
-            ) : null}
-            {item.kind === "npc" ? item.text : item.text}
-          </div>
-        ))}
+      <div className={styles.logWrap}>
+        <Log items={log} />
       </div>
 
-      {error ? <p style={{ color: "#ff8a7a" }}>{error}</p> : null}
+      {error ? <p className={styles.error}>{error}</p> : null}
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          void send();
-        }}
-        style={{ display: "flex", gap: 8 }}
-      >
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type what you say or do…"
-          disabled={
-            busy ||
-            (playthrough?.status !== "active" &&
-              playthrough?.status !== "denouement")
-          }
-          style={{
-            flex: 1,
-            padding: "0.75rem 1rem",
-            background: "#121a24",
-            border: "1px solid #2a3a4a",
-            color: "#e6eef6",
-            borderRadius: 4,
-          }}
-        />
+      <Composer
+        busy={busy}
+        closed={closed}
+        onSend={send}
+      />
+    </>
+  );
+
+  return (
+    <>
+      <Atmosphere />
+      <GameShell left={left} center={center} right={right} />
+
+      <nav className={styles.mobileBar} aria-label="Investigation panels">
         <button
-          type="submit"
-          disabled={
-            busy ||
-            !input.trim() ||
-            (playthrough?.status !== "active" &&
-              playthrough?.status !== "denouement")
-          }
-          style={{
-            background: "#b83a3a",
-            color: "#fff",
-            border: "none",
-            padding: "0 1.25rem",
-            borderRadius: 4,
-            fontWeight: 600,
-          }}
+          type="button"
+          onClick={() => setDrawer("evidence")}
+          className={drawer === "evidence" ? styles.mobileBarActive : ""}
         >
-          {busy ? "…" : "Send"}
+          Evidence
         </button>
-      </form>
-      <p style={{ fontSize: 12, color: "#5c6b80", marginTop: 8 }}>
-        Free text · engine-validated state
-        {narratorMode ? ` · narrator: ${narratorMode}` : ""}
-      </p>
-    </main>
+        <button
+          type="button"
+          onClick={() => setDrawer("notebook")}
+          className={drawer === "notebook" ? styles.mobileBarActive : ""}
+        >
+          Notebook
+        </button>
+        <button
+          type="button"
+          onClick={() => setDrawer("map")}
+          className={drawer === "map" ? styles.mobileBarActive : ""}
+        >
+          Map
+        </button>
+        <button
+          type="button"
+          onClick={() => setDrawer("cast")}
+          className={drawer === "cast" ? styles.mobileBarActive : ""}
+        >
+          Cast
+        </button>
+      </nav>
+
+      <SideDrawer
+        side="left"
+        title="Evidence"
+        open={drawer === "evidence"}
+        onClose={() => setDrawer(null)}
+      >
+        <EvidencePanel items={evidenceItems} />
+      </SideDrawer>
+
+      <SideDrawer
+        side="left"
+        title="Notebook"
+        open={drawer === "notebook"}
+        onClose={() => setDrawer(null)}
+      >
+        <NotebookPanel entries={playthrough?.notebook ?? []} />
+      </SideDrawer>
+
+      <SideDrawer
+        side="left"
+        title="Map"
+        open={drawer === "map"}
+        onClose={() => setDrawer(null)}
+      >
+        <MapPanel
+          visitedLocationIds={playthrough?.visitedLocationIds ?? []}
+          currentLocationId={playthrough?.locationId ?? ""}
+          locationNames={LOCATION_NAMES}
+        />
+      </SideDrawer>
+
+      <SideDrawer
+        side="right"
+        title="Cast"
+        open={drawer === "cast"}
+        onClose={() => setDrawer(null)}
+      >
+        <CastPanel characters={castHere} />
+      </SideDrawer>
+
+      {playthrough?.status === "solved" || playthrough?.status === "failed" ? (
+        <EndingOverlay
+          status={playthrough.status}
+          ending={playthrough.ending}
+          resolution={playthrough.resolution}
+        />
+      ) : null}
+    </>
   );
 }
