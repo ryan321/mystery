@@ -18,6 +18,14 @@ export type LogItem =
       startingKnowledge?: string;
       setting?: string;
       role?: string;
+      displayName?: string;
+      addressAs?: string;
+      appearance?: string;
+      age?: string;
+      gender?: string;
+      background?: string;
+      publicPerception?: string;
+      authority?: string;
     };
 
 export default function Log({
@@ -74,9 +82,37 @@ export default function Log({
                       <strong>Setting.</strong> {item.setting}
                     </p>
                   ) : null}
-                  {item.role ? (
+                  {item.displayName || item.role ? (
                     <p>
-                      <strong>You.</strong> {item.role}
+                      <strong>You are.</strong>{" "}
+                      {item.displayName ? (
+                        <>
+                          <em>{item.displayName}</em>
+                          {item.role ? ` — ${item.role}` : ""}
+                        </>
+                      ) : (
+                        item.role
+                      )}
+                      {item.age || item.gender || item.appearance ? (
+                        <>
+                          {" "}
+                          (
+                          {[item.age, item.gender, item.appearance]
+                            .filter(Boolean)
+                            .join("; ")}
+                          )
+                        </>
+                      ) : null}
+                    </p>
+                  ) : null}
+                  {item.background ? (
+                    <p>
+                      <strong>Background.</strong> {item.background}
+                    </p>
+                  ) : null}
+                  {item.publicPerception ? (
+                    <p>
+                      <strong>How they see you.</strong> {item.publicPerception}
                     </p>
                   ) : null}
                   {item.theMystery ? (
@@ -97,7 +133,8 @@ export default function Log({
                   <p className={styles.briefingHint}>
                     Explore, question people, examine the scene, and present
                     evidence. When you are ready, accuse with a name — and if
-                    you can, method and motive.
+                    you can, method and motive. Stay in character: the world
+                    treats you as this persona, not a generic blank detective.
                   </p>
                 </div>
               </SystemCard>

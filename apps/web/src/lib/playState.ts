@@ -50,6 +50,13 @@ export function getPlayState(caseId: string): PlayStateEntry | undefined {
   return load()[caseId];
 }
 
+/** Drop local tracking for a mystery (does not delete server playthroughs). */
+export function clearPlayState(caseId: string) {
+  const state = load();
+  delete state[caseId];
+  save(state);
+}
+
 export function getAllPlayStates(): Record<string, PlayStateEntry> {
   return load();
 }

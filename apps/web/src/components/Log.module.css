@@ -22,3 +22,39 @@
 .end {
   height: 1px;
 }
+
+.briefing {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.briefingTitle {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--candle);
+}
+
+.briefing p {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--paper);
+}
+
+.briefing strong {
+  color: var(--candle);
+  font-weight: 600;
+}
+
+.briefingHint {
+  margin-top: 0.25rem !important;
+  padding-top: 0.55rem;
+  border-top: 1px solid rgba(200, 165, 110, 0.2);
+  font-size: 0.8rem !important;
+  color: var(--fog) !important;
+}

@@ -17,6 +17,7 @@ import { assetUrl, getPlaythrough, sendTurn } from "../../../lib/api";
 import { markCompleted } from "../../../lib/playState";
 import type {
   DialogueLine,
+  MysteryBriefing,
   PlaythroughState,
   TurnLogEntry,
 } from "../../../lib/types";
@@ -43,11 +44,39 @@ function portraitFor(
 function buildLog(
   opening: string | undefined,
   turns: TurnLogEntry[] | undefined,
-  playthrough?: PlaythroughState | null
+  playthrough?: PlaythroughState | null,
+  briefing?: MysteryBriefing | null
 ): LogItem[] {
   const items: LogItem[] = [];
   if (opening) {
     items.push({ kind: "narration", text: opening });
+  }
+  // Opening dossier — only on a fresh play (no turns yet) so reloads stay clean
+  // once the investigation is underway; still show if there are turns but
+  // player is reviewing the start by keeping briefing only when no turns.
+  const hasBriefing =
+    briefing &&
+    (briefing.theMystery ||
+      briefing.objective ||
+      briefing.startingKnowledge ||
+      briefing.setting);
+  if (hasBriefing && !(turns && turns.length > 0)) {
+    items.push({
+      kind: "briefing",
+      setting: briefing.setting,
+      theMystery: briefing.theMystery,
+      objective: briefing.objective,
+      startingKnowledge: briefing.startingKnowledge,
+      role: briefing.role,
+      displayName: briefing.displayName,
+      addressAs: briefing.addressAs,
+      appearance: briefing.appearance,
+      age: briefing.age,
+      gender: briefing.gender,
+      background: briefing.background,
+      publicPerception: briefing.publicPerception,
+      authority: briefing.authority,
+    });
   }
   for (const t of turns ?? []) {
     items.push({ kind: "you", text: t.playerInput });
@@ -86,7 +115,19 @@ export default function PlaythroughPage() {
           sessionStorage.getItem(`mystery:opening:${id}`) ??
           data.openingNarration ??
           "";
-        setLog(buildLog(opening, data.turns, data.playthrough));
+        let briefing = data.briefing;
+        const briefKey = `mystery:briefing:${id}`;
+        if (briefing) {
+          sessionStorage.setItem(briefKey, JSON.stringify(briefing));
+        } else {
+          try {
+            const raw = sessionStorage.getItem(briefKey);
+            if (raw) briefing = JSON.parse(raw) as MysteryBriefing;
+          } catch {
+            /* ignore */
+          }
+        }
+        setLog(buildLog(opening, data.turns, data.playthrough, briefing));
       } catch {
         if (!cancelled) setError("Playthrough not found");
       }

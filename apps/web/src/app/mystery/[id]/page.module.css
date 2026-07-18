@@ -237,6 +237,45 @@
   cursor: not-allowed;
 }
 
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 0.65rem;
+  padding: 0.45rem 0.75rem;
+  background: transparent;
+  border: 1px solid rgba(154, 175, 196, 0.22);
+  border-radius: 4px;
+  color: var(--fog);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.btnGhost:hover:not(:disabled) {
+  color: var(--paper);
+  border-color: rgba(200, 165, 110, 0.35);
+  background: rgba(154, 175, 196, 0.06);
+}
+
+.btnGhost:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.restartHint {
+  margin: 0.45rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--fog);
+  opacity: 0.85;
+}
+
 .infoList {
   display: flex;
   flex-direction: column;

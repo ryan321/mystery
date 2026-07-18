@@ -30,8 +30,19 @@ export type CastMember = {
 };
 
 export type MysteryPlayerInfo = {
+  personaId?: string;
   displayName: string;
+  fullName?: string;
+  addressAs?: string;
+  pronouns?: string;
   role: string;
+  authority?: "civilian" | "guest" | "professional" | "official";
+  gender?: string;
+  age?: string;
+  appearance?: string;
+  clothing?: string;
+  background?: string;
+  publicPerception?: string;
   objective?: string;
   startingKnowledge?: string;
 };
@@ -51,6 +62,15 @@ export type MysteryBriefing = {
   objective?: string;
   startingKnowledge?: string;
   role?: string;
+  displayName?: string;
+  addressAs?: string;
+  personaId?: string;
+  authority?: string;
+  appearance?: string;
+  age?: string;
+  gender?: string;
+  background?: string;
+  publicPerception?: string;
 };
 
 export type DialogueLine = {
@@ -144,6 +164,7 @@ export type PlaythroughState = {
   denouement?: Denouement;
   interactive: boolean;
   playerStatus: PlayerStatus;
+  playerPersona?: MysteryPlayerInfo & { addressAs?: string };
   clocks: Record<string, number>;
   time?: TimeState;
   environment: EnvironmentState;

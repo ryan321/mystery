@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import Atmosphere from "../../../components/Atmosphere";
@@ -9,6 +9,23 @@ import { difficultyLabel } from "../../../lib/format";
 import { getPlayState, markBeingPlayed } from "../../../lib/playState";
 import type { CaseDetail } from "../../../lib/types";
 import styles from "./page.module.css";
+
+function beginPlaythrough(
+  id: string,
+  data: Awaited<ReturnType<typeof startCase>>
+) {
+  markBeingPlayed(id, data.playthrough.id);
+  sessionStorage.setItem(
+    `mystery:opening:${data.playthrough.id}`,
+    data.openingNarration ?? ""
+  );
+  if (data.briefing) {
+    sessionStorage.setItem(
+      `mystery:briefing:${data.playthrough.id}`,
+      JSON.stringify(data.briefing)
+    );
+  }
+}
 
 const CASE_IMAGES: Record<string, string> = {
   "blackwood-inheritance": "/images/cases/blackwood-inheritance.jpg",
@@ -29,7 +46,10 @@ export default function CaseDetailPage() {
   const [detail, setDetail] = useState<CaseDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
+  const [restarting, setRestarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /** Bump after local play-state changes so Continue/Restart stay in sync. */
+  const [playTick, setPlayTick] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -54,12 +74,11 @@ export default function CaseDetailPage() {
     }
   }, [loading, detail, router]);
 
-  if (loading || !detail) {
-    return null;
-  }
-
-  const playState = getPlayState(id);
+  const playState = useMemo(() => getPlayState(id), [id, playTick]);
   const playStateStatus = playState?.status;
+  const hasProgress =
+    playStateStatus === "being_played" || playStateStatus === "completed";
+  const busy = starting || restarting;
 
   async function handleStart() {
     setStarting(true);
@@ -71,14 +90,11 @@ export default function CaseDetailPage() {
       return;
     }
 
-    // If completed, start a new playthrough (replay)
+    // Fresh start or play-again after completion
     try {
       const data = await startCase(id);
-      markBeingPlayed(id, data.playthrough.id);
-      sessionStorage.setItem(
-        `mystery:opening:${data.playthrough.id}`,
-        data.openingNarration ?? ""
-      );
+      beginPlaythrough(id, data);
+      setPlayTick((n) => n + 1);
       router.push(`/play/${data.playthrough.id}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to start");
@@ -86,12 +102,36 @@ export default function CaseDetailPage() {
     }
   }
 
+  async function handleRestart() {
+    const inProgress = playStateStatus === "being_played";
+    const message = inProgress
+      ? "Start this mystery from the beginning? Your current investigation will be left behind and cannot be continued from where you were."
+      : "Start a completely new investigation of this mystery?";
+    if (!window.confirm(message)) return;
+
+    setRestarting(true);
+    setError(null);
+    try {
+      const data = await startCase(id);
+      beginPlaythrough(id, data);
+      setPlayTick((n) => n + 1);
+      router.push(`/play/${data.playthrough.id}`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to restart");
+      setRestarting(false);
+    }
+  }
+
   const buttonLabel =
     playStateStatus === "being_played"
       ? "Continue"
       : playStateStatus === "completed"
-        ? "Replay"
+        ? "Play again"
         : "Start";
+
+  if (loading || !detail) {
+    return null;
+  }
 
   const difficultyClass =
     detail.meta.difficulty === "hard"
@@ -134,21 +174,94 @@ export default function CaseDetailPage() {
 
           <div className={styles.content}>
             <div className={styles.main}>
-              <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>Premise</h2>
-                <p className={styles.premise}>{detail.meta.premise}</p>
-              </section>
+              {detail.meta.setting ? (
+                <section className={styles.section}>
+                  <h2 className={styles.sectionTitle}>Setting</h2>
+                  <p className={styles.description}>{detail.meta.setting}</p>
+                </section>
+              ) : null}
 
               <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>About this case</h2>
-                <p className={styles.description}>
-                  You are a detective called to investigate. Question the
-                  household, search the scene, and find the truth. The mystery
-                  has a fixed solution — the AI performs the characters and
-                  world, but the truth is already written.
+                <h2 className={styles.sectionTitle}>The story</h2>
+                <p className={styles.premise}>{detail.meta.premise}</p>
+                {detail.meta.summary ? (
+                  <p className={styles.description} style={{ marginTop: "0.85rem" }}>
+                    {detail.meta.summary}
+                  </p>
+                ) : null}
+              </section>
+
+              {detail.meta.theMystery ? (
+                <section className={styles.section}>
+                  <h2 className={styles.sectionTitle}>The mystery</h2>
+                  <p className={styles.premise}>{detail.meta.theMystery}</p>
+                </section>
+              ) : null}
+
+              <section className={styles.section}>
+                <h2 className={styles.sectionTitle}>You play as</h2>
+                <p className={styles.premise}>
+                  {detail.player?.displayName ?? "Investigator"}
+                  {detail.player?.role ? (
+                    <span className={styles.description}>
+                      {" "}
+                      — {detail.player.role}
+                    </span>
+                  ) : null}
+                </p>
+                {(detail.player?.age ||
+                  detail.player?.gender ||
+                  detail.player?.appearance ||
+                  detail.player?.clothing) && (
+                  <p className={styles.description} style={{ marginTop: "0.75rem" }}>
+                    <strong style={{ color: "var(--candle)" }}>Look. </strong>
+                    {[
+                      detail.player.age,
+                      detail.player.gender,
+                      detail.player.appearance,
+                      detail.player.clothing,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </p>
+                )}
+                {detail.player?.background ? (
+                  <p className={styles.description} style={{ marginTop: "0.75rem" }}>
+                    <strong style={{ color: "var(--candle)" }}>Background. </strong>
+                    {detail.player.background}
+                  </p>
+                ) : null}
+                {detail.player?.publicPerception ? (
+                  <p className={styles.description} style={{ marginTop: "0.75rem" }}>
+                    <strong style={{ color: "var(--candle)" }}>
+                      How they see you.{" "}
+                    </strong>
+                    {detail.player.publicPerception}
+                  </p>
+                ) : null}
+                {detail.player?.objective ? (
+                  <p className={styles.description} style={{ marginTop: "0.75rem" }}>
+                    <strong style={{ color: "var(--candle)" }}>Your job. </strong>
+                    {detail.player.objective}
+                  </p>
+                ) : null}
+                {detail.player?.startingKnowledge ? (
+                  <p className={styles.description} style={{ marginTop: "0.75rem" }}>
+                    <strong style={{ color: "var(--candle)" }}>What you know. </strong>
+                    {detail.player.startingKnowledge}
+                  </p>
+                ) : null}
+                {detail.player?.personaId ? (
+                  <p className={styles.description} style={{ marginTop: "0.75rem" }}>
+                    Recurring persona: <code>{detail.player.personaId}</code>
+                  </p>
+                ) : null}
+                <p className={styles.description} style={{ marginTop: "0.85rem" }}>
+                  Free-text investigation: talk, search, present evidence, accuse.
+                  The world treats you as this person — not a blank avatar. The
+                  solution is fixed and fair.
                 </p>
               </section>
-
             </div>
 
             <aside className={styles.sidebar}>
@@ -156,15 +269,47 @@ export default function CaseDetailPage() {
                 <h2 className={styles.playTitle}>Start investigating</h2>
                 <p className={styles.playMeta}>
                   Free mystery · Plays in your browser · No download
+                  {detail.meta.estimatedMinutes
+                    ? ` · ~${detail.meta.estimatedMinutes} min`
+                    : ""}
                 </p>
+                {playStateStatus === "being_played" ? (
+                  <p className={styles.restartHint}>
+                    Investigation in progress.
+                  </p>
+                ) : playStateStatus === "completed" ? (
+                  <p className={styles.restartHint}>
+                    You’ve finished this mystery once.
+                  </p>
+                ) : null}
                 <button
                   type="button"
                   className={styles.btnPrimary}
                   onClick={handleStart}
-                  disabled={starting}
+                  disabled={busy}
                 >
-                  {starting ? "Starting…" : buttonLabel}
+                  {starting
+                    ? playStateStatus === "being_played"
+                      ? "Opening…"
+                      : "Starting…"
+                    : buttonLabel}
                 </button>
+                {hasProgress ? (
+                  <>
+                    <button
+                      type="button"
+                      className={styles.btnGhost}
+                      onClick={handleRestart}
+                      disabled={busy}
+                    >
+                      {restarting ? "Restarting…" : "Restart"}
+                    </button>
+                    <p className={styles.restartHint}>
+                      Fresh start from the opening — progress on the current
+                      run is not carried over.
+                    </p>
+                  </>
+                ) : null}
                 {error ? <p className={styles.playMeta}>{error}</p> : null}
               </div>
 

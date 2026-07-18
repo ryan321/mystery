@@ -14,7 +14,7 @@ export default function SystemCard({
         <span className={styles.icon} aria-hidden="true">
           {icon}
         </span>
-        <span className={styles.text}>{children}</span>
+        <div className={styles.text}>{children}</div>
       </div>
     </div>
   );
