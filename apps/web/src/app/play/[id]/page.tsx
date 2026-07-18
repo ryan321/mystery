@@ -13,9 +13,6 @@ import SideDrawer from "../../../components/SideDrawer";
 import EvidencePanel, {
   type EvidenceItem,
 } from "../../../components/EvidencePanel";
-import CastPanel, {
-  type CastCharacter,
-} from "../../../components/CastPanel";
 import { getPlaythrough, sendTurn } from "../../../lib/api";
 import type {
   DialogueLine,
@@ -24,12 +21,11 @@ import type {
 } from "../../../lib/types";
 import {
   CASE_TITLES,
-  CHARACTER_NAMES,
   EVIDENCE_DESCRIPTIONS,
 } from "../../../lib/content";
 import styles from "./page.module.css";
 
-type Drawer = "evidence" | "cast" | null;
+type Drawer = "evidence" | null;
 
 function buildLog(
   opening: string | undefined,
@@ -165,24 +161,6 @@ export default function PlaythroughPage() {
     }));
   }, [playthrough]);
 
-  const castHere = useMemo<CastCharacter[]>(() => {
-    if (!playthrough) return [];
-    return Object.entries(playthrough.characters)
-      .filter(([, cs]) => cs.locationId === playthrough.locationId)
-      .map(([cid, cs]) => ({
-        id: cid,
-        name:
-          CHARACTER_NAMES[cid] ??
-          cid
-            .split("-")
-            .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-            .join(" "),
-        willingness: cs.willingness,
-        stance: cs.stance,
-        pressure: cs.pressure,
-      }));
-  }, [playthrough]);
-
   const closed = playthrough
     ? playthrough.status !== "active" && playthrough.status !== "denouement"
     : true;
@@ -226,23 +204,6 @@ export default function PlaythroughPage() {
     </>
   );
 
-  const right = (
-    <Panel
-      title="Present"
-      action={
-        <button
-          type="button"
-          className={styles.linkBtn}
-          onClick={() => setDrawer("cast")}
-        >
-          All
-        </button>
-      }
-    >
-      <CastPanel characters={castHere} />
-    </Panel>
-  );
-
   const center = (
     <>
       <header className={styles.chrome}>
@@ -284,7 +245,7 @@ export default function PlaythroughPage() {
   return (
     <>
       <Atmosphere />
-      <GameShell left={left} center={center} right={right} />
+      <GameShell left={left} center={center} />
 
       <nav className={styles.mobileBar} aria-label="Investigation panels">
         <button
@@ -293,13 +254,6 @@ export default function PlaythroughPage() {
           className={drawer === "evidence" ? styles.mobileBarActive : ""}
         >
           Evidence
-        </button>
-        <button
-          type="button"
-          onClick={() => setDrawer("cast")}
-          className={drawer === "cast" ? styles.mobileBarActive : ""}
-        >
-          Cast
         </button>
       </nav>
 
@@ -310,15 +264,6 @@ export default function PlaythroughPage() {
         onClose={() => setDrawer(null)}
       >
         <EvidencePanel items={evidenceItems} />
-      </SideDrawer>
-
-      <SideDrawer
-        side="right"
-        title="Cast"
-        open={drawer === "cast"}
-        onClose={() => setDrawer(null)}
-      >
-        <CastPanel characters={castHere} />
       </SideDrawer>
 
       {playthrough?.status === "solved" || playthrough?.status === "failed" ? (
