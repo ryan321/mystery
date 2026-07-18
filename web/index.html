@@ -169,10 +169,15 @@
 
           <div class="play-terminal">
             <header class="play-chrome">
-              <span class="play-dot" aria-hidden="true"></span>
-              <span class="play-dot" aria-hidden="true"></span>
-              <span class="play-dot" aria-hidden="true"></span>
-              <p class="play-case-name">The Pier at Low Tide</p>
+              <div class="play-case-badge">
+                <span class="play-case-dot" aria-hidden="true"></span>
+                <span class="play-case-name">The Pier at Low Tide</span>
+              </div>
+              <div class="play-chrome-actions" aria-hidden="true">
+                <span class="play-chrome-action" title="Evidence">☰</span>
+                <span class="play-chrome-action" title="Notebook">🖊</span>
+                <span class="play-chrome-action" title="Map">⌖</span>
+              </div>
             </header>
 
             <!-- EXPLORE -->
@@ -184,7 +189,7 @@
               data-panel="explore"
             >
               <p class="play-status">
-                <span class="play-status-label">You are in</span>
+                <span class="play-status-label">Location</span>
                 the harbormaster’s office
               </p>
               <div class="play-log">
@@ -194,9 +199,17 @@
                   pulled him out. The door to the pier stands half open; cold air
                   slides in with the smell of diesel and low tide.
                 </p>
-                <div class="play-bubble play-bubble-you">
-                  <span class="play-bubble-label">You</span>
-                  I’m going out onto the pier.
+                <div class="play-message play-message-you">
+                  <img
+                    class="play-avatar"
+                    src="images/avatar-player.png"
+                    alt=""
+                    aria-hidden="true"
+                  />
+                  <div class="play-bubble">
+                    <span class="play-bubble-label">You</span>
+                    I’m going out onto the pier.
+                  </div>
                 </div>
                 <p class="play-sys">
                   Wet planks under your shoes. Rope, cold metal, the slap of
@@ -207,7 +220,7 @@
                 </p>
               </div>
               <div class="play-composer" aria-hidden="true">
-                <span class="play-composer-label">Your message</span>
+                <span class="play-composer-prompt">&gt;</span>
                 <p class="play-composer-line">
                   I want a closer look at that stain on the dock…
                   <span class="play-cursor"></span>
@@ -225,33 +238,50 @@
               hidden
             >
               <p class="play-status">
-                <span class="play-status-label">You are on</span>
+                <span class="play-status-label">Location</span>
                 the pier
               </p>
               <div class="play-log">
-                <div class="play-bubble play-bubble-you">
-                  <span class="play-bubble-label">You</span>
-                  I kneel and check the dark stain on the edge of the dock.
+                <div class="play-message play-message-you">
+                  <img
+                    class="play-avatar"
+                    src="images/avatar-player.png"
+                    alt=""
+                    aria-hidden="true"
+                  />
+                  <div class="play-bubble">
+                    <span class="play-bubble-label">You</span>
+                    I kneel and check the dark stain on the edge of the dock.
+                  </div>
                 </div>
                 <p class="play-sys">
                   Not rust. Darker — sticky where the wood hasn’t fully dried.
                   Someone tried to scrub it in a hurry and missed the groove
                   between the boards.
                 </p>
-                <div class="play-bubble play-bubble-you">
-                  <span class="play-bubble-label">You</span>
-                  What’s under the ladder for the skiff?
+                <div class="play-message play-message-you">
+                  <img
+                    class="play-avatar"
+                    src="images/avatar-player.png"
+                    alt=""
+                    aria-hidden="true"
+                  />
+                  <div class="play-bubble">
+                    <span class="play-bubble-label">You</span>
+                    What’s under the ladder for the skiff?
+                  </div>
                 </div>
                 <p class="play-sys">
                   Wedged in a rung: a crumpled receipt, still damp.
                   <strong>Pier Locker 3 · 4:12 a.m. · paid cash.</strong>
                 </p>
                 <p class="play-sys play-item">
+                  <span class="play-item-icon" aria-hidden="true">✦</span>
                   You pocket the receipt. It’s in your evidence now.
                 </p>
               </div>
               <div class="play-composer" aria-hidden="true">
-                <span class="play-composer-label">Your message</span>
+                <span class="play-composer-prompt">&gt;</span>
                 <p class="play-composer-line">
                   Mara, I need to ask you something…
                   <span class="play-cursor"></span>
@@ -269,43 +299,92 @@
               hidden
             >
               <p class="play-status">
-                <span class="play-status-label">With</span>
+                <span class="play-status-label">Speaking with</span>
                 Mara · on the pier
               </p>
               <div class="play-log">
-                <div class="play-bubble play-bubble-you">
-                  <span class="play-bubble-label">You</span>
-                  Where were you when he died?
+                <div class="play-message play-message-you">
+                  <img
+                    class="play-avatar"
+                    src="images/avatar-player.png"
+                    alt=""
+                    aria-hidden="true"
+                  />
+                  <div class="play-bubble">
+                    <span class="play-bubble-label">You</span>
+                    Where were you when he died?
+                  </div>
                 </div>
-                <div class="play-bubble play-bubble-npc">
-                  <span class="play-bubble-label">Mara</span>
-                  Home. Asleep. Ask anyone on Dock Three — they saw my lights
-                  out.
+                <div class="play-message play-message-npc">
+                  <img
+                    class="play-avatar"
+                    src="images/avatar-mara.png"
+                    alt=""
+                    aria-hidden="true"
+                  />
+                  <div class="play-bubble">
+                    <span class="play-bubble-label">Mara</span>
+                    Home. Asleep. Ask anyone on Dock Three — they saw my lights
+                    out.
+                  </div>
                 </div>
-                <div class="play-bubble play-bubble-you">
-                  <span class="play-bubble-label">You</span>
-                  Then explain this. I found a receipt for locker 3 at 4:12 a.m.
-                  That’s your locker, isn’t it?
+                <div class="play-message play-message-you">
+                  <img
+                    class="play-avatar"
+                    src="images/avatar-player.png"
+                    alt=""
+                    aria-hidden="true"
+                  />
+                  <div class="play-bubble">
+                    <span class="play-bubble-label">You</span>
+                    Then explain this. I found a receipt for locker 3 at 4:12 a.m.
+                    That’s your locker, isn’t it?
+                  </div>
                 </div>
-                <div class="play-bubble play-bubble-npc">
-                  <span class="play-bubble-label">Mara</span>
-                  She laughs once, thin. “Plenty of people use those lockers.”
+                <div class="play-message play-message-npc">
+                  <img
+                    class="play-avatar"
+                    src="images/avatar-mara.png"
+                    alt=""
+                    aria-hidden="true"
+                  />
+                  <div class="play-bubble">
+                    <span class="play-bubble-label">Mara</span>
+                    She laughs once, thin. “Plenty of people use those lockers.”
+                  </div>
                 </div>
-                <div class="play-bubble play-bubble-you">
-                  <span class="play-bubble-label">You</span>
-                  Number 3 is yours. You said you were home.
+                <div class="play-message play-message-you">
+                  <img
+                    class="play-avatar"
+                    src="images/avatar-player.png"
+                    alt=""
+                    aria-hidden="true"
+                  />
+                  <div class="play-bubble">
+                    <span class="play-bubble-label">You</span>
+                    Number 3 is yours. You said you were home.
+                  </div>
                 </div>
-                <div class="play-bubble play-bubble-npc">
-                  <span class="play-bubble-label">Mara</span>
-                  The cigarette burns down to the filter. She doesn’t look at
-                  the water. “Fine. I was here. But I didn’t kill him.”
+                <div class="play-message play-message-npc">
+                  <img
+                    class="play-avatar"
+                    src="images/avatar-mara.png"
+                    alt=""
+                    aria-hidden="true"
+                  />
+                  <div class="play-bubble">
+                    <span class="play-bubble-label">Mara</span>
+                    The cigarette burns down to the filter. She doesn’t look at
+                    the water. “Fine. I was here. But I didn’t kill him.”
+                  </div>
                 </div>
                 <p class="play-sys play-item">
+                  <span class="play-item-icon" aria-hidden="true">✦</span>
                   Her alibi doesn’t hold. She admits she was on the pier.
                 </p>
               </div>
               <div class="play-composer" aria-hidden="true">
-                <span class="play-composer-label">Your message</span>
+                <span class="play-composer-prompt">&gt;</span>
                 <p class="play-composer-line">
                   Why were you really here that early?
                   <span class="play-cursor"></span>
@@ -331,13 +410,22 @@
                   You’ve walked the pier, broken an alibi, and the receipt still
                   smells like the sea. When you’re sure, you say so.
                 </p>
-                <div class="play-bubble play-bubble-you">
-                  <span class="play-bubble-label">You</span>
-                  I know who did it. Mara killed the harbormaster. She was here
-                  at low tide, struck him on the dock, tried to scrub the stain,
-                  and needed him quiet about the night runs.
+                <div class="play-message play-message-you">
+                  <img
+                    class="play-avatar"
+                    src="images/avatar-player.png"
+                    alt=""
+                    aria-hidden="true"
+                  />
+                  <div class="play-bubble">
+                    <span class="play-bubble-label">You</span>
+                    I know who did it. Mara killed the harbormaster. She was here
+                    at low tide, struck him on the dock, tried to scrub the stain,
+                    and needed him quiet about the night runs.
+                  </div>
                 </div>
                 <p class="play-sys play-end">
+                  <span class="play-item-icon" aria-hidden="true">✦</span>
                   You lay it out: the stain between the boards, locker 3 at
                   4:12, the alibi that only held until the paper came out of your
                   pocket. Mara doesn’t run. She looks at the black water and
@@ -353,7 +441,7 @@
                 </p>
               </div>
               <div class="play-composer" aria-hidden="true">
-                <span class="play-composer-label">Your message</span>
+                <span class="play-composer-prompt">&gt;</span>
                 <p class="play-composer-line play-composer-idle">
                   …
                   <span class="play-cursor"></span>
