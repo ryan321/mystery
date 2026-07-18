@@ -68,11 +68,22 @@
     const manor = document.querySelector(".manor-img");
     if (!toggle) return;
 
+    const THUNDER_VARIANTS = [
+      "audio/thunder-1.mp3",
+      "audio/thunder-2.mp3",
+      "audio/thunder-3.mp3",
+      "audio/thunder-4.mp3",
+    ];
+
     let rainAudio = null;
-    let thunderAudio = null;
+    let thunderAudios = [];
     let enabled = false;
     let flashTimer = null;
     let nextFlashAt = 0;
+    let autoplayFailed = false;
+
+    const RAIN_VOLUME = 0.5;
+    const THUNDER_VOLUME = 0.75;
 
     function createAudio(src) {
       const audio = new Audio(src);
@@ -81,11 +92,20 @@
       return audio;
     }
 
+    function getThunderAudio() {
+      if (thunderAudios.length === 0) {
+        thunderAudios = THUNDER_VARIANTS.map(createAudio);
+      }
+      const idx = Math.floor(Math.random() * thunderAudios.length);
+      return thunderAudios[idx];
+    }
+
     function playThunder() {
-      if (!enabled || !thunderAudio) return;
-      thunderAudio.currentTime = 0;
-      thunderAudio.volume = 0.55;
-      const play = thunderAudio.play();
+      if (!enabled) return;
+      const audio = getThunderAudio();
+      audio.currentTime = 0;
+      audio.volume = THUNDER_VOLUME;
+      const play = audio.play();
       if (play && typeof play.catch === "function") {
         play.catch(function () {
           // Ignore autoplay/policy errors
@@ -105,9 +125,8 @@
     }
 
     function scheduleFlash() {
-      const now = Date.now();
-      const delay = enabled ? 6000 + Math.random() * 9000 : Infinity;
-      nextFlashAt = now + delay;
+      const delay = enabled ? 5000 + Math.random() * 7000 : Infinity;
+      nextFlashAt = Date.now() + delay;
       if (flashTimer) clearTimeout(flashTimer);
       flashTimer = setTimeout(function () {
         triggerFlash();
@@ -115,8 +134,7 @@
       }, delay);
     }
 
-    function setEnabled(on) {
-      enabled = on;
+    function updateToggleUI(on) {
       toggle.setAttribute("aria-pressed", on ? "true" : "false");
       toggle.classList.toggle("is-active", on);
 
@@ -128,39 +146,43 @@
         "aria-label",
         on ? "Disable rain and thunder ambience" : "Enable rain and thunder ambience"
       );
+    }
+
+    function setEnabled(on) {
+      enabled = on;
+      updateToggleUI(on);
 
       if (on) {
         if (!rainAudio) rainAudio = createAudio("audio/rain.mp3");
-        if (!thunderAudio) thunderAudio = createAudio("audio/thunder.mp3");
+        if (thunderAudios.length === 0) {
+          thunderAudios = THUNDER_VARIANTS.map(createAudio);
+        }
         rainAudio.loop = true;
-        rainAudio.volume = 0.2;
+        rainAudio.volume = RAIN_VOLUME;
         const play = rainAudio.play();
         if (play && typeof play.catch === "function") {
           play.catch(function () {
-            // Browser may block until next user gesture
+            // Browser blocked autoplay; mute UI until user toggles
+            autoplayFailed = true;
+            enabled = false;
+            updateToggleUI(false);
           });
         }
-        // Flash soon after enabling, then on a natural interval
-        if (Date.now() >= nextFlashAt) {
-          clearTimeout(flashTimer);
-          flashTimer = setTimeout(function () {
-            triggerFlash();
-            scheduleFlash();
-          }, 1200);
-        } else {
-          scheduleFlash();
-        }
+        scheduleFlash();
       } else {
         if (rainAudio) {
           rainAudio.pause();
           rainAudio.currentTime = 0;
         }
-        if (thunderAudio) thunderAudio.pause();
+        thunderAudios.forEach(function (audio) {
+          audio.pause();
+        });
         if (flashTimer) clearTimeout(flashTimer);
       }
     }
 
     toggle.addEventListener("click", function () {
+      autoplayFailed = false;
       setEnabled(!enabled);
     });
 
@@ -185,6 +207,9 @@
         manor.classList.remove("is-flashing");
       });
     }
+
+    // Ambience is on by default; browsers may block until first user gesture
+    setEnabled(true);
   }
 
   initAudio();
@@ -198,10 +223,6 @@
     let drops = [];
     let rafId = null;
     let lastTime = 0;
-
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
 
     function resize() {
       const rect = canvas.getBoundingClientRect();
