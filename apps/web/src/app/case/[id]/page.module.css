@@ -269,11 +269,83 @@
   color: var(--fog);
 }
 
+.charactersSection {
+  margin-top: 2rem;
+}
+
+.characters {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.characterCard {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.85rem;
+  background: var(--glass);
+  border: 1px solid rgba(200, 165, 110, 0.15);
+  border-radius: 6px;
+  backdrop-filter: blur(12px);
+}
+
+.characterPortrait {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(8, 12, 20, 0.6);
+  border: 1px solid rgba(200, 165, 110, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.characterPortrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.characterInitial {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  color: var(--candle);
+}
+
+.characterInfo {
+  min-width: 0;
+}
+
+.characterName {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--paper);
+  margin-bottom: 0.25rem;
+}
+
+.characterBio {
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--fog);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 @media (max-width: 800px) {
   .content {
     grid-template-columns: 1fr;
   }
   .playCard {
     position: static;
+  }
+  .characters {
+    grid-template-columns: 1fr;
   }
 }

@@ -33,7 +33,6 @@ export default function PlayLobbyPage() {
                 premise:
                   "A stormy night, a locked manor, and a body at the foot of the stairs. The family was already at each other’s throats.",
                 tone: "gothic manor whodunit, tense and formal",
-                estimatedMinutes: 40,
                 tags: ["Manor", "Family", "Storm", "Classic"],
                 difficulty: "easy",
                 contentWarnings: ["murder", "violence"],
@@ -93,11 +92,6 @@ export default function PlayLobbyPage() {
                             {t}
                           </span>
                         ))}
-                        {c.meta.estimatedMinutes ? (
-                          <span className={styles.tag}>
-                            ~{c.meta.estimatedMinutes} min
-                          </span>
-                        ) : null}
                       </div>
                     </div>
                   </article>

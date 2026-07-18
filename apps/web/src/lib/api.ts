@@ -1,4 +1,5 @@
 import type {
+  CaseDetail,
   CaseSummary,
   GetPlaythroughResponse,
   SendTurnResponse,
@@ -28,6 +29,11 @@ export async function listCases(): Promise<CaseSummary[]> {
   const res = await fetch(`${API}/v1/cases`);
   const data = await json<{ cases: CaseSummary[] }>(res);
   return data.cases;
+}
+
+export async function getCase(caseId: string): Promise<CaseDetail> {
+  const res = await fetch(`${API}/v1/cases/${caseId}`);
+  return json<CaseDetail>(res);
 }
 
 export async function startCase(caseId: string): Promise<StartCaseResponse> {

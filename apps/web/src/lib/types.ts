@@ -2,16 +2,31 @@ export type CaseMeta = {
   title: string;
   premise: string;
   tone?: string;
-  estimatedMinutes?: number;
   tags: string[];
   difficulty?: "easy" | "medium" | "hard";
   contentWarnings: string[];
+  artStyle?: string;
 };
 
 export type CaseSummary = {
   id: string;
   contentVersion: string;
   meta: CaseMeta;
+};
+
+export type CastMember = {
+  id: string;
+  name: string;
+  shortBio?: string;
+  portrait?: string;
+  portraitUrl?: string;
+};
+
+export type CaseDetail = {
+  id: string;
+  contentVersion: string;
+  meta: CaseMeta;
+  cast?: CastMember[];
 };
 
 export type DialogueLine = {

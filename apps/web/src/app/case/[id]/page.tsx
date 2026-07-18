@@ -4,56 +4,48 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import Atmosphere from "../../../components/Atmosphere";
-import { startCase } from "../../../lib/api";
+import { assetUrl, getCase, startCase } from "../../../lib/api";
 import { difficultyLabel } from "../../../lib/format";
+import type { CaseDetail } from "../../../lib/types";
 import styles from "./page.module.css";
 
 const CASE_IMAGES: Record<string, string> = {
   "blackwood-inheritance": "/images/cases/blackwood-inheritance.jpg",
 };
 
-const CASE_DETAILS: Record<
-  string,
-  {
-    title: string;
-    premise: string;
-    description: string;
-    tags: string[];
-    difficulty: "easy" | "medium" | "hard";
-    estimatedMinutes?: number;
-    contentWarnings: string[];
-    tone?: string;
-  }
-> = {
-  "blackwood-inheritance": {
-    title: "The Blackwood Inheritance",
-    premise:
-      "A stormy night, a locked manor, and violence at the foot of the stairs. The family was already at each other’s throats.",
-    description:
-      "You are a police inspector called to Blackwood Manor after a crash and a body. Mr. Blackwood lies dead at the foot of the main stairs. The storm has cut the road; no one left the grounds after ten. Butler Henshaw has put you in a small guest room upstairs — a place to leave your coat and notebook. Question the household, search the manor, and find the truth before the storm lifts.",
-    tags: ["Manor", "Family", "Storm", "Classic"],
-    difficulty: "easy",
-    estimatedMinutes: 40,
-    contentWarnings: ["murder", "violence"],
-    tone: "gothic manor whodunit, tense and formal",
-  },
-};
-
 export default function CaseDetailPage() {
   const params = useParams();
   const router = useRouter();
   const id = String(params.id);
-  const detail = CASE_DETAILS[id];
+  const [detail, setDetail] = useState<CaseDetail | null>(null);
+  const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!detail) {
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await getCase(id);
+        if (!cancelled) setDetail(data);
+      } catch {
+        if (!cancelled) setDetail(null);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  useEffect(() => {
+    if (!loading && !detail) {
       router.replace("/play");
     }
-  }, [detail, router]);
+  }, [loading, detail, router]);
 
-  if (!detail) {
+  if (loading || !detail) {
     return null;
   }
 
@@ -74,9 +66,9 @@ export default function CaseDetailPage() {
   }
 
   const difficultyClass =
-    detail.difficulty === "hard"
+    detail.meta.difficulty === "hard"
       ? styles.badgeHard
-      : detail.difficulty === "medium"
+      : detail.meta.difficulty === "medium"
         ? styles.badgeMedium
         : styles.badgeEasy;
 
@@ -98,19 +90,14 @@ export default function CaseDetailPage() {
             <div className={styles.heroOverlay} />
             <div className={styles.heroContent}>
               <p className={styles.eyebrow}>Case file</p>
-              <h1 className={styles.title}>{detail.title}</h1>
+              <h1 className={styles.title}>{detail.meta.title}</h1>
               <div className={styles.metaRow}>
                 <span className={`${styles.badge} ${difficultyClass}`}>
-                  {difficultyLabel(detail.difficulty)}
+                  {difficultyLabel(detail.meta.difficulty)}
                 </span>
-                {detail.estimatedMinutes ? (
+                {detail.meta.tone ? (
                   <span className={`${styles.badge} ${styles.badgeNeutral}`}>
-                    ~{detail.estimatedMinutes} min
-                  </span>
-                ) : null}
-                {detail.tone ? (
-                  <span className={`${styles.badge} ${styles.badgeNeutral}`}>
-                    {detail.tone}
+                    {detail.meta.tone}
                   </span>
                 ) : null}
               </div>
@@ -121,18 +108,23 @@ export default function CaseDetailPage() {
             <div className={styles.main}>
               <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>Premise</h2>
-                <p className={styles.premise}>{detail.premise}</p>
+                <p className={styles.premise}>{detail.meta.premise}</p>
               </section>
 
               <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>About this case</h2>
-                <p className={styles.description}>{detail.description}</p>
+                <p className={styles.description}>
+                  You are a detective called to investigate. Question the
+                  household, search the scene, and find the truth. The case has
+                  a fixed solution — the AI performs the characters and world,
+                  but the truth is already written.
+                </p>
               </section>
 
-              {detail.contentWarnings.length > 0 ? (
+              {detail.meta.contentWarnings.length > 0 ? (
                 <div className={styles.warning}>
                   <strong>Content warnings:</strong>{" "}
-                  {detail.contentWarnings.join(", ")}
+                  {detail.meta.contentWarnings.join(", ")}
                 </div>
               ) : null}
             </div>
@@ -157,7 +149,7 @@ export default function CaseDetailPage() {
               <div className={styles.section}>
                 <h2 className={styles.sectionTitle}>Tags</h2>
                 <div className={styles.tags}>
-                  {detail.tags.map((t) => (
+                  {detail.meta.tags.map((t) => (
                     <span key={t} className={styles.tag}>
                       {t}
                     </span>
@@ -166,6 +158,39 @@ export default function CaseDetailPage() {
               </div>
             </aside>
           </div>
+
+          {detail.cast && detail.cast.length > 0 ? (
+            <section className={styles.charactersSection}>
+              <h2 className={styles.sectionTitle}>The people in this case</h2>
+              <div className={styles.characters}>
+                {detail.cast.map((c) => (
+                  <div key={c.id} className={styles.characterCard}>
+                    <div className={styles.characterPortrait}>
+                      {c.portraitUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={assetUrl(c.portraitUrl)}
+                          alt=""
+                          width={96}
+                          height={96}
+                        />
+                      ) : (
+                        <span className={styles.characterInitial}>
+                          {c.name.charAt(0)}
+                        </span>
+                      )}
+                    </div>
+                    <div className={styles.characterInfo}>
+                      <div className={styles.characterName}>{c.name}</div>
+                      {c.shortBio ? (
+                        <div className={styles.characterBio}>{c.shortBio}</div>
+                      ) : null}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          ) : null}
         </div>
       </main>
     </>
