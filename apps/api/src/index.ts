@@ -2,8 +2,8 @@ import { config as loadEnv } from "dotenv";
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { readFileSync, readdirSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
+import { join, dirname, normalize, extname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   parseMysteryDefinition,
@@ -17,8 +17,7 @@ import {
   migrate,
   insertPlaythrough,
   getPlaythrough,
-  updatePlaythrough,
-  insertTurn,
+  commitTurn,
   listTurns,
   databaseUrl,
 } from "./db.js";
@@ -94,6 +93,77 @@ app.get("/v1/cases/:caseId", (c) => {
     id: def.id,
     contentVersion: def.contentVersion,
     meta: def.meta,
+    player: {
+      personaId: def.player.personaId,
+      displayName: def.player.displayName,
+      fullName: def.player.fullName,
+      addressAs: def.player.addressAs ?? def.player.displayName,
+      pronouns: def.player.pronouns,
+      role: def.player.role,
+      authority: def.player.authority,
+      gender: def.player.gender,
+      age: def.player.age,
+      appearance: def.player.appearance,
+      clothing: def.player.clothing,
+      background: def.player.background,
+      publicPerception: def.player.publicPerception,
+      objective: def.player.objective,
+      startingKnowledge: def.player.startingKnowledge,
+    },
+    cast: def.characters.map((ch) => ({
+      id: ch.id,
+      name: ch.name,
+      shortBio: ch.shortBio,
+      storyRole: ch.storyRole ?? "suspect",
+      portrait: ch.portrait,
+      portraitUrl: ch.portrait
+        ? `/v1/cases/${def.id}/assets/${ch.portrait}`
+        : undefined,
+    })),
+  });
+});
+
+/**
+ * Serve case content assets (portraits, etc.) under content/cases/<id>/.
+ * Path is relative to the case folder; traversal is rejected.
+ */
+app.get("/v1/cases/:caseId/assets/*", async (c) => {
+  const caseId = c.req.param("caseId");
+  if (!cases.has(caseId)) return c.json({ error: "not_found" }, 404);
+
+  const prefix = `/v1/cases/${caseId}/assets/`;
+  const raw = c.req.path.startsWith(prefix)
+    ? c.req.path.slice(prefix.length)
+    : "";
+  const rel = normalize(decodeURIComponent(raw)).replace(/^(\.\.(\/|\\|$))+/, "");
+  if (!rel || rel.startsWith("..") || rel.includes("/../") || rel.includes("\\")) {
+    return c.json({ error: "invalid_path" }, 400);
+  }
+
+  const caseRoot = resolve(contentRoot, caseId);
+  const full = resolve(caseRoot, rel);
+  if (!full.startsWith(caseRoot + "/") && full !== caseRoot) {
+    return c.json({ error: "invalid_path" }, 400);
+  }
+  if (!existsSync(full) || !statSync(full).isFile()) {
+    return c.json({ error: "not_found" }, 404);
+  }
+
+  const ext = extname(full).toLowerCase();
+  const types: Record<string, string> = {
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".webp": "image/webp",
+    ".gif": "image/gif",
+    ".svg": "image/svg+xml",
+  };
+  const body = readFileSync(full);
+  return new Response(body, {
+    headers: {
+      "Content-Type": types[ext] ?? "application/octet-stream",
+      "Cache-Control": "public, max-age=3600",
+    },
   });
 });
 
@@ -110,6 +180,7 @@ app.post("/v1/playthroughs", async (c) => {
   return c.json({
     playthrough: publicState(state, def),
     openingNarration: def.openingNarration,
+    briefing: buildBriefing(def, state),
     locationName: def.locations.find((l) => l.id === state.locationId)?.name,
   });
 });
@@ -122,6 +193,7 @@ app.get("/v1/playthroughs/:id", async (c) => {
   return c.json({
     playthrough: publicState(row.state, def),
     openingNarration: row.openingNarration,
+    briefing: def ? buildBriefing(def, row.state) : undefined,
     locationName: def?.locations.find((l) => l.id === row.state.locationId)
       ?.name,
     turns: turns.map((t) => ({
@@ -183,28 +255,26 @@ app.post("/v1/playthroughs/:id/turns", async (c) => {
   const committed = result.state;
 
   try {
-    await updatePlaythrough(pool, committed);
+    await commitTurn(pool, committed, {
+      playthroughId: committed.id,
+      turnIndex: committed.turnCount,
+      playerInput: input,
+      narration: result.narration,
+      dialogue: result.dialogue,
+      appliedPatch: result.appliedPatch,
+      rejected: result.rejected,
+      evidenceAdded: result.evidenceAdded,
+      model: `${result.debug.directorModel}+${result.debug.performerModel}`,
+      mock: result.debug.directorMock || result.debug.performerMock,
+      latencyMs:
+        result.debug.directorLatencyMs + result.debug.performerLatencyMs,
+    });
   } catch (err) {
     if (err instanceof Error && err.message === "playthrough_conflict") {
       return c.json({ error: "conflict", message: "Stale playthrough" }, 409);
     }
     throw err;
   }
-
-  await insertTurn(pool, {
-    playthroughId: committed.id,
-    turnIndex: committed.turnCount,
-    playerInput: input,
-    narration: result.narration,
-    dialogue: result.dialogue,
-    appliedPatch: result.appliedPatch,
-    rejected: result.rejected,
-    evidenceAdded: result.evidenceAdded,
-    model: `${result.debug.directorModel}+${result.debug.performerModel}`,
-    mock: result.debug.directorMock || result.debug.performerMock,
-    latencyMs:
-      result.debug.directorLatencyMs + result.debug.performerLatencyMs,
-  });
 
   return c.json({
     narration: result.narration,
@@ -219,6 +289,27 @@ app.post("/v1/playthroughs/:id/turns", async (c) => {
     _debug: result.debug,
   });
 });
+
+function buildBriefing(def: MysteryDefinition, state?: PlaythroughState) {
+  const p = state?.playerPersona;
+  return {
+    setting: def.meta.setting,
+    theMystery: def.meta.theMystery,
+    objective: p?.objective ?? def.player.objective,
+    startingKnowledge:
+      p?.startingKnowledge ?? def.player.startingKnowledge,
+    role: p?.role ?? def.player.role,
+    displayName: p?.displayName ?? def.player.displayName,
+    addressAs: p?.addressAs ?? def.player.addressAs ?? def.player.displayName,
+    personaId: p?.personaId ?? def.player.personaId,
+    authority: p?.authority ?? def.player.authority,
+    appearance: p?.appearance ?? def.player.appearance,
+    age: p?.age ?? def.player.age,
+    gender: p?.gender ?? def.player.gender,
+    background: p?.background ?? def.player.background,
+    publicPerception: p?.publicPerception ?? def.player.publicPerception,
+  };
+}
 
 function publicState(state: PlaythroughState, def?: MysteryDefinition) {
   const ending =
@@ -237,6 +328,7 @@ function publicState(state: PlaythroughState, def?: MysteryDefinition) {
     visitedLocationIds: state.visitedLocationIds,
     turnCount: state.turnCount,
     phaseId: state.phaseId,
+    playerPersona: state.playerPersona,
     endingId: state.endingId,
     ending: ending
       ? {
@@ -264,18 +356,35 @@ function publicState(state: PlaythroughState, def?: MysteryDefinition) {
       crowd: state.environment.crowd,
       ambient: state.environment.ambient,
     },
-    // character willingness for UI hints
+    // character willingness + portraits for UI
     characters: Object.fromEntries(
-      Object.entries(state.characterState).map(([id, cs]) => [
-        id,
-        {
-          locationId: cs.locationId,
-          willingness: cs.willingness,
-          stance: cs.stance,
-          pressure: cs.pressure,
-        },
-      ])
+      Object.entries(state.characterState).map(([id, cs]) => {
+        const ch = def?.characters.find((x) => x.id === id);
+        return [
+          id,
+          {
+            locationId: cs.locationId,
+            willingness: cs.willingness,
+            stance: cs.stance,
+            pressure: cs.pressure,
+            name: ch?.name,
+            portrait: ch?.portrait,
+            portraitUrl: ch?.portrait
+              ? `/v1/cases/${state.caseId}/assets/${ch.portrait}`
+              : undefined,
+          },
+        ];
+      })
     ),
+    cast: def?.characters.map((ch) => ({
+      id: ch.id,
+      name: ch.name,
+      shortBio: ch.shortBio,
+      portrait: ch.portrait,
+      portraitUrl: ch.portrait
+        ? `/v1/cases/${state.caseId}/assets/${ch.portrait}`
+        : undefined,
+    })),
   };
 }
 

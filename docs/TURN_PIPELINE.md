@@ -14,7 +14,8 @@ Player free text
 └─────────┬─────────┘
           ▼
 ┌───────────────────┐
-│ ENGINE            │  intents → patch → validateAndApplyPatch
+│ ENGINE            │  intents → patch → accuse gate →
+│                   │  validateAndApplyPatch
 │                   │  (doors, evidence, flags, accuse…)
 │                   │  build justHappened
 └─────────┬─────────┘
@@ -33,6 +34,13 @@ Player free text
 2. **Director** may suggest a patch; **engine** is authority.
 3. **Performer** must honor `justHappened` and default-deny character knowledge.
 4. Without `OPENROUTER_API_KEY`, both calls use heuristics.
+5. **Accuse gate** (`packages/engine/src/accuse-gate.ts`): informal accusations
+   become `pendingAccusation` and must be confirmed in-fiction (or worded
+   formally — "I accuse X") before scoring. Scoring is negation-aware
+   ("it wasn't X" never counts as naming X). Naming suspects sets generic
+   `accused_<id>` / `falsely_accused_<id>` game flags for definition-driven
+   reactions — no per-case engine hardcodes. Config: definition `accusePolicy`
+   (`requireConfirmation`, default true; `pendingTurns`, default 3).
 
 ## Models (env)
 

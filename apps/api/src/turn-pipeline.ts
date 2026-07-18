@@ -4,6 +4,7 @@ import type {
   JustHappened,
 } from "@mystery/shared";
 import {
+  applyAccuseGate,
   buildContextPack,
   directorIntentsToPatch,
   validateAndApplyPatch,
@@ -85,16 +86,6 @@ export async function runTurnPipeline(args: {
     playerInput
   );
 
-  if (
-    patch.accuse?.suspectIds?.includes("henshaw") &&
-    !patch.accuse.suspectIds.includes("vale")
-  ) {
-    patch.setFlags = {
-      ...(patch.setFlags ?? {}),
-      falsely_accused_henshaw: true,
-    };
-  }
-
   if (state.status === "denouement" && patch.accuse) {
     delete patch.accuse;
     notes.push("accuse ignored — denouement");
@@ -105,8 +96,16 @@ export async function runTurnPipeline(args: {
     delete patch.accuse;
   }
 
+  // Accusation confirmation gate: informal accusations go pending and must be
+  // confirmed (or worded formally) before they are scored. Also records
+  // generic accused_<id> flags for definition-driven reactions.
+  const gate = applyAccuseGate(def, state, patch, playerInput);
+  state = gate.state;
+  justHappened.push(...gate.justHappened);
+  notes.push(...gate.notes);
+
   const { applied, rejected, nextState, evidenceAdded, accusation } =
-    validateAndApplyPatch(def, state, patch);
+    validateAndApplyPatch(def, state, gate.patch);
 
   // --- Beat pass 2: player-caused unlocks ---
   const playerBeats = evaluateBeats(def, nextState, 3, {

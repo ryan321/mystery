@@ -1,0 +1,756 @@
+{
+  "$schema": "../definition.schema.json",
+  "schemaVersion": "1.5",
+  "id": "hostile-takeover",
+  "contentVersion": "0.1.3",
+  "meta": {
+    "title": "Hostile Takeover",
+    "premise": "A tech CEO falls from a penthouse boardroom the night before a billion-dollar merger. Everyone inside had a reason to push.",
+    "tone": "corporate thriller, glass and steel, clipped ambition",
+    "estimatedMinutes": 50,
+    "tags": [
+      "Corporate",
+      "Office",
+      "Espionage",
+      "Modern"
+    ],
+    "difficulty": "medium",
+    "contentWarnings": [
+      "murder",
+      "suicide discussion"
+    ],
+    "artStyle": "Corporate noir portrait, head-and-shoulders, cool glass-tower blue and charcoal, executive fashion, same polished boardroom lighting for every cast member, mystery game NPC portrait",
+    "setting": "A glass penthouse boardroom, fifty floors up. Night before the merger vote. City lights like a circuit board.",
+    "summary": "CEO Ava Krane is dead on the terrace setback below — she went over the boardroom balcony during a late session. Present: CFO Marcus Bell, activist investor Cole Grant, general counsel Priya Shah, VP Product Jordan Lee, and exec assistant Noah Kim. Tomorrow’s merger is worth a fortune to the people who shorted it and a disaster to the people who didn’t. Someone in that room decided Ava would not live to ring the open bell.",
+    "theMystery": "Who pushed Ava Krane from the boardroom balcony — and what about the merger made murder cheaper than a vote?"
+  },
+  "player": {
+    "displayName": "Investigator",
+    "addressAs": "Investigator",
+    "pronouns": "they/them",
+    "role": "Independent investigator retained by the board chair before counsel locks the floor",
+    "authority": "professional",
+    "age": "forties",
+    "appearance": "Boardroom-appropriate; nothing flashy",
+    "clothing": "Dark suit, soft-soled shoes, a notebook instead of a phone at the table",
+    "background": "Brought in the same night as the fall — paid to ask questions security and GC would rather control.",
+    "publicPerception": "An outside problem with access. Executives perform; juniors panic.",
+    "voiceNotes": "Measured, corporate-fluent, hard to charm",
+    "performanceNotes": "No badge. Authority is contractual and temporary. Cole will lawyer up; Marcus may cooperate.",
+    "startingLocationId": "boardroom",
+    "startingEvidenceIds": [],
+    "startingKnowledge": "CEO Ava Krane is dead on the terrace setback fifty floors down — fell from the boardroom balcony. Present for the late session: CFO Marcus Bell, GC Priya Shah, VP Product Jordan Lee, activist investor Cole Grant, exec assistant Noah Kim. Merger vote was tomorrow. Security says the balcony door was open.",
+    "objective": "Work the boardroom, balcony, and offices; follow the money and the threats; and accuse the killer with method and motive before counsel shuts the building down."
+  },
+  "openingNarration": "Floor-to-ceiling glass. The city is a circuit board of lights. In the boardroom, water glasses still sit at six places. One chair is empty — Ava’s. The balcony door is open to a cold wind. Fifty floors below, emergency lights paint the terrace setback where Ava Krane landed. The people who were in this room for the late session are still here: Marcus, Cole, Priya, Jordan, Noah — each with a story about where they stood when she “fell.” Tomorrow’s merger does not care about grief. You do. Find who pushed her, and why the deal was worth a body.",
+  "phases": [
+    {
+      "id": "arrival",
+      "description": "Boardroom scene"
+    },
+    {
+      "id": "deepening",
+      "description": "Emails, prints, motives"
+    },
+    {
+      "id": "crisis",
+      "description": "Pressure on the killer"
+    },
+    {
+      "id": "confrontation",
+      "description": "Accusation"
+    },
+    {
+      "id": "denouement",
+      "description": "After the fall"
+    }
+  ],
+  "wrapUp": {
+    "enabled": true,
+    "maxTurns": 8,
+    "allowEarlyExit": true
+  },
+  "time": {
+    "startSlotId": "night",
+    "minutesPerTurn": 10,
+    "schedule": [
+      {
+        "id": "night",
+        "label": "Late night",
+        "minutesFromStart": 0
+      },
+      {
+        "id": "pre_dawn",
+        "label": "Pre-dawn markets",
+        "minutesFromStart": 60
+      },
+      {
+        "id": "open_bell",
+        "label": "Near open bell",
+        "minutesFromStart": 120
+      }
+    ]
+  },
+  "environment": {
+    "weather": "clear",
+    "light": "night",
+    "ambient": "corporate_cold",
+    "crowd": "none",
+    "flags": {}
+  },
+  "flags": [
+    {
+      "id": "examined_balcony",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "found_term_sheet",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "found_glove",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "falsely_accused_noah-kim",
+      "aiVisible": true,
+      "defaultValue": false
+    }
+  ],
+  "locations": [
+    {
+      "id": "boardroom",
+      "name": "Penthouse boardroom",
+      "description": "Long table, skyline, open balcony. Crime scene tape in spirit if not in plastic.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "balcony",
+          "label": "onto the balcony"
+        },
+        {
+          "toLocationId": "anteroom",
+          "label": "to the anteroom"
+        },
+        {
+          "toLocationId": "ava-office",
+          "label": "into Ava's office"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "ava-chair",
+          "name": "Ava's chair and glass",
+          "onInspect": {
+            "narrativeHints": "No suicide note. Glass undisturbed. Struggle marks on the armrest — someone grabbed from behind toward the balcony.",
+            "revealsEvidenceIds": [
+              "struggle-marks"
+            ],
+            "setsFlags": {
+              "examined_balcony": true
+            }
+          }
+        },
+        {
+          "id": "tablet",
+          "name": "abandoned tablet",
+          "onInspect": {
+            "narrativeHints": "Unlocked. Draft message from Ava: 'Cole — if you short us before the vote I will expose the shell companies.' Timestamp 10:41 p.m.",
+            "revealsEvidenceIds": [
+              "ava-threat-message"
+            ]
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "marcus-bell"
+        },
+        {
+          "characterId": "noah-kim"
+        }
+      ]
+    },
+    {
+      "id": "balcony",
+      "name": "Boardroom balcony",
+      "description": "Wind. Rail scuffed. The drop is absolute.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "boardroom",
+          "label": "inside"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "rail",
+          "name": "balcony rail",
+          "onInspect": {
+            "narrativeHints": "Leather glove snagged in the join of the rail — left hand, expensive, monogram CB inside the cuff.",
+            "revealsEvidenceIds": [
+              "monogram-glove"
+            ],
+            "setsFlags": {
+              "found_glove": true
+            }
+          }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "anteroom",
+      "name": "Anteroom / coffee station",
+      "description": "Espresso machine, coats, whispered deals.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "boardroom",
+          "label": "into the boardroom"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "coat-rack",
+          "name": "coat rack",
+          "onInspect": {
+            "narrativeHints": "Cole Grant's coat has one glove in the pocket. Its mate is missing."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "cole-grant"
+        },
+        {
+          "characterId": "priya-shah"
+        },
+        {
+          "characterId": "jordan-lee"
+        }
+      ]
+    },
+    {
+      "id": "ava-office",
+      "name": "Ava Krane's office",
+      "description": "Standing desk, awards, a safe drawer ajar.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "boardroom",
+          "label": "to the boardroom"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "safe-drawer",
+          "name": "ajar drawer",
+          "onInspect": {
+            "narrativeHints": "Term sheet addendum: Cole's fund is short the stock through offshore shells. Ava's sticky note: 'Bring to board — kill the vote.'",
+            "revealsEvidenceIds": [
+              "short-term-sheet"
+            ],
+            "setsFlags": {
+              "found_term_sheet": true
+            }
+          }
+        }
+      ],
+      "charactersPresent": []
+    }
+  ],
+  "relationships": [
+    {
+      "id": "cole_short",
+      "fromId": "cole-grant",
+      "toId": "marcus-bell",
+      "type": "rivalry",
+      "label": "activist shorting the merger",
+      "strength": 3,
+      "public": false,
+      "knownToPlayerByDefault": false
+    },
+    {
+      "id": "marcus_cfo",
+      "fromId": "marcus-bell",
+      "toId": "priya-shah",
+      "type": "business",
+      "label": "CFO under merger pressure",
+      "strength": 2,
+      "public": true,
+      "knownToPlayerByDefault": true
+    }
+  ],
+  "characters": [
+    {
+      "id": "ava-krane",
+      "name": "Ava Krane",
+      "shortBio": "CEO — went over the boardroom balcony the night before the merger vote.",
+      "portrait": "portraits/ava-krane.jpg",
+      "defaultLocationId": "boardroom",
+      "storyRole": "victim",
+      "voice": "Silent now",
+      "knowledge": {
+        "public": "Deceased. Fell from the boardroom balcony during a late session.",
+        "private": [],
+        "secrets": []
+      },
+      "defenses": []
+    },
+    {
+      "id": "marcus-bell",
+      "name": "Marcus Bell",
+      "shortBio": "CFO; already managing the narrative.",
+      "voice": "Smooth finance",
+      "portrait": "portraits/marcus-bell.jpg",
+      "defaultLocationId": "boardroom",
+      "defaultWillingness": "guarded",
+      "knowledge": {
+        "public": "He was in the anteroom on a call. He did not see the fall.",
+        "private": [
+          {
+            "id": "marcus-feared-cole",
+            "content": "He knew Cole was shorting. Ava planned to expose it at the vote.",
+            "requiresEvidenceIds": [
+              "short-term-sheet"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Corporate speak"
+      ],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "cole-grant",
+      "name": "Cole Grant",
+      "shortBio": "Activist investor; smiles with teeth.",
+      "voice": "Charming, predatory",
+      "portrait": "portraits/cole-grant.jpg",
+      "defaultLocationId": "anteroom",
+      "defaultWillingness": "guarded",
+      "defaultStance": "dealmaker",
+      "knowledge": {
+        "public": "He stepped onto the balcony for air. Ava was alive when he left the room — he says.",
+        "private": [
+          {
+            "id": "cole-admits-argument",
+            "content": "He argued with Ava about the short. He denies pushing her.",
+            "requiresEvidenceIds": [
+              "ava-threat-message"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded",
+              "hostile"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Threatens lawsuits",
+        "Claims suicide"
+      ],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "priya-shah",
+      "name": "Priya Shah",
+      "shortBio": "General counsel.",
+      "voice": "Precise, cautious",
+      "portrait": "portraits/priya-shah.jpg",
+      "defaultLocationId": "anteroom",
+      "defaultWillingness": "open",
+      "knowledge": {
+        "public": "She was reviewing merger language in the anteroom. She heard a shout near 10:45.",
+        "private": [],
+        "secrets": []
+      },
+      "defenses": [],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "jordan-lee",
+      "name": "Jordan Lee",
+      "shortBio": "VP Product; wanted the merger.",
+      "voice": "Fast, anxious",
+      "portrait": "portraits/jordan-lee.jpg",
+      "defaultLocationId": "anteroom",
+      "defaultWillingness": "open",
+      "knowledge": {
+        "public": "Jordan saw Cole return from the balcony alone, pale, one glove off.",
+        "private": [],
+        "secrets": []
+      },
+      "defenses": [],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "noah-kim",
+      "name": "Noah Kim",
+      "shortBio": "Exec assistant; first to scream.",
+      "voice": "Shaken, loyal to Ava",
+      "portrait": "portraits/noah-kim.jpg",
+      "defaultLocationId": "boardroom",
+      "defaultWillingness": "open",
+      "knowledge": {
+        "public": "Noah went for printouts. When Noah returned, the balcony door was open and Ava was gone.",
+        "private": [],
+        "secrets": []
+      },
+      "defenses": [
+        "Easy false suspect as last 'alone' with schedule"
+      ],
+      "storyRole": "suspect"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "struggle-marks",
+      "name": "Chair struggle marks",
+      "description": "Not a clean jump — struggle toward balcony.",
+      "discoverableAt": {
+        "locationId": "boardroom",
+        "inspectableId": "ava-chair"
+      },
+      "canPresentTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "ava-threat-message",
+      "name": "Ava's tablet message",
+      "description": "Threat to expose Cole's shell companies before the vote.",
+      "discoverableAt": {
+        "locationId": "boardroom",
+        "inspectableId": "tablet"
+      },
+      "canPresentTo": [
+        "cole-grant",
+        "marcus-bell",
+        "priya-shah"
+      ]
+    },
+    {
+      "id": "monogram-glove",
+      "name": "Monogram glove CB",
+      "description": "Left glove snagged on rail; CB monogram.",
+      "discoverableAt": {
+        "locationId": "balcony",
+        "inspectableId": "rail"
+      },
+      "canPresentTo": [
+        "cole-grant",
+        "jordan-lee",
+        "noah-kim"
+      ]
+    },
+    {
+      "id": "short-term-sheet",
+      "name": "Short term sheet",
+      "description": "Cole's fund short via offshore shells; Ava meant to kill the vote.",
+      "discoverableAt": {
+        "locationId": "ava-office",
+        "inspectableId": "safe-drawer"
+      },
+      "canPresentTo": [
+        "cole-grant",
+        "marcus-bell",
+        "priya-shah"
+      ]
+    }
+  ],
+  "beats": [
+    {
+      "id": "not_suicide",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "struggle-marks"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "examined_balcony",
+          "value": true
+        },
+        {
+          "type": "set_phase",
+          "phaseId": "deepening"
+        }
+      ],
+      "narrationHints": "This was not a voluntary step into air."
+    },
+    {
+      "id": "short_revealed",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "short-term-sheet"
+      },
+      "effects": [
+        {
+          "type": "reveal_relationship",
+          "relationshipId": "cole_short"
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "cole-grant",
+          "by": 2
+        }
+      ],
+      "narrationHints": "Billions on the wrong side of a trade."
+    },
+    {
+      "id": "cole_cornered",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "presented",
+            "evidenceId": "monogram-glove",
+            "toCharacterId": "cole-grant"
+          },
+          {
+            "type": "has_evidence",
+            "evidenceId": "short-term-sheet"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_willingness",
+          "characterId": "cole-grant",
+          "value": "hostile"
+        },
+        {
+          "type": "set_alibi_status",
+          "characterId": "cole-grant",
+          "value": "broken"
+        },
+        {
+          "type": "set_phase",
+          "phaseId": "crisis"
+        },
+        {
+          "type": "start_clock",
+          "clockId": "cole_lawyers",
+          "turns": 8
+        }
+      ],
+      "narrationHints": "Cole's smile fails. Finish before the lawyers land."
+    },
+    {
+      "id": "wrong_noah",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "game_flag",
+        "id": "falsely_accused_noah-kim",
+        "equals": true
+      },
+      "effects": [
+        {
+          "type": "set_willingness",
+          "characterId": "noah-kim",
+          "value": "silent"
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "jordan-lee",
+          "value": "hostile"
+        }
+      ],
+      "narrationHints": "Blaming the assistant freezes the room."
+    },
+    {
+      "id": "cole_walks",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "case_active"
+          },
+          {
+            "type": "clock_expired",
+            "clockId": "cole_lawyers"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "end_case",
+          "outcome": "failure",
+          "endingId": "failure_escaped",
+          "endingKind": "escaped"
+        }
+      ],
+      "narrationHints": "Cole leaves under counsel. Markets open on a lie."
+    },
+    {
+      "id": "wrap_success",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "in_denouement"
+          },
+          {
+            "type": "or",
+            "of": [
+              {
+                "type": "resolution_outcome",
+                "is": "success"
+              },
+              {
+                "type": "resolution_outcome",
+                "is": "partial"
+              }
+            ]
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "move_character",
+          "characterId": "cole-grant",
+          "toLocationId": "boardroom"
+        },
+        {
+          "type": "set_stance",
+          "characterId": "cole-grant",
+          "value": "cornered_capital"
+        }
+      ],
+      "narrationHints": "Glass and silence. The merger will not close as planned."
+    }
+  ],
+  "solution": {
+    "summary": "Cole Grant pushed Ava Krane from the balcony after she threatened to expose his short positions through shell companies. His monogrammed glove caught on the rail. Struggle marks rule out clean suicide. Term sheet and tablet message establish motive.",
+    "guiltyPartyIds": [
+      "cole-grant"
+    ],
+    "method": "Pushed from boardroom balcony after struggle",
+    "motive": "Stop exposure of illegal/short scheme before merger vote",
+    "criticalEvidenceIds": [
+      "monogram-glove",
+      "short-term-sheet"
+    ],
+    "rubric": {
+      "partialCredit": true,
+      "allowWithoutEvidence": true,
+      "successPolicy": "identity_plus_one",
+      "requiredFacts": [
+        {
+          "id": "killer-cole",
+          "role": "identity",
+          "description": "Cole Grant",
+          "matchHints": [
+            "cole",
+            "grant"
+          ]
+        },
+        {
+          "id": "method-push",
+          "role": "method",
+          "description": "Push / balcony / struggle",
+          "matchHints": [
+            "push",
+            "balcony",
+            "rail",
+            "struggle",
+            "fall",
+            "threw"
+          ]
+        },
+        {
+          "id": "motive-short",
+          "role": "motive",
+          "description": "Short / merger / expose / shells",
+          "matchHints": [
+            "short",
+            "merger",
+            "shell",
+            "expose",
+            "vote",
+            "fund"
+          ]
+        }
+      ]
+    }
+  },
+  "canon": {
+    "timeline": [
+      {
+        "at": "10:41 p.m.",
+        "event": "Ava drafts threat to Cole on tablet.",
+        "locationId": "boardroom",
+        "actorIds": []
+      },
+      {
+        "at": "10:45 p.m.",
+        "event": "Cole pushes Ava; glove snags.",
+        "locationId": "balcony",
+        "actorIds": [
+          "cole-grant"
+        ]
+      }
+    ]
+  },
+  "endings": [
+    {
+      "id": "success_earned",
+      "when": "success",
+      "kind": "solved",
+      "title": "Markets closed",
+      "templateNotes": "Cole is held. The short is public. The skyline does not care — but the board will."
+    },
+    {
+      "id": "success_lucky",
+      "when": "success",
+      "kind": "lucky_solve",
+      "title": "Call on the floor",
+      "templateNotes": "You name Cole early; evidence still fits. Do not invent documents unfound."
+    },
+    {
+      "id": "partial",
+      "when": "partial",
+      "kind": "partial",
+      "title": "Material nonpublic",
+      "templateNotes": "Enough smoke for arrest; trial will be a war."
+    },
+    {
+      "id": "failure_wrong_accusation",
+      "when": "failure",
+      "kind": "wrong_accusation",
+      "title": "Wrong ticker",
+      "templateNotes": "Wrong name. The real short seller walks."
+    },
+    {
+      "id": "failure_escaped",
+      "when": "failure",
+      "kind": "escaped",
+      "title": "Counsel present",
+      "templateNotes": "Cole leaves. The open bell rings on a cover story."
+    }
+  ]
+}

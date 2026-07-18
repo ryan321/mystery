@@ -1,0 +1,773 @@
+{
+  "$schema": "../definition.schema.json",
+  "schemaVersion": "1.5",
+  "id": "last-broadcast",
+  "contentVersion": "0.1.3",
+  "meta": {
+    "title": "The Last Broadcast",
+    "premise": "A true-crime podcaster is found dead hours before her final episode drops. The recording still holds the key.",
+    "tone": "modern media thriller, neon-and-static, sharp dialogue",
+    "estimatedMinutes": 55,
+    "tags": [
+      "Radio",
+      "Studio",
+      "Media",
+      "Modern"
+    ],
+    "difficulty": "medium",
+    "contentWarnings": [
+      "murder",
+      "violence"
+    ],
+    "artStyle": "Modern media noir portrait, head-and-shoulders, studio purple and LED blue palette, slight film grain, contemporary clothing, same cool podcast-studio lighting for every cast member, mystery game NPC portrait",
+    "setting": "A late-night podcast studio complex. Studio B, control booth, green room. ON AIR is dark.",
+    "summary": "Host Lena Ortiz is dead in Studio B hours before Blood Signal was supposed to air — headphones still on, the main session wiped, a backup waveform that does not match the official story. On site: producer Kai Okonkwo, engineer Amy Chen, rival host Blake Mercer, intern Riley Cho, and network exec Dana Ruiz. Someone turned a final episode into a crime scene. The feed will not wait forever for the truth.",
+    "theMystery": "Who killed Lena Ortiz in Studio B before her last episode — and what in that show was worth killing to bury?"
+  },
+  "player": {
+    "displayName": "Investigator",
+    "addressAs": "Investigator",
+    "pronouns": "they/them",
+    "role": "Independent investigator brought in before the network freezes the scene",
+    "authority": "professional",
+    "age": "thirties",
+    "appearance": "Unremarkable on purpose — someone who can stand in a green room without looking like press",
+    "clothing": "Dark jacket, soft shoes, badge lanyard that is not network security",
+    "background": "Hired quietly when a death hits a production floor and legal wants a clean private record before police narrative takes over.",
+    "publicPerception": "Not staff, not quite cops. People decide whether to help based on fear of the network.",
+    "voiceNotes": "Calm, probing, media-fluent",
+    "performanceNotes": "Studio people may call you 'Investigator' or avoid names. You do not run the feed.",
+    "startingLocationId": "studio-floor",
+    "startingEvidenceIds": [],
+    "startingKnowledge": "Host Lena Ortiz is dead in Studio B. Final episode 'Blood Signal' was due tonight. On site: engineer Kai Okonkwo, guest researcher Dr. Amy Chen, rival host Blake Mercer, intern Riley Cho, building security Dana Ruiz. The raw session file is missing from the primary drive.",
+    "objective": "Search the studio, recover what the recording still holds, pressure the cast and crew, and accuse the murderer with method and motive."
+  },
+  "openingNarration": "ON AIR light is dark. Studio B smells like coffee and ozone. Lena Ortiz is slumped over the boom arm, headphones still on. The waveform on the backup recorder is a jagged confession the main file no longer holds. Kai stands in the booth doorway like someone who has already aged a year. Down the hall: a rival host who should not have badge access, an engineer who knows every cable, an intern who saw too much, and a network executive already thinking about press. Lena’s final episode dies with her unless you find who killed her — and what story they were trying to kill with her.",
+  "phases": [
+    {
+      "id": "arrival",
+      "description": "Body and studio"
+    },
+    {
+      "id": "deepening",
+      "description": "Files, alibis, rivalry"
+    },
+    {
+      "id": "crisis",
+      "description": "Killer cornered"
+    },
+    {
+      "id": "confrontation",
+      "description": "Accusation"
+    },
+    {
+      "id": "denouement",
+      "description": "After the show"
+    }
+  ],
+  "wrapUp": {
+    "enabled": true,
+    "maxTurns": 8,
+    "allowEarlyExit": true,
+    "performanceNotes": "Podcast world aftermath — statements, deleted episodes, quiet studio."
+  },
+  "time": {
+    "startSlotId": "evening",
+    "minutesPerTurn": 10,
+    "schedule": [
+      {
+        "id": "evening",
+        "label": "Evening",
+        "minutesFromStart": 0
+      },
+      {
+        "id": "prime_time",
+        "label": "Prime time approaching",
+        "minutesFromStart": 50
+      },
+      {
+        "id": "air_window",
+        "label": "Air window",
+        "minutesFromStart": 100
+      }
+    ]
+  },
+  "environment": {
+    "weather": "clear",
+    "light": "studio",
+    "ambient": "static_tension",
+    "crowd": "none",
+    "flags": {}
+  },
+  "flags": [
+    {
+      "id": "examined_body",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "found_backup",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "found_email",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "falsely_accused_kai",
+      "aiVisible": true,
+      "defaultValue": false
+    }
+  ],
+  "locations": [
+    {
+      "id": "studio-floor",
+      "name": "Studio B floor",
+      "description": "Foam walls, mics, a body at the desk. Hall to booth, green room, and server closet.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "control-booth",
+          "label": "into the control booth"
+        },
+        {
+          "toLocationId": "green-room",
+          "label": "to the green room"
+        },
+        {
+          "toLocationId": "server-closet",
+          "label": "to the server closet"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "lena-body",
+          "name": "Lena at the desk",
+          "onInspect": {
+            "narrativeHints": "Strangled with her own headphone cable. Defensive marks. Backup handheld recorder still rolling in her bag — not the main DAW.",
+            "revealsEvidenceIds": [
+              "cable-marks",
+              "backup-recorder"
+            ],
+            "setsFlags": {
+              "examined_body": true
+            }
+          }
+        },
+        {
+          "id": "main-daw",
+          "name": "main recording computer",
+          "onInspect": {
+            "narrativeHints": "Session file BloodSignal_FINAL deleted at 8:14 p.m. Deletion used Kai's login — or someone who had it."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "kai-okonkwo"
+        },
+        {
+          "characterId": "dana-ruiz"
+        }
+      ]
+    },
+    {
+      "id": "control-booth",
+      "name": "Control booth",
+      "description": "Glass view into Studio B. Faders, talkback, coffee rings.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "studio-floor",
+          "label": "into the studio"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "talkback-log",
+          "name": "talkback log",
+          "onInspect": {
+            "narrativeHints": "Talkback engaged at 8:09 from booth to studio — one-way. Someone spoke to Lena without entering. Badge log can show who was in the booth."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "kai-okonkwo"
+        }
+      ]
+    },
+    {
+      "id": "green-room",
+      "name": "Green room",
+      "description": "Couch, craft services, nervous guests.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "studio-floor",
+          "label": "to the studio floor"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "blake-bag",
+          "name": "Blake's messenger bag",
+          "onInspect": {
+            "narrativeHints": "Printout of Lena's unreleased outline: 'Mercer killed the story — and maybe more.' Blake's show logo in the corner as if he annotated it.",
+            "revealsEvidenceIds": [
+              "stolen-outline"
+            ],
+            "setsFlags": {
+              "found_email": true
+            }
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "blake-mercer"
+        },
+        {
+          "characterId": "amy-chen"
+        },
+        {
+          "characterId": "riley-cho"
+        }
+      ]
+    },
+    {
+      "id": "server-closet",
+      "name": "Server closet",
+      "description": "Humming racks. Badge reader. A USB stick taped under a shelf.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "studio-floor",
+          "label": "back to the studio"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "hidden-usb",
+          "name": "USB under shelf",
+          "onInspect": {
+            "narrativeHints": "Audio clip: Lena confronting someone off-mic — 'You leaked my source to bury the story. I air it tonight.' A man's voice: Blake's cadence. Then scuffle.",
+            "revealsEvidenceIds": [
+              "usb-confrontation"
+            ],
+            "setsFlags": {
+              "found_backup": true
+            }
+          }
+        },
+        {
+          "id": "badge-log",
+          "name": "badge access log",
+          "onInspect": {
+            "narrativeHints": "Blake Mercer badge in control booth 8:08–8:16. Kai's badge still in studio. Riley in green room. Dana at desk."
+          }
+        }
+      ],
+      "charactersPresent": []
+    }
+  ],
+  "relationships": [
+    {
+      "id": "blake_rival",
+      "fromId": "blake-mercer",
+      "toId": "kai-okonkwo",
+      "type": "rivalry",
+      "label": "rival host; hated Lena's scoop",
+      "strength": 3,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "kai_loyalty",
+      "fromId": "kai-okonkwo",
+      "toId": "riley-cho",
+      "type": "loyalty",
+      "label": "loyal engineer; grief-stricken",
+      "strength": 2,
+      "public": true,
+      "knownToPlayerByDefault": true
+    }
+  ],
+  "characters": [
+    {
+      "id": "lena-ortiz",
+      "name": "Lena Ortiz",
+      "shortBio": "True-crime host of Blood Signal — found dead in Studio B hours before air.",
+      "portrait": "portraits/lena-ortiz.jpg",
+      "defaultLocationId": "studio-floor",
+      "storyRole": "victim",
+      "voice": "Silent now",
+      "knowledge": {
+        "public": "Deceased. Found in Studio B with headphones still on.",
+        "private": [],
+        "secrets": []
+      },
+      "defenses": []
+    },
+    {
+      "id": "kai-okonkwo",
+      "name": "Kai Okonkwo",
+      "shortBio": "Studio engineer; last login on the DAW.",
+      "voice": "Technical, shaken",
+      "portrait": "portraits/kai-okonkwo.jpg",
+      "defaultLocationId": "studio-floor",
+      "defaultWillingness": "open",
+      "knowledge": {
+        "public": "Kai was balancing levels, stepped out for cables, came back to Lena dead. Login was unlocked — bad habit.",
+        "private": [
+          {
+            "id": "kai-saw-blake-booth",
+            "content": "Kai saw Blake slip into the control booth alone near 8:10.",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Easy false suspect because of login"
+      ],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "blake-mercer",
+      "name": "Blake Mercer",
+      "shortBio": "Rival true-crime host; smile like a brand.",
+      "voice": "Smooth, performative, cold when pressed",
+      "portrait": "portraits/blake-mercer.jpg",
+      "defaultLocationId": "green-room",
+      "defaultWillingness": "guarded",
+      "defaultStance": "on_brand",
+      "knowledge": {
+        "public": "Blake says he waited in the green room for a joint promo. He never entered Studio B.",
+        "private": [
+          {
+            "id": "blake-admits-booth",
+            "content": "He admits he used the booth to 'listen in' — not to kill. The USB will break that.",
+            "requiresEvidenceIds": [
+              "usb-confrontation"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded",
+              "hostile"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Media training",
+        "Points at Kai's login"
+      ],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "amy-chen",
+      "name": "Dr. Amy Chen",
+      "shortBio": "Guest researcher for the episode.",
+      "voice": "Academic, careful",
+      "portrait": "portraits/amy-chen.jpg",
+      "defaultLocationId": "green-room",
+      "defaultWillingness": "open",
+      "knowledge": {
+        "public": "She was reviewing notes in the green room. She heard raised voices through the wall around 8:10.",
+        "private": [],
+        "secrets": []
+      },
+      "defenses": [],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "riley-cho",
+      "name": "Riley Cho",
+      "shortBio": "Intern; first death on a job.",
+      "voice": "Nervous, eager to help",
+      "portrait": "portraits/riley-cho.jpg",
+      "defaultLocationId": "green-room",
+      "defaultWillingness": "open",
+      "knowledge": {
+        "public": "Riley fetched water, saw Blake leave the green room toward the booth hall.",
+        "private": [],
+        "secrets": []
+      },
+      "defenses": [],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "dana-ruiz",
+      "name": "Dana Ruiz",
+      "shortBio": "Building security.",
+      "voice": "Procedural, dry",
+      "portrait": "portraits/dana-ruiz.jpg",
+      "defaultLocationId": "studio-floor",
+      "defaultWillingness": "open",
+      "knowledge": {
+        "public": "Badge logs are in the server closet. No forced entry from outside.",
+        "private": [],
+        "secrets": []
+      },
+      "defenses": [],
+      "storyRole": "suspect"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "cable-marks",
+      "name": "Headphone cable marks",
+      "description": "Strangulation with Lena's own cable.",
+      "discoverableAt": {
+        "locationId": "studio-floor",
+        "inspectableId": "lena-body"
+      },
+      "canPresentTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "backup-recorder",
+      "name": "Backup handheld recorder",
+      "description": "Waveform spike then silence at 00:41:12 into the episode clock.",
+      "discoverableAt": {
+        "locationId": "studio-floor",
+        "inspectableId": "lena-body"
+      },
+      "canPresentTo": [
+        "kai-okonkwo",
+        "blake-mercer",
+        "amy-chen"
+      ]
+    },
+    {
+      "id": "stolen-outline",
+      "name": "Stolen episode outline",
+      "description": "Lena's outline accusing Mercer of killing a story; in Blake's bag.",
+      "discoverableAt": {
+        "locationId": "green-room",
+        "inspectableId": "blake-bag"
+      },
+      "canPresentTo": [
+        "blake-mercer",
+        "kai-okonkwo",
+        "riley-cho"
+      ]
+    },
+    {
+      "id": "usb-confrontation",
+      "name": "USB confrontation audio",
+      "description": "Lena vs Blake off-mic; scuffle after threat to air the story.",
+      "discoverableAt": {
+        "locationId": "server-closet",
+        "inspectableId": "hidden-usb"
+      },
+      "canPresentTo": [
+        "blake-mercer",
+        "kai-okonkwo",
+        "dana-ruiz",
+        "amy-chen"
+      ]
+    }
+  ],
+  "beats": [
+    {
+      "id": "body_done",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "cable-marks"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "examined_body",
+          "value": true
+        },
+        {
+          "type": "set_phase",
+          "phaseId": "deepening"
+        }
+      ],
+      "narrationHints": "Murder, not an accident with gear."
+    },
+    {
+      "id": "usb_crisis",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "usb-confrontation"
+      },
+      "effects": [
+        {
+          "type": "set_phase",
+          "phaseId": "crisis"
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "blake-mercer",
+          "by": 2
+        },
+        {
+          "type": "set_player_threat",
+          "threat": "watched"
+        },
+        {
+          "type": "set_stance",
+          "characterId": "blake-mercer",
+          "value": "brittle"
+        }
+      ],
+      "narrationHints": "The episode already recorded its own murder."
+    },
+    {
+      "id": "blake_cornered",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "presented",
+            "evidenceId": "usb-confrontation",
+            "toCharacterId": "blake-mercer"
+          },
+          {
+            "type": "has_evidence",
+            "evidenceId": "stolen-outline"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_willingness",
+          "characterId": "blake-mercer",
+          "value": "hostile"
+        },
+        {
+          "type": "set_alibi_status",
+          "characterId": "blake-mercer",
+          "value": "broken"
+        },
+        {
+          "type": "start_clock",
+          "clockId": "blake_spin",
+          "turns": 8
+        },
+        {
+          "type": "set_player_threat",
+          "threat": "threatened"
+        }
+      ],
+      "narrationHints": "Blake's brand cracks. Finish before he controls the narrative."
+    },
+    {
+      "id": "wrong_kai",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "game_flag",
+        "id": "falsely_accused_kai-okonkwo",
+        "equals": true
+      },
+      "effects": [
+        {
+          "type": "set_willingness",
+          "characterId": "kai-okonkwo",
+          "value": "silent"
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "riley-cho",
+          "value": "hostile"
+        }
+      ],
+      "narrationHints": "Blaming the engineer freezes the crew."
+    },
+    {
+      "id": "blake_escapes_narrative",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "case_active"
+          },
+          {
+            "type": "clock_expired",
+            "clockId": "blake_spin"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "end_case",
+          "outcome": "failure",
+          "endingId": "failure_escaped",
+          "endingKind": "escaped"
+        }
+      ],
+      "narrationHints": "Blake walks with lawyers and a podcast denial. Failure."
+    },
+    {
+      "id": "wrap_success",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "in_denouement"
+          },
+          {
+            "type": "or",
+            "of": [
+              {
+                "type": "resolution_outcome",
+                "is": "success"
+              },
+              {
+                "type": "resolution_outcome",
+                "is": "partial"
+              }
+            ]
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "move_character",
+          "characterId": "blake-mercer",
+          "toLocationId": "studio-floor"
+        },
+        {
+          "type": "set_stance",
+          "characterId": "blake-mercer",
+          "value": "broken_brand"
+        }
+      ],
+      "narrationHints": "Studio aftermath. The show will not air as planned — something truer will."
+    }
+  ],
+  "solution": {
+    "summary": "Blake Mercer entered the control booth, confronted Lena about her episode exposing him for leaking a source, then entered Studio B and strangled her with the headphone cable. He deleted the main session under Kai's open login and hid a USB of the confrontation. Badge logs and audio prove the timeline.",
+    "guiltyPartyIds": [
+      "blake-mercer"
+    ],
+    "method": "Strangulation with headphone cable after booth approach",
+    "motive": "Stop Lena airing evidence he killed a story / leaked a source",
+    "criticalEvidenceIds": [
+      "usb-confrontation",
+      "stolen-outline"
+    ],
+    "rubric": {
+      "partialCredit": true,
+      "allowWithoutEvidence": true,
+      "successPolicy": "identity_plus_one",
+      "requiredFacts": [
+        {
+          "id": "killer-blake",
+          "role": "identity",
+          "description": "Blake Mercer",
+          "matchHints": [
+            "blake",
+            "mercer"
+          ]
+        },
+        {
+          "id": "method-cable",
+          "role": "method",
+          "description": "Cable / strangle / booth",
+          "matchHints": [
+            "cable",
+            "strangl",
+            "headphones",
+            "booth",
+            "studio"
+          ]
+        },
+        {
+          "id": "motive-story",
+          "role": "motive",
+          "description": "Episode / leak / rival / bury story",
+          "matchHints": [
+            "episode",
+            "leak",
+            "source",
+            "rival",
+            "bury",
+            "outline",
+            "air"
+          ]
+        }
+      ]
+    }
+  },
+  "canon": {
+    "timeline": [
+      {
+        "at": "8:08 p.m.",
+        "event": "Blake badges into control booth.",
+        "locationId": "control-booth",
+        "actorIds": [
+          "blake-mercer"
+        ]
+      },
+      {
+        "at": "8:10–8:14",
+        "event": "Confrontation; murder; file delete.",
+        "locationId": "studio-floor",
+        "actorIds": [
+          "blake-mercer"
+        ]
+      }
+    ]
+  },
+  "endings": [
+    {
+      "id": "success_earned",
+      "when": "success",
+      "kind": "solved",
+      "title": "End of show",
+      "templateNotes": "Blake is held. The USB and outline close the loop. Kai grieves. The feed will carry a different final episode — truth, not brand."
+    },
+    {
+      "id": "success_lucky",
+      "when": "success",
+      "kind": "lucky_solve",
+      "title": "Cold open",
+      "templateNotes": "You name Blake before every file is checked. He still folds. Do not invent unfound audio."
+    },
+    {
+      "id": "partial",
+      "when": "partial",
+      "kind": "partial",
+      "title": "Pending review",
+      "templateNotes": "Enough to detain; lawyers already circling. The story is incomplete."
+    },
+    {
+      "id": "failure_wrong_accusation",
+      "when": "failure",
+      "kind": "wrong_accusation",
+      "title": "Bad take",
+      "templateNotes": "Wrong name on the record. The real killer owns the narrative by morning."
+    },
+    {
+      "id": "failure_escaped",
+      "when": "failure",
+      "kind": "escaped",
+      "title": "He walked",
+      "templateNotes": "Blake leaves with counsel and a denial episode. Lena's last broadcast never airs clean."
+    }
+  ]
+}

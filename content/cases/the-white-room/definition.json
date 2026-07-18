@@ -1,0 +1,930 @@
+{
+  "$schema": "../definition.schema.json",
+  "schemaVersion": "1.5",
+  "id": "the-white-room",
+  "contentVersion": "0.1.3",
+  "meta": {
+    "title": "The White Room",
+    "premise": "You wake in a silent asylum with no name, no file, and no way out. The staff insist you belong here. One of them is lying.",
+    "tone": "psychological locked-ward mystery, soft voices and hard locks, fair-play identity puzzle",
+    "estimatedMinutes": 55,
+    "tags": [
+      "Psychological",
+      "Asylum",
+      "Identity",
+      "Hard"
+    ],
+    "difficulty": "hard",
+    "contentWarnings": [
+      "institutional abuse themes",
+      "gaslighting",
+      "murder",
+      "memory loss"
+    ],
+    "artStyle": "Desaturated institutional portrait, head-and-shoulders, pale green and lamp-yellow asylum palette, soft painterly dread, same cold corridor lighting for every cast member, early 20th-century clinical dress, mystery game NPC portrait, consistent artist hand",
+    "setting": "Ravenscroft Asylum, deep night. Green corridors, bolted windows, files that rewrite themselves.",
+    "summary": "You wake as Patient 14 in a white room. Staff say you were admitted for violent delusions after a fire you do not remember. Night nurse Ada Crane, orderly Bram Holt, director Dr. Silas More, and clerk June Pell treat your questions as symptoms. Another patient, Eli Voss, whispers that a doctor died in the east wing last night — and that your file is forged. To leave, you must learn who you are, what happened in this place, and who is using the ward as a cover.",
+    "theMystery": "Who are you really — and who murdered the whistleblower doctor while rewriting you into Patient 14?"
+  },
+  "player": {
+    "displayName": "Patient 14",
+    "fullName": "Cassandra Vale",
+    "addressAs": "Fourteen",
+    "pronouns": "she/her",
+    "role": "Amnesiac labeled a patient — actually a private investigator rewritten into the ward",
+    "authority": "civilian",
+    "gender": "woman",
+    "age": "thirties",
+    "appearance": "Pale from sedation, hair unpinned, eyes that keep testing every claim",
+    "clothing": "Institutional nightshirt or plain day clothes issued by the ward",
+    "background": "They call you Patient 14. The true intake — when you find it — names Cassandra Vale, P.I.",
+    "publicPerception": "A patient. Staff talk over you; Eli may treat you as an equal; More wants you quiet.",
+    "voiceNotes": "Uncertain, stubborn, testing every claim",
+    "performanceNotes": "CRITICAL: Staff address you as Fourteen / Patient 14. You may not know your true name until files reveal it — do not have NPCs call you Cassandra until evidence/knowledge supports it. You have no official authority; doors and sedation are real threats.",
+    "startingLocationId": "white-room",
+    "startingEvidenceIds": [],
+    "startingKnowledge": "You woke in a white room. Staff call you Patient 14. They say you were admitted for violent delusions after a fire. You do not remember a fire. Night nurse Ada Crane, orderly Bram Holt, director Dr. Silas More, and clerk June Pell are on the ward. Another patient, Eli Voss, whispers that a doctor died last night in the east wing — and that your file is forged.",
+    "objective": "Escape the gaslight: explore the ward, read the files they don’t want you to see, learn what happened in the east wing, recover your true identity, and name the person responsible."
+  },
+  "openingNarration": "White walls. A bolted window that shows only fogged glass. Your wrists are unmarked; the door is not locked from the inside — only heavy. In the corridor, a wall lamp hums. Someone has hung a cracked mirror at the turn; for a second the reflection looks like a stranger wearing your face. Ada Crane appears with a tray and a smile that does not reach her eyes. “Back to bed, Fourteen. Doctor’s orders.” They say you belong here. You do not remember a fire. You do not remember the name they gave you. Somewhere a door closes that should not open at night. Find out who you are, what this asylum is hiding — and who is lying when they call you Patient 14.",
+  "phases": [
+    {
+      "id": "arrival",
+      "description": "Room, ward, first contradictions"
+    },
+    {
+      "id": "deepening",
+      "description": "File, east wing, motive"
+    },
+    {
+      "id": "crisis",
+      "description": "Identity cracks"
+    },
+    {
+      "id": "confrontation",
+      "description": "Accusation"
+    },
+    {
+      "id": "denouement",
+      "description": "Who you are"
+    }
+  ],
+  "wrapUp": {
+    "enabled": true,
+    "maxTurns": 10,
+    "allowEarlyExit": true,
+    "performanceNotes": "Quiet, intimate, institutional. Reveal identity carefully. No supernatural explanations — human lies only."
+  },
+  "time": {
+    "startSlotId": "night",
+    "minutesPerTurn": 12,
+    "schedule": [
+      {
+        "id": "night",
+        "label": "Deep night",
+        "minutesFromStart": 0
+      },
+      {
+        "id": "predawn",
+        "label": "Pre-dawn",
+        "minutesFromStart": 60
+      },
+      {
+        "id": "morning_rounds",
+        "label": "Morning rounds",
+        "minutesFromStart": 120
+      }
+    ]
+  },
+  "environment": {
+    "weather": "none",
+    "light": "corridor_lamp",
+    "ambient": "asylum_quiet",
+    "crowd": "none",
+    "flags": {
+      "doors": "night_lock"
+    }
+  },
+  "flags": [
+    {
+      "id": "read_file",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "found_body",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "found_true_id",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "falsely_accused_eli-voss",
+      "aiVisible": true,
+      "defaultValue": false
+    }
+  ],
+  "locations": [
+    {
+      "id": "white-room",
+      "name": "The white room",
+      "description": "Bare bed, basin, bolted window. A nightstand with a drawer that sticks. Your only fixed point.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "corridor",
+          "label": "into the corridor"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "nightstand",
+          "name": "nightstand drawer",
+          "onInspect": {
+            "narrativeHints": "Tucked under liner paper: a visitor badge for Ravenscroft Asylum — name scratched off — and a newspaper clipping about a whistleblower doctor, Dr. Helen Marrow, who planned to report illegal commitments."
+          }
+        },
+        {
+          "id": "window-bolt",
+          "name": "window bolt",
+          "onInspect": {
+            "narrativeHints": "Bolt is decorative; the real seal is wired from outside. You are kept, not convalescing."
+          }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "corridor",
+      "name": "East corridor",
+      "description": "Arched plaster, green dado, gas-electric hybrids. Cracked mirror. Doors to ward office, day room, and east wing.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "white-room",
+          "label": "back to your room"
+        },
+        {
+          "toLocationId": "ward-office",
+          "label": "into the ward office"
+        },
+        {
+          "toLocationId": "day-room",
+          "label": "into the day room"
+        },
+        {
+          "toLocationId": "east-wing",
+          "label": "toward the east wing"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "cracked-mirror",
+          "name": "cracked mirror",
+          "onInspect": {
+            "narrativeHints": "Behind a loose frame edge: a photograph of a woman in civilian clothes — you, or someone who looks exactly like you — standing with Dr. Helen Marrow outside a courthouse. On the back: 'Cass. Keep this. — H.'"
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "ada-crane"
+        },
+        {
+          "characterId": "bram-holt"
+        }
+      ]
+    },
+    {
+      "id": "ward-office",
+      "name": "Ward office",
+      "description": "Filing cabinets, a desk lamp, ledgers. June Pell's domain by day; More's keys by night.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "corridor",
+          "label": "back to the corridor"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "patient-14-file",
+          "name": "Patient 14 file",
+          "onInspect": {
+            "narrativeHints": "File claims you are 'C. Reed,' admitted after arson delusions. Ink on the admission date is fresher than the folder. A second page slipped in: true intake form for Cassandra Vale, private investigator, brought in last night under chemical restraint — authorized by Dr. Silas More, counter-signed Ada Crane.",
+            "revealsEvidenceIds": [
+              "forged-file",
+              "true-intake"
+            ],
+            "setsFlags": {
+              "read_file": true,
+              "found_true_id": true
+            }
+          }
+        },
+        {
+          "id": "drug-log",
+          "name": "night drug log",
+          "onInspect": {
+            "narrativeHints": "Ada logged a double sedative for '14' at 11 p.m. — and a separate unlogged draw of the same drug thirty minutes earlier. Bram's initials are forged on the second line."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "june-pell"
+        },
+        {
+          "characterId": "dr-silas-more"
+        }
+      ]
+    },
+    {
+      "id": "day-room",
+      "name": "Day room",
+      "description": "Chairs in a circle, a piano that is never tuned, barred windows. Eli Voss sits where he can see both doors.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "corridor",
+          "label": "back to the corridor"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "piano-bench",
+          "name": "piano bench",
+          "onInspect": {
+            "narrativeHints": "Eli has hidden a torn page from Marrow's report draft: names of patients held without proper order — including a list More needed buried."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "eli-voss"
+        }
+      ]
+    },
+    {
+      "id": "east-wing",
+      "name": "East wing — treatment hall",
+      "description": "Colder. A treatment room door ajar. The smell of antiseptic and something metallic.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "corridor",
+          "label": "back to the corridor"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "marrow-body",
+          "name": "Dr. Helen Marrow",
+          "onInspect": {
+            "narrativeHints": "Marrow is dead in a restraint chair — not suicide. Bruising at the throat; a broken syringe on the floor with More's clinic stamp. She was silenced mid-report.",
+            "revealsEvidenceIds": [
+              "marrow-body-notes",
+              "broken-syringe"
+            ],
+            "setsFlags": {
+              "found_body": true
+            }
+          }
+        },
+        {
+          "id": "restraint-straps",
+          "name": "restraint straps",
+          "onInspect": {
+            "narrativeHints": "Straps adjusted for someone larger than Marrow — an orderly held her while she was injected. Bram's height matches the strap setting."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "bram-holt"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "id": "more_coverup",
+      "fromId": "dr-silas-more",
+      "toId": "ada-crane",
+      "type": "conspiracy",
+      "label": "director and night nurse covering illegal commitments",
+      "strength": 3,
+      "public": false,
+      "knownToPlayerByDefault": false
+    },
+    {
+      "id": "bram_orders",
+      "fromId": "bram-holt",
+      "toId": "dr-silas-more",
+      "type": "employee",
+      "label": "orderly under More's pay",
+      "strength": 3,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "eli_ally",
+      "fromId": "eli-voss",
+      "toId": "june-pell",
+      "type": "ally",
+      "label": "Eli trusts the clerk more than doctors",
+      "strength": 2,
+      "public": false,
+      "knownToPlayerByDefault": false
+    }
+  ],
+  "characters": [
+    {
+      "id": "helen-marrow",
+      "name": "Dr. Helen Marrow",
+      "shortBio": "Whistleblower physician — found dead in the east wing treatment hall.",
+      "portrait": "portraits/helen-marrow.jpg",
+      "defaultLocationId": "east-wing",
+      "storyRole": "victim",
+      "voice": "Silent now",
+      "knowledge": {
+        "public": "Deceased. Found in a restraint chair in the east wing.",
+        "private": [],
+        "secrets": []
+      },
+      "defenses": []
+    },
+    {
+      "id": "ada-crane",
+      "name": "Ada Crane",
+      "shortBio": "Night nurse; soft voice; keys on a ribbon.",
+      "voice": "Soothing, practiced, dangerous when rushed",
+      "portrait": "portraits/ada-crane.jpg",
+      "defaultLocationId": "corridor",
+      "defaultWillingness": "guarded",
+      "defaultStance": "care_mask",
+      "knowledge": {
+        "public": "You are Patient 14. You had a bad night. Doctor wants rest. The east wing is closed for cleaning.",
+        "private": [
+          {
+            "id": "ada-admits-forge",
+            "content": "She admits she helped forge the Reed file and sedated Cassandra Vale on More's order after Vale arrived asking about Marrow's patients.",
+            "requiresEvidenceIds": [
+              "true-intake",
+              "forged-file"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded",
+              "hostile"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Institutional authority",
+        "Gaslights memory gaps"
+      ],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "bram-holt",
+      "name": "Bram Holt",
+      "shortBio": "Orderly; large hands; follows paychecks.",
+      "voice": "Slow, sullen, simple until cornered",
+      "portrait": "portraits/bram-holt.jpg",
+      "defaultLocationId": "corridor",
+      "defaultWillingness": "guarded",
+      "knowledge": {
+        "public": "He moves patients. He does not make medical decisions. East wing was locked.",
+        "private": [
+          {
+            "id": "bram-held-marrow",
+            "content": "He held Marrow in the chair because More told him she was 'dangerous with a needle.' He did not know the syringe was lethal until after.",
+            "requiresEvidenceIds": [
+              "broken-syringe",
+              "marrow-body-notes"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded",
+              "hostile"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Obeys orders defense",
+        "Blames medical staff"
+      ],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "dr-silas-more",
+      "name": "Dr. Silas More",
+      "shortBio": "Director; white coat over evening clothes; smiles with his teeth.",
+      "voice": "Cultured, paternal, ice underneath",
+      "portrait": "portraits/dr-silas-more.jpg",
+      "defaultLocationId": "ward-office",
+      "defaultWillingness": "guarded",
+      "defaultStance": "director_mask",
+      "knowledge": {
+        "public": "You are ill. Marrow resigned. Any 'body' story is a patient fantasy. He will have you sedated if you agitate the ward.",
+        "private": [
+          {
+            "id": "more-motive",
+            "content": "He admits — only under proof — that Marrow's report would have closed Ravenscroft and imprisoned him for fraudulent commitments for profit.",
+            "requiresEvidenceIds": [
+              "true-intake",
+              "marrow-body-notes"
+            ],
+            "requiresWillingnessIn": [
+              "hostile",
+              "open"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Medical hierarchy",
+        "Threatens sedation",
+        "Frames Eli as delusional"
+      ],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "june-pell",
+      "name": "June Pell",
+      "shortBio": "Ward clerk; ink stains; knows which files were rewritten.",
+      "voice": "Quiet, precise, scared of More",
+      "portrait": "portraits/june-pell.jpg",
+      "defaultLocationId": "ward-office",
+      "defaultWillingness": "open",
+      "knowledge": {
+        "public": "She files papers. Admission last night was irregular. She was told not to ask.",
+        "private": [
+          {
+            "id": "june-saw-rewrite",
+            "content": "She saw Ada and More rewrite the 14 file after midnight and move Marrow's draft report into the incinerator chute — except one page Eli stole.",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Fear of losing job",
+        "Will help if protected"
+      ],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "eli-voss",
+      "name": "Eli Voss",
+      "shortBio": "Long-term patient; clearer than the staff want; cracked-mirror confidant.",
+      "voice": "Whispery, wry, intermittently lucid",
+      "portrait": "portraits/eli-voss.jpg",
+      "defaultLocationId": "day-room",
+      "defaultWillingness": "open",
+      "knowledge": {
+        "public": "A doctor died. Your name is not Reed. They put people here who ask questions.",
+        "private": [
+          {
+            "id": "eli-saw-more",
+            "content": "He saw More and Bram enter the east wing with Marrow after lights-out; only More and Bram left.",
+            "requiresWillingnessIn": [
+              "open"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Easy to dismiss as mad",
+        "Actually your best witness"
+      ],
+      "storyRole": "suspect"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "forged-file",
+      "name": "Forged Patient 14 file",
+      "description": "Fresh ink 'C. Reed' arson story over a real identity.",
+      "discoverableAt": {
+        "locationId": "ward-office",
+        "inspectableId": "patient-14-file"
+      },
+      "canPresentTo": [
+        "ada-crane",
+        "dr-silas-more",
+        "june-pell",
+        "eli-voss"
+      ]
+    },
+    {
+      "id": "true-intake",
+      "name": "True intake — Cassandra Vale",
+      "description": "You are Cassandra Vale, PI, chemically restrained last night by More/Crane.",
+      "discoverableAt": {
+        "locationId": "ward-office",
+        "inspectableId": "patient-14-file"
+      },
+      "canPresentTo": [
+        "ada-crane",
+        "dr-silas-more",
+        "june-pell",
+        "bram-holt"
+      ]
+    },
+    {
+      "id": "marrow-body-notes",
+      "name": "Marrow death notes",
+      "description": "Helen Marrow murdered in restraint chair; not suicide.",
+      "discoverableAt": {
+        "locationId": "east-wing",
+        "inspectableId": "marrow-body"
+      },
+      "canPresentTo": [
+        "dr-silas-more",
+        "bram-holt",
+        "ada-crane",
+        "eli-voss"
+      ]
+    },
+    {
+      "id": "broken-syringe",
+      "name": "Broken syringe",
+      "description": "Lethal injection tool with More's clinic stamp.",
+      "discoverableAt": {
+        "locationId": "east-wing",
+        "inspectableId": "marrow-body"
+      },
+      "canPresentTo": [
+        "dr-silas-more",
+        "bram-holt",
+        "ada-crane",
+        "june-pell"
+      ]
+    }
+  ],
+  "beats": [
+    {
+      "id": "file_read",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "true-intake"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "found_true_id",
+          "value": true
+        },
+        {
+          "type": "set_game_flag",
+          "id": "read_file",
+          "value": true
+        },
+        {
+          "type": "set_phase",
+          "phaseId": "deepening"
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "ada-crane",
+          "by": 1
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "dr-silas-more",
+          "by": 1
+        }
+      ],
+      "narrationHints": "Your name returns like a bruise. Cassandra Vale. Investigator — not patient."
+    },
+    {
+      "id": "body_found",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "marrow-body-notes"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "found_body",
+          "value": true
+        },
+        {
+          "type": "reveal_relationship",
+          "relationshipId": "more_coverup"
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "dr-silas-more",
+          "by": 2
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "bram-holt",
+          "by": 1
+        }
+      ],
+      "narrationHints": "The east wing was never cleaning. It was a cover."
+    },
+    {
+      "id": "more_cornered",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "presented",
+            "evidenceId": "marrow-body-notes",
+            "toCharacterId": "dr-silas-more"
+          },
+          {
+            "type": "has_evidence",
+            "evidenceId": "true-intake"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_willingness",
+          "characterId": "dr-silas-more",
+          "value": "hostile"
+        },
+        {
+          "type": "set_alibi_status",
+          "characterId": "dr-silas-more",
+          "value": "broken"
+        },
+        {
+          "type": "set_phase",
+          "phaseId": "crisis"
+        },
+        {
+          "type": "set_stance",
+          "characterId": "ada-crane",
+          "value": "cracking"
+        },
+        {
+          "type": "reveal_knowledge",
+          "characterId": "dr-silas-more",
+          "knowledgeId": "more-motive"
+        }
+      ],
+      "narrationHints": "More's paternal smile dies. The ward is a crime scene with better stationery."
+    },
+    {
+      "id": "ada_breaks",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "presented",
+            "evidenceId": "forged-file",
+            "toCharacterId": "ada-crane"
+          },
+          {
+            "type": "has_evidence",
+            "evidenceId": "true-intake"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_willingness",
+          "characterId": "ada-crane",
+          "value": "open"
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "dr-silas-more",
+          "by": 1
+        },
+        {
+          "type": "reveal_knowledge",
+          "characterId": "ada-crane",
+          "knowledgeId": "ada-admits-forge"
+        }
+      ],
+      "narrationHints": "Ada's care mask slips. She would rather talk than hang alone."
+    },
+    {
+      "id": "wrong_eli",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "game_flag",
+        "id": "falsely_accused_eli-voss",
+        "equals": true
+      },
+      "effects": [
+        {
+          "type": "set_willingness",
+          "characterId": "eli-voss",
+          "value": "silent"
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "june-pell",
+          "value": "hostile"
+        }
+      ],
+      "narrationHints": "Blame the patient who helped you and the ward grows colder."
+    },
+    {
+      "id": "wrap_success",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "in_denouement"
+          },
+          {
+            "type": "or",
+            "of": [
+              {
+                "type": "resolution_outcome",
+                "is": "success"
+              },
+              {
+                "type": "resolution_outcome",
+                "is": "partial"
+              }
+            ]
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "move_character",
+          "characterId": "dr-silas-more",
+          "toLocationId": "ward-office"
+        },
+        {
+          "type": "set_stance",
+          "characterId": "dr-silas-more",
+          "value": "unmasked"
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "ada-crane",
+          "value": "open"
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "june-pell",
+          "value": "open"
+        }
+      ],
+      "narrationHints": "Morning rounds will bring real authorities — if you hold the door open."
+    }
+  ],
+  "solution": {
+    "summary": "Dr. Silas More murdered whistleblower Dr. Helen Marrow (lethal injection while Bram restrained her) to bury a report on illegal profitable commitments. When private investigator Cassandra Vale (you) arrived, More and Ada Crane forged a patient file, sedated you, and labeled you Patient 14. The mystery is both who killed Marrow and who you are — solved by the true intake, the body, and the conspiracy between director and night nurse. Bram is accomplice to restraint; More is principal for murder.",
+    "guiltyPartyIds": [
+      "dr-silas-more"
+    ],
+    "method": "Lethal injection in restraint chair; cover-up via forged patient identity",
+    "motive": "Silence Marrow's report; neutralize the investigator (you) who followed it",
+    "criticalEvidenceIds": [
+      "true-intake",
+      "marrow-body-notes",
+      "broken-syringe"
+    ],
+    "rubric": {
+      "partialCredit": true,
+      "allowWithoutEvidence": true,
+      "successPolicy": "identity_plus_one",
+      "requiredFacts": [
+        {
+          "id": "killer-more",
+          "role": "identity",
+          "description": "Dr. Silas More",
+          "matchHints": [
+            "more",
+            "silas",
+            "director",
+            "doctor"
+          ]
+        },
+        {
+          "id": "method-inject",
+          "role": "method",
+          "description": "Injection / syringe / restraint / east wing",
+          "matchHints": [
+            "inject",
+            "syringe",
+            "restraint",
+            "chair",
+            "poison",
+            "drug",
+            "east"
+          ]
+        },
+        {
+          "id": "motive-report",
+          "role": "motive",
+          "description": "Report / commitments / cover-up / silence Marrow",
+          "matchHints": [
+            "report",
+            "commit",
+            "profit",
+            "silence",
+            "marrow",
+            "whistle",
+            "forge",
+            "file"
+          ]
+        }
+      ]
+    }
+  },
+  "canon": {
+    "timeline": [
+      {
+        "at": "Previous day",
+        "event": "Marrow prepares report; Vale investigates.",
+        "locationId": "ward-office",
+        "actorIds": [
+          "dr-silas-more"
+        ]
+      },
+      {
+        "at": "Lights-out",
+        "event": "More and Bram kill Marrow in east wing.",
+        "locationId": "east-wing",
+        "actorIds": [
+          "dr-silas-more",
+          "bram-holt"
+        ]
+      },
+      {
+        "at": "Late night",
+        "event": "Vale arrives; sedated; filed as Patient 14 by More and Ada.",
+        "locationId": "white-room",
+        "actorIds": [
+          "ada-crane",
+          "dr-silas-more"
+        ]
+      }
+    ]
+  },
+  "endings": [
+    {
+      "id": "success_earned",
+      "when": "success",
+      "kind": "solved",
+      "title": "Name restored",
+      "templateNotes": "You are Cassandra Vale. More falls. Ada may flip. The white room was never medicine — it was a muzzle. Hold the file until morning."
+    },
+    {
+      "id": "success_lucky",
+      "when": "success",
+      "kind": "lucky_solve",
+      "title": "A name in the dark",
+      "templateNotes": "You name More before every page is read. The ward still cracks. Do not invent files unfound."
+    },
+    {
+      "id": "partial",
+      "when": "partial",
+      "kind": "partial",
+      "title": "Held for review",
+      "templateNotes": "Enough to stop More's night; the full conspiracy needs daylight and lawyers."
+    },
+    {
+      "id": "failure_wrong_accusation",
+      "when": "failure",
+      "kind": "wrong_accusation",
+      "title": "Sedated again",
+      "templateNotes": "Wrong name. The director smiles. The white room closes."
+    },
+    {
+      "id": "failure_escaped",
+      "when": "failure",
+      "kind": "escaped",
+      "title": "Transfer papers",
+      "templateNotes": "More ships you out before dawn. Marrow stays a suicide on paper."
+    }
+  ]
+}

@@ -25,6 +25,7 @@ export type CastMember = {
   id: string;
   name: string;
   shortBio?: string;
+  storyRole?: "suspect" | "victim" | "witness" | "support";
   portrait?: string;
   portraitUrl?: string;
 };

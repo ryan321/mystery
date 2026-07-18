@@ -26,7 +26,11 @@ export function createPool(url: string = databaseUrl()): Db {
 export async function migrate(pool: Db): Promise<void> {
   const dir = join(dirname(fileURLToPath(import.meta.url)), "../sql");
   await pool.query(`CREATE EXTENSION IF NOT EXISTS pgcrypto`);
-  for (const file of ["001_init.sql", "002_state_json.sql"]) {
+  for (const file of [
+    "001_init.sql",
+    "002_state_json.sql",
+    "003_denouement_status.sql",
+  ]) {
     const sql = readFileSync(join(dir, file), "utf8");
     await pool.query(sql);
   }
@@ -131,11 +135,15 @@ export async function getPlaythrough(
   };
 }
 
+type Queryable = {
+  query: pg.Pool["query"];
+};
+
 export async function updatePlaythrough(
-  pool: Db,
+  client: Queryable,
   state: PlaythroughState
 ): Promise<void> {
-  const res = await pool.query(
+  const res = await client.query(
     `UPDATE playthroughs SET
       status = $2,
       location_id = $3,
@@ -170,23 +178,25 @@ export async function updatePlaythrough(
   }
 }
 
+export type InsertTurnArgs = {
+  playthroughId: string;
+  turnIndex: number;
+  playerInput: string;
+  narration: string;
+  dialogue: unknown;
+  appliedPatch: unknown;
+  rejected: unknown;
+  evidenceAdded: unknown;
+  model: string | null;
+  mock: boolean;
+  latencyMs: number | null;
+};
+
 export async function insertTurn(
-  pool: Db,
-  args: {
-    playthroughId: string;
-    turnIndex: number;
-    playerInput: string;
-    narration: string;
-    dialogue: unknown;
-    appliedPatch: unknown;
-    rejected: unknown;
-    evidenceAdded: unknown;
-    model: string | null;
-    mock: boolean;
-    latencyMs: number | null;
-  }
+  client: Queryable,
+  args: InsertTurnArgs
 ): Promise<void> {
-  await pool.query(
+  await client.query(
     `INSERT INTO turns (
       playthrough_id, turn_index, player_input, narration, dialogue,
       applied_patch, rejected, evidence_added, model, mock, latency_ms
@@ -205,6 +215,32 @@ export async function insertTurn(
       args.latencyMs,
     ]
   );
+}
+
+/**
+ * Atomically persist playthrough snapshot + turn log (optimistic lock on turn_count).
+ */
+export async function commitTurn(
+  pool: Db,
+  state: PlaythroughState,
+  turn: InsertTurnArgs
+): Promise<void> {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await updatePlaythrough(client, state);
+    await insertTurn(client, turn);
+    await client.query("COMMIT");
+  } catch (err) {
+    try {
+      await client.query("ROLLBACK");
+    } catch {
+      // ignore rollback errors
+    }
+    throw err;
+  } finally {
+    client.release();
+  }
 }
 
 export async function listTurns(pool: Db, playthroughId: string) {

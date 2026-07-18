@@ -6,6 +6,7 @@ import type {
 import { flagsMatch, mergeFlags } from "./flags.js";
 import { canRevealBeat } from "./knowledge.js";
 import {
+  accusedCharacterIds,
   scoreAccusationDetailed,
   type AccusationResult,
 } from "./accusation.js";
@@ -469,6 +470,18 @@ export function validateAndApplyPatch(
 
   if (patch.accuse && status === "active") {
     applied.accuse = patch.accuse;
+
+    // Generic, definition-consumable record of who was formally accused.
+    // Cases react via `accused_<id>` / `falsely_accused_<id>` game flags
+    // (e.g. Blackwood's henshaw_shuts_down beat) — no engine hardcodes.
+    const guiltySet = new Set(def.solution.guiltyPartyIds);
+    for (const cid of accusedCharacterIds(def, patch.accuse)) {
+      flags = mergeFlags(flags, { [`accused_${cid}`]: true });
+      if (!guiltySet.has(cid)) {
+        flags = mergeFlags(flags, { [`falsely_accused_${cid}`]: true });
+      }
+    }
+
     const tempState: PlaythroughState = {
       ...state,
       flags,

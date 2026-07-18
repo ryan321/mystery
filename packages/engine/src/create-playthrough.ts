@@ -6,6 +6,7 @@ import type {
   LocationRuntimeState,
   RelationshipRuntimeState,
 } from "@mystery/shared";
+import { snapshotPlayerPersona } from "@mystery/shared";
 import { randomUUID } from "node:crypto";
 
 export function createInitialPlaythrough(
@@ -28,13 +29,20 @@ export function createInitialPlaythrough(
         l.charactersPresent.some((p) => p.characterId === c.id)
       )?.id ??
       def.player.startingLocationId;
+    const isVictim = c.storyRole === "victim";
+    const available =
+      c.availableByDefault !== undefined
+        ? c.availableByDefault
+        : !isVictim;
     characterState[c.id] = {
       locationId: defaultLoc,
-      available: true,
-      willingness: c.defaultWillingness ?? "open",
+      available,
+      willingness: isVictim
+        ? "silent"
+        : (c.defaultWillingness ?? "open"),
       pressure: 0,
       trust: 0,
-      stance: c.defaultStance ?? "",
+      stance: c.defaultStance ?? (isVictim ? "deceased" : ""),
       alibiStatus: "none",
       timesTalked: 0,
     };
@@ -157,5 +165,6 @@ export function createInitialPlaythrough(
       tags: [],
       flags: {},
     },
+    playerPersona: snapshotPlayerPersona(def.player),
   };
 }

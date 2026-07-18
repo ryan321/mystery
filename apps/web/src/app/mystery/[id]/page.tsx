@@ -174,13 +174,6 @@ export default function CaseDetailPage() {
 
           <div className={styles.content}>
             <div className={styles.main}>
-              {detail.meta.setting ? (
-                <section className={styles.section}>
-                  <h2 className={styles.sectionTitle}>Setting</h2>
-                  <p className={styles.description}>{detail.meta.setting}</p>
-                </section>
-              ) : null}
-
               <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>The story</h2>
                 <p className={styles.premise}>{detail.meta.premise}</p>
@@ -191,6 +184,13 @@ export default function CaseDetailPage() {
                 ) : null}
               </section>
 
+              {detail.meta.setting ? (
+                <section className={styles.section}>
+                  <h2 className={styles.sectionTitle}>Setting</h2>
+                  <p className={styles.description}>{detail.meta.setting}</p>
+                </section>
+              ) : null}
+
               {detail.meta.theMystery ? (
                 <section className={styles.section}>
                   <h2 className={styles.sectionTitle}>The mystery</h2>
@@ -200,67 +200,25 @@ export default function CaseDetailPage() {
 
               <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>You play as</h2>
-                <p className={styles.premise}>
+                <p className={styles.playerName}>
                   {detail.player?.displayName ?? "Investigator"}
-                  {detail.player?.role ? (
-                    <span className={styles.description}>
-                      {" "}
-                      — {detail.player.role}
-                    </span>
-                  ) : null}
                 </p>
+                {detail.player?.role ? (
+                  <p className={styles.playerRole}>{detail.player.role}</p>
+                ) : null}
                 {(detail.player?.age ||
-                  detail.player?.gender ||
                   detail.player?.appearance ||
-                  detail.player?.clothing) && (
-                  <p className={styles.description} style={{ marginTop: "0.75rem" }}>
-                    <strong style={{ color: "var(--candle)" }}>Look. </strong>
+                  detail.player?.objective) && (
+                  <p className={styles.playerMeta}>
                     {[
                       detail.player.age,
-                      detail.player.gender,
                       detail.player.appearance,
-                      detail.player.clothing,
+                      detail.player.objective,
                     ]
                       .filter(Boolean)
                       .join(" · ")}
                   </p>
                 )}
-                {detail.player?.background ? (
-                  <p className={styles.description} style={{ marginTop: "0.75rem" }}>
-                    <strong style={{ color: "var(--candle)" }}>Background. </strong>
-                    {detail.player.background}
-                  </p>
-                ) : null}
-                {detail.player?.publicPerception ? (
-                  <p className={styles.description} style={{ marginTop: "0.75rem" }}>
-                    <strong style={{ color: "var(--candle)" }}>
-                      How they see you.{" "}
-                    </strong>
-                    {detail.player.publicPerception}
-                  </p>
-                ) : null}
-                {detail.player?.objective ? (
-                  <p className={styles.description} style={{ marginTop: "0.75rem" }}>
-                    <strong style={{ color: "var(--candle)" }}>Your job. </strong>
-                    {detail.player.objective}
-                  </p>
-                ) : null}
-                {detail.player?.startingKnowledge ? (
-                  <p className={styles.description} style={{ marginTop: "0.75rem" }}>
-                    <strong style={{ color: "var(--candle)" }}>What you know. </strong>
-                    {detail.player.startingKnowledge}
-                  </p>
-                ) : null}
-                {detail.player?.personaId ? (
-                  <p className={styles.description} style={{ marginTop: "0.75rem" }}>
-                    Recurring persona: <code>{detail.player.personaId}</code>
-                  </p>
-                ) : null}
-                <p className={styles.description} style={{ marginTop: "0.85rem" }}>
-                  Free-text investigation: talk, search, present evidence, accuse.
-                  The world treats you as this person — not a blank avatar. The
-                  solution is fixed and fair.
-                </p>
               </section>
             </div>
 
@@ -330,31 +288,42 @@ export default function CaseDetailPage() {
             <section className={styles.charactersSection}>
               <h2 className={styles.sectionTitle}>The characters in this mystery</h2>
               <div className={styles.characters}>
-                {detail.cast.map((c) => (
-                  <div key={c.id} className={styles.characterCard}>
-                    <div className={styles.characterPortrait}>
-                      {c.portraitUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={assetUrl(c.portraitUrl)}
-                          alt=""
-                          width={96}
-                          height={96}
-                        />
-                      ) : (
-                        <span className={styles.characterInitial}>
-                          {c.name.charAt(0)}
-                        </span>
-                      )}
+                {[...detail.cast]
+                  .sort((a, b) => {
+                    const rank = (r?: string) =>
+                      r === "victim" ? 0 : r === "suspect" ? 1 : 2;
+                    return rank(a.storyRole) - rank(b.storyRole);
+                  })
+                  .map((c) => (
+                    <div key={c.id} className={styles.characterCard}>
+                      <div className={styles.characterPortrait}>
+                        {c.portraitUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={assetUrl(c.portraitUrl)}
+                            alt=""
+                            width={140}
+                            height={140}
+                          />
+                        ) : (
+                          <span className={styles.characterInitial}>
+                            {c.name.charAt(0)}
+                          </span>
+                        )}
+                      </div>
+                      <div className={styles.characterInfo}>
+                        <div className={styles.characterName}>{c.name}</div>
+                        {c.storyRole === "victim" ? (
+                          <span className={styles.roleBadge}>Victim</span>
+                        ) : c.storyRole === "witness" ? (
+                          <span className={styles.roleBadgeMuted}>Witness</span>
+                        ) : null}
+                        {c.shortBio ? (
+                          <div className={styles.characterBio}>{c.shortBio}</div>
+                        ) : null}
+                      </div>
                     </div>
-                    <div className={styles.characterInfo}>
-                      <div className={styles.characterName}>{c.name}</div>
-                      {c.shortBio ? (
-                        <div className={styles.characterBio}>{c.shortBio}</div>
-                      ) : null}
-                    </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </section>
           ) : null}

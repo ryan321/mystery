@@ -1,0 +1,823 @@
+{
+  "$schema": "../definition.schema.json",
+  "schemaVersion": "1.5",
+  "id": "snowbound-lodge",
+  "contentVersion": "0.1.3",
+  "meta": {
+    "title": "The Snowbound Lodge",
+    "premise": "A luxury retreat cut off by avalanche. A guest dead in the study. No one came in, and no one left.",
+    "tone": "cozy-threatening alpine locked-room, firelight and whiteout",
+    "estimatedMinutes": 35,
+    "tags": [
+      "Winter",
+      "Isolated",
+      "Locked-room",
+      "Mountains"
+    ],
+    "difficulty": "easy",
+    "contentWarnings": [
+      "murder"
+    ],
+    "artStyle": "Alpine winter mystery portrait, head-and-shoulders, warm firelight against blue snow light, wool and evening dress, painted soft illustration, same cozy-gothic lodge palette for every cast member, mystery game NPC portrait",
+    "setting": "An alpine lodge sealed by avalanche. Morning after the whiteout. Firelight and locked doors.",
+    "summary": "Host Lucien Voss is found dead in his study after breakfast — the door locked from the inside, a brandy glass on its side, no wound that explains the look of him. An avalanche closed the mountain road last night. The only people on site are his business partner Iris Hale, ski guide Tomas Berg, heiress guest Petra Lang, and chef-manager Odette March. Someone in this snowbound house turned a locked room into a stage. You are the only guest who ever worked cases.",
+    "theMystery": "Who killed Lucien Voss in a study locked from the inside — and how did the killer leave without a trace?"
+  },
+  "player": {
+    "displayName": "Guest",
+    "addressAs": "friend",
+    "pronouns": "they/them",
+    "role": "Weekend guest at the lodge — and the only person here who used to work criminal cases",
+    "authority": "guest",
+    "age": "thirties",
+    "appearance": "Travel-worn guest; not staff, not a local celebrity",
+    "clothing": "Wool layers and boots still dusted with snow from the arrival",
+    "background": "Invited for the alpine weekend; known vaguely as 'the one who used to investigate things.'",
+    "publicPerception": "A fellow guest who has been drafted into asking hard questions. No badge — only competence and proximity.",
+    "voiceNotes": "Warm, curious, slightly reluctant",
+    "performanceNotes": "Second person stays you. Cast treat you as a guest first, investigator second. They may not know your full name — Odette may lean on your old profession.",
+    "startingLocationId": "great-room",
+    "startingEvidenceIds": [],
+    "startingKnowledge": "Avalanche sealed the mountain road last night. At breakfast, host Lucien Voss is found dead in the study — door locked from inside. Guests: his business partner Iris Hale, ski guide Tomas Berg, heiress Petra Lang, and chef/manager Odette March. No one can leave until the pass opens.",
+    "objective": "Search the lodge, press the guests and staff, reconstruct the locked-room trick, and accuse the murderer with method and motive."
+  },
+  "openingNarration": "Snow presses the windows like white felt. The great room still smells of last night’s pine and brandy. Odette stands by the fire with a tray she is not offering. Beyond the hall, the study door is open now — forced by Tomas after no one answered. Lucien Voss sits slumped at his desk, a glass on its side, a book of guest accounts open. Outside, the world is a wall of white. No help is coming until the pass opens. You are the only one here who used to work cases — and the only one expected to answer a simple question: who killed the host, and how did they walk out of a locked room?",
+  "phases": [
+    {
+      "id": "arrival",
+      "description": "Study and first interviews"
+    },
+    {
+      "id": "deepening",
+      "description": "Key, window, motive"
+    },
+    {
+      "id": "crisis",
+      "description": "Someone cracks"
+    },
+    {
+      "id": "confrontation",
+      "description": "Accusation"
+    },
+    {
+      "id": "denouement",
+      "description": "Aftermath by the fire"
+    }
+  ],
+  "wrapUp": {
+    "enabled": true,
+    "maxTurns": 8,
+    "allowEarlyExit": true,
+    "performanceNotes": "Firelight, snow silence, confession or denial. Keep it intimate."
+  },
+  "time": {
+    "startSlotId": "morning",
+    "minutesPerTurn": 12,
+    "schedule": [
+      {
+        "id": "morning",
+        "label": "Snowbound morning",
+        "minutesFromStart": 0
+      },
+      {
+        "id": "midday",
+        "label": "Midday whiteout",
+        "minutesFromStart": 50
+      },
+      {
+        "id": "afternoon",
+        "label": "Late afternoon",
+        "minutesFromStart": 100
+      }
+    ]
+  },
+  "environment": {
+    "weather": "snow",
+    "weatherIntensity": "blizzard",
+    "light": "firelight",
+    "ambient": "claustrophobic",
+    "crowd": "none",
+    "flags": {}
+  },
+  "flags": [
+    {
+      "id": "examined_study",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "found_spare_key",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "found_ledger",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "falsely_accused_tomas",
+      "aiVisible": true,
+      "defaultValue": false
+    }
+  ],
+  "locations": [
+    {
+      "id": "great-room",
+      "name": "Lodge great room",
+      "description": "Stone fireplace, antlers, deep chairs. Snow seals every window. Hallway to the study and kitchen wing; stairs to guest rooms.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "study",
+          "label": "into the study"
+        },
+        {
+          "toLocationId": "kitchen",
+          "label": "toward the kitchen"
+        },
+        {
+          "toLocationId": "upstairs-hall",
+          "label": "upstairs"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "fireplace",
+          "name": "fireplace",
+          "onInspect": {
+            "narrativeHints": "Fire well tended. A scrap of burned paper in the ash — numbers, half a name: 'Lang — transfer'."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "odette-march"
+        },
+        {
+          "characterId": "iris-hale"
+        }
+      ]
+    },
+    {
+      "id": "study",
+      "name": "Lucien's study",
+      "description": "Locked-room crime scene. Desk, ledgers, a window that should not open in this cold — yet the catch is loose. Door lock shows a clean bolt, forced only from outside by Tomas after the fact.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "great-room",
+          "label": "back to the great room"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "body-desk",
+          "name": "Lucien at the desk",
+          "onInspect": {
+            "narrativeHints": "No wound. Pupils and lips suggest poison in the brandy. Glass smells of bitter almonds under the alcohol. The door was locked from inside — but the spare key is missing from its usual hook.",
+            "revealsEvidenceIds": [
+              "poisoned-glass"
+            ],
+            "setsFlags": {
+              "examined_study": true
+            }
+          }
+        },
+        {
+          "id": "window-catch",
+          "name": "study window catch",
+          "onInspect": {
+            "narrativeHints": "Catch scraped recently. Outside ledge holds a boot scrape in crusted snow — someone left by the window after locking the door from inside with a key, then closed the catch poorly."
+          }
+        },
+        {
+          "id": "key-hook",
+          "name": "empty key hook",
+          "onInspect": {
+            "narrativeHints": "Hook labeled 'Study spare'. Empty. Dust ring says the key lived here until last night."
+          }
+        },
+        {
+          "id": "guest-ledger",
+          "name": "guest accounts ledger",
+          "onInspect": {
+            "narrativeHints": "Open to Petra Lang's page. Large withdrawals marked 'personal loan — Voss'. A second hand noted 'due — or public'.",
+            "revealsEvidenceIds": [
+              "debt-ledger"
+            ],
+            "setsFlags": {
+              "found_ledger": true
+            }
+          }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "kitchen",
+      "name": "Kitchen and stores",
+      "description": "Copper pots, locked spice cabinet, Odette's domain. Back door buried in snowdrift.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "great-room",
+          "label": "back to the great room"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "spice-cabinet",
+          "name": "spice cabinet",
+          "onInspect": {
+            "narrativeHints": "One small vial of almond extract is nearly empty — too empty for pastry. Odette says pastry was not on last night's menu."
+          }
+        },
+        {
+          "id": "service-tray",
+          "name": "service tray",
+          "onInspect": {
+            "narrativeHints": "Two brandy glasses were set last night. Only one returned to the kitchen. The other is still in the study."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "odette-march"
+        }
+      ]
+    },
+    {
+      "id": "upstairs-hall",
+      "name": "Upstairs guest hall",
+      "description": "Four doors, runner carpet, cold draft from a linen closet.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "great-room",
+          "label": "downstairs"
+        },
+        {
+          "toLocationId": "petra-room",
+          "label": "into Petra's room"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "linen-closet",
+          "name": "linen closet",
+          "onInspect": {
+            "narrativeHints": "Tucked in a towel stack: the study spare key, still faintly smelling of brandy and cold metal.",
+            "revealsEvidenceIds": [
+              "spare-key"
+            ],
+            "setsFlags": {
+              "found_spare_key": true
+            }
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "tomas-berg"
+        },
+        {
+          "characterId": "petra-lang"
+        }
+      ]
+    },
+    {
+      "id": "petra-room",
+      "name": "Petra's guest room",
+      "description": "Elegant mess. Open suitcase. A coat with damp cuffs hanging to dry.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "upstairs-hall",
+          "label": "back to the hall"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "damp-coat",
+          "name": "Petra's coat",
+          "onInspect": {
+            "narrativeHints": "Cuffs and hem damp with fresh snow melt — not from a morning walk that never happened. She was outside the study window line last night."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "petra-lang"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "id": "petra_debt_voss",
+      "fromId": "petra-lang",
+      "toId": "iris-hale",
+      "type": "debt",
+      "label": "owed Lucien; feared exposure",
+      "strength": 3,
+      "public": false,
+      "knownToPlayerByDefault": false,
+      "notes": "Private motive edge; reveal with ledger."
+    },
+    {
+      "id": "iris_partner",
+      "fromId": "iris-hale",
+      "toId": "odette-march",
+      "type": "business",
+      "label": "business partner of the dead host",
+      "strength": 2,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "tomas_employee",
+      "fromId": "tomas-berg",
+      "toId": "odette-march",
+      "type": "employee",
+      "label": "ski guide on staff",
+      "strength": 1,
+      "public": true,
+      "knownToPlayerByDefault": true
+    }
+  ],
+  "characters": [
+    {
+      "id": "lucien-voss",
+      "name": "Lucien Voss",
+      "shortBio": "Host of the lodge — found dead in his locked study over breakfast brandy.",
+      "portrait": "portraits/lucien-voss.jpg",
+      "defaultLocationId": "study",
+      "storyRole": "victim",
+      "voice": "Silent now",
+      "knowledge": {
+        "public": "Deceased. Found locked in the study with a poisoned glass.",
+        "private": [],
+        "secrets": []
+      },
+      "defenses": []
+    },
+    {
+      "id": "odette-march",
+      "name": "Odette March",
+      "shortBio": "Chef and lodge manager; runs the house like a ship.",
+      "voice": "Crisp, practical, strained",
+      "portrait": "portraits/odette-march.jpg",
+      "defaultLocationId": "great-room",
+      "defaultWillingness": "open",
+      "knowledge": {
+        "public": "She served brandy to Lucien alone in the study after the others retired. She left the bottle and one glass. She did not lock him in.",
+        "private": [
+          {
+            "id": "odette-key-missing",
+            "content": "She noticed the spare study key missing when she brought breakfast tea. She thought Lucien had taken it himself.",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Protects the lodge's reputation",
+        "Will not invent witnesses"
+      ],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "iris-hale",
+      "name": "Iris Hale",
+      "shortBio": "Lucien's business partner; sharp suits even in the mountains.",
+      "voice": "Cool, legal, measured",
+      "portrait": "portraits/iris-hale.jpg",
+      "defaultLocationId": "great-room",
+      "defaultWillingness": "guarded",
+      "knowledge": {
+        "public": "She went to bed early. She heard nothing. She and Lucien argued sometimes about money — 'normally'.",
+        "private": [
+          {
+            "id": "iris-knew-petra-debt",
+            "content": "She knew Petra owed Lucien a fortune and that he planned to force repayment publicly if she refused.",
+            "requiresEvidenceIds": [
+              "debt-ledger"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Lawyerly deflection",
+        "Denies personal motive"
+      ],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "tomas-berg",
+      "name": "Tomas Berg",
+      "shortBio": "Ski guide; forced the study door this morning.",
+      "voice": "Blunt, outdoor, honest-sounding",
+      "portrait": "portraits/tomas-berg.jpg",
+      "defaultLocationId": "upstairs-hall",
+      "defaultWillingness": "open",
+      "knowledge": {
+        "public": "He broke the study door when Lucien did not answer. The bolt was locked from inside. He saw no one outside in the storm — visibility was nothing.",
+        "private": [
+          {
+            "id": "tomas-window-boot",
+            "content": "He saw a small boot scrape under the study window when he checked the walls for avalanche damage. He thought it was old until he looked again.",
+            "requiresWillingnessIn": [
+              "open"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Straightforward",
+        "Easy to falsely suspect because he forced the door"
+      ],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "petra-lang",
+      "name": "Petra Lang",
+      "shortBio": "Heiress guest; charming until cornered.",
+      "voice": "Bright, brittle, too quick to laugh",
+      "portrait": "portraits/petra-lang.jpg",
+      "defaultLocationId": "upstairs-hall",
+      "defaultWillingness": "guarded",
+      "defaultStance": "charm_mask",
+      "knowledge": {
+        "public": "She slept badly. She never left her room. She liked Lucien 'as a host'.",
+        "private": [
+          {
+            "id": "petra-admits-debt-talk",
+            "content": "She admits Lucien threatened to expose her debt at breakfast if she did not sign papers.",
+            "requiresEvidenceIds": [
+              "debt-ledger"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded",
+              "hostile"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Denies leaving her room",
+        "Blames the locked-room impossibility"
+      ],
+      "storyRole": "suspect"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "poisoned-glass",
+      "name": "Poisoned brandy glass",
+      "description": "Bitter almond note under brandy; poison delivery.",
+      "discoverableAt": {
+        "locationId": "study",
+        "inspectableId": "body-desk"
+      },
+      "canPresentTo": [
+        "odette-march",
+        "iris-hale",
+        "petra-lang",
+        "tomas-berg"
+      ]
+    },
+    {
+      "id": "debt-ledger",
+      "name": "Debt ledger page",
+      "description": "Petra Lang owes Voss; note 'due — or public'.",
+      "discoverableAt": {
+        "locationId": "study",
+        "inspectableId": "guest-ledger"
+      },
+      "canPresentTo": [
+        "petra-lang",
+        "iris-hale",
+        "odette-march"
+      ]
+    },
+    {
+      "id": "spare-key",
+      "name": "Study spare key",
+      "description": "Found in upstairs linen; explains locked-from-inside after exit via window.",
+      "discoverableAt": {
+        "locationId": "upstairs-hall",
+        "inspectableId": "linen-closet"
+      },
+      "canPresentTo": [
+        "petra-lang",
+        "odette-march",
+        "tomas-berg",
+        "iris-hale"
+      ]
+    }
+  ],
+  "beats": [
+    {
+      "id": "study_examined",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "poisoned-glass"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "examined_study",
+          "value": true
+        },
+        {
+          "type": "set_phase",
+          "phaseId": "deepening"
+        }
+      ],
+      "narrationHints": "Poison, not avalanche chance. The locked door is a puzzle, not a miracle."
+    },
+    {
+      "id": "ledger_pressure",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "debt-ledger"
+      },
+      "effects": [
+        {
+          "type": "reveal_relationship",
+          "relationshipId": "petra_debt_voss"
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "petra-lang",
+          "by": 2
+        },
+        {
+          "type": "set_stance",
+          "characterId": "petra-lang",
+          "value": "brittle"
+        }
+      ],
+      "narrationHints": "Money and shame walk the same hall as murder."
+    },
+    {
+      "id": "key_explains_room",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "spare-key"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "found_spare_key",
+          "value": true
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "petra-lang",
+          "by": 1
+        }
+      ],
+      "narrationHints": "Locked inside is easy if you leave by the window with the spare key."
+    },
+    {
+      "id": "petra_cornered",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "presented",
+            "evidenceId": "debt-ledger",
+            "toCharacterId": "petra-lang"
+          },
+          {
+            "type": "has_evidence",
+            "evidenceId": "spare-key"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_willingness",
+          "characterId": "petra-lang",
+          "value": "hostile"
+        },
+        {
+          "type": "set_alibi_status",
+          "characterId": "petra-lang",
+          "value": "broken"
+        },
+        {
+          "type": "set_phase",
+          "phaseId": "crisis"
+        },
+        {
+          "type": "reveal_knowledge",
+          "characterId": "petra-lang",
+          "knowledgeId": "petra-admits-debt-talk"
+        }
+      ],
+      "narrationHints": "Petra's charm snaps. The locked room no longer protects her story."
+    },
+    {
+      "id": "wrong_tomas",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "game_flag",
+        "id": "falsely_accused_tomas-berg",
+        "equals": true
+      },
+      "effects": [
+        {
+          "type": "set_willingness",
+          "characterId": "tomas-berg",
+          "value": "silent"
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "odette-march",
+          "value": "hostile"
+        }
+      ],
+      "narrationHints": "Blaming the man who forced the door freezes the staff."
+    },
+    {
+      "id": "wrap_success",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "in_denouement"
+          },
+          {
+            "type": "or",
+            "of": [
+              {
+                "type": "resolution_outcome",
+                "is": "success"
+              },
+              {
+                "type": "resolution_outcome",
+                "is": "partial"
+              }
+            ]
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "move_character",
+          "characterId": "petra-lang",
+          "toLocationId": "great-room"
+        },
+        {
+          "type": "set_stance",
+          "characterId": "petra-lang",
+          "value": "broken"
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "petra-lang",
+          "value": "open"
+        }
+      ],
+      "narrationHints": "Firelight aftermath. Petra may confess. Snow still seals the world."
+    }
+  ],
+  "solution": {
+    "summary": "Petra Lang poisoned Lucien Voss's brandy, locked the study from inside with the spare key, climbed out the window into the snow, and hid the key in the linen closet. Motive: Lucien threatened to expose her debt publicly. The locked room was staged; the window catch and damp coat give her away.",
+    "guiltyPartyIds": [
+      "petra-lang"
+    ],
+    "method": "Poison in brandy; spare key + window to fake locked-room",
+    "motive": "Silence / stop public exposure of crushing debt to Voss",
+    "criticalEvidenceIds": [
+      "debt-ledger",
+      "spare-key"
+    ],
+    "rubric": {
+      "partialCredit": true,
+      "allowWithoutEvidence": true,
+      "successPolicy": "identity_plus_one",
+      "requiredFacts": [
+        {
+          "id": "killer-petra",
+          "role": "identity",
+          "description": "Petra Lang",
+          "matchHints": [
+            "petra",
+            "lang",
+            "heiress"
+          ]
+        },
+        {
+          "id": "method-poison",
+          "role": "method",
+          "description": "Poison / brandy / key / window",
+          "matchHints": [
+            "poison",
+            "brandy",
+            "key",
+            "window",
+            "almond",
+            "locked"
+          ]
+        },
+        {
+          "id": "motive-debt",
+          "role": "motive",
+          "description": "Debt / exposure",
+          "matchHints": [
+            "debt",
+            "money",
+            "expose",
+            "loan",
+            "public",
+            "ledger"
+          ]
+        }
+      ]
+    }
+  },
+  "canon": {
+    "timeline": [
+      {
+        "at": "Last night after dinner",
+        "event": "Lucien threatens Petra over debt papers.",
+        "locationId": "study",
+        "actorIds": [
+          "petra-lang"
+        ]
+      },
+      {
+        "at": "Late evening",
+        "event": "Petra poisons brandy, locks door, exits window, hides key upstairs.",
+        "locationId": "study",
+        "actorIds": [
+          "petra-lang"
+        ]
+      },
+      {
+        "at": "Morning",
+        "event": "Tomas forces door; body found.",
+        "locationId": "study",
+        "actorIds": [
+          "tomas-berg"
+        ]
+      }
+    ]
+  },
+  "endings": [
+    {
+      "id": "success_earned",
+      "when": "success",
+      "kind": "solved",
+      "title": "The key in the linen",
+      "templateNotes": "Petra's locked-room theater collapses. The spare key, the ledger, and the window tell the same story. Snow still holds the lodge; justice will wait for the pass — but the truth does not."
+    },
+    {
+      "id": "success_lucky",
+      "when": "success",
+      "kind": "lucky_solve",
+      "title": "A name by the fire",
+      "templateNotes": "You name Petra before every thread is tied. She still breaks. Do not invent evidence unfound. The fire pops; the snow does not care."
+    },
+    {
+      "id": "partial",
+      "when": "partial",
+      "kind": "partial",
+      "title": "Thin ice",
+      "templateNotes": "You have enough to hold her, not enough for a clean file. The mountain keeps its secrets a little longer."
+    },
+    {
+      "id": "failure_wrong_accusation",
+      "when": "failure",
+      "kind": "wrong_accusation",
+      "title": "Wrong guest",
+      "templateNotes": "The lodge freezes you out. When the pass opens, the real trail is colder than the snow."
+    }
+  ]
+}

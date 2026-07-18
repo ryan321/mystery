@@ -61,7 +61,10 @@ Validate by parsing with `parseMysteryDefinition` (shared package) or loading th
   "contentVersion": "0.1.0",
   "meta": {
     "title": "Title",
-    "premise": "One-paragraph hook",
+    "premise": "Short shelf-card hook (1–2 sentences)",
+    "setting": "Where/when — bookstore setting line",
+    "summary": "Longer jacket blurb: scene, stakes, cast, no spoilers",
+    "theMystery": "The central question the player must answer",
     "tone": "how it should feel",
     "estimatedMinutes": 40,
     "tags": ["Manor"],
@@ -69,13 +72,26 @@ Validate by parsing with `parseMysteryDefinition` (shared package) or loading th
     "contentWarnings": ["murder"]
   },
   "player": {
-    "displayName": "Inspector",
-    "role": "who you are",
+    "personaId": "optional-recurring-id",
+    "displayName": "Inspector Cross",
+    "addressAs": "Inspector",
+    "pronouns": "he/him",
+    "role": "Role in *this* mystery (guest, inspector, patient…)",
+    "authority": "official",
+    "gender": "optional",
+    "age": "optional age band",
+    "appearance": "optional look",
+    "clothing": "optional outfit in this mystery",
+    "background": "what the world may know about you",
+    "publicPerception": "how this cast sees you at start",
+    "voiceNotes": "manner",
+    "performanceNotes": "how NPCs should treat this persona",
     "startingLocationId": "hall",
     "startingEvidenceIds": [],
-    "startingKnowledge": "What the player already knows at turn 0."
+    "startingKnowledge": "Facts at turn 0 (briefing + AI).",
+    "objective": "What the player must do to solve this mystery."
   },
-  "openingNarration": "Second-person cold open…",
+  "openingNarration": "Second-person cold open that ends by making the mystery and next step clear…",
   "locations": [ /* at least one */ ],
   "characters": [],
   "relationships": [],
@@ -239,6 +255,7 @@ Validate by parsing with `parseMysteryDefinition` (shared package) or loading th
   "name": "Mr. Vale",
   "shortBio": "House guest…",
   "voice": "Smooth, defensive when cornered",
+  "portrait": "portraits/vale.jpg",
   "defaultLocationId": "entrance-hall",
   "defaultWillingness": "guarded",
   "defaultStance": "polite_mask",
@@ -260,6 +277,32 @@ Validate by parsing with `parseMysteryDefinition` (shared package) or loading th
   "defenses": ["Denies murder", "Insists on alibi"]
 }
 ```
+
+### Portraits
+
+| Field | Where | Meaning |
+|-------|--------|---------|
+| `character.portrait` | per cast member | Path **relative to the case folder** (e.g. `portraits/henshaw.png`) |
+| `meta.artStyle` | case meta | Shared visual brief so all portraits match (style, lighting, era) |
+
+Files live under:
+
+```
+content/cases/<case-id>/
+  definition.json
+  portraits/
+    henshaw.png
+    vale.png
+    …
+```
+
+API serves them at:
+
+```
+GET /v1/cases/<case-id>/assets/portraits/henshaw.png
+```
+
+Playthrough JSON includes `cast[].portraitUrl` and `characters[id].portraitUrl` for the UI. Keep one art style per case (oil gothic, pulp noir, etc.) — regenerate the whole set if the style changes.
 
 ### Willingness ladder
 
@@ -431,7 +474,28 @@ Prefer typed state (willingness, object stage, relationships) when possible; fla
 
 **Important:** Success does **not** require holding evidence. Cold correct guesses can win (`lucky_solve` vs `solved` / earned path via `criticalEvidenceIds`).
 
-`matchHints` are case-insensitive substrings against the accusation text + suspect ids/names.
+`matchHints` are case-insensitive, **negation-aware** matches against the accusation text (summary + method + motive). "It wasn't Vale" does not count as naming Vale; suspect ids resolved by the director are matched structurally.
+
+### Confirmation gate (`accusePolicy`, optional root field)
+
+Informal accusations ("Vale did it") are **not judged immediately**: they go pending and the performer asks, in-fiction, whether the player formally commits. Formal wording ("I accuse Vale", "arrest him") or confirming/repeating while pending triggers judgment. Withdrawal or expiry clears it.
+
+```json
+"accusePolicy": { "requireConfirmation": true, "pendingTurns": 3 }
+```
+
+Both fields optional; defaults shown. Set `requireConfirmation: false` for judge-on-first-utterance.
+
+### Generic accusation flags (react in beats)
+
+The engine sets game flags whenever suspects are named — no engine hardcodes per case:
+
+| Flag | Set when |
+|------|----------|
+| `accused_<characterId>` | The character is named in a pending **or** scored accusation |
+| `falsely_accused_<characterId>` | A scored accusation named them and they are not guilty |
+
+Example: Blackwood's `henshaw_shuts_down` beat fires on `game_flag falsely_accused_henshaw`.
 
 ---
 

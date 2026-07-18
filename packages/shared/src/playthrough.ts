@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { FlagValueSchema } from "./definition.js";
+import { FlagValueSchema, PlayerPersonaSnapshotSchema } from "./definition.js";
 
 export const PlaythroughStatusSchema = z.enum([
   "active",
@@ -157,6 +157,21 @@ export const TimeStateSchema = z.object({
 });
 export type TimeState = z.infer<typeof TimeStateSchema>;
 
+/**
+ * An accusation voiced informally ("Vale did it") that awaits formal
+ * confirmation before it is scored. Cleared on confirm, withdraw, or expiry.
+ */
+export const PendingAccusationSchema = z.object({
+  summary: z.string(),
+  suspectIds: z.array(z.string()).default([]),
+  method: z.string().optional(),
+  motive: z.string().optional(),
+  madeOnTurn: z.number().int().nonnegative(),
+  /** Last turnCount at which this pending accusation can still be confirmed. */
+  expiresAfterTurn: z.number().int().nonnegative(),
+});
+export type PendingAccusation = z.infer<typeof PendingAccusationSchema>;
+
 export const PresentedRecordSchema = z.object({
   evidenceId: z.string(),
   characterId: z.string(),
@@ -235,7 +250,14 @@ export const PlaythroughStateSchema = z.object({
     tags: [],
     flags: {},
   }),
+  /**
+   * Who the player is in this playthrough (role, appearance, recurring personaId).
+   * Snapshot at start from definition.player (+ future persona catalog merges).
+   */
+  playerPersona: PlayerPersonaSnapshotSchema.optional(),
   endingId: z.string().optional(),
+  /** Informal accusation awaiting formal confirmation (accuse gate). */
+  pendingAccusation: PendingAccusationSchema.optional(),
   /** Set when judgment is rendered (accuse / fail beat), even during denouement. */
   resolution: ResolutionSchema.optional(),
   /** Present while status === denouement. */

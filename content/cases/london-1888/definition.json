@@ -1,0 +1,855 @@
+{
+  "$schema": "../definition.schema.json",
+  "schemaVersion": "1.5",
+  "id": "london-1888",
+  "contentVersion": "0.1.3",
+  "meta": {
+    "title": "London, 1888",
+    "premise": "A cabinet minister is found in a foggy Whitechapel alley. The newspapers blame the Ripper, but the motive is too modern.",
+    "tone": "gaslit political murder, fog and print-shops, clipped Victorian procedure",
+    "estimatedMinutes": 50,
+    "tags": [
+      "Victorian",
+      "Fog",
+      "Politics",
+      "Whitechapel"
+    ],
+    "difficulty": "medium",
+    "contentWarnings": [
+      "murder",
+      "violence",
+      "period prejudice"
+    ],
+    "artStyle": "Victorian gaslight portrait, head-and-shoulders, sepia fog palette (umber, soot, lamp amber), etched newspaper illustration feel, same foggy Whitechapel lighting for every cast member, 1888 fashion, mystery game NPC portrait, consistent artist hand",
+    "setting": "Whitechapel, London, autumn 1888. Gaslight, fog, and the morning editions already typeset.",
+    "summary": "Cabinet Under-Secretary Sir Reginald Ashcombe is dead in a narrow alley off Commercial Road — one neat wound, no theatrical mutilation for the penny papers. Scotland Yard seconded you from the Home Office desk because the press will scream Ripper and Whitehall wants quiet. Nearby: Constable Hale, surgeon Dr. Vesper, private secretary Miles Crowe, scandal printer Lottie Kane, and Lady Evelyn arrived from Mayfair. The fog hides faces. The ledgers do not.",
+    "theMystery": "Who stabbed Sir Reginald Ashcombe in a Whitechapel alley — and was it the Ripper panic, or politics and money wearing fog as a mask?"
+  },
+  "player": {
+    "personaId": "inspector-cross",
+    "displayName": "Inspector Cross",
+    "fullName": "Inspector Edmund Cross",
+    "addressAs": "Inspector",
+    "pronouns": "he/him",
+    "role": "Scotland Yard inspector seconded from the Home Office inquiry desk",
+    "authority": "official",
+    "gender": "man",
+    "age": "early fifties",
+    "appearance": "Spare, upright, lamp-amber on a tired face",
+    "clothing": "Dark overcoat, bowler set aside, notebook and pencil",
+    "background": "Seconded because Whitehall wants quiet and Whitechapel wants a myth. Known for preferring paper to panic.",
+    "publicPerception": "The Yard in a foggy alley — useful to some, a threat to others, a headline risk to all.",
+    "voiceNotes": "Dry, careful, unimpressed by headlines",
+    "performanceNotes": "Period speech from NPCs; Cross is modern-minded for 1888 but not anachronistic slang. Address as Inspector.",
+    "startingLocationId": "alley",
+    "startingEvidenceIds": [],
+    "startingKnowledge": "Cabinet Under-Secretary Sir Reginald Ashcombe was found dead before dawn in a Whitechapel alley off Commercial Road. The press is already screaming Ripper. You have orders: treat it as murder, not myth. On the scene or nearby: Constable Hale, morgue surgeon Dr. Vesper, Ashcombe's private secretary Miles Crowe, printer Lottie Kane (who printed a scandal sheet last week), and Ashcombe's wife Lady Evelyn — arrived from Mayfair an hour ago.",
+    "objective": "Treat it as murder, not myth: examine the alley and the body, follow the print shop and the private lodging, and accuse the killer with method and motive the Yard can hold."
+  },
+  "openingNarration": "Fog turns the alley into a grey throat. Sir Reginald Ashcombe lies on cobbles, coat open, a single neat wound under the ribs. No theatrical mutilation — nothing for the penny papers. Constable Hale holds a lantern too steady. Somewhere a press clatters. The Yard wants quiet. Whitechapel wants a story. You want the truth between them. You are Inspector Cross. The newspapers will blame the Ripper by breakfast if you let them. Find who really killed a cabinet minister in this alley — and why the motive smells more of ledgers than legend.",
+  "phases": [
+    {
+      "id": "arrival",
+      "description": "Alley, body, first statements"
+    },
+    {
+      "id": "deepening",
+      "description": "Press, ledger, motive"
+    },
+    {
+      "id": "crisis",
+      "description": "Someone is pressed"
+    },
+    {
+      "id": "confrontation",
+      "description": "Accusation"
+    },
+    {
+      "id": "denouement",
+      "description": "Fog and aftermath"
+    }
+  ],
+  "wrapUp": {
+    "enabled": true,
+    "maxTurns": 8,
+    "allowEarlyExit": true,
+    "performanceNotes": "Victorian formality, fog, newspaper ink. Confessions are stiff. Do not invent Ripper theatrics."
+  },
+  "time": {
+    "startSlotId": "dawn",
+    "minutesPerTurn": 12,
+    "schedule": [
+      {
+        "id": "dawn",
+        "label": "Foggy dawn",
+        "minutesFromStart": 0
+      },
+      {
+        "id": "morning",
+        "label": "Morning editions",
+        "minutesFromStart": 50
+      },
+      {
+        "id": "midday",
+        "label": "Midday fog",
+        "minutesFromStart": 100
+      }
+    ]
+  },
+  "environment": {
+    "weather": "fog",
+    "weatherIntensity": "heavy",
+    "light": "gaslight_dawn",
+    "ambient": "print_and_fear",
+    "crowd": "thin",
+    "flags": {}
+  },
+  "flags": [
+    {
+      "id": "examined_body",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "found_ledger",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "found_proof",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "falsely_accused_lottie-kane",
+      "aiVisible": true,
+      "defaultValue": false
+    }
+  ],
+  "locations": [
+    {
+      "id": "alley",
+      "name": "Whitechapel alley",
+      "description": "Narrow cobbles, soot walls, a gas lamp with a cracked glass. Ashcombe's body under a borrowed tarp. Exit to Commercial Road; a side door marked Kane Print.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "morgue-room",
+          "label": "to the parish morgue cart"
+        },
+        {
+          "toLocationId": "print-shop",
+          "label": "into Kane Print"
+        },
+        {
+          "toLocationId": "lodging",
+          "label": "to Ashcombe's secret lodging"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "ashcombe-body",
+          "name": "Sir Reginald's body",
+          "onInspect": {
+            "narrativeHints": "Single upward stab under the ribs — professional, not frenzy. No Ripper signature. Boots clean for Whitechapel mud: he was not wandering. A cufflink monogram M.C. pressed into his palm as if forced there after death.",
+            "revealsEvidenceIds": [
+              "cufflink-mc",
+              "wound-notes"
+            ],
+            "setsFlags": {
+              "examined_body": true
+            }
+          }
+        },
+        {
+          "id": "boot-scrape",
+          "name": "boot scrape on the wall",
+          "onInspect": {
+            "narrativeHints": "Someone braced high while delivering the blow — taller than Lottie Kane, closer to Crowe's height."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "constable-hale"
+        },
+        {
+          "characterId": "miles-crowe"
+        }
+      ]
+    },
+    {
+      "id": "morgue-room",
+      "name": "Parish morgue",
+      "description": "Lime and cold iron. Dr. Vesper works by lantern. A sheet waits.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "alley",
+          "label": "back to the alley"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "wound-table",
+          "name": "examination table",
+          "onInspect": {
+            "narrativeHints": "Vesper confirms: one blade, narrow, upward. Death within minutes. No defensive cuts. He may have known his killer."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "dr-vesper"
+        }
+      ]
+    },
+    {
+      "id": "print-shop",
+      "name": "Kane Print",
+      "description": "Ink, type cases, a hand press still warm. Scandal sheets drying on lines. Lottie Kane owns every word that leaves this room.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "alley",
+          "label": "back to the alley"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "scandal-proof",
+          "name": "stopped press proof",
+          "onInspect": {
+            "narrativeHints": "A half-set headline: ASHCOMBE AND THE DOCK SHARES. Body copy names a shell company and a payment chain. In the margin, a different hand: 'Kill the story or I kill you. — M.C.'",
+            "revealsEvidenceIds": [
+              "scandal-proof"
+            ],
+            "setsFlags": {
+              "found_proof": true
+            }
+          }
+        },
+        {
+          "id": "type-case",
+          "name": "type case",
+          "onInspect": {
+            "narrativeHints": "Lottie's hands are ink-black. No blood. A compositor's apron on the hook is clean."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "lottie-kane"
+        }
+      ]
+    },
+    {
+      "id": "lodging",
+      "name": "Ashcombe's private lodging",
+      "description": "A furnished room above a chandler's, paid in cash. Not for a wife. Papers on the desk; Lady Evelyn waits by the window in travelling clothes.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "alley",
+          "label": "down to the alley"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "share-ledger",
+          "name": "dock shares ledger",
+          "onInspect": {
+            "narrativeHints": "Ledger of East India dock options in Ashcombe's name — and transfers countersigned M. Crowe. Notes: 'if Kane prints, we are ruined.' Last entry timed last night.",
+            "revealsEvidenceIds": [
+              "share-ledger"
+            ],
+            "setsFlags": {
+              "found_ledger": true
+            }
+          }
+        },
+        {
+          "id": "bloody-handkerchief",
+          "name": "handkerchief in the grate",
+          "onInspect": {
+            "narrativeHints": "Half-burned linen monogrammed M.C., brown at the edge. Someone tried and failed to destroy it here after the alley."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "lady-evelyn"
+        },
+        {
+          "characterId": "miles-crowe"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "id": "crowe_secretary",
+      "fromId": "miles-crowe",
+      "toId": "lady-evelyn",
+      "type": "employee",
+      "label": "private secretary to the dead minister",
+      "strength": 2,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "crowe_shares",
+      "fromId": "miles-crowe",
+      "toId": "lottie-kane",
+      "type": "blackmail",
+      "label": "threatened Kane over the dock-shares story",
+      "strength": 3,
+      "public": false,
+      "knownToPlayerByDefault": false,
+      "notes": "Reveal with scandal-proof or ledger."
+    },
+    {
+      "id": "evelyn_marriage",
+      "fromId": "lady-evelyn",
+      "toId": "miles-crowe",
+      "type": "distrust",
+      "label": "distrusts the secretary's hold on her husband",
+      "strength": 2,
+      "public": false,
+      "knownToPlayerByDefault": false
+    }
+  ],
+  "characters": [
+    {
+      "id": "sir-reginald",
+      "name": "Sir Reginald Ashcombe",
+      "shortBio": "Cabinet Under-Secretary — found stabbed in a Whitechapel alley at dawn.",
+      "portrait": "portraits/sir-reginald.jpg",
+      "defaultLocationId": "alley",
+      "storyRole": "victim",
+      "voice": "Silent now",
+      "knowledge": {
+        "public": "Deceased. Single wound under the ribs in a foggy alley.",
+        "private": [],
+        "secrets": []
+      },
+      "defenses": []
+    },
+    {
+      "id": "constable-hale",
+      "name": "Constable Hale",
+      "shortBio": "Local constable; first on the scene; hates the press.",
+      "voice": "Blunt, procedural, East End vowels",
+      "portrait": "portraits/constable-hale.jpg",
+      "defaultLocationId": "alley",
+      "defaultWillingness": "open",
+      "knowledge": {
+        "public": "He found the body at 5:10 after a watchman shouted. No one lingered. He kept Crowe from moving the body.",
+        "private": [
+          {
+            "id": "hale-saw-crowe-early",
+            "content": "He saw Miles Crowe already in the alley when he arrived — coat unbuttoned, breathing hard — claiming he had 'just discovered' his master.",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Sticks to notebook",
+        "Will not invent witnesses"
+      ],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "dr-vesper",
+      "name": "Dr. Vesper",
+      "shortBio": "Parish surgeon; allergic to sensationalism.",
+      "voice": "Precise, weary, Latin when annoyed",
+      "portrait": "portraits/dr-vesper.jpg",
+      "defaultLocationId": "morgue-room",
+      "defaultWillingness": "open",
+      "knowledge": {
+        "public": "Death by single penetrating wound. Not the Whitechapel series pattern. Time of death roughly 4:30–5:00.",
+        "private": [
+          {
+            "id": "vesper-cufflink",
+            "content": "The cufflink in the palm was placed post-mortem — no blood under it. Someone wanted a scapegoat monogram found.",
+            "requiresEvidenceIds": [
+              "cufflink-mc"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Medical authority",
+        "Dismisses Ripper talk"
+      ],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "miles-crowe",
+      "name": "Miles Crowe",
+      "shortBio": "Ashcombe's private secretary; too composed for dawn murder.",
+      "voice": "Cultivated, helpful, slightly too quick",
+      "portrait": "portraits/miles-crowe.jpg",
+      "defaultLocationId": "alley",
+      "defaultWillingness": "guarded",
+      "defaultStance": "loyal_servant",
+      "knowledge": {
+        "public": "He was to meet Sir Reginald at the lodging to discuss 'press trouble'. He found him in the alley. He is devastated.",
+        "private": [
+          {
+            "id": "crowe-admits-threat",
+            "content": "He admits he threatened Kane's print run and that he and Ashcombe shared the illegal dock options — if the story ran, both were finished.",
+            "requiresEvidenceIds": [
+              "scandal-proof",
+              "share-ledger"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded",
+              "hostile"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Blames the press and the Ripper panic",
+        "Offers Lady Evelyn as emotional cover"
+      ],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "lottie-kane",
+      "name": "Lottie Kane",
+      "shortBio": "Printer and scandal editor; ink under her nails, steel in her spine.",
+      "voice": "Sharp, Cockney-tinged educated, unapologetic",
+      "portrait": "portraits/lottie-kane.jpg",
+      "defaultLocationId": "print-shop",
+      "defaultWillingness": "guarded",
+      "knowledge": {
+        "public": "She was setting type all night. Ashcombe's story was true. Someone sent a threat note. She did not kill him — dead men sell fewer papers than live scandals.",
+        "private": [
+          {
+            "id": "lottie-threat-hand",
+            "content": "She recognizes the threat margin hand as Crowe's — she has seen his notes on Ashcombe's stationery.",
+            "requiresEvidenceIds": [
+              "scandal-proof"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Motive is inverted: she needed him alive for the story",
+        "Easy false suspect for the Yard"
+      ],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "lady-evelyn",
+      "name": "Lady Evelyn Ashcombe",
+      "shortBio": "Widow in travelling grey; arrived from Mayfair after a wire.",
+      "voice": "Controlled, aristocratic, brittle",
+      "portrait": "portraits/lady-evelyn.jpg",
+      "defaultLocationId": "lodging",
+      "defaultWillingness": "guarded",
+      "knowledge": {
+        "public": "She knew of the lodging. She did not know the full extent of the dock business. She suspects Crowe held too much power over her husband.",
+        "private": [
+          {
+            "id": "evelyn-crowe-fear",
+            "content": "Reginald told her last week that if Crowe ever turned, 'he could hang us both with paper.'",
+            "requiresEvidenceIds": [
+              "share-ledger"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Grief as shield",
+        "Will not invent evidence"
+      ],
+      "storyRole": "suspect"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "cufflink-mc",
+      "name": "Monogrammed cufflink M.C.",
+      "description": "Forced into the dead palm post-mortem — planted or dropped by Crowe.",
+      "discoverableAt": {
+        "locationId": "alley",
+        "inspectableId": "ashcombe-body"
+      },
+      "canPresentTo": [
+        "miles-crowe",
+        "dr-vesper",
+        "constable-hale",
+        "lady-evelyn"
+      ]
+    },
+    {
+      "id": "wound-notes",
+      "name": "Wound examination notes",
+      "description": "Single professional stab; not Ripper pattern.",
+      "discoverableAt": {
+        "locationId": "alley",
+        "inspectableId": "ashcombe-body"
+      },
+      "canPresentTo": [
+        "dr-vesper",
+        "constable-hale",
+        "miles-crowe"
+      ]
+    },
+    {
+      "id": "scandal-proof",
+      "name": "Stopped press proof",
+      "description": "Dock-shares exposé with Crowe's written threat in the margin.",
+      "discoverableAt": {
+        "locationId": "print-shop",
+        "inspectableId": "scandal-proof"
+      },
+      "canPresentTo": [
+        "lottie-kane",
+        "miles-crowe",
+        "lady-evelyn",
+        "constable-hale"
+      ]
+    },
+    {
+      "id": "share-ledger",
+      "name": "Dock shares ledger",
+      "description": "Illegal options; Crowe countersigns; note about Kane's print.",
+      "discoverableAt": {
+        "locationId": "lodging",
+        "inspectableId": "share-ledger"
+      },
+      "canPresentTo": [
+        "miles-crowe",
+        "lady-evelyn",
+        "lottie-kane"
+      ]
+    }
+  ],
+  "beats": [
+    {
+      "id": "body_examined",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "wound-notes"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "examined_body",
+          "value": true
+        },
+        {
+          "type": "set_phase",
+          "phaseId": "deepening"
+        }
+      ],
+      "narrationHints": "This is politics with a knife, not a myth with a cloak."
+    },
+    {
+      "id": "proof_pressure",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "scandal-proof"
+      },
+      "effects": [
+        {
+          "type": "reveal_relationship",
+          "relationshipId": "crowe_shares"
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "miles-crowe",
+          "by": 2
+        },
+        {
+          "type": "set_stance",
+          "characterId": "miles-crowe",
+          "value": "cornered_clerk"
+        }
+      ],
+      "narrationHints": "Ink outlasts fog. The threat has a name."
+    },
+    {
+      "id": "ledger_closes",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "share-ledger"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "found_ledger",
+          "value": true
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "miles-crowe",
+          "by": 2
+        }
+      ],
+      "narrationHints": "Paper can hang a man as surely as rope."
+    },
+    {
+      "id": "crowe_cornered",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "presented",
+            "evidenceId": "share-ledger",
+            "toCharacterId": "miles-crowe"
+          },
+          {
+            "type": "has_evidence",
+            "evidenceId": "scandal-proof"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_willingness",
+          "characterId": "miles-crowe",
+          "value": "hostile"
+        },
+        {
+          "type": "set_alibi_status",
+          "characterId": "miles-crowe",
+          "value": "broken"
+        },
+        {
+          "type": "set_phase",
+          "phaseId": "crisis"
+        },
+        {
+          "type": "reveal_knowledge",
+          "characterId": "miles-crowe",
+          "knowledgeId": "crowe-admits-threat"
+        }
+      ],
+      "narrationHints": "Crowe's helpful mask slips. The alley was never a Ripper stage."
+    },
+    {
+      "id": "wrong_lottie",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "game_flag",
+        "id": "falsely_accused_lottie-kane",
+        "equals": true
+      },
+      "effects": [
+        {
+          "type": "set_willingness",
+          "characterId": "lottie-kane",
+          "value": "hostile"
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "constable-hale",
+          "value": "guarded"
+        }
+      ],
+      "narrationHints": "Blame the printer and the East End closes ranks."
+    },
+    {
+      "id": "wrap_success",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "in_denouement"
+          },
+          {
+            "type": "or",
+            "of": [
+              {
+                "type": "resolution_outcome",
+                "is": "success"
+              },
+              {
+                "type": "resolution_outcome",
+                "is": "partial"
+              }
+            ]
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "move_character",
+          "characterId": "miles-crowe",
+          "toLocationId": "alley"
+        },
+        {
+          "type": "set_stance",
+          "characterId": "miles-crowe",
+          "value": "broken"
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "miles-crowe",
+          "value": "open"
+        }
+      ],
+      "narrationHints": "Fog thins. The morning editions will still be wrong for an hour."
+    }
+  ],
+  "solution": {
+    "summary": "Miles Crowe stabbed Sir Reginald Ashcombe in the alley after Ashcombe hesitated on silencing Lottie Kane's exposé of their illegal dock-share scheme. Crowe planted or left his cufflink in the palm and tried to burn a handkerchief at the lodging. The 'Ripper' framing is newspaper noise; the motive is modern greed and blackmail of the press.",
+    "guiltyPartyIds": [
+      "miles-crowe"
+    ],
+    "method": "Single upward stab in the alley; attempt to frame via monogram and fog panic",
+    "motive": "Stop the dock-shares exposé and save himself after Ashcombe wavered",
+    "criticalEvidenceIds": [
+      "scandal-proof",
+      "share-ledger"
+    ],
+    "rubric": {
+      "partialCredit": true,
+      "allowWithoutEvidence": true,
+      "successPolicy": "identity_plus_one",
+      "requiredFacts": [
+        {
+          "id": "killer-crowe",
+          "role": "identity",
+          "description": "Miles Crowe",
+          "matchHints": [
+            "crowe",
+            "miles",
+            "secretary"
+          ]
+        },
+        {
+          "id": "method-stab",
+          "role": "method",
+          "description": "Stab / alley / knife",
+          "matchHints": [
+            "stab",
+            "knife",
+            "alley",
+            "wound",
+            "blade"
+          ]
+        },
+        {
+          "id": "motive-shares",
+          "role": "motive",
+          "description": "Shares / scandal / silence press",
+          "matchHints": [
+            "share",
+            "dock",
+            "scandal",
+            "print",
+            "kane",
+            "expose",
+            "ledger",
+            "money"
+          ]
+        }
+      ]
+    }
+  },
+  "canon": {
+    "timeline": [
+      {
+        "at": "Night before",
+        "event": "Crowe threatens Kane in writing; Ashcombe wavers on paying silence.",
+        "locationId": "print-shop",
+        "actorIds": [
+          "miles-crowe"
+        ]
+      },
+      {
+        "at": "~4:45 a.m.",
+        "event": "Crowe stabs Ashcombe in the alley.",
+        "locationId": "alley",
+        "actorIds": [
+          "miles-crowe"
+        ]
+      },
+      {
+        "at": "5:10 a.m.",
+        "event": "Hale finds body; Crowe already present.",
+        "locationId": "alley",
+        "actorIds": [
+          "constable-hale",
+          "miles-crowe"
+        ]
+      }
+    ]
+  },
+  "endings": [
+    {
+      "id": "success_earned",
+      "when": "success",
+      "kind": "solved",
+      "title": "Not the Ripper",
+      "templateNotes": "Crowe is held. The ledger and proof close the case. Fog still lies; the truth does not. Tell the papers carefully."
+    },
+    {
+      "id": "success_lucky",
+      "when": "success",
+      "kind": "lucky_solve",
+      "title": "A name in the fog",
+      "templateNotes": "You name Crowe before every sheet is read. He still breaks. Do not invent unfound print."
+    },
+    {
+      "id": "partial",
+      "when": "partial",
+      "kind": "partial",
+      "title": "Pending brief",
+      "templateNotes": "Enough for detention; Whitehall will fight the rest."
+    },
+    {
+      "id": "failure_wrong_accusation",
+      "when": "failure",
+      "kind": "wrong_accusation",
+      "title": "Wrong column",
+      "templateNotes": "Wrong name. The real hand walks into the fog with clean gloves."
+    },
+    {
+      "id": "failure_escaped",
+      "when": "failure",
+      "kind": "escaped",
+      "title": "Left for the Continent",
+      "templateNotes": "Crowe slips the net. Morning editions print a myth."
+    }
+  ]
+}

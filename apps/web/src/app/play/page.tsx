@@ -131,7 +131,7 @@ export default function ShelfPage() {
                 className={`${styles.tagFilter} ${statusFilter === "being_played" ? styles.tagFilterActive : ""}`}
                 onClick={() => setStatusFilter(statusFilter === "being_played" ? "all" : "being_played")}
               >
-                Being played
+                Started
               </button>
               <button
                 type="button"

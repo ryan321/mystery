@@ -93,12 +93,20 @@ export function allowedKnowledgeForCharacter(
     mustNotReveal.push("Character is unwilling to share useful information.");
   }
 
+  // Withheld beats are reported only as an opaque count — descriptive beat
+  // ids ("saw-vale-earlier") would leak their content into the prompt.
+  let withheldCount = 0;
   for (const beat of allBeats(character)) {
     if (beatIsReleased(def, beat, state, characterId)) {
       allowed.push(beat.content);
     } else {
-      mustNotReveal.push(`Withheld knowledge id: ${beat.id}`);
+      withheldCount += 1;
     }
+  }
+  if (withheldCount > 0) {
+    mustNotReveal.push(
+      `This character is holding back ${withheldCount} undisclosed fact${withheldCount === 1 ? "" : "s"}. Do not invent, hint at, or reveal what they might be.`
+    );
   }
 
   const judged =

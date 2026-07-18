@@ -10,6 +10,7 @@ export * from "./effects.js";
 export * from "./beats.js";
 export * from "./endings.js";
 export * from "./accusation.js";
+export * from "./accuse-gate.js";
 export * from "./resolve-case.js";
 export * from "./relationships.js";
 export * from "./inventory.js";

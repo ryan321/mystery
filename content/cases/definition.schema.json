@@ -31,6 +31,15 @@
           "type": "string",
           "minLength": 1
         },
+        "setting": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "theMystery": {
+          "type": "string"
+        },
         "tone": {
           "type": "string"
         },
@@ -59,6 +68,9 @@
             "type": "string"
           },
           "default": []
+        },
+        "artStyle": {
+          "type": "string"
         }
       },
       "required": [
@@ -70,15 +82,58 @@
     "player": {
       "type": "object",
       "properties": {
+        "personaId": {
+          "type": "string",
+          "minLength": 1
+        },
         "displayName": {
           "type": "string",
           "minLength": 1
+        },
+        "fullName": {
+          "type": "string"
+        },
+        "addressAs": {
+          "type": "string"
+        },
+        "pronouns": {
+          "type": "string"
         },
         "role": {
           "type": "string",
           "minLength": 1
         },
+        "authority": {
+          "type": "string",
+          "enum": [
+            "civilian",
+            "guest",
+            "professional",
+            "official"
+          ]
+        },
+        "gender": {
+          "type": "string"
+        },
+        "age": {
+          "type": "string"
+        },
+        "appearance": {
+          "type": "string"
+        },
+        "clothing": {
+          "type": "string"
+        },
+        "background": {
+          "type": "string"
+        },
+        "publicPerception": {
+          "type": "string"
+        },
         "voiceNotes": {
+          "type": "string"
+        },
+        "performanceNotes": {
           "type": "string"
         },
         "startingLocationId": {
@@ -95,6 +150,9 @@
         "startingKnowledge": {
           "type": "string",
           "default": ""
+        },
+        "objective": {
+          "type": "string"
         }
       },
       "required": [
@@ -298,6 +356,19 @@
           "voice": {
             "type": "string"
           },
+          "portrait": {
+            "type": "string",
+            "minLength": 1
+          },
+          "storyRole": {
+            "type": "string",
+            "enum": [
+              "suspect",
+              "victim",
+              "witness",
+              "support"
+            ]
+          },
           "defaultLocationId": {
             "type": "string"
           },
@@ -314,6 +385,9 @@
           },
           "defaultStance": {
             "type": "string"
+          },
+          "availableByDefault": {
+            "type": "boolean"
           },
           "knowledge": {
             "type": "object",
@@ -838,6 +912,21 @@
         },
         "performanceNotes": {
           "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "accusePolicy": {
+      "type": "object",
+      "properties": {
+        "requireConfirmation": {
+          "type": "boolean",
+          "default": true
+        },
+        "pendingTurns": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "default": 3
         }
       },
       "additionalProperties": false

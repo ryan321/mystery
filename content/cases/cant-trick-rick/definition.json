@@ -1,0 +1,764 @@
+{
+  "$schema": "../definition.schema.json",
+  "schemaVersion": "1.5",
+  "id": "cant-trick-rick",
+  "contentVersion": "0.1.2",
+  "meta": {
+    "title": "Can't Trick Rick: The Case of the Stolen Skateboard",
+    "premise": "The neighborhood’s best kid detective has one afternoon to catch a thief, clear a friend, and still be home for dinner.",
+    "tone": "bright kid-detective adventure, funny and fair, no gore",
+    "estimatedMinutes": 25,
+    "tags": [
+      "Kid-friendly",
+      "Neighborhood",
+      "Puzzles",
+      "Series"
+    ],
+    "difficulty": "easy",
+    "contentWarnings": [
+      "theft",
+      "mild conflict"
+    ],
+    "artStyle": "Warm illustrated kids-mystery portrait, head-and-shoulders, Saturday-morning adventure palette (sunlit sidewalk, denim blue, lemonade yellow), friendly comic-realistic style, same sunny neighborhood look for every character, no horror",
+    "setting": "A sunny neighborhood afternoon. Porch steps, skate park, corner shop, and a chalk-marked alley. Dinner is at six.",
+    "summary": "Maya’s custom skateboard — Nightwing — vanished from the park rack at lunch. She blames classmate Troy after a dumb bet; Troy is loud enough to look guilty. You’ve never missed a solved case and a hot meal yet. The block is small: the park, Mr. Del’s shop, an alley garage, and kids who always see more than they admit. Someone took the board. Someone knows where it is. You are Can’t Trick Rick — and the clock is already chewing the afternoon.",
+    "theMystery": "Who stole Maya’s skateboard, where is it hidden, and can you prove it before dinner?"
+  },
+  "player": {
+    "personaId": "cant-trick-rick",
+    "displayName": "Rick",
+    "fullName": "Rick",
+    "addressAs": "Rick",
+    "pronouns": "he/him",
+    "role": "Neighborhood kid detective — Can't Trick Rick",
+    "authority": "civilian",
+    "gender": "boy",
+    "age": "about twelve",
+    "appearance": "Wiry, curious, always half a step toward the next clue",
+    "clothing": "Jeans, sneakers, a thrift-store jacket with a magnifying-glass pin",
+    "background": "The block's go-to kid for lost bikes, stolen lunches, and anything that looks like a case. Never misses dinner if he can help it.",
+    "publicPerception": "A kid who asks too many questions — usually the right ones. Adults humor him; kids know he solves things.",
+    "voiceNotes": "Curious, fair, a little cocky in a likable way",
+    "performanceNotes": "This is a kids' mystery. Adults talk down or kindly; peers banter. No gore, no adult police authority. Stay Rick.",
+    "startingLocationId": "front-porch",
+    "startingEvidenceIds": [],
+    "startingKnowledge": "Your friend Maya's custom skateboard vanished from the park rack at lunch. She thinks classmate Troy took it after a bet. You've got until dinner. Suspects around the block: Troy, Maya, shop-owner Mr. Del, little sister Zoe, and skate-rat Jules.",
+    "objective": "Talk to Maya, Troy, Jules, Mr. Del, and Zoe; follow the clues around the block; recover Nightwing; and name the thief fairly."
+  },
+  "openingNarration": "Sun on the sidewalk. Somewhere a mower drones. Maya sits on your porch steps looking furious and like she might cry if she stops being furious. “Someone took Nightwing,” she says — her black-and-teal board. The park is two blocks down. Dinner is at six. She thinks Troy did it. You’ve got one afternoon to find out who really took the board, where they stashed it, and still make it home for dinner. Can’t trick Rick.",
+  "phases": [
+    {
+      "id": "arrival",
+      "description": "Porch and park"
+    },
+    {
+      "id": "deepening",
+      "description": "Shop, alley, alibis"
+    },
+    {
+      "id": "crisis",
+      "description": "Confront the thief"
+    },
+    {
+      "id": "confrontation",
+      "description": "Accusation"
+    },
+    {
+      "id": "denouement",
+      "description": "Board returned"
+    }
+  ],
+  "wrapUp": {
+    "enabled": true,
+    "maxTurns": 6,
+    "allowEarlyExit": true,
+    "performanceNotes": "Keep it kind. Consequences are grounded: apology, returned board, lessons. No cruelty."
+  },
+  "time": {
+    "startSlotId": "after_lunch",
+    "minutesPerTurn": 15,
+    "schedule": [
+      {
+        "id": "after_lunch",
+        "label": "After lunch",
+        "minutesFromStart": 0
+      },
+      {
+        "id": "afternoon",
+        "label": "Afternoon",
+        "minutesFromStart": 60
+      },
+      {
+        "id": "near_dinner",
+        "label": "Almost dinner",
+        "minutesFromStart": 120
+      }
+    ]
+  },
+  "environment": {
+    "weather": "clear",
+    "light": "day",
+    "ambient": "neighborhood_summer",
+    "crowd": "none",
+    "flags": {}
+  },
+  "flags": [
+    {
+      "id": "checked_rack",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "found_receipt",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "found_bolt",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "falsely_accused_troy",
+      "aiVisible": true,
+      "defaultValue": false
+    }
+  ],
+  "locations": [
+    {
+      "id": "front-porch",
+      "name": "Rick's front porch",
+      "description": "Steps, bike, a notebook in your pocket. Maple shade. Maya waits.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "skate-park",
+          "label": "to the skate park"
+        },
+        {
+          "toLocationId": "del-shop",
+          "label": "to Del's Bike & Board"
+        }
+      ],
+      "inspectables": [],
+      "charactersPresent": [
+        {
+          "characterId": "maya"
+        }
+      ]
+    },
+    {
+      "id": "skate-park",
+      "name": "Neighborhood skate park",
+      "description": "Ramps, rails, a metal rack by the fence. Jules practices kickflips. Troy hangs near the water fountain looking guilty about something — or everything.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "front-porch",
+          "label": "back toward home"
+        },
+        {
+          "toLocationId": "alley",
+          "label": "into the side alley"
+        },
+        {
+          "toLocationId": "del-shop",
+          "label": "to Del's shop"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "board-rack",
+          "name": "board rack",
+          "onInspect": {
+            "narrativeHints": "Empty slot where Nightwing was. Scuff of teal paint on the bar. A cheap silver bolt on the ground — not from Maya's hardware.",
+            "revealsEvidenceIds": [
+              "teal-scuff",
+              "silver-bolt"
+            ],
+            "setsFlags": {
+              "checked_rack": true
+            }
+          }
+        },
+        {
+          "id": "fountain",
+          "name": "water fountain",
+          "onInspect": {
+            "narrativeHints": "Troy's backpack is unzipped on the bench. Inside: homework and a energy bar. No skateboard."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "troy"
+        },
+        {
+          "characterId": "jules"
+        }
+      ]
+    },
+    {
+      "id": "del-shop",
+      "name": "Del's Bike & Board",
+      "description": "Bell on the door, smell of rubber and wax. Mr. Del knows every kid's setup.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "skate-park",
+          "label": "to the park"
+        },
+        {
+          "toLocationId": "front-porch",
+          "label": "toward Rick's street"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "parts-bin",
+          "name": "loose parts bin",
+          "onInspect": {
+            "narrativeHints": "Silver bolts like the one at the rack are sold in packs of four. Del says a kid bought a pack this morning — paid cash, wore a green hoodie."
+          }
+        },
+        {
+          "id": "counter-receipt",
+          "name": "counter receipt spike",
+          "onInspect": {
+            "narrativeHints": "Top receipt: 'bolt pack x1 — cash — J.R.' Timestamp 12:40 p.m.",
+            "revealsEvidenceIds": [
+              "bolt-receipt"
+            ],
+            "setsFlags": {
+              "found_receipt": true
+            }
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "mr-del"
+        }
+      ]
+    },
+    {
+      "id": "alley",
+      "name": "Side alley behind the park",
+      "description": "Dumpsters, a garage door, Zoe chalking hopscotch at the far end. A green hoodie hangs on a fence post.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "skate-park",
+          "label": "back to the park"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "green-hoodie",
+          "name": "green hoodie on the fence",
+          "onInspect": {
+            "narrativeHints": "Jules's size. Pocket holds a folded sticky note: 'stash until after dinner — no one checks the garage'."
+          }
+        },
+        {
+          "id": "garage-door",
+          "name": "garage door",
+          "onInspect": {
+            "narrativeHints": "Unlocked. Inside: Nightwing under a tarp, teal grip tape unmistakable. Silver bolts half-installed on the trucks.",
+            "revealsEvidenceIds": [
+              "hidden-board"
+            ],
+            "setsFlags": {
+              "found_bolt": true
+            }
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "zoe"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "id": "maya_friend_rick",
+      "fromId": "maya",
+      "toId": "troy",
+      "type": "rivalry",
+      "label": "lost a bet to Troy yesterday",
+      "strength": 1,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "jules_wants_board",
+      "fromId": "jules",
+      "toId": "maya",
+      "type": "envy",
+      "label": "wanted a board like Nightwing",
+      "strength": 2,
+      "public": false,
+      "knownToPlayerByDefault": false
+    }
+  ],
+  "characters": [
+    {
+      "id": "maya",
+      "name": "Maya",
+      "shortBio": "Your friend; owner of Nightwing.",
+      "voice": "Upset, loyal, direct",
+      "portrait": "portraits/maya.jpg",
+      "defaultLocationId": "front-porch",
+      "defaultWillingness": "open",
+      "knowledge": {
+        "public": "She racked the board at lunch, went to the water fountain, came back and it was gone. Troy had been bragging about 'borrowing' things for jokes.",
+        "private": [],
+        "secrets": []
+      },
+      "defenses": [],
+      "storyRole": "witness"
+    },
+    {
+      "id": "troy",
+      "name": "Troy",
+      "shortBio": "Classmate; loud; easy to blame.",
+      "voice": "Defensive bravado",
+      "portrait": "portraits/troy.jpg",
+      "defaultLocationId": "skate-park",
+      "defaultWillingness": "guarded",
+      "knowledge": {
+        "public": "He made a dumb joke about taking Nightwing. He says he was at the fountain the whole time. He did not buy bolts.",
+        "private": [
+          {
+            "id": "troy-alibi",
+            "content": "Two kids saw him at the fountain during the whole window. He is guilty of being annoying, not theft.",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Loud denials",
+        "Points at Jules"
+      ],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "jules",
+      "name": "Jules",
+      "shortBio": "Skate-rat; green hoodie; too casual.",
+      "voice": "Shrugs everything off",
+      "portrait": "portraits/jules.jpg",
+      "defaultLocationId": "skate-park",
+      "defaultWillingness": "guarded",
+      "defaultStance": "too_cool",
+      "knowledge": {
+        "public": "Jules says they never touched Maya's board. They bought 'random parts' at Del's for a repair.",
+        "private": [
+          {
+            "id": "jules-admits-plan",
+            "content": "When pressed with receipt and board, Jules admits they took it to 'teach Maya not to brag' and planned to return it after dinner.",
+            "requiresEvidenceIds": [
+              "hidden-board",
+              "bolt-receipt"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded",
+              "hostile"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Pretends it is a prank",
+        "Blames Troy"
+      ],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "mr-del",
+      "name": "Mr. Del",
+      "shortBio": "Shop owner; fair witness.",
+      "voice": "Kind, factual",
+      "portrait": "portraits/mr-del.jpg",
+      "defaultLocationId": "del-shop",
+      "defaultWillingness": "open",
+      "knowledge": {
+        "public": "A kid in a green hoodie bought silver bolts at 12:40. He did not see a skateboard brought in.",
+        "private": [],
+        "secrets": []
+      },
+      "defenses": [],
+      "storyRole": "witness"
+    },
+    {
+      "id": "zoe",
+      "name": "Zoe",
+      "shortBio": "Little sister chalking in the alley; sees everything.",
+      "voice": "Proud of noticing things",
+      "portrait": "portraits/zoe.jpg",
+      "defaultLocationId": "alley",
+      "defaultWillingness": "open",
+      "knowledge": {
+        "public": "She saw Jules carry a black-and-teal board into the garage and pull a tarp over it.",
+        "private": [],
+        "secrets": []
+      },
+      "defenses": [],
+      "storyRole": "witness"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "teal-scuff",
+      "name": "Teal paint scuff",
+      "description": "Nightwing's grip color on the rack bar.",
+      "discoverableAt": {
+        "locationId": "skate-park",
+        "inspectableId": "board-rack"
+      },
+      "canPresentTo": [
+        "maya",
+        "troy",
+        "jules",
+        "mr-del"
+      ]
+    },
+    {
+      "id": "silver-bolt",
+      "name": "Silver bolt",
+      "description": "Cheap bolt from the rack ground; not Maya's hardware.",
+      "discoverableAt": {
+        "locationId": "skate-park",
+        "inspectableId": "board-rack"
+      },
+      "canPresentTo": [
+        "mr-del",
+        "jules",
+        "troy"
+      ]
+    },
+    {
+      "id": "bolt-receipt",
+      "name": "Bolt pack receipt",
+      "description": "12:40 cash sale, initials J.R., green-hoodie buyer.",
+      "discoverableAt": {
+        "locationId": "del-shop",
+        "inspectableId": "counter-receipt"
+      },
+      "canPresentTo": [
+        "jules",
+        "mr-del",
+        "maya",
+        "troy"
+      ]
+    },
+    {
+      "id": "hidden-board",
+      "name": "Nightwing under tarp",
+      "description": "Maya's board in the alley garage; new silver bolts half on.",
+      "discoverableAt": {
+        "locationId": "alley",
+        "inspectableId": "garage-door"
+      },
+      "canPresentTo": [
+        "jules",
+        "maya",
+        "troy",
+        "zoe"
+      ]
+    }
+  ],
+  "beats": [
+    {
+      "id": "rack_checked",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "silver-bolt"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "checked_rack",
+          "value": true
+        },
+        {
+          "type": "set_phase",
+          "phaseId": "deepening"
+        }
+      ],
+      "narrationHints": "Someone changed hardware in a hurry."
+    },
+    {
+      "id": "receipt_points_jules",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "bolt-receipt"
+      },
+      "effects": [
+        {
+          "type": "reveal_relationship",
+          "relationshipId": "jules_wants_board"
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "jules",
+          "by": 1
+        }
+      ],
+      "narrationHints": "J.R. and a green hoodie — Jules's colors."
+    },
+    {
+      "id": "board_found",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "hidden-board"
+      },
+      "effects": [
+        {
+          "type": "add_pressure",
+          "characterId": "jules",
+          "by": 2
+        },
+        {
+          "type": "set_phase",
+          "phaseId": "crisis"
+        },
+        {
+          "type": "set_stance",
+          "characterId": "jules",
+          "value": "cornered"
+        }
+      ],
+      "narrationHints": "Nightwing was never far. The prank is over."
+    },
+    {
+      "id": "jules_cracks",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "presented",
+            "evidenceId": "hidden-board",
+            "toCharacterId": "jules"
+          },
+          {
+            "type": "has_evidence",
+            "evidenceId": "bolt-receipt"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_willingness",
+          "characterId": "jules",
+          "value": "open"
+        },
+        {
+          "type": "set_alibi_status",
+          "characterId": "jules",
+          "value": "broken"
+        },
+        {
+          "type": "reveal_knowledge",
+          "characterId": "jules",
+          "knowledgeId": "jules-admits-plan"
+        }
+      ],
+      "narrationHints": "Jules drops the shrug. Time to finish this fairly."
+    },
+    {
+      "id": "wrong_troy",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "game_flag",
+        "id": "falsely_accused_troy",
+        "equals": true
+      },
+      "effects": [
+        {
+          "type": "set_willingness",
+          "characterId": "troy",
+          "value": "silent"
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "maya",
+          "value": "guarded"
+        }
+      ],
+      "narrationHints": "Blaming Troy for being loud freezes him — and worries Maya about your fairness."
+    },
+    {
+      "id": "wrap_success",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "in_denouement"
+          },
+          {
+            "type": "or",
+            "of": [
+              {
+                "type": "resolution_outcome",
+                "is": "success"
+              },
+              {
+                "type": "resolution_outcome",
+                "is": "partial"
+              }
+            ]
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "move_character",
+          "characterId": "jules",
+          "toLocationId": "front-porch"
+        },
+        {
+          "type": "move_character",
+          "characterId": "maya",
+          "toLocationId": "front-porch"
+        },
+        {
+          "type": "set_stance",
+          "characterId": "jules",
+          "value": "apologetic"
+        }
+      ],
+      "narrationHints": "Board returned. Apology. Dinner still possible."
+    }
+  ],
+  "solution": {
+    "summary": "Jules took Nightwing as a 'prank', bought matching silver bolts at Del's, and hid the board in the alley garage under a tarp. Troy is the loud red herring. Zoe saw the stash. Receipt initials J.R. and green hoodie seal it.",
+    "guiltyPartyIds": [
+      "jules"
+    ],
+    "method": "Took board from rack; hid in garage; swapped bolts",
+    "motive": "Jealous prank / 'teach Maya not to brag'",
+    "criticalEvidenceIds": [
+      "hidden-board",
+      "bolt-receipt"
+    ],
+    "rubric": {
+      "partialCredit": true,
+      "allowWithoutEvidence": true,
+      "successPolicy": "identity_plus_one",
+      "requiredFacts": [
+        {
+          "id": "thief-jules",
+          "role": "identity",
+          "description": "Jules",
+          "matchHints": [
+            "jules"
+          ]
+        },
+        {
+          "id": "method-hide",
+          "role": "method",
+          "description": "Garage / tarp / bolts / rack",
+          "matchHints": [
+            "garage",
+            "tarp",
+            "bolt",
+            "rack",
+            "hid",
+            "stole",
+            "took"
+          ]
+        },
+        {
+          "id": "motive-prank",
+          "role": "motive",
+          "description": "Prank / jealous / brag",
+          "matchHints": [
+            "prank",
+            "jealous",
+            "brag",
+            "joke",
+            "teach"
+          ]
+        }
+      ]
+    }
+  },
+  "canon": {
+    "timeline": [
+      {
+        "at": "12:30",
+        "event": "Maya racks board; leaves for fountain.",
+        "locationId": "skate-park",
+        "actorIds": [
+          "maya"
+        ]
+      },
+      {
+        "at": "12:40",
+        "event": "Jules buys bolts at Del's.",
+        "locationId": "del-shop",
+        "actorIds": [
+          "jules"
+        ]
+      },
+      {
+        "at": "12:45",
+        "event": "Jules takes board to alley garage.",
+        "locationId": "alley",
+        "actorIds": [
+          "jules"
+        ]
+      }
+    ]
+  },
+  "endings": [
+    {
+      "id": "success_earned",
+      "when": "success",
+      "kind": "solved",
+      "title": "Board returned before dinner",
+      "templateNotes": "Jules apologizes. Maya has Nightwing back. Troy is loud but cleared. You make it home for dinner. Can't trick Rick."
+    },
+    {
+      "id": "success_lucky",
+      "when": "success",
+      "kind": "lucky_solve",
+      "title": "Lucky call",
+      "templateNotes": "You name Jules early; the evidence still fits. Keep it kind. Board comes home."
+    },
+    {
+      "id": "partial",
+      "when": "partial",
+      "kind": "partial",
+      "title": "Almost dinner",
+      "templateNotes": "You mostly have it. Jules folds enough to return the board. Details stay fuzzy."
+    },
+    {
+      "id": "failure_wrong_accusation",
+      "when": "failure",
+      "kind": "wrong_accusation",
+      "title": "Wrong kid",
+      "templateNotes": "You blamed the wrong person. Trust dents. The board is still missing at dinner time — for now."
+    }
+  ]
+}

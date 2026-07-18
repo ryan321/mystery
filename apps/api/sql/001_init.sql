@@ -4,7 +4,9 @@ CREATE TABLE IF NOT EXISTS playthroughs (
   id UUID PRIMARY KEY,
   case_id TEXT NOT NULL,
   content_version TEXT NOT NULL,
-  status TEXT NOT NULL CHECK (status IN ('active', 'solved', 'failed', 'abandoned')),
+  status TEXT NOT NULL CHECK (
+    status IN ('active', 'denouement', 'solved', 'failed', 'abandoned')
+  ),
   location_id TEXT NOT NULL,
   evidence_ids JSONB NOT NULL DEFAULT '[]'::jsonb,
   flags JSONB NOT NULL DEFAULT '{}'::jsonb,

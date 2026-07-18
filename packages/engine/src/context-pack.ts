@@ -167,25 +167,84 @@ export function buildContextPack(
     cast: def.characters.map((c) => ({
       id: c.id,
       name: c.name,
+      /** Relative portrait path from definition (UI resolves URL). */
+      portrait: c.portrait,
     })),
     /**
      * Novel-like social texture for the scene — not a player relationship map.
      * Public or player-known edges among people here.
      */
     socialSurface,
-    player: {
-      displayName: def.player.displayName,
-      role: def.player.role,
-      startingKnowledge: def.player.startingKnowledge,
-      status: {
-        threat: state.playerStatus?.threat ?? "none",
-        safeHavenCompromised:
-          state.playerStatus?.safeHavenCompromised ?? false,
-        tags: state.playerStatus?.tags ?? [],
-        flags: state.playerStatus?.flags ?? {},
-      },
-    },
+    player: (() => {
+      const p = state.playerPersona ?? {
+        displayName: def.player.displayName,
+        addressAs: def.player.addressAs ?? def.player.displayName,
+        role: def.player.role,
+        startingKnowledge: def.player.startingKnowledge,
+        personaId: def.player.personaId,
+        fullName: def.player.fullName,
+        pronouns: def.player.pronouns,
+        authority: def.player.authority,
+        gender: def.player.gender,
+        age: def.player.age,
+        appearance: def.player.appearance,
+        clothing: def.player.clothing,
+        background: def.player.background,
+        publicPerception: def.player.publicPerception,
+        voiceNotes: def.player.voiceNotes,
+        performanceNotes: def.player.performanceNotes,
+        objective: def.player.objective,
+      };
+      return {
+        /** Recurring persona handle when present (e.g. miss-marple). */
+        personaId: p.personaId,
+        displayName: p.displayName,
+        fullName: p.fullName,
+        addressAs: p.addressAs ?? p.displayName,
+        pronouns: p.pronouns,
+        /** In-mystery role: guest, inspector, patient, … */
+        role: p.role,
+        authority: p.authority,
+        gender: p.gender,
+        age: p.age,
+        appearance: p.appearance,
+        clothing: p.clothing,
+        background: p.background,
+        publicPerception: p.publicPerception,
+        voiceNotes: p.voiceNotes,
+        performanceNotes: p.performanceNotes,
+        objective: p.objective,
+        startingKnowledge:
+          p.startingKnowledge ?? def.player.startingKnowledge,
+        status: {
+          threat: state.playerStatus?.threat ?? "none",
+          safeHavenCompromised:
+            state.playerStatus?.safeHavenCompromised ?? false,
+          tags: state.playerStatus?.tags ?? [],
+          flags: state.playerStatus?.flags ?? {},
+        },
+      };
+    })(),
     resolution: state.resolution,
+    /**
+     * Informal accusation awaiting formal commitment. Present only while the
+     * player has named a suspect but not confirmed. Never implies guilt.
+     */
+    pendingAccusation: state.pendingAccusation
+      ? {
+          summary: state.pendingAccusation.summary,
+          suspectIds: state.pendingAccusation.suspectIds,
+          suspectNames: state.pendingAccusation.suspectIds.map(
+            (id) => def.characters.find((c) => c.id === id)?.name ?? id
+          ),
+          method: state.pendingAccusation.method,
+          motive: state.pendingAccusation.motive,
+          turnsRemaining: Math.max(
+            0,
+            state.pendingAccusation.expiresAfterTurn - state.turnCount
+          ),
+        }
+      : undefined,
     denouement:
       state.status === "denouement" && state.denouement
         ? {
@@ -256,6 +315,8 @@ export function buildContextPack(
         "Characters may only state facts listed in their allowedKnowledge. Do not invent secret plot facts.",
       respectWillingness:
         "If willingness is silent or hostile, they share little; silent gives almost nothing useful.",
+      playerPersona:
+        "player.* is who the human is in this story (name, role, appearance, authority). Second person still — address them as that person. NPCs must treat them according to role, authority, and publicPerception (a dinner guest is not a badge; an official may open doors; a patient may be dismissed). Use addressAs in dialogue. Do not invent a different identity, gender, age, or backstory. If personaId is set, this may be a recurring detective known across cases — stay consistent with background/appearance.",
       detectiveAsTarget:
         "Player status (threat, safeHavenCompromised, tags) is engine-owned. Perform pressure already in status and justHappened. Do not invent new attacks, break-ins, or thefts unless listed in justHappened or status.",
       denouement:
@@ -264,6 +325,9 @@ export function buildContextPack(
           : "Investigation mode: solution sealed until judged.",
       socialGraph:
         "socialSurface and per-character relationships shape behavior and subtext. Private edges (public:false, knownToPlayer:false) inform how people act — do NOT lecture the player about them unless a character would say so. No relationship HUD; reveal bonds in prose and dialogue like a novel.",
+      accusations: state.pendingAccusation
+        ? "pendingAccusation is present: the player has voiced a theory but NOT formally committed. Nothing has been judged. Ask in-fiction whether they commit; do not confirm, deny, or resolve the theory."
+        : "Only a formal, confirmed accusation decides the case. Informal theories are conversation, not judgment.",
     },
   };
 }

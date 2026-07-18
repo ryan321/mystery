@@ -29,25 +29,49 @@ export type AccusationResult = {
   notes: string[];
 };
 
-function accuseText(
-  accuse: NonNullable<StatePatch["accuse"]>,
-  def: MysteryDefinition
-): string {
-  const nameHints: string[] = [];
-  for (const id of accuse.suspectIds ?? []) {
-    nameHints.push(id);
-    const ch = def.characters.find((c) => c.id === id);
-    if (ch) nameHints.push(ch.name);
-  }
-  return [
-    accuse.summary,
-    accuse.method ?? "",
-    accuse.motive ?? "",
-    ...(accuse.suspectIds ?? []),
-    ...nameHints,
-  ]
+/** Free text of the accusation only — structured suspectIds are checked separately. */
+function accuseFreeText(accuse: NonNullable<StatePatch["accuse"]>): string {
+  return [accuse.summary, accuse.method ?? "", accuse.motive ?? ""]
     .join(" ")
     .toLowerCase();
+}
+
+/** Negation cues in the same sentence, before the mention. */
+const NEG_BEFORE_RE =
+  /(?:\bnot\b|n['’]t\b|\bnever\b|\bdoubt\w*\b|\bunless\b|\brule[sd]?\s+out\b|\bruling\s+out\b|\bcan['’]t\s+(?:be|have)\b|\bcouldn['’]t\b|\bwasn['’]t\b|\bisn['’]t\b|\bwouldn['’]t\b|\binstead\s+of\b|\bother\s+than\b|\bexcept\b|\bexonerat\w*|\bclear(?:s|ed)\b|\binnocen\w*)\s*$|(?:\bnot\b|n['’]t\b|\bnever\b|\bdoubt\w*\b|\bunless\b|\brule[sd]?\s+out\b|\bcan['’]t\s+(?:be|have)\b|\bcouldn['’]t\b|\bwasn['’]t\b|\bisn['’]t\b|\bwouldn['’]t\b|\binstead\s+of\b|\bother\s+than\b|\bexcept\b|\bexonerat\w*|\binnocen\w*)/i;
+
+/** Negation cues in the same sentence, immediately after the mention. */
+const NEG_AFTER_RE =
+  /^\s*(?:is|was|are|were|being|seems?|looked)?\s*(?:not\b|n['’]t\b|innocent\b|cleared\b|blameless\b|couldn['’]t\b|didn['’]t\b|wouldn['’]t\b|can['’]t\s+have\b|had\s+nothing\b|would\s+never\b)/i;
+
+/**
+ * True when `term` appears in `text` at least once WITHOUT a negation in the
+ * same sentence ("it wasn't Vale", "I don't think Vale did it",
+ * "Vale is innocent" all fail; "Vale did it" passes).
+ */
+export function affirmativeMention(text: string, term: string): boolean {
+  const t = term.toLowerCase().trim();
+  if (!t) return false;
+  let idx = text.indexOf(t);
+  while (idx !== -1) {
+    const before = text.slice(Math.max(0, idx - 96), idx);
+    const sentenceStart = Math.max(
+      before.lastIndexOf("."),
+      before.lastIndexOf("!"),
+      before.lastIndexOf("?"),
+      before.lastIndexOf(";")
+    );
+    const scopeBefore =
+      sentenceStart >= 0 ? before.slice(sentenceStart + 1) : before;
+    const after = text.slice(idx + t.length, idx + t.length + 48);
+    const sentenceEnd = after.search(/[.!?;]/);
+    const scopeAfter = sentenceEnd >= 0 ? after.slice(0, sentenceEnd) : after;
+    if (!NEG_BEFORE_RE.test(scopeBefore) && !NEG_AFTER_RE.test(scopeAfter)) {
+      return true;
+    }
+    idx = text.indexOf(t, idx + t.length);
+  }
+  return false;
 }
 
 function factMatches(
@@ -56,7 +80,36 @@ function factMatches(
   extra?: string[]
 ): boolean {
   const all = [...hints, ...(extra ?? [])];
-  return all.some((h) => h && text.includes(h.toLowerCase()));
+  return all.some((h) => h && affirmativeMention(text, h));
+}
+
+/**
+ * Which characters an accusation actually names.
+ * Structured suspectIds win; free text (negation-aware) is the fallback.
+ * Used for generic `accused_<id>` / `falsely_accused_<id>` flags.
+ */
+export function accusedCharacterIds(
+  def: MysteryDefinition,
+  accuse: NonNullable<StatePatch["accuse"]>
+): string[] {
+  const ids = new Set<string>();
+  for (const id of accuse.suspectIds ?? []) {
+    if (def.characters.some((c) => c.id === id)) ids.add(id);
+  }
+  if (ids.size > 0) return [...ids];
+
+  const text = accuseFreeText(accuse);
+  for (const c of def.characters) {
+    const last = c.name.toLowerCase().split(/\s+/).pop() ?? "";
+    if (
+      affirmativeMention(text, c.id) ||
+      affirmativeMention(text, c.name) ||
+      (last.length > 2 && affirmativeMention(text, last))
+    ) {
+      ids.add(c.id);
+    }
+  }
+  return [...ids];
 }
 
 /**
@@ -70,21 +123,22 @@ export function scoreAccusationDetailed(
   state: PlaythroughState,
   accuse: NonNullable<StatePatch["accuse"]>
 ): AccusationResult {
-  const text = accuseText(accuse, def);
+  const text = accuseFreeText(accuse);
   const notes: string[] = [];
   const facts = def.solution.rubric.requiredFacts;
   const policy = def.solution.rubric.successPolicy ?? "identity_plus_one";
   const partialCredit = def.solution.rubric.partialCredit !== false;
   const guilty = def.solution.guiltyPartyIds;
 
-  // Identity: guilty ids, character names, suspectIds list
+  // Identity: structured suspectIds first; free text is negation-aware
+  // ("it wasn't Vale" must not count as naming Vale).
   let identityCorrect = false;
   for (const gid of guilty) {
     if ((accuse.suspectIds ?? []).includes(gid)) {
       identityCorrect = true;
       break;
     }
-    if (text.includes(gid.toLowerCase())) {
+    if (affirmativeMention(text, gid)) {
       identityCorrect = true;
       break;
     }
@@ -93,8 +147,8 @@ export function scoreAccusationDetailed(
       const parts = ch.name.toLowerCase().split(/\s+/);
       const last = parts[parts.length - 1] ?? "";
       if (
-        text.includes(ch.name.toLowerCase()) ||
-        (last.length > 2 && text.includes(last))
+        affirmativeMention(text, ch.name) ||
+        (last.length > 2 && affirmativeMention(text, last))
       ) {
         identityCorrect = true;
         break;

@@ -48,16 +48,43 @@ export const KnowledgeBeatSchema = z.object({
 });
 export type KnowledgeBeat = z.infer<typeof KnowledgeBeatSchema>;
 
+/**
+ * How this person appears on the mystery cast list / in the story.
+ * Victims are listed and portrayed but not talkable by default.
+ */
+export const CharacterStoryRoleSchema = z.enum([
+  "suspect",
+  "victim",
+  "witness",
+  "support",
+]);
+export type CharacterStoryRole = z.infer<typeof CharacterStoryRoleSchema>;
+
 export const CharacterSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   shortBio: z.string().optional(),
   voice: z.string().optional(),
+  /**
+   * Path to portrait image relative to the case content folder
+   * (e.g. "portraits/henshaw.png"). Served by the API as a case asset.
+   */
+  portrait: z.string().min(1).optional(),
+  /**
+   * Cast / story function. Victims appear on the shelf cast with a badge
+   * and start unavailable (cannot be interviewed).
+   */
+  storyRole: CharacterStoryRoleSchema.optional(),
   defaultLocationId: z.string().optional(),
   defaultWillingness: z
     .enum(["open", "guarded", "hostile", "silent", "fled"])
     .default("open"),
   defaultStance: z.string().optional(),
+  /**
+   * If false, character is not interviewable at start (e.g. deceased).
+   * Defaults false when storyRole is "victim", otherwise true.
+   */
+  availableByDefault: z.boolean().optional(),
   knowledge: z.object({
     public: z.string().default(""),
     private: z.array(KnowledgeBeatSchema).default([]),
@@ -296,24 +323,170 @@ export const EndingSchema = z.object({
 });
 export type Ending = z.infer<typeof EndingSchema>;
 
+/**
+ * Who the human plays as in a mystery.
+ *
+ * Mysteries always define a concrete in-world identity (guest, inspector,
+ * patient, kid detective…). Optional `personaId` is a stable handle for
+ * *recurring* personas (Miss Marple, Poirot, …) that may later live in a
+ * shared catalog and appear across many mysteries with case-specific
+ * overrides (role, starting knowledge, clothing).
+ */
 export const PlayerPersonaSchema = z.object({
+  /**
+   * Stable id for a recurring persona across mysteries
+   * (e.g. "miss-marple", "henri-poirot", "cant-trick-rick").
+   * Omit for one-off mystery-local roles.
+   */
+  personaId: z.string().min(1).optional(),
+  /** Short name used in UI and second person (“Inspector”, “Rick”). */
   displayName: z.string().min(1),
+  /** Full legal / formal name if different from displayName. */
+  fullName: z.string().optional(),
+  /**
+   * How NPCs should address the player in dialogue
+   * (e.g. “Inspector”, “Miss Marple”, “Mr. Cross”). Defaults to displayName.
+   */
+  addressAs: z.string().optional(),
+  /** Pronouns for narration/dialogue consistency, e.g. "she/her", "he/him", "they/them". */
+  pronouns: z.string().optional(),
+  /**
+   * Role *in this mystery* — dinner guest, private detective, patient,
+   * kid sleuth, corporate auditor. Drives how the world treats you.
+   */
   role: z.string().min(1),
+  /**
+   * Authority NPCs attribute to you. Shapes cooperation, doors, and tone.
+   * civilian = no official power; guest = invited but private;
+   * professional = hired/competent outsider; official = police/badge.
+   */
+  authority: z
+    .enum(["civilian", "guest", "professional", "official"])
+    .optional(),
+  /** Freeform gender presentation, if authored (optional). */
+  gender: z.string().optional(),
+  /** Age or age band as prose, e.g. "about twelve", "mid-forties", "elderly". */
+  age: z.string().optional(),
+  /** Physical appearance the cast can notice. */
+  appearance: z.string().optional(),
+  /** What you're wearing / carrying in this mystery (optional). */
+  clothing: z.string().optional(),
+  /** Short public bio — what locals or the cast may already know about you. */
+  background: z.string().optional(),
+  /**
+   * How this household/scene sees you at the start
+   * (e.g. "unwanted official", "trusted dinner guest", "just another patient").
+   */
+  publicPerception: z.string().optional(),
+  /** Voice / manner for second-person performance notes. */
   voiceNotes: z.string().optional(),
+  /**
+   * Extra performer guidance: stay in this persona; NPCs react to role/authority.
+   */
+  performanceNotes: z.string().optional(),
   startingLocationId: z.string().min(1),
   startingEvidenceIds: z.array(z.string()).default([]),
+  /**
+   * Facts the player already knows at turn 0 (shown in the opening briefing
+   * and available to the AI as player knowledge).
+   */
   startingKnowledge: z.string().default(""),
+  /**
+   * Clear statement of what the player is supposed to do
+   * (e.g. identify the killer, recover the board, escape the ward).
+   * Shown on the mystery page and at the start of play.
+   */
+  objective: z.string().optional(),
 });
 export type PlayerPersona = z.infer<typeof PlayerPersonaSchema>;
 
+/**
+ * Runtime snapshot of who the player is in a playthrough.
+ * Frozen at start so definition edits or future persona-catalog merges
+ * don't change mid-game identity.
+ */
+export const PlayerPersonaSnapshotSchema = z.object({
+  personaId: z.string().optional(),
+  displayName: z.string().min(1),
+  fullName: z.string().optional(),
+  addressAs: z.string().min(1),
+  pronouns: z.string().optional(),
+  role: z.string().min(1),
+  authority: z
+    .enum(["civilian", "guest", "professional", "official"])
+    .optional(),
+  gender: z.string().optional(),
+  age: z.string().optional(),
+  appearance: z.string().optional(),
+  clothing: z.string().optional(),
+  background: z.string().optional(),
+  publicPerception: z.string().optional(),
+  voiceNotes: z.string().optional(),
+  performanceNotes: z.string().optional(),
+  objective: z.string().optional(),
+  startingKnowledge: z.string().optional(),
+});
+export type PlayerPersonaSnapshot = z.infer<typeof PlayerPersonaSnapshotSchema>;
+
+/** Build a playthrough-frozen persona from a mystery's player block. */
+export function snapshotPlayerPersona(
+  player: PlayerPersona
+): PlayerPersonaSnapshot {
+  return {
+    personaId: player.personaId,
+    displayName: player.displayName,
+    fullName: player.fullName,
+    addressAs: player.addressAs ?? player.displayName,
+    pronouns: player.pronouns,
+    role: player.role,
+    authority: player.authority,
+    gender: player.gender,
+    age: player.age,
+    appearance: player.appearance,
+    clothing: player.clothing,
+    background: player.background,
+    publicPerception: player.publicPerception,
+    voiceNotes: player.voiceNotes,
+    performanceNotes: player.performanceNotes,
+    objective: player.objective,
+    startingKnowledge: player.startingKnowledge || undefined,
+  };
+}
+
+/**
+ * Catalog + shelf copy. Think bookstore jacket:
+ * premise = short hook; setting = where/when; summary = back cover;
+ * theMystery = the central question the player must answer.
+ */
 export const CaseMetaSchema = z.object({
   title: z.string().min(1),
+  /** Short shelf-card hook (1–2 sentences). */
   premise: z.string().min(1),
+  /**
+   * Where and when — place, era, atmosphere.
+   * Bookstore “setting” line (e.g. “A fogbound pier, low tide, 1924.”).
+   */
+  setting: z.string().optional(),
+  /**
+   * Longer jacket blurb: scene, stakes, and cast without spoilers.
+   * Used on the mystery detail page (not necessarily on the shelf card).
+   */
+  summary: z.string().optional(),
+  /**
+   * The explicit mystery question (e.g. “Who killed the harbormaster,
+   * and why frame the tide?”). Shown on detail + play briefing.
+   */
+  theMystery: z.string().optional(),
   tone: z.string().optional(),
   estimatedMinutes: z.number().int().positive().optional(),
   tags: z.array(z.string()).default([]),
   difficulty: z.enum(["easy", "medium", "hard"]).optional(),
   contentWarnings: z.array(z.string()).default([]),
+  /**
+   * Shared visual direction for cast portraits (and optional key art).
+   * Authors generate assets offline; engine does not invent images.
+   */
+  artStyle: z.string().optional(),
 });
 export type CaseMeta = z.infer<typeof CaseMetaSchema>;
 
@@ -332,6 +505,19 @@ export const WrapUpConfigSchema = z.object({
   performanceNotes: z.string().optional(),
 });
 export type WrapUpConfig = z.infer<typeof WrapUpConfigSchema>;
+
+/**
+ * How formal an accusation must be before it is judged.
+ * Default: informal theories ("X did it") go pending and must be confirmed;
+ * explicitly formal wording ("I accuse X") is judged immediately.
+ */
+export const AccusePolicySchema = z.object({
+  /** Informal accusations require confirmation before scoring. Default true. */
+  requireConfirmation: z.boolean().default(true),
+  /** How many turns a pending accusation stays confirmable. Default 3. */
+  pendingTurns: z.number().int().positive().default(3),
+});
+export type AccusePolicy = z.infer<typeof AccusePolicySchema>;
 
 export const MysteryDefinitionSchema = z
   .object({
@@ -356,6 +542,8 @@ export const MysteryDefinitionSchema = z
     openingNarration: z.string().min(1),
     /** Interactive aftermath after solve/fail. Default: enabled. */
     wrapUp: WrapUpConfigSchema.optional(),
+    /** Accusation formality gate. Default: confirmation required. */
+    accusePolicy: AccusePolicySchema.optional(),
     /** Plot dynamics */
     beats: z.array(StoryBeatSchema).default([]),
     phases: z

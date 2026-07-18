@@ -1,0 +1,1155 @@
+{
+  "$schema": "../definition.schema.json",
+  "schemaVersion": "1.5",
+  "id": "pier-at-low-tide",
+  "contentVersion": "0.1.3",
+  "meta": {
+    "title": "The Pier at Low Tide",
+    "premise": "The harbormaster is dead in the water. Five people were on the pier before dawn. Each one has a story.",
+    "tone": "fogbound coastal noir, salt and secrets, clipped and atmospheric",
+    "estimatedMinutes": 50,
+    "tags": [
+      "Harbor",
+      "Fog",
+      "Seaside",
+      "Maritime"
+    ],
+    "difficulty": "medium",
+    "contentWarnings": [
+      "murder",
+      "violence",
+      "drowning"
+    ],
+    "artStyle": "Coastal noir character portrait, head-and-shoulders, fog and salt air palette (slate blue, wet rope brown, gull grey, lantern amber), painted illustration with soft edges, same cold harbor lighting for every cast member, early 20th-century working waterfront fashion, mystery game NPC portrait, consistent artist hand",
+    "setting": "Coldharbor pier at first light. Fog, low tide, mudflats under the planks. The road and telegraph are down.",
+    "summary": "Harbormaster Tom Rourke was hauled up dripping from under the pier just after first light — not a simple drowning. Five people admit they were on the pier or aboard boats before dawn: fishmonger Nell Avery, Captain Harlan Briggs, deckhand Jess Pike, summer visitor Dr. Miriam Cole, and night watch Sam Quinn. You are the coastal inspector from the county seat. Until the tide turns and the county boat can reach you, the truth stays between these pilings.",
+    "theMystery": "Who killed Harbormaster Tom Rourke on the pier before dawn — and what secret was worth a life at low tide?"
+  },
+  "player": {
+    "personaId": "inspector-cross",
+    "displayName": "Inspector Cross",
+    "fullName": "Inspector Edmund Cross",
+    "addressAs": "Inspector",
+    "pronouns": "he/him",
+    "role": "Coastal inspector sent down from the county seat",
+    "authority": "official",
+    "gender": "man",
+    "age": "early fifties",
+    "appearance": "Sea-weathered, practical, notebook never far",
+    "clothing": "Oilskin over a dark suit, salt already on the cuffs",
+    "background": "County man, not a local — brought in when a body hits the water and the fog cuts the telegraph.",
+    "publicPerception": "Outsider with a badge. Fishermen may close ranks; the watch must answer him.",
+    "voiceNotes": "Dry, practical, sea-weathered patience",
+    "performanceNotes": "Same recurring inspector as other cases when personaId matches. Locals may not know his full reputation yet.",
+    "startingLocationId": "pier-deck",
+    "startingEvidenceIds": [],
+    "startingKnowledge": "Harbormaster Tom Rourke was found floating under the pier just after first light. The tide was still low. Five people admit they were on the pier or aboard boats before dawn: Nell Avery the fishmonger, Captain Harlan Briggs, deckhand Jess Pike, Dr. Miriam Cole (summer visitor), and watchman Sam Quinn. The road out of town is fog-bound; the telegraph is down. You have until the tide turns and the county boat can reach you.",
+    "objective": "Examine the body and the pier, interview everyone who was there before dawn, follow the maritime paper trail, and accuse the killer with method and motive before high water."
+  },
+  "openingNarration": "Fog hangs like wet wool over Coldharbor. The pier creaks under your boots. Below the planks, black water shows mudflats and kelp. A tarpaulin covers what used to be Tom Rourke — hauled up an hour ago, still dripping. Lantern light pools on wet wood. Nell Avery stands by her fish shed with her arms folded. Further out, a fishing boat rocks against the piles. Sam Quinn waits by the harbormaster’s shack with a face like a closed door. You are the county inspector. The road is fog-bound, the telegraph is down, and five people were here before dawn. One of them killed the harbormaster. Find who — and why — before the tide turns.",
+  "phases": [
+    {
+      "id": "arrival",
+      "description": "Body, pier, first interviews"
+    },
+    {
+      "id": "deepening",
+      "description": "Logs, gaff, alibis crack"
+    },
+    {
+      "id": "crisis",
+      "description": "Someone is cornered"
+    },
+    {
+      "id": "confrontation",
+      "description": "Accusation"
+    },
+    {
+      "id": "denouement",
+      "description": "Aftermath on the pier"
+    }
+  ],
+  "wrapUp": {
+    "enabled": true,
+    "maxTurns": 8,
+    "allowEarlyExit": true,
+    "performanceNotes": "Fog, tide, and working-waterfront aftermath. The guilty may confess or curse the tide. Keep it salty and grounded."
+  },
+  "time": {
+    "startSlotId": "first_light",
+    "minutesPerTurn": 10,
+    "schedule": [
+      {
+        "id": "first_light",
+        "label": "First light",
+        "minutesFromStart": 0
+      },
+      {
+        "id": "morning_fog",
+        "label": "Morning fog",
+        "minutesFromStart": 40
+      },
+      {
+        "id": "tide_turning",
+        "label": "Tide turning",
+        "minutesFromStart": 90
+      },
+      {
+        "id": "high_approaching",
+        "label": "High water approaching",
+        "minutesFromStart": 140
+      }
+    ]
+  },
+  "environment": {
+    "weather": "fog",
+    "weatherIntensity": "heavy",
+    "light": "dawn",
+    "ambient": "salt_and_tension",
+    "crowd": "none",
+    "flags": {}
+  },
+  "flags": [
+    {
+      "id": "examined_body",
+      "description": "Inspected Rourke's body",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "found_log_scrap",
+      "description": "Found torn harbormaster log scrap",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "found_gaff",
+      "description": "Found bloody gaff on Briggs's boat",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "falsely_accused_jess-pike",
+      "description": "Wrongly accused Jess Pike",
+      "aiVisible": true,
+      "defaultValue": false
+    }
+  ],
+  "locations": [
+    {
+      "id": "pier-deck",
+      "name": "Coldharbor Pier — the deck",
+      "description": "Wet planks, rope coils, lanterns bleeding into fog. The ladder down to the water is slick. A tarpaulin covers Tom Rourke's body near the middle piles. The harbormaster's shack stands at the shore end. Nell's fish shed is to the left. Briggs's boat is moored further out.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "harbormaster-shack",
+          "label": "into the harbormaster's shack"
+        },
+        {
+          "toLocationId": "fish-shed",
+          "label": "into Nell's fish shed"
+        },
+        {
+          "toLocationId": "briggs-boat",
+          "label": "aboard Captain Briggs's boat"
+        },
+        {
+          "toLocationId": "outer-walk",
+          "label": "along the outer walk into the fog"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "rourke-body",
+          "name": "Tom Rourke's body",
+          "onInspect": {
+            "narrativeHints": "Rourke is cold and wet. A deep gash at the temple — not a drowning mark. His pocket watch is smashed, hands stopped at 4:12. Brackish water in his lungs means he went in alive or nearly so after the blow. Kelp tangled in his coat, not boat grease.",
+            "revealsEvidenceIds": [
+              "stopped-watch",
+              "temple-wound"
+            ],
+            "setsFlags": {
+              "examined_body": true
+            }
+          }
+        },
+        {
+          "id": "ladder",
+          "name": "ladder to the water",
+          "onInspect": {
+            "narrativeHints": "Rungs wet from the tide. A scrape of dark wood varnish on the third rung down — as if a long pole or gaff was dragged."
+          }
+        },
+        {
+          "id": "lantern-post",
+          "name": "lantern post",
+          "onInspect": {
+            "narrativeHints": "The post lantern burned low overnight. Glass is intact. Someone stood here long enough to leave a circle of boot scrapes in the salt."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "nell-avery"
+        },
+        {
+          "characterId": "sam-quinn"
+        }
+      ]
+    },
+    {
+      "id": "harbormaster-shack",
+      "name": "Harbormaster's shack",
+      "description": "A cramped office of charts, tide tables, and the smell of pipe tobacco. Rourke's desk faces the window onto the pier. A logbook lies open — a page roughly torn out.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "pier-deck",
+          "label": "back to the pier deck"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "tide-table",
+          "name": "tide table on the wall",
+          "onInspect": {
+            "narrativeHints": "Last night's low tide bottomed around 4:00 a.m. High water is due late morning. Bodies and evidence on the flats will be underwater again soon."
+          }
+        },
+        {
+          "id": "logbook",
+          "name": "open logbook",
+          "onInspect": {
+            "narrativeHints": "Yesterday's entries note boat traffic. A jagged tear removes last night's page. In the desk drawer underneath: the torn scrap, crumpled, still readable — Rourke's hand: 'B. midnight run confirmed. Tell county if he lies again.'",
+            "revealsEvidenceIds": [
+              "log-scrap"
+            ],
+            "setsFlags": {
+              "found_log_scrap": true
+            }
+          }
+        },
+        {
+          "id": "pipe-rack",
+          "name": "pipe and cold ash",
+          "onInspect": {
+            "narrativeHints": "Pipe cold. Ashtray clean. Rourke did not sit and smoke through the night — he went out."
+          }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "fish-shed",
+      "name": "Nell's fish shed",
+      "description": "Ice, knives, and the honest stink of the trade. Nell keeps her books better than half the captains. A kettle steams on a spirit stove.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "pier-deck",
+          "label": "back to the pier deck"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "nell-ledger",
+          "name": "Nell's ledger",
+          "onInspect": {
+            "narrativeHints": "She bought from Briggs last week. Numbers are clean. A note in the margin: 'Tom in a mood about the night boats again.'"
+          }
+        },
+        {
+          "id": "apron-hooks",
+          "name": "apron hooks and knives",
+          "onInspect": {
+            "narrativeHints": "All her knives accounted for. Clean. Whatever killed Rourke did not come from this shed."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "nell-avery"
+        }
+      ]
+    },
+    {
+      "id": "briggs-boat",
+      "name": "The Merrow — Briggs's boat",
+      "description": "A working trawler painted grey and black. Deck wet, gear stowed. A canvas tarp covers something by the port rail. Below, the cabin smells of diesel and old coffee.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "pier-deck",
+          "label": "back to the pier deck"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "tarp-gear",
+          "name": "canvas tarp by the rail",
+          "onInspect": {
+            "narrativeHints": "Under the tarp: a long-handled gaff. The iron hook is rinsed but not well — a dark crust in the crease. Salt water and blood do not lie the same way. Handle wet above the waterline mark.",
+            "revealsEvidenceIds": [
+              "bloody-gaff"
+            ],
+            "setsFlags": {
+              "found_gaff": true
+            }
+          }
+        },
+        {
+          "id": "cabin-log",
+          "name": "boat cabin log",
+          "onInspect": {
+            "narrativeHints": "Briggs claims he slept aboard. The cabin bunk is made. A lantern was moved recently — soot smear on a bulkhead at standing height, not sleeping height."
+          }
+        },
+        {
+          "id": "deck-boots",
+          "name": "pair of deck boots",
+          "onInspect": {
+            "narrativeHints": "Size eleven, still damp with pier mud, not only deck brine. Matching the scrapes near the ladder."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "harlan-briggs"
+        }
+      ]
+    },
+    {
+      "id": "outer-walk",
+      "name": "Outer walk — fog end",
+      "description": "Planks vanish into white. Somewhere a bell buoy clangs. Dr. Cole stands with a coat too fine for this weather, staring where the bay should be. Jess Pike paces, hands in pockets, jaw set.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "pier-deck",
+          "label": "back toward the main pier"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "rail-scrape",
+          "name": "scrape on the outer rail",
+          "onInspect": {
+            "narrativeHints": "Fresh gouge in the wood — something heavy dragged or braced. Points back toward Briggs's mooring, not the open bay."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "miriam-cole"
+        },
+        {
+          "characterId": "jess-pike"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "id": "briggs_fears_rourke",
+      "fromId": "harlan-briggs",
+      "toId": "sam-quinn",
+      "type": "wary",
+      "label": "hates being watched by the harbor",
+      "strength": 2,
+      "public": false,
+      "knownToPlayerByDefault": false,
+      "notes": "Briggs resents official eyes; private behavior only until motive is known."
+    },
+    {
+      "id": "nell_respects_rourke",
+      "fromId": "nell-avery",
+      "toId": "sam-quinn",
+      "type": "loyalty",
+      "label": "respected Rourke; wants truth",
+      "strength": 2,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "jess_anger_rourke",
+      "fromId": "jess-pike",
+      "toId": "harlan-briggs",
+      "type": "employee",
+      "label": "works for Briggs; resented Rourke's scolding",
+      "strength": 2,
+      "public": true,
+      "knownToPlayerByDefault": true,
+      "notes": "Jess had a public row with Rourke yesterday — red herring surface."
+    },
+    {
+      "id": "cole_outsider",
+      "fromId": "miriam-cole",
+      "toId": "nell-avery",
+      "type": "distrusts",
+      "label": "town keeps her at arm's length",
+      "strength": 1,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "briggs_smuggling_pressure",
+      "fromId": "harlan-briggs",
+      "toId": "nell-avery",
+      "type": "debt",
+      "label": "owes silence about night runs",
+      "strength": 3,
+      "public": false,
+      "knownToPlayerByDefault": false,
+      "notes": "Private: Briggs's midnight cargo. Reveal when log scrap is known."
+    }
+  ],
+  "characters": [
+    {
+      "id": "tom-rourke",
+      "name": "Tom Rourke",
+      "shortBio": "Harbormaster of Coldharbor — pulled from under the pier at first light.",
+      "portrait": "portraits/tom-rourke.jpg",
+      "defaultLocationId": "pier-deck",
+      "storyRole": "victim",
+      "voice": "Silent now",
+      "knowledge": {
+        "public": "Deceased. Recovered from the water under the pier.",
+        "private": [],
+        "secrets": []
+      },
+      "defenses": []
+    },
+    {
+      "id": "nell-avery",
+      "name": "Nell Avery",
+      "shortBio": "Runs the fish shed; knows every boat and rumor on the pier.",
+      "voice": "Blunt, salt-cured, fair",
+      "portrait": "portraits/nell-avery.jpg",
+      "defaultLocationId": "pier-deck",
+      "defaultWillingness": "open",
+      "defaultStance": "watchful",
+      "knowledge": {
+        "public": "She opened the shed at half four. She heard a splash, then nothing. She found Rourke when the light came up and shouted for Sam.",
+        "private": [
+          {
+            "id": "nell-saw-briggs",
+            "content": "She saw Captain Briggs leave his boat and walk toward the ladder around four. He was carrying something long under his arm. She thought it was a gaff or a pole.",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ],
+        "secrets": [
+          {
+            "id": "nell-knows-smuggling-talk",
+            "content": "Rourke told her last week he was done looking the other way on night boats. He did not name Briggs aloud, but she knew who he meant.",
+            "requiresEvidenceIds": [
+              "log-scrap"
+            ],
+            "requiresWillingnessIn": [
+              "open"
+            ]
+          }
+        ]
+      },
+      "defenses": [
+        "Will not invent what she did not see",
+        "Protects the working pier, not liars"
+      ],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "harlan-briggs",
+      "name": "Captain Harlan Briggs",
+      "shortBio": "Master of the Merrow; respected, hard, always just a little too careful.",
+      "voice": "Gravel, practiced calm, sharp when pressed",
+      "portrait": "portraits/harlan-briggs.jpg",
+      "defaultLocationId": "briggs-boat",
+      "defaultWillingness": "guarded",
+      "defaultStance": "captain_mask",
+      "knowledge": {
+        "public": "He says he slept aboard the Merrow all night. He heard nothing until Nell shouted. He and Rourke 'got on well enough.'",
+        "private": [
+          {
+            "id": "briggs-admits-argument",
+            "content": "He and Rourke argued yesterday about 'inspections' and 'county eyes.' He calls it a professional disagreement.",
+            "requiresEvidenceIds": [
+              "log-scrap"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded",
+              "hostile"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Denies murder",
+        "Insists he never left the boat",
+        "Blames fog and the tide for confusion"
+      ],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "jess-pike",
+      "name": "Jess Pike",
+      "shortBio": "Young deckhand on the Merrow; temper like a short fuse.",
+      "voice": "Defensive, quick, sometimes too honest",
+      "portrait": "portraits/jess-pike.jpg",
+      "defaultLocationId": "outer-walk",
+      "defaultWillingness": "guarded",
+      "defaultStance": "bristling",
+      "knowledge": {
+        "public": "Jess fought with Rourke yesterday over wages and 'talking back.' Everyone heard it. Jess says they slept in a loft ashore and came at dawn.",
+        "private": [
+          {
+            "id": "jess-not-on-pier",
+            "content": "Jess can name the loft landlady who saw them until near five. Jess is scared — but of being blamed, not of the truth about four o'clock.",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Loud about innocence",
+        "Will admit the row, not a killing"
+      ],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "miriam-cole",
+      "name": "Dr. Miriam Cole",
+      "shortBio": "Physician renting a cottage for the season; outsider with a cool eye.",
+      "voice": "Precise, dry, slightly weary of small towns",
+      "portrait": "portraits/miriam-cole.jpg",
+      "defaultLocationId": "outer-walk",
+      "defaultWillingness": "open",
+      "defaultStance": "clinical",
+      "knowledge": {
+        "public": "She was walking the outer rail for air before dawn — insomnia. She heard a splash and a man's grunt, then footsteps on wood going toward the boats, not the shore.",
+        "private": [
+          {
+            "id": "cole-wound-opinion",
+            "content": "As a doctor she will say the temple wound looks like a heavy hook or gaff strike, not a fall against the piles.",
+            "requiresEvidenceIds": [
+              "temple-wound"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Will not invent local gossip",
+        "Sticks to what she heard and medically knows"
+      ],
+      "storyRole": "suspect"
+    },
+    {
+      "id": "sam-quinn",
+      "name": "Sam Quinn",
+      "shortBio": "Night watch for the harbor; Rourke's friend, now a man with a dead friend.",
+      "voice": "Quiet, flat with grief, careful",
+      "portrait": "portraits/sam-quinn.jpg",
+      "defaultLocationId": "pier-deck",
+      "defaultWillingness": "open",
+      "defaultStance": "grieving_duty",
+      "knowledge": {
+        "public": "Sam walked the shore end of the pier at three and again near five. He did not walk the outer end — fog and orders. He found Nell screaming and helped haul Rourke up.",
+        "private": [
+          {
+            "id": "sam-rourke-worry",
+            "content": "Rourke told Sam he had something for the county about night traffic. Sam wished he had asked which boat.",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ],
+        "secrets": [
+          {
+            "id": "sam-names-briggs-fear",
+            "content": "Sam always figured Briggs's 'midnight runs' were more than fish. He never had proof. The torn log would be that proof.",
+            "requiresEvidenceIds": [
+              "log-scrap"
+            ],
+            "requiresWillingnessIn": [
+              "open"
+            ]
+          }
+        ]
+      },
+      "defenses": [
+        "Won't accuse without evidence",
+        "Grief makes him slow, not stupid"
+      ],
+      "storyRole": "suspect"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "stopped-watch",
+      "name": "Rourke's smashed watch",
+      "description": "Pocket watch stopped at 4:12. Glass cracked. Time of the blow or the fall into the piles.",
+      "discoverableAt": {
+        "locationId": "pier-deck",
+        "inspectableId": "rourke-body"
+      },
+      "canPresentTo": [
+        "nell-avery",
+        "harlan-briggs",
+        "jess-pike",
+        "miriam-cole",
+        "sam-quinn"
+      ]
+    },
+    {
+      "id": "temple-wound",
+      "name": "Temple wound notes",
+      "description": "Deep gash at the temple consistent with a heavy hook or gaff, not a simple fall.",
+      "discoverableAt": {
+        "locationId": "pier-deck",
+        "inspectableId": "rourke-body"
+      },
+      "canPresentTo": [
+        "miriam-cole",
+        "sam-quinn",
+        "harlan-briggs"
+      ]
+    },
+    {
+      "id": "log-scrap",
+      "name": "Torn log scrap",
+      "description": "Rourke's handwriting: 'B. midnight run confirmed. Tell county if he lies again.'",
+      "discoverableAt": {
+        "locationId": "harbormaster-shack",
+        "inspectableId": "logbook"
+      },
+      "canPresentTo": [
+        "nell-avery",
+        "harlan-briggs",
+        "sam-quinn",
+        "jess-pike",
+        "miriam-cole"
+      ]
+    },
+    {
+      "id": "bloody-gaff",
+      "name": "Bloody gaff",
+      "description": "Long-handled gaff from under a tarp on the Merrow. Blood crust in the iron crease; handle wet above a normal dunk line.",
+      "discoverableAt": {
+        "locationId": "briggs-boat",
+        "inspectableId": "tarp-gear"
+      },
+      "canPresentTo": [
+        "harlan-briggs",
+        "nell-avery",
+        "sam-quinn",
+        "jess-pike",
+        "miriam-cole"
+      ]
+    }
+  ],
+  "beats": [
+    {
+      "id": "body_examined",
+      "title": "The watch stops the night",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "stopped-watch"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "examined_body",
+          "value": true
+        },
+        {
+          "type": "set_ambient",
+          "ambient": "grim_focus"
+        }
+      ],
+      "narrationHints": "4:12 is a fixed point in the fog. Everything else has to hang from it."
+    },
+    {
+      "id": "log_opens_deepening",
+      "title": "The letter B",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "log-scrap"
+      },
+      "effects": [
+        {
+          "type": "set_phase",
+          "phaseId": "deepening"
+        },
+        {
+          "type": "advance_time",
+          "toSlotId": "morning_fog"
+        },
+        {
+          "type": "reveal_relationship",
+          "relationshipId": "briggs_smuggling_pressure"
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "nell-avery",
+          "value": "open"
+        },
+        {
+          "type": "add_trust",
+          "characterId": "nell-avery",
+          "by": 1
+        },
+        {
+          "type": "add_trust",
+          "characterId": "sam-quinn",
+          "by": 1
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "harlan-briggs",
+          "value": "guarded"
+        },
+        {
+          "type": "set_stance",
+          "characterId": "harlan-briggs",
+          "value": "careful"
+        }
+      ],
+      "narrationHints": "Rourke left a breadcrumb: B and a midnight run. The pier's careful manners get thinner.",
+      "reactions": [
+        {
+          "characterId": "sam-quinn",
+          "lineHint": "Tom said he had something for the county. I should have asked which boat.",
+          "stance": "grieving_duty"
+        }
+      ]
+    },
+    {
+      "id": "gaff_found",
+      "title": "Iron and blood",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "bloody-gaff"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "found_gaff",
+          "value": true
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "harlan-briggs",
+          "by": 2
+        },
+        {
+          "type": "set_player_threat",
+          "threat": "watched"
+        },
+        {
+          "type": "set_stance",
+          "characterId": "harlan-briggs",
+          "value": "brittle"
+        }
+      ],
+      "narrationHints": "The weapon was never far from the Merrow. Briggs feels the net close.",
+      "reactions": [
+        {
+          "characterId": "harlan-briggs",
+          "lineHint": "Gear gets dirty. That doesn't make it a murder weapon.",
+          "stance": "brittle"
+        }
+      ]
+    },
+    {
+      "id": "briggs_cornered",
+      "title": "Briggs's alibi sinks",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "presented",
+            "evidenceId": "log-scrap",
+            "toCharacterId": "harlan-briggs"
+          },
+          {
+            "type": "has_evidence",
+            "evidenceId": "bloody-gaff"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_alibi_status",
+          "characterId": "harlan-briggs",
+          "value": "broken"
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "harlan-briggs",
+          "value": "hostile"
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "harlan-briggs",
+          "by": 2
+        },
+        {
+          "type": "set_phase",
+          "phaseId": "crisis"
+        },
+        {
+          "type": "set_player_threat",
+          "threat": "threatened"
+        },
+        {
+          "type": "start_clock",
+          "clockId": "briggs_flight",
+          "turns": 8
+        },
+        {
+          "type": "reveal_knowledge",
+          "characterId": "harlan-briggs",
+          "knowledgeId": "briggs-admits-argument"
+        }
+      ],
+      "narrationHints": "With the log and the gaff, Briggs's night aboard the Merrow no longer holds. He turns dangerous. A clock starts — if you stall, he may try the fog.",
+      "reactions": [
+        {
+          "characterId": "harlan-briggs",
+          "lineHint": "You put that paper with that hook and you think you own me. Careful, inspector.",
+          "stance": "cornered"
+        }
+      ]
+    },
+    {
+      "id": "jess_wrongly_accused",
+      "title": "The pier closes ranks for Jess",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "game_flag",
+        "id": "falsely_accused_jess-pike",
+        "equals": true
+      },
+      "effects": [
+        {
+          "type": "set_willingness",
+          "characterId": "jess-pike",
+          "value": "silent"
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "nell-avery",
+          "value": "hostile"
+        },
+        {
+          "type": "set_ambient",
+          "ambient": "hostile_harbor"
+        }
+      ],
+      "narrationHints": "Pinning the kid for a loud argument freezes half the pier. Nell especially."
+    },
+    {
+      "id": "failure_briggs_flees",
+      "title": "Into the fog",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "case_active"
+          },
+          {
+            "type": "clock_expired",
+            "clockId": "briggs_flight"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_character_available",
+          "characterId": "harlan-briggs",
+          "value": false
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "harlan-briggs",
+          "value": "fled"
+        },
+        {
+          "type": "end_case",
+          "outcome": "failure",
+          "endingId": "failure_escaped",
+          "endingKind": "escaped"
+        }
+      ],
+      "narrationHints": "You waited too long after cornering Briggs. The Merrow is gone into the fog. Failure by escape."
+    },
+    {
+      "id": "failure_tide",
+      "title": "High water takes the trail",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "case_active"
+          },
+          {
+            "type": "time_at_least",
+            "slotId": "high_approaching"
+          },
+          {
+            "type": "not",
+            "of": {
+              "type": "clock_running",
+              "clockId": "briggs_flight"
+            }
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "end_case",
+          "outcome": "failure",
+          "endingId": "failure_time_expired",
+          "endingKind": "time_expired"
+        }
+      ],
+      "narrationHints": "The tide returns. What the flats held is gone, and the county boat finds a colder trail. Failure by time."
+    },
+    {
+      "id": "wrap_success",
+      "title": "The Merrow stays at the piles",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "in_denouement"
+          },
+          {
+            "type": "or",
+            "of": [
+              {
+                "type": "resolution_outcome",
+                "is": "success"
+              },
+              {
+                "type": "resolution_outcome",
+                "is": "partial"
+              }
+            ]
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_willingness",
+          "characterId": "harlan-briggs",
+          "value": "open"
+        },
+        {
+          "type": "set_stance",
+          "characterId": "harlan-briggs",
+          "value": "broken"
+        },
+        {
+          "type": "move_character",
+          "characterId": "harlan-briggs",
+          "toLocationId": "pier-deck"
+        },
+        {
+          "type": "move_character",
+          "characterId": "nell-avery",
+          "toLocationId": "pier-deck"
+        },
+        {
+          "type": "move_character",
+          "characterId": "sam-quinn",
+          "toLocationId": "pier-deck"
+        },
+        {
+          "type": "set_ambient",
+          "ambient": "aftermath_fog"
+        }
+      ],
+      "narrationHints": "Aftermath: Briggs on the deck under lantern light. Nell and Sam close enough to hear. Still interactive.",
+      "reactions": [
+        {
+          "characterId": "harlan-briggs",
+          "lineHint": "He was going to the county. I told him the fog would take care of fools.",
+          "stance": "broken"
+        }
+      ]
+    }
+  ],
+  "solution": {
+    "summary": "Captain Harlan Briggs killed Harbormaster Tom Rourke around 4:12 a.m. with a gaff after Rourke confirmed Briggs's illegal midnight cargo runs and threatened to tell the county. Briggs struck Rourke on the pier near the ladder, Rourke went into the water at low tide, and Briggs rinsed the gaff poorly and hid it under a tarp on the Merrow. He claimed he never left the boat. Nell Avery saw him leave the boat with a long tool; the torn log scrap names 'B' and the midnight run; the smashed watch fixes the time; Dr. Cole's wound reading matches a gaff.",
+    "guiltyPartyIds": [
+      "harlan-briggs"
+    ],
+    "method": "Gaff strike to the temple on the pier; body into the water at low tide",
+    "motive": "Silence Rourke before he reported smuggling / midnight runs to the county",
+    "criticalEvidenceIds": [
+      "log-scrap",
+      "bloody-gaff"
+    ],
+    "rubric": {
+      "partialCredit": true,
+      "allowWithoutEvidence": true,
+      "successPolicy": "identity_plus_one",
+      "requiredFacts": [
+        {
+          "id": "killer-briggs",
+          "role": "identity",
+          "description": "Identifies Captain Briggs / Harlan as the killer",
+          "matchHints": [
+            "briggs",
+            "harlan",
+            "captain"
+          ]
+        },
+        {
+          "id": "method-gaff",
+          "role": "method",
+          "description": "Gaff / hook / strike / pier / water",
+          "matchHints": [
+            "gaff",
+            "hook",
+            "strike",
+            "pier",
+            "ladder",
+            "temple",
+            "blow"
+          ]
+        },
+        {
+          "id": "motive-smuggling",
+          "role": "motive",
+          "description": "Midnight run / smuggling / county / exposure",
+          "matchHints": [
+            "smuggl",
+            "midnight",
+            "cargo",
+            "county",
+            "expose",
+            "log",
+            "run",
+            "illegal"
+          ]
+        }
+      ]
+    }
+  },
+  "canon": {
+    "timeline": [
+      {
+        "id": "argument",
+        "at": "Yesterday afternoon",
+        "event": "Rourke confronts Briggs about midnight runs; threatens county report.",
+        "locationId": "pier-deck",
+        "actorIds": [
+          "harlan-briggs"
+        ]
+      },
+      {
+        "id": "jess-row",
+        "at": "Yesterday evening",
+        "event": "Public row: Jess Pike and Rourke over wages (red herring surface).",
+        "locationId": "pier-deck",
+        "actorIds": [
+          "jess-pike"
+        ]
+      },
+      {
+        "id": "murder",
+        "at": "About 4:12 a.m.",
+        "event": "Briggs leaves Merrow with gaff, strikes Rourke near ladder, body into low-tide water.",
+        "locationId": "pier-deck",
+        "actorIds": [
+          "harlan-briggs"
+        ]
+      },
+      {
+        "id": "discovery",
+        "at": "First light",
+        "event": "Nell finds body; Sam helps haul Rourke up; fog holds the town.",
+        "locationId": "pier-deck",
+        "actorIds": [
+          "nell-avery",
+          "sam-quinn"
+        ]
+      }
+    ],
+    "notes": "Jess is the loud red herring. Cole is honest witness. Nell is key eyewitness."
+  },
+  "endings": [
+    {
+      "id": "success_earned",
+      "when": "success",
+      "kind": "solved",
+      "title": "The Merrow stays tied",
+      "templateNotes": "Briggs is held for the county boat. The gaff, the log scrap, and the watch make a chain even fog cannot cut. Nell does not celebrate. Sam stands watch over a friend who will not stand again. Outside, the tide begins to rise — on schedule, indifferent."
+    },
+    {
+      "id": "success_lucky",
+      "when": "success",
+      "kind": "lucky_solve",
+      "title": "A name in the fog",
+      "templateNotes": "You named Briggs before every board was checked. Still, the truth lands: he cracks under the accusation, salt and guilt in equal measure. Do not invent proof the player never found. The pier listens. The Merrow does not leave."
+    },
+    {
+      "id": "partial",
+      "when": "partial",
+      "kind": "partial",
+      "title": "Enough to hold",
+      "templateNotes": "You have Briggs by the collar but the file is thin. He will fight the county every step. The fog does not clear — it only thins."
+    },
+    {
+      "id": "failure_wrong_accusation",
+      "when": "failure",
+      "kind": "wrong_accusation",
+      "title": "Wrong fish",
+      "templateNotes": "You pinned the wrong name. The pier goes cold. By the time the county arrives, the real trail has washed toward open water."
+    },
+    {
+      "id": "failure_escaped",
+      "when": "failure",
+      "kind": "escaped",
+      "title": "Fog takes the Merrow",
+      "templateNotes": "Briggs ran when he knew you had him. The Merrow is a ghost in the white. Rourke's murder leaves with him."
+    },
+    {
+      "id": "failure_time_expired",
+      "when": "failure",
+      "kind": "time_expired",
+      "title": "Tide's in",
+      "templateNotes": "High water erases the flats. What you did not find is gone. The county boat finds a cleaner pier and a colder case."
+    }
+  ]
+}
