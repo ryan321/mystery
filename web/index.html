@@ -11,17 +11,79 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Libre+Bodoni:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <!-- Atmosphere: pure CSS rain + mansion silhouette -->
+    <div class="sky" aria-hidden="true">
+      <div class="sky-glow"></div>
+      <div class="fog fog-a"></div>
+      <div class="fog fog-b"></div>
+      <div class="mansion">
+        <svg
+          class="mansion-svg"
+          viewBox="0 0 800 420"
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="xMidYMax meet"
+        >
+          <!-- ground / hill -->
+          <path
+            fill="#05080c"
+            d="M0 420h800V300c-80-20-160-35-280-28-90 5-140 40-220 42-100 3-180-30-300-20v126z"
+          />
+          <!-- main house -->
+          <path
+            fill="#0a0f16"
+            d="M210 300V170l90-55 90 55v130H210z"
+          />
+          <!-- left wing -->
+          <path fill="#080d13" d="M120 300V200l70-40 20 12v128H120z" />
+          <!-- right wing -->
+          <path fill="#080d13" d="M410 300V200l-20-12 70 40v72H410z" />
+          <!-- tower -->
+          <path fill="#0c1219" d="M470 300V130l45-50 45 50v170H470z" />
+          <path fill="#060a10" d="M505 80l10-28 10 28v50h-20V80z" />
+          <!-- roof accents -->
+          <path fill="#05080e" d="M210 170l90-55 90 55-90 20-90-20z" />
+          <!-- windows (lit) -->
+          <rect class="win" x="250" y="200" width="22" height="28" rx="1" />
+          <rect class="win" x="310" y="200" width="22" height="28" rx="1" />
+          <rect class="win" x="250" y="245" width="22" height="28" rx="1" />
+          <rect class="win dim" x="310" y="245" width="22" height="28" rx="1" />
+          <rect class="win" x="145" y="230" width="18" height="24" rx="1" />
+          <rect class="win dim" x="145" y="265" width="18" height="24" rx="1" />
+          <rect class="win" x="480" y="210" width="20" height="26" rx="1" />
+          <rect class="win" x="520" y="210" width="20" height="26" rx="1" />
+          <rect class="win dim" x="500" y="250" width="20" height="32" rx="1" />
+          <!-- door -->
+          <path fill="#04070b" d="M285 300v-48h40v48h-40z" />
+          <rect class="win dim" x="297" y="268" width="8" height="10" rx="1" />
+          <!-- bare tree left -->
+          <path
+            fill="#060a10"
+            d="M70 300c8-40 6-70-10-100 18 8 28 4 40-12-4 22 8 40 22 52-20-4-30 12-28 40 14-10 30-8 44 4-30 2-48 10-68 16z"
+          />
+          <!-- bare tree right -->
+          <path
+            fill="#060a10"
+            d="M680 310c-6-50 4-80 24-110-20 10-32 4-48-10 8 24-2 42-14 56 22 0 34 14 36 40-12-8-28-6-44 2 28 6 40 14 46 22z"
+          />
+        </svg>
+      </div>
+      <div class="rain rain-back"></div>
+      <div class="rain rain-mid"></div>
+      <div class="rain rain-front"></div>
+      <div class="lightning"></div>
+      <div class="vignette"></div>
+    </div>
     <div class="grain" aria-hidden="true"></div>
 
     <header class="site-header">
       <a class="logo" href="#">
-        <span class="logo-mark" aria-hidden="true">▣</span>
+        <span class="logo-mark" aria-hidden="true">◆</span>
         Mystery
       </a>
       <nav class="nav">
