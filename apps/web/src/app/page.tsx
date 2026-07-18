@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import Atmosphere from "../components/Atmosphere";
-import { listCases, startCase } from "../lib/api";
+import { listCases } from "../lib/api";
 import { difficultyClass, difficultyLabel } from "../lib/format";
 import type { CaseSummary } from "../lib/types";
 import styles from "./page.module.css";
@@ -14,12 +13,9 @@ const CASE_IMAGES: Record<string, string> = {
 };
 
 export default function HomePage() {
-  const router = useRouter();
   const [cases, setCases] = useState<CaseSummary[]>([]);
   const [loading, setLoading] = useState(true);
-  const [starting, setStarting] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -64,22 +60,6 @@ export default function HomePage() {
     );
   });
 
-  async function handleStart(caseId: string) {
-    setStarting(caseId);
-    setError(null);
-    try {
-      const data = await startCase(caseId);
-      sessionStorage.setItem(
-        `mystery:opening:${data.playthrough.id}`,
-        data.openingNarration ?? ""
-      );
-      router.push(`/play/${data.playthrough.id}`);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to start");
-      setStarting(null);
-    }
-  }
-
   return (
     <>
       <Atmosphere />
@@ -118,50 +98,42 @@ export default function HomePage() {
             ) : (
               <div className={styles.caseGrid}>
                 {filtered.map((c) => (
-                  <article key={c.id} className={styles.caseCard}>
-                    <div className={styles.caseImage}>
-                      <img
-                        src={
-                          CASE_IMAGES[c.id] ??
-                          "/images/cases/blackwood-inheritance.jpg"
-                        }
-                        alt=""
-                      />
-                    </div>
-                    <div className={styles.caseBody}>
-                      <div className={styles.caseTitleRow}>
-                        <h3 className={styles.caseTitle}>{c.meta.title}</h3>
-                        <span
-                          className={`${styles.difficulty} ${difficultyClass(c.meta.difficulty)}`}
-                        >
-                          {difficultyLabel(c.meta.difficulty)}
-                        </span>
+                  <Link key={c.id} href={`/case/${c.id}`} className={styles.caseCardLink}>
+                    <article className={styles.caseCard}>
+                      <div className={styles.caseImage}>
+                        <img
+                          src={
+                            CASE_IMAGES[c.id] ??
+                            "/images/cases/blackwood-inheritance.jpg"
+                          }
+                          alt=""
+                        />
                       </div>
-                      <p className={styles.premise}>{c.meta.premise}</p>
-                      <div className={styles.meta}>
-                        {c.meta.tags.map((t) => (
-                          <span key={t} className={styles.tag}>
-                            {t}
+                      <div className={styles.caseBody}>
+                        <div className={styles.caseTitleRow}>
+                          <h3 className={styles.caseTitle}>{c.meta.title}</h3>
+                          <span
+                            className={`${styles.difficulty} ${difficultyClass(c.meta.difficulty)}`}
+                          >
+                            {difficultyLabel(c.meta.difficulty)}
                           </span>
-                        ))}
-                        {c.meta.estimatedMinutes ? (
-                          <span className={styles.tag}>
-                            ~{c.meta.estimatedMinutes} min
-                          </span>
-                        ) : null}
+                        </div>
+                        <p className={styles.premise}>{c.meta.premise}</p>
+                        <div className={styles.meta}>
+                          {c.meta.tags.map((t) => (
+                            <span key={t} className={styles.tag}>
+                              {t}
+                            </span>
+                          ))}
+                          {c.meta.estimatedMinutes ? (
+                            <span className={styles.tag}>
+                              ~{c.meta.estimatedMinutes} min
+                            </span>
+                          ) : null}
+                        </div>
                       </div>
-                      <div className={styles.actions}>
-                        <button
-                          type="button"
-                          className={styles.btnPrimary}
-                          onClick={() => handleStart(c.id)}
-                          disabled={starting !== null}
-                        >
-                          {starting === c.id ? "Starting…" : "Play"}
-                        </button>
-                      </div>
-                    </div>
-                  </article>
+                    </article>
+                  </Link>
                 ))}
               </div>
             )}
@@ -171,8 +143,6 @@ export default function HomePage() {
             <h2 className={styles.sectionTitle}>Completed</h2>
             <p className={styles.empty}>No cases closed yet.</p>
           </section>
-
-          {error ? <p className={styles.subtitle}>{error}</p> : null}
         </div>
       </main>
     </>

@@ -47,6 +47,12 @@
   gap: 1.25rem;
 }
 
+.caseCardLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
 .caseCard {
   position: relative;
   background: var(--glass);
