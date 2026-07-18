@@ -5,15 +5,66 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./TopNav.module.css";
 
+function DropdownSection({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={styles.dropdownSection}>
+      <div className={styles.dropdownSectionTitle}>{title}</div>
+      {children}
+    </div>
+  );
+}
+
+function Toggle({
+  label,
+  checked,
+  onChange,
+  disabled = false,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      className={`${styles.toggleRow} ${disabled ? styles.toggleDisabled : ""}`}
+      onClick={() => !disabled && onChange(!checked)}
+      disabled={disabled}
+      role="switch"
+      aria-checked={checked}
+    >
+      <span className={styles.toggleLabel}>{label}</span>
+      <span className={`${styles.toggleTrack} ${checked ? styles.toggleOn : ""}`}>
+        <span className={styles.toggleThumb} />
+      </span>
+    </button>
+  );
+}
+
 export default function TopNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [ambienceOpen, setAmbienceOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const ambienceRef = useRef<HTMLDivElement>(null);
+
+  const [soundsEnabled, setSoundsEnabled] = useState(true);
+  const [musicEnabled, setMusicEnabled] = useState(false);
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);
+      }
+      if (ambienceRef.current && !ambienceRef.current.contains(e.target as Node)) {
+        setAmbienceOpen(false);
       }
     }
     document.addEventListener("mousedown", onClickOutside);
@@ -39,6 +90,44 @@ export default function TopNav() {
         >
           Shelf
         </Link>
+
+        <div className={styles.avatarWrap} ref={ambienceRef}>
+          <button
+            type="button"
+            className={styles.iconBtn}
+            onClick={() => setAmbienceOpen((v) => !v)}
+            aria-label="Ambience settings"
+            aria-expanded={ambienceOpen}
+            title="Ambience"
+          >
+            ♪
+          </button>
+          {ambienceOpen ? (
+            <div className={styles.dropdown} role="menu">
+              <DropdownSection title="Ambience">
+                <Toggle
+                  label="Ambient sounds"
+                  checked={soundsEnabled}
+                  onChange={setSoundsEnabled}
+                />
+                <Toggle
+                  label="Ambient music"
+                  checked={musicEnabled}
+                  onChange={setMusicEnabled}
+                />
+                <button type="button" className={styles.dropdownItemDisabled} disabled>
+                  Sound theme: Manor storm (default)
+                </button>
+              </DropdownSection>
+              <hr />
+              <DropdownSection title="Theme">
+                <button type="button" className={styles.dropdownItemDisabled} disabled>
+                  Manor night (only theme)
+                </button>
+              </DropdownSection>
+            </div>
+          ) : null}
+        </div>
 
         <div className={styles.avatarWrap} ref={ref}>
           <button

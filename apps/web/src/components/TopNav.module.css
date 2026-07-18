@@ -128,3 +128,115 @@
   border: none;
   border-top: 1px solid rgba(200, 165, 110, 0.15);
 }
+
+.iconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  padding: 0;
+  background: rgba(212, 181, 106, 0.08);
+  border: 1px solid rgba(212, 181, 106, 0.25);
+  border-radius: 50%;
+  color: var(--candle);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.iconBtn:hover {
+  border-color: var(--candle);
+  background: rgba(212, 181, 106, 0.15);
+}
+
+.dropdownSection {
+  padding: 0.35rem 0;
+}
+
+.dropdownSectionTitle {
+  padding: 0.35rem 0.9rem 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--candle-dim);
+}
+
+.dropdownItemDisabled {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  background: none;
+  border: none;
+  cursor: not-allowed;
+  text-align: left;
+}
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.9rem;
+  color: var(--paper);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.toggleRow:hover {
+  background: rgba(212, 181, 106, 0.08);
+  color: var(--candle);
+}
+
+.toggleDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toggleLabel {
+  flex: 1;
+}
+
+.toggleTrack {
+  position: relative;
+  width: 2.2rem;
+  height: 1.15rem;
+  flex-shrink: 0;
+  background: rgba(154, 175, 196, 0.2);
+  border: 1px solid rgba(154, 175, 196, 0.35);
+  border-radius: 999px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.toggleTrack.toggleOn {
+  background: rgba(212, 181, 106, 0.35);
+  border-color: rgba(212, 181, 106, 0.6);
+}
+
+.toggleThumb {
+  position: absolute;
+  top: 50%;
+  left: 0.15rem;
+  transform: translateY(-50%);
+  width: 0.8rem;
+  height: 0.8rem;
+  background: var(--paper);
+  border-radius: 50%;
+  transition: left 0.15s ease, background 0.15s ease;
+}
+
+.toggleOn .toggleThumb {
+  left: 1.2rem;
+  background: var(--candle);
+}
