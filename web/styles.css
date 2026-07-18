@@ -1982,7 +1982,8 @@ a:hover {
 
 .case-difficulty {
   display: inline-block;
-  margin: 0 0 0.65rem;
+  float: right;
+  margin: 0.15rem 0 0.65rem 0.75rem;
   padding: 0.2rem 0.55rem;
   font-family: var(--font-mono);
   font-size: 0.65rem;
