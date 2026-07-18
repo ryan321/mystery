@@ -177,7 +177,7 @@ export default function ShelfPage() {
                     <article className={styles.caseCard}>
                       {status === "being_played" ? (
                         <span className={`${styles.statusBanner} ${styles.statusBeingPlayed}`}>
-                          Being played
+                          Started
                         </span>
                       ) : status === "completed" ? (
                         <span className={`${styles.statusBanner} ${styles.statusCompleted}`}>
