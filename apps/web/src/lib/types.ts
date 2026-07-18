@@ -1,11 +1,18 @@
 export type CaseMeta = {
   title: string;
   premise: string;
+  /** Where/when — bookstore setting line. */
+  setting?: string;
+  /** Longer jacket blurb for the detail page. */
+  summary?: string;
+  /** Central mystery question the player must answer. */
+  theMystery?: string;
   tone?: string;
   tags: string[];
   difficulty?: "easy" | "medium" | "hard";
   contentWarnings: string[];
   artStyle?: string;
+  estimatedMinutes?: number;
 };
 
 export type CaseSummary = {
@@ -22,11 +29,28 @@ export type CastMember = {
   portraitUrl?: string;
 };
 
+export type MysteryPlayerInfo = {
+  displayName: string;
+  role: string;
+  objective?: string;
+  startingKnowledge?: string;
+};
+
 export type CaseDetail = {
   id: string;
   contentVersion: string;
   meta: CaseMeta;
+  player?: MysteryPlayerInfo;
   cast?: CastMember[];
+};
+
+/** Opening dossier shown at the start of play. */
+export type MysteryBriefing = {
+  setting?: string;
+  theMystery?: string;
+  objective?: string;
+  startingKnowledge?: string;
+  role?: string;
 };
 
 export type DialogueLine = {
@@ -156,12 +180,14 @@ export type TurnLogEntry = {
 export type StartCaseResponse = {
   playthrough: PlaythroughState;
   openingNarration: string;
+  briefing?: MysteryBriefing;
   locationName?: string;
 };
 
 export type GetPlaythroughResponse = {
   playthrough: PlaythroughState;
   openingNarration?: string;
+  briefing?: MysteryBriefing;
   locationName?: string;
   turns: TurnLogEntry[];
 };

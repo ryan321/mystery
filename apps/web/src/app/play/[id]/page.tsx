@@ -60,12 +60,6 @@ function buildLog(
         avatarUrl: portraitFor(playthrough, d.characterId),
       });
     }
-    if (t.evidenceAdded?.length) {
-      items.push({
-        kind: "system",
-        text: `Evidence added: ${t.evidenceAdded.join(", ")}`,
-      });
-    }
   }
   return items;
 }
@@ -140,15 +134,6 @@ export default function PlaythroughPage() {
         setLocationName(data.locationName ?? data.playthrough.locationId);
         setLog((prev) => [...prev, { kind: "narration", text: data.narration }]);
         appendDialogue(data.dialogue, data.playthrough);
-        if (data.evidenceAdded?.length) {
-          setLog((prev) => [
-            ...prev,
-            {
-              kind: "system",
-              text: `Evidence added: ${data.evidenceAdded.join(", ")}`,
-            },
-          ]);
-        }
         if (data.justHappened?.length) {
           for (const j of data.justHappened) {
             if (

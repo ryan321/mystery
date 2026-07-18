@@ -10,7 +10,15 @@ export type LogItem =
   | { kind: "narration"; text: string }
   | { kind: "you"; text: string }
   | { kind: "npc"; name: string; text: string; avatarUrl?: string }
-  | { kind: "system"; text: string };
+  | { kind: "system"; text: string }
+  | {
+      kind: "briefing";
+      theMystery?: string;
+      objective?: string;
+      startingKnowledge?: string;
+      setting?: string;
+      role?: string;
+    };
 
 export default function Log({
   items,
@@ -56,6 +64,44 @@ export default function Log({
             );
           case "system":
             return <SystemCard key={i}>{item.text}</SystemCard>;
+          case "briefing":
+            return (
+              <SystemCard key={i}>
+                <div className={styles.briefing}>
+                  <p className={styles.briefingTitle}>Your briefing</p>
+                  {item.setting ? (
+                    <p>
+                      <strong>Setting.</strong> {item.setting}
+                    </p>
+                  ) : null}
+                  {item.role ? (
+                    <p>
+                      <strong>You.</strong> {item.role}
+                    </p>
+                  ) : null}
+                  {item.theMystery ? (
+                    <p>
+                      <strong>The mystery.</strong> {item.theMystery}
+                    </p>
+                  ) : null}
+                  {item.objective ? (
+                    <p>
+                      <strong>Your job.</strong> {item.objective}
+                    </p>
+                  ) : null}
+                  {item.startingKnowledge ? (
+                    <p>
+                      <strong>What you know.</strong> {item.startingKnowledge}
+                    </p>
+                  ) : null}
+                  <p className={styles.briefingHint}>
+                    Explore, question people, examine the scene, and present
+                    evidence. When you are ready, accuse with a name — and if
+                    you can, method and motive.
+                  </p>
+                </div>
+              </SystemCard>
+            );
         }
       })}
       {busy ? <ThinkingIndicator /> : null}

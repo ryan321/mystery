@@ -12,89 +12,65 @@
   text-transform: uppercase;
 }
 
-.candle {
+.watch {
   position: relative;
-  width: 14px;
+  width: 28px;
   height: 28px;
 }
 
-.stick {
+.case {
   position: absolute;
-  bottom: 0;
+  inset: 0;
+  border: 2px solid rgba(200, 165, 110, 0.5);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(200, 165, 110, 0.15), rgba(8, 12, 20, 0.9));
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.08);
+}
+
+.crown {
+  position: absolute;
+  top: -4px;
   left: 50%;
   transform: translateX(-50%);
   width: 6px;
-  height: 16px;
-  background: linear-gradient(180deg, #e8dfd0, #b8a88a);
-  border-radius: 2px 2px 1px 1px;
-  box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+  height: 5px;
+  background: rgba(200, 165, 110, 0.5);
+  border-radius: 2px 2px 0 0;
 }
 
-.wick {
+.hand {
   position: absolute;
-  bottom: 14px;
   left: 50%;
-  transform: translateX(-50%);
+  top: 50%;
+  transform-origin: 0 100%;
+  background: var(--candle);
+  border-radius: 1px;
+}
+
+.hour {
+  width: 2px;
+  height: 7px;
+  margin-left: -1px;
+  margin-top: -7px;
+  animation: rotate 6s linear infinite;
+}
+
+.minute {
   width: 1.5px;
-  height: 4px;
-  background: #2a1a12;
+  height: 10px;
+  margin-left: -0.75px;
+  margin-top: -10px;
+  animation: rotate 1.2s linear infinite;
 }
 
-.flame {
-  position: absolute;
-  bottom: 17px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 10px;
-  height: 14px;
-  background: radial-gradient(
-    ellipse at center bottom,
-    #fff8e0 0%,
-    #ffd76a 30%,
-    #ff9a3a 65%,
-    rgba(255, 90, 40, 0.2) 100%
-  );
-  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-  filter: blur(0.5px);
-  transform-origin: center bottom;
-  animation: flicker 0.18s infinite alternate;
-}
-
-.glow {
-  position: absolute;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 26px;
-  height: 26px;
-  background: radial-gradient(circle, rgba(255, 180, 80, 0.35), transparent 70%);
-  border-radius: 50%;
-  animation: glowPulse 0.9s ease-in-out infinite alternate;
-}
-
-@keyframes flicker {
-  0% {
-    transform: translateX(-50%) scaleX(1) scaleY(1) rotate(-2deg);
-    opacity: 0.95;
-  }
-  50% {
-    transform: translateX(-50%) scaleX(1.1) scaleY(0.92) rotate(1deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(-50%) scaleX(0.92) scaleY(1.08) rotate(2deg);
-    opacity: 0.9;
-  }
-}
-
-@keyframes glowPulse {
+@keyframes rotate {
   from {
-    opacity: 0.4;
-    transform: translateX(-50%) scale(0.9);
+    transform: rotate(0deg);
   }
   to {
-    opacity: 0.8;
-    transform: translateX(-50%) scale(1.15);
+    transform: rotate(360deg);
   }
 }
 
