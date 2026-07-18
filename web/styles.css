@@ -149,7 +149,6 @@ body {
   );
   opacity: 0.95;
   filter: brightness(1);
-  animation: manor-flash 12s ease-in-out infinite;
   will-change: filter;
 }
 
@@ -173,57 +172,72 @@ body {
   }
 }
 
-/* Occasional lightning flash */
+/* Occasional lightning flash — triggered by JS so thunder can sync */
 .lightning {
   position: absolute;
   inset: 0;
   background: rgba(200, 220, 255, 0.55);
   opacity: 0;
-  animation: lightning 12s ease-in-out infinite;
+  pointer-events: none;
 }
 
-@keyframes lightning {
+.lightning.is-flashing {
+  animation: lightning-flash 1.1s ease-in-out;
+}
+
+@keyframes lightning-flash {
   0%,
-  88%,
   100% {
     opacity: 0;
   }
-  89% {
+  10% {
+    opacity: 0.08;
+  }
+  18% {
+    opacity: 0;
+  }
+  26% {
+    opacity: 0.28;
+  }
+  34% {
+    opacity: 0.04;
+  }
+  42% {
     opacity: 0.12;
   }
-  89.5% {
+  55%,
+  100% {
     opacity: 0;
   }
-  90% {
-    opacity: 0.3;
-  }
-  90.4% {
-    opacity: 0.05;
-  }
-  91% {
-    opacity: 0;
-  }
+}
+
+/* Manor brightens during lightning */
+.manor-img.is-flashing {
+  animation: manor-flash 1.1s ease-in-out;
 }
 
 @keyframes manor-flash {
   0%,
-  88%,
   100% {
     filter: brightness(1);
   }
-  89% {
-    filter: brightness(1.18);
+  10% {
+    filter: brightness(1.12);
   }
-  89.5% {
+  18% {
     filter: brightness(1);
   }
-  90% {
-    filter: brightness(1.35);
+  26% {
+    filter: brightness(1.32);
   }
-  90.4% {
-    filter: brightness(1.08);
+  34% {
+    filter: brightness(1.05);
   }
-  91% {
+  42% {
+    filter: brightness(1.1);
+  }
+  55%,
+  100% {
     filter: brightness(1);
   }
 }
@@ -351,6 +365,47 @@ a:hover {
 
 @media (max-width: 720px) {
   .nav a:not(.nav-cta) {
+    display: none;
+  }
+}
+
+/* Audio ambience toggle */
+.audio-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.7rem;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--fog);
+  background: rgba(10, 16, 24, 0.5);
+  border: 1px solid rgba(154, 175, 196, 0.25);
+  border-radius: var(--radius);
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.audio-toggle:hover {
+  color: var(--paper);
+  border-color: rgba(212, 181, 106, 0.45);
+  background: rgba(20, 30, 45, 0.65);
+}
+
+.audio-toggle.is-active {
+  color: var(--candle);
+  border-color: rgba(212, 181, 106, 0.5);
+  background: rgba(212, 181, 106, 0.1);
+  box-shadow: 0 0 16px rgba(212, 181, 106, 0.1);
+}
+
+.audio-icon {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+@media (max-width: 720px) {
+  .audio-label {
     display: none;
   }
 }

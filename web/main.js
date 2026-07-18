@@ -61,6 +61,134 @@
   initReveal();
   initParallax();
 
+  // Ambient audio (rain loop + thunder on lightning)
+  function initAudio() {
+    const toggle = document.getElementById("audio-toggle");
+    const lightning = document.querySelector(".lightning");
+    const manor = document.querySelector(".manor-img");
+    if (!toggle) return;
+
+    let rainAudio = null;
+    let thunderAudio = null;
+    let enabled = false;
+    let flashTimer = null;
+    let nextFlashAt = 0;
+
+    function createAudio(src) {
+      const audio = new Audio(src);
+      audio.preload = "auto";
+      audio.crossOrigin = "anonymous";
+      return audio;
+    }
+
+    function playThunder() {
+      if (!enabled || !thunderAudio) return;
+      thunderAudio.currentTime = 0;
+      thunderAudio.volume = 0.55;
+      const play = thunderAudio.play();
+      if (play && typeof play.catch === "function") {
+        play.catch(function () {
+          // Ignore autoplay/policy errors
+        });
+      }
+    }
+
+    function triggerFlash() {
+      if (!lightning) return;
+      lightning.classList.remove("is-flashing");
+      if (manor) manor.classList.remove("is-flashing");
+      // Force reflow so the animation restarts
+      void lightning.offsetWidth;
+      lightning.classList.add("is-flashing");
+      if (manor) manor.classList.add("is-flashing");
+      playThunder();
+    }
+
+    function scheduleFlash() {
+      const now = Date.now();
+      const delay = enabled ? 6000 + Math.random() * 9000 : Infinity;
+      nextFlashAt = now + delay;
+      if (flashTimer) clearTimeout(flashTimer);
+      flashTimer = setTimeout(function () {
+        triggerFlash();
+        scheduleFlash();
+      }, delay);
+    }
+
+    function setEnabled(on) {
+      enabled = on;
+      toggle.setAttribute("aria-pressed", on ? "true" : "false");
+      toggle.classList.toggle("is-active", on);
+
+      const icon = toggle.querySelector(".audio-icon");
+      const label = toggle.querySelector(".audio-label");
+      if (icon) icon.textContent = on ? "🔊" : "🔇";
+      if (label) label.textContent = on ? "Sound on" : "Sound";
+      toggle.setAttribute(
+        "aria-label",
+        on ? "Disable rain and thunder ambience" : "Enable rain and thunder ambience"
+      );
+
+      if (on) {
+        if (!rainAudio) rainAudio = createAudio("audio/rain.mp3");
+        if (!thunderAudio) thunderAudio = createAudio("audio/thunder.mp3");
+        rainAudio.loop = true;
+        rainAudio.volume = 0.2;
+        const play = rainAudio.play();
+        if (play && typeof play.catch === "function") {
+          play.catch(function () {
+            // Browser may block until next user gesture
+          });
+        }
+        // Flash soon after enabling, then on a natural interval
+        if (Date.now() >= nextFlashAt) {
+          clearTimeout(flashTimer);
+          flashTimer = setTimeout(function () {
+            triggerFlash();
+            scheduleFlash();
+          }, 1200);
+        } else {
+          scheduleFlash();
+        }
+      } else {
+        if (rainAudio) {
+          rainAudio.pause();
+          rainAudio.currentTime = 0;
+        }
+        if (thunderAudio) thunderAudio.pause();
+        if (flashTimer) clearTimeout(flashTimer);
+      }
+    }
+
+    toggle.addEventListener("click", function () {
+      setEnabled(!enabled);
+    });
+
+    // Pause rain when the tab is hidden to be polite
+    document.addEventListener("visibilitychange", function () {
+      if (!enabled || !rainAudio) return;
+      if (document.hidden) {
+        rainAudio.pause();
+      } else {
+        rainAudio.play().catch(function () {});
+      }
+    });
+
+    // Clean up flash animation class when it ends
+    if (lightning) {
+      lightning.addEventListener("animationend", function () {
+        lightning.classList.remove("is-flashing");
+      });
+    }
+    if (manor) {
+      manor.addEventListener("animationend", function () {
+        manor.classList.remove("is-flashing");
+      });
+    }
+  }
+
+  initAudio();
+
   // Canvas rain overlay
   const canvas = document.querySelector(".rain-canvas");
   if (canvas) {
