@@ -110,6 +110,12 @@ export default function TopNav() {
           Shelf
         </Link>
         <Link
+          href="/my-mysteries"
+          className={`${styles.link} ${isActive("/my-mysteries") ? styles.active : ""}`}
+        >
+          My mysteries
+        </Link>
+        <Link
           href="/help"
           className={`${styles.link} ${isActive("/help") ? styles.active : ""}`}
         >
