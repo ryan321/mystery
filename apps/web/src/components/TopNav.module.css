@@ -100,7 +100,8 @@
 }
 
 .dropdown a,
-.dropdown button {
+.dropdown button,
+.dropdownItem {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -118,9 +119,15 @@
 }
 
 .dropdown a:hover,
-.dropdown button:hover {
+.dropdown button:hover,
+.dropdownItem:hover {
   background: rgba(212, 181, 106, 0.08);
   color: var(--candle);
+}
+
+.dropdownItemActive {
+  color: var(--candle);
+  background: rgba(212, 181, 106, 0.1);
 }
 
 .dropdown hr {

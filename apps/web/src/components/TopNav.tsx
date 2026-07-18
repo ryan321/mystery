@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAmbience } from "./AmbienceProvider";
+import { AMBIENCE_PACKS } from "../lib/ambience";
 import styles from "./TopNav.module.css";
 
 function DropdownSection({
@@ -55,8 +57,14 @@ export default function TopNav() {
   const ref = useRef<HTMLDivElement>(null);
   const ambienceRef = useRef<HTMLDivElement>(null);
 
-  const [soundsEnabled, setSoundsEnabled] = useState(true);
-  const [musicEnabled, setMusicEnabled] = useState(false);
+  const {
+    packId,
+    soundsEnabled,
+    musicEnabled,
+    setSoundsEnabled,
+    setMusicEnabled,
+    setPackId,
+  } = useAmbience();
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
@@ -115,9 +123,17 @@ export default function TopNav() {
                   checked={musicEnabled}
                   onChange={setMusicEnabled}
                 />
-                <button type="button" className={styles.dropdownItemDisabled} disabled>
-                  Sound theme: Manor storm (default)
-                </button>
+                <div className={styles.dropdownSectionTitle}>Sound pack</div>
+                {AMBIENCE_PACKS.map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    className={`${styles.dropdownItem} ${packId === p.id ? styles.dropdownItemActive : ""}`}
+                    onClick={() => setPackId(p.id)}
+                  >
+                    {p.name}
+                  </button>
+                ))}
               </DropdownSection>
               <hr />
               <DropdownSection title="Theme">
