@@ -12,6 +12,14 @@ import styles from "./page.module.css";
 
 const CASE_IMAGES: Record<string, string> = {
   "blackwood-inheritance": "/images/cases/blackwood-inheritance.jpg",
+  "pier-at-low-tide": "/images/cases/pier-at-low-tide.jpg",
+  "last-broadcast": "/images/cases/last-broadcast.jpg",
+  "dead-air": "/images/cases/dead-air.jpg",
+  "london-1888": "/images/cases/london-1888.jpg",
+  "snowbound-lodge": "/images/cases/snowbound-lodge.jpg",
+  "the-white-room": "/images/cases/the-white-room.jpg",
+  "hostile-takeover": "/images/cases/hostile-takeover.jpg",
+  "cant-trick-rick": "/images/cases/cant-trick-rick.jpg",
 };
 
 export default function CaseDetailPage() {
@@ -175,7 +183,7 @@ export default function CaseDetailPage() {
 
           {detail.cast && detail.cast.length > 0 ? (
             <section className={styles.charactersSection}>
-              <h2 className={styles.sectionTitle}>The people in this case</h2>
+              <h2 className={styles.sectionTitle}>The characters in this mystery</h2>
               <div className={styles.characters}>
                 {detail.cast.map((c) => (
                   <div key={c.id} className={styles.characterCard}>
