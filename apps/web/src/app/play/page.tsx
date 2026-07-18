@@ -22,6 +22,7 @@ const CASE_IMAGES: Record<string, string> = {
 };
 
 type StatusFilter = "all" | "being_played" | "completed" | "not_started";
+type DifficultyFilter = "all" | "easy" | "medium" | "hard";
 
 export default function ShelfPage() {
   const [cases, setCases] = useState<CaseSummary[]>([]);
@@ -29,6 +30,7 @@ export default function ShelfPage() {
   const [search, setSearch] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [difficultyFilter, setDifficultyFilter] = useState<DifficultyFilter>("all");
   const [playStates, setPlayStates] = useState<Record<string, { status: string }>>({});
 
   useEffect(() => {
@@ -92,9 +94,12 @@ export default function ShelfPage() {
         (statusFilter === "completed" && status === "completed") ||
         (statusFilter === "not_started" && !status);
 
-      return matchesSearch && matchesTag && matchesStatus;
+      const matchesDifficulty =
+        difficultyFilter === "all" || c.meta.difficulty === difficultyFilter;
+
+      return matchesSearch && matchesTag && matchesStatus && matchesDifficulty;
     });
-  }, [cases, search, activeTag, statusFilter, playStates]);
+  }, [cases, search, activeTag, statusFilter, difficultyFilter, playStates]);
 
   return (
     <>
@@ -146,6 +151,36 @@ export default function ShelfPage() {
                 onClick={() => setStatusFilter(statusFilter === "not_started" ? "all" : "not_started")}
               >
                 Not started
+              </button>
+            </div>
+            <div className={styles.tagFilters}>
+              <button
+                type="button"
+                className={`${styles.tagFilter} ${difficultyFilter === "all" ? styles.tagFilterActive : ""}`}
+                onClick={() => setDifficultyFilter("all")}
+              >
+                Any difficulty
+              </button>
+              <button
+                type="button"
+                className={`${styles.tagFilter} ${difficultyFilter === "easy" ? styles.tagFilterActive : ""}`}
+                onClick={() => setDifficultyFilter(difficultyFilter === "easy" ? "all" : "easy")}
+              >
+                Easy
+              </button>
+              <button
+                type="button"
+                className={`${styles.tagFilter} ${difficultyFilter === "medium" ? styles.tagFilterActive : ""}`}
+                onClick={() => setDifficultyFilter(difficultyFilter === "medium" ? "all" : "medium")}
+              >
+                Medium
+              </button>
+              <button
+                type="button"
+                className={`${styles.tagFilter} ${difficultyFilter === "hard" ? styles.tagFilterActive : ""}`}
+                onClick={() => setDifficultyFilter(difficultyFilter === "hard" ? "all" : "hard")}
+              >
+                Difficult
               </button>
             </div>
             {allTags.length > 0 ? (
