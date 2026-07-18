@@ -108,7 +108,7 @@ app.post("/v1/playthroughs", async (c) => {
   await insertPlaythrough(pool, state, def.openingNarration);
 
   return c.json({
-    playthrough: publicState(state),
+    playthrough: publicState(state, def),
     openingNarration: def.openingNarration,
     locationName: def.locations.find((l) => l.id === state.locationId)?.name,
   });
@@ -120,7 +120,7 @@ app.get("/v1/playthroughs/:id", async (c) => {
   const def = cases.get(row.state.caseId);
   const turns = await listTurns(pool, row.state.id);
   return c.json({
-    playthrough: publicState(row.state),
+    playthrough: publicState(row.state, def),
     openingNarration: row.openingNarration,
     locationName: def?.locations.find((l) => l.id === row.state.locationId)
       ?.name,
@@ -140,8 +140,15 @@ app.post("/v1/playthroughs/:id/turns", async (c) => {
   if (!row) return c.json({ error: "not_found" }, 404);
 
   let state = row.state;
-  if (state.status !== "active") {
-    return c.json({ error: "case_not_active", status: state.status }, 400);
+  if (state.status !== "active" && state.status !== "denouement") {
+    return c.json(
+      {
+        error: "case_not_active",
+        status: state.status,
+        message: "Case is fully closed. Start a new playthrough.",
+      },
+      400
+    );
   }
 
   const def = cases.get(state.caseId);
@@ -202,7 +209,7 @@ app.post("/v1/playthroughs/:id/turns", async (c) => {
   return c.json({
     narration: result.narration,
     dialogue: result.dialogue,
-    playthrough: publicState(committed),
+    playthrough: publicState(committed, def),
     appliedPatch: result.appliedPatch,
     rejected: result.rejected,
     evidenceAdded: result.evidenceAdded,
@@ -213,7 +220,11 @@ app.post("/v1/playthroughs/:id/turns", async (c) => {
   });
 });
 
-function publicState(state: PlaythroughState) {
+function publicState(state: PlaythroughState, def?: MysteryDefinition) {
+  const ending =
+    state.endingId && def
+      ? def.endings.find((e) => e.id === state.endingId)
+      : undefined;
   return {
     id: state.id,
     caseId: state.caseId,
@@ -227,6 +238,20 @@ function publicState(state: PlaythroughState) {
     turnCount: state.turnCount,
     phaseId: state.phaseId,
     endingId: state.endingId,
+    ending: ending
+      ? {
+          id: ending.id,
+          when: ending.when,
+          kind: ending.kind,
+          title: ending.title,
+          templateNotes: ending.templateNotes,
+        }
+      : undefined,
+    resolution: state.resolution,
+    denouement: state.denouement,
+    interactive: state.status === "active" || state.status === "denouement",
+    playerStatus: state.playerStatus,
+    clocks: state.clocks,
     time: state.time
       ? {
           slotId: state.time.slotId,

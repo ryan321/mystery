@@ -26,12 +26,25 @@ export const KnowledgeBeatSchema = z.object({
   content: z.string().min(1),
   requiresFlags: FlagRequirementSchema.optional(),
   requiresEvidenceIds: z.array(z.string()).optional(),
-  /** Optional soft gate; engine may ignore in v1. */
+  /**
+   * Character trust (runtime characterState.trust) must be >= this value.
+   * Raised via add_trust / set_trust effects or high willingness arcs.
+   */
   requiresTrust: z.number().optional(),
   /** If set, character must have this willingness or looser to share. */
   requiresWillingnessIn: z
     .array(z.enum(["open", "guarded", "hostile", "silent", "fled"]))
     .optional(),
+  /**
+   * Relationship edge ids that must be knownToPlayer (and active)
+   * before this knowledge may be shared.
+   */
+  requiresRelationshipIds: z.array(z.string()).optional(),
+  /**
+   * Single relationship gate (known + optional type check via edge id).
+   * Prefer requiresRelationshipIds for multiple.
+   */
+  requiresRelationshipId: z.string().optional(),
 });
 export type KnowledgeBeat = z.infer<typeof KnowledgeBeatSchema>;
 
@@ -53,6 +66,42 @@ export const CharacterSchema = z.object({
   defenses: z.array(z.string()).default([]),
 });
 export type Character = z.infer<typeof CharacterSchema>;
+
+/**
+ * Directed social edge: how A stands toward B.
+ * Novel-like — revealed in dialogue/narration, not a player relationship HUD.
+ *
+ * Common types (free string, not enum-locked):
+ * family | spouse | employer | employee | business | debt | blackmail |
+ * romantic | rivalry | loyalty | protects | alibi_with | resents | fears | trusts
+ */
+export const RelationshipEdgeSchema = z.object({
+  id: z.string().min(1),
+  fromId: z.string().min(1),
+  toId: z.string().min(1),
+  /** Semantic type of the bond. */
+  type: z.string().min(1),
+  /** Short human/AI label e.g. "business partner", "protects the family name". */
+  label: z.string().optional(),
+  /** 0 = weak … 3 = defining. Default 1. */
+  strength: z.number().int().min(0).max(3).default(1),
+  /**
+   * If true, the bond is social surface (how people act around each other /
+   * what gossip might mention). If false, private — AI uses for behavior but
+   * must not dump unless conditions/knowledge allow.
+   */
+  public: z.boolean().default(false),
+  /**
+   * If true, player may already "know" this from briefing/gossip at start.
+   * Runtime can reveal private edges later without making them public gossip.
+   */
+  knownToPlayerByDefault: z.boolean().default(false),
+  /** Optional author note for AI when this edge is in the behavior pack. */
+  notes: z.string().optional(),
+  /** Starts active; beats can deactivate (broken alliances, deaths). */
+  startsActive: z.boolean().default(true),
+});
+export type RelationshipEdge = z.infer<typeof RelationshipEdgeSchema>;
 
 export const ExitSchema = z.object({
   toLocationId: z.string().min(1),
@@ -114,32 +163,135 @@ export const EvidenceItemSchema = z.object({
     })
     .optional(),
   canPresentTo: z.union([z.array(z.string()), z.literal("*")]).optional(),
+  /**
+   * Authored red herring — findable and presentable, never required for
+   * solution success. Engine does not auto-exclude from inventory.
+   */
+  redHerring: z.boolean().default(false),
 });
 export type EvidenceItem = z.infer<typeof EvidenceItemSchema>;
+
+/** Sealed crime history — authoring / lint only; never in performer pack. */
+export const CanonTimelineEventSchema = z.object({
+  id: z.string().optional(),
+  /** Story clock label e.g. "10:45 PM" or "before dinner". */
+  at: z.string().min(1),
+  event: z.string().min(1),
+  locationId: z.string().optional(),
+  actorIds: z.array(z.string()).default([]),
+});
+export type CanonTimelineEvent = z.infer<typeof CanonTimelineEventSchema>;
+
+export const CanonSchema = z.object({
+  timeline: z.array(CanonTimelineEventSchema).default([]),
+  /** Freeform sealed notes for authors / offline tools. */
+  notes: z.string().optional(),
+});
+export type Canon = z.infer<typeof CanonSchema>;
+
+/**
+ * What a rubric fact is for scoring free-text accusations.
+ * Evidence possession is NEVER required — only matching words/ids.
+ */
+export const RubricFactRoleSchema = z.enum([
+  "identity",
+  "method",
+  "motive",
+  "supporting",
+]);
+export type RubricFactRole = z.infer<typeof RubricFactRoleSchema>;
 
 export const RubricFactSchema = z.object({
   id: z.string().min(1),
   description: z.string().min(1),
   matchHints: z.array(z.string()).default([]),
+  /**
+   * identity = who; method/motive/supporting = how/why/detail.
+   * Defaults to supporting if omitted (except auto-identity from guiltyPartyIds).
+   */
+  role: RubricFactRoleSchema.optional(),
 });
 export type RubricFact = z.infer<typeof RubricFactSchema>;
+
+/**
+ * How much of the truth the player must name to fully solve —
+ * still never requires having found evidence in inventory.
+ */
+export const AccusationSuccessPolicySchema = z.enum([
+  /** Correct culprit id/name alone closes the case. */
+  "identity",
+  /** Culprit + at least one method/motive/supporting fact. Default. */
+  "identity_plus_one",
+  /** Every requiredFacts entry must match. Strict. */
+  "all_facts",
+]);
+export type AccusationSuccessPolicy = z.infer<
+  typeof AccusationSuccessPolicySchema
+>;
 
 export const SolutionSchema = z.object({
   summary: z.string().min(1),
   guiltyPartyIds: z.array(z.string()).default([]),
   method: z.string().optional(),
   motive: z.string().optional(),
+  /**
+   * Evidence that, if held (or presented to a guilty party), marks the solve
+   * as "earned" rather than a lucky/bluff guess. Optional flavor only —
+   * never a gate for success.
+   */
+  criticalEvidenceIds: z.array(z.string()).default([]),
   rubric: z.object({
     requiredFacts: z.array(RubricFactSchema).default([]),
     partialCredit: z.boolean().default(true),
+    /**
+     * Free-text accusations always allowed without evidence (default true).
+     * If false, engine still scores but marks path; success still does not
+     * require inventory — reserved for future hard-mode gates.
+     */
+    allowWithoutEvidence: z.boolean().default(true),
+    /** How many truth facets needed for full success. */
+    successPolicy: AccusationSuccessPolicySchema.default("identity_plus_one"),
   }),
 });
 export type Solution = z.infer<typeof SolutionSchema>;
 
+/**
+ * How the case closed — especially distinct failure paths.
+ * Authors may have many endings with when:"failure" differentiated by kind/id.
+ */
+export const EndingKindSchema = z.enum([
+  "solved",
+  /** Correct theory with little or no investigation evidence */
+  "lucky_solve",
+  "partial",
+  /** Named the wrong person or an unsupportable theory */
+  "wrong_accusation",
+  /** Investigation clock / story schedule ran out (culprit fled, roads opened, etc.) */
+  "time_expired",
+  /** The detective was killed (or neutralized) before solving */
+  "murdered",
+  /** Overreached: locked up, suspended, or detained for misconduct */
+  "arrested",
+  /** Culprit escaped without necessarily killing the detective */
+  "escaped",
+  /** Case-specific / other */
+  "custom",
+]);
+export type EndingKind = z.infer<typeof EndingKindSchema>;
+
 export const EndingSchema = z.object({
   id: z.string().min(1),
+  /** Broad outcome bucket for scoring / filters. */
   when: z.enum(["success", "partial", "failure", "custom"]),
+  /**
+   * Finer classification — use for multiple failure branches
+   * (time ran out vs murdered vs arrested vs wrong accuse).
+   */
+  kind: EndingKindSchema.optional(),
+  /** Short player-facing title e.g. "Out of time". */
+  title: z.string().optional(),
   requiresFlags: FlagRequirementSchema.optional(),
+  /** Prose guidance for the performer / end screen. */
   templateNotes: z.string().min(1),
 });
 export type Ending = z.infer<typeof EndingSchema>;
@@ -165,6 +317,22 @@ export const CaseMetaSchema = z.object({
 });
 export type CaseMeta = z.infer<typeof CaseMetaSchema>;
 
+/**
+ * After judgment (solve / fail), optional interactive wrap-up:
+ * confessions, consequences, goodbyes — still freeform turns.
+ */
+export const WrapUpConfigSchema = z.object({
+  /** Default true — set false for hard cut to end screen. */
+  enabled: z.boolean().default(true),
+  /** Max interactive turns after judgment (then auto-close). */
+  maxTurns: z.number().int().positive().default(10),
+  /** Player can end early ("I leave", "goodbye", "end case"). */
+  allowEarlyExit: z.boolean().default(true),
+  /** Guidance for performer during wrap-up (global). */
+  performanceNotes: z.string().optional(),
+});
+export type WrapUpConfig = z.infer<typeof WrapUpConfigSchema>;
+
 export const MysteryDefinitionSchema = z
   .object({
     schemaVersion: z.union([z.literal("1"), z.literal("1.5")]),
@@ -174,11 +342,20 @@ export const MysteryDefinitionSchema = z
     player: PlayerPersonaSchema,
     locations: z.array(LocationSchema).min(1),
     characters: z.array(CharacterSchema).default([]),
+    /** Social graph: directed edges between characters (and optionally player later). */
+    relationships: z.array(RelationshipEdgeSchema).default([]),
     evidence: z.array(EvidenceItemSchema).default([]),
     flags: z.array(FlagDefSchema).default([]),
     solution: SolutionSchema,
+    /**
+     * Sealed past of the crime. Never sent to Director/Performer packs.
+     * Used for authoring, lint, and future debrief tools.
+     */
+    canon: CanonSchema.optional(),
     endings: z.array(EndingSchema).min(1),
     openingNarration: z.string().min(1),
+    /** Interactive aftermath after solve/fail. Default: enabled. */
+    wrapUp: WrapUpConfigSchema.optional(),
     /** Plot dynamics */
     beats: z.array(StoryBeatSchema).default([]),
     phases: z
@@ -272,6 +449,32 @@ export const MysteryDefinitionSchema = z
           code: z.ZodIssueCode.custom,
           message: `solution.guiltyPartyIds references unknown character "${eid}"`,
           path: ["solution", "guiltyPartyIds"],
+        });
+      }
+    }
+
+    const relIds = new Set<string>();
+    for (const rel of def.relationships) {
+      if (relIds.has(rel.id)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Duplicate relationship id "${rel.id}"`,
+          path: ["relationships"],
+        });
+      }
+      relIds.add(rel.id);
+      if (!characterIds.has(rel.fromId)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Relationship "${rel.id}" fromId unknown character "${rel.fromId}"`,
+          path: ["relationships"],
+        });
+      }
+      if (!characterIds.has(rel.toId)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Relationship "${rel.id}" toId unknown character "${rel.toId}"`,
+          path: ["relationships"],
         });
       }
     }

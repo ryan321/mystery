@@ -16,10 +16,11 @@ Rules:
 3. Prefer specific ids when you can resolve them; otherwise put a short hint string.
 4. For present: player shows held evidence to someone present.
 5. For use: player uses held item on something (e.g. key on drawer) — often also inspect with requirements.
-6. For accuse: fill summary and suspectIds if they name who did it.
-7. You may include suggestedPatch with setLocationId / addEvidenceIds / setFlags / accuse — but only for ids in the pack. Prefer intents; patch is optional.
-8. Set focusCharacterId when the player is clearly addressing someone.
-9. Output ONLY JSON. No markdown.
+6. For accuse: ANY clear claim of who committed the crime is an accuse intent — even cold, mid-conversation, without evidence, without the word "accuse". Examples: "X did it", "It was X with the knife", "I know X is the killer", "X murdered them because…". Map names to cast[].id from the pack. Put the full player wording in summary; fill method/motive if stated. The engine scores truth — you do NOT know the solution and must not block a guess for lack of evidence. If caseStatus is already denouement/solved/failed, do NOT emit accuse again — map to talk/look/other.
+7. If caseStatus is denouement and the player says they leave, go, goodbye, end, or finish the case → intent type "other" with note "exit_denouement" (engine will close wrap-up).
+8. You may include suggestedPatch with setLocationId / addEvidenceIds / setFlags / accuse — but only for ids in the pack. Prefer intents; patch is optional.
+9. Set focusCharacterId when the player is clearly addressing someone (including when accusing them to their face).
+10. Output ONLY JSON. No markdown.
 
 JSON shape:
 {

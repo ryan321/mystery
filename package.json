@@ -5,6 +5,7 @@
   "scripts": {
     "build": "pnpm -r run build",
     "build:packages": "pnpm --filter @mystery/shared build && pnpm --filter @mystery/engine build && pnpm --filter @mystery/llm build",
+    "schema": "pnpm --filter @mystery/shared schema",
     "test": "pnpm -r run test",
     "typecheck": "pnpm -r run typecheck",
     "dev:api": "pnpm run build:packages && pnpm --filter @mystery/api dev",

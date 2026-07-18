@@ -5,12 +5,26 @@ import type {
 } from "@mystery/shared";
 import { flagsMatch, mergeFlags } from "./flags.js";
 import { canRevealBeat } from "./knowledge.js";
+import {
+  scoreAccusationDetailed,
+  type AccusationResult,
+} from "./accusation.js";
+import { enterResolution } from "./resolve-case.js";
+import { ensureObjectState, takeIntoInventory } from "./inventory.js";
+
+export type { AccusationResult };
+export {
+  scoreAccusation,
+  scoreAccusationDetailed,
+  accusationNarrationHints,
+} from "./accusation.js";
 
 export type PatchValidation = {
   applied: StatePatch;
   rejected: string[];
   nextState: PlaythroughState;
   evidenceAdded: string[];
+  accusation?: AccusationResult;
 };
 
 function locationById(def: MysteryDefinition, id: string) {
@@ -100,10 +114,92 @@ function evidenceDiscoverableHere(
   }
   if (!flagsMatch(state.flags, insp.hiddenUntilFlags)) return false;
 
-  // Locked container: requiresEvidenceIds already checked above (e.g. key in hand).
-  // object.locked is bookkeeping only once requirements are met.
-
+  // Key-in-hand (requiresEvidenceIds) opens the container regardless of locked bookkeeping.
   return insp.onInspect.revealsEvidenceIds?.includes(evidenceId) ?? false;
+}
+
+/**
+ * When evidence is taken via an inspectable: unlock container objectId,
+ * mark stages examined/taken.
+ */
+function applyInspectObjectEffects(
+  def: MysteryDefinition,
+  locationId: string,
+  evidenceId: string,
+  objectState: PlaythroughState["objectState"],
+  state: PlaythroughState,
+  preferredInspectableId?: string
+): PlaythroughState["objectState"] {
+  const loc = locationById(def, locationId);
+  if (!loc) return objectState;
+  let next = { ...objectState };
+
+  const candidates = preferredInspectableId
+    ? loc.inspectables.filter((i) => i.id === preferredInspectableId)
+    : loc.inspectables.filter((i) =>
+        i.onInspect.revealsEvidenceIds?.includes(evidenceId)
+      );
+
+  for (const insp of candidates) {
+    if (
+      !inspectRequirementsMet(
+        state,
+        insp.onInspect.requiresFlags,
+        insp.onInspect.requiresEvidenceIds
+      )
+    ) {
+      continue;
+    }
+    if (!flagsMatch(state.flags, insp.hiddenUntilFlags)) continue;
+
+    if (insp.objectId) {
+      const os = next[insp.objectId] ?? {
+        stage: "visible" as const,
+        locked: true,
+        locationId,
+      };
+      next = {
+        ...next,
+        [insp.objectId]: {
+          ...os,
+          locked: false,
+          stage: os.stage === "taken" ? "taken" : "examined",
+          locationId: os.locationId ?? locationId,
+        },
+      };
+    }
+    for (const eid of insp.onInspect.revealsEvidenceIds ?? []) {
+      if (eid === evidenceId || state.evidenceIds.includes(eid)) {
+        const os = next[eid];
+        if (os) {
+          next = {
+            ...next,
+            [eid]: { ...os, stage: "taken" },
+          };
+        }
+      }
+    }
+  }
+  return next;
+}
+
+function inspRequirementsAllowLocked(
+  insp: {
+    objectId?: string;
+    onInspect: {
+      requiresFlags?: Record<string, unknown>;
+      requiresEvidenceIds?: string[];
+    };
+  },
+  _objectState: PlaythroughState["objectState"],
+  state: PlaythroughState
+): boolean {
+  // If player holds required keys/tools, treat as openable even if locked flag still true
+  return inspectRequirementsMet(
+    state,
+    insp.onInspect.requiresFlags,
+    insp.onInspect.requiresEvidenceIds
+  );
 }
 
 /**
@@ -164,34 +260,56 @@ export function validateAndApplyPatch(
     for (const id of patch.addEvidenceIds) {
       if (evidenceIds.includes(id)) continue;
       if (evidenceDiscoverableHere(def, probe(), id)) {
-        evidenceIds.push(id);
         added.push(id);
         evidenceAdded.push(id);
-        const os = objectState[id];
-        if (os) {
-          objectState = {
-            ...objectState,
-            [id]: { ...os, stage: "taken" },
-          };
-        }
+        // temp state for take
+        let tmp: PlaythroughState = {
+          ...probe(),
+          evidenceIds,
+          objectState,
+        };
+        tmp = takeIntoInventory(tmp, id);
+        evidenceIds = tmp.evidenceIds;
+        objectState = tmp.objectState;
+        objectState = applyInspectObjectEffects(
+          def,
+          locationId,
+          id,
+          objectState,
+          probe()
+        );
       } else {
-        // second chance via inspectable that reveals it with requirements met
         const loc = locationById(def, locationId);
-        const viaInspect = loc?.inspectables.some(
-          (insp) =>
+        const insp = loc?.inspectables.find(
+          (i) =>
             inspectRequirementsMet(
               probe(),
-              insp.onInspect.requiresFlags,
-              insp.onInspect.requiresEvidenceIds
+              i.onInspect.requiresFlags,
+              i.onInspect.requiresEvidenceIds
             ) &&
-            flagsMatch(flags, insp.hiddenUntilFlags) &&
-            !(insp.objectId && objectState[insp.objectId]?.locked) &&
-            insp.onInspect.revealsEvidenceIds?.includes(id)
+            flagsMatch(flags, i.hiddenUntilFlags) &&
+            inspRequirementsAllowLocked(i, objectState, probe()) &&
+            i.onInspect.revealsEvidenceIds?.includes(id)
         );
-        if (viaInspect) {
-          evidenceIds.push(id);
+        if (insp) {
           added.push(id);
           evidenceAdded.push(id);
+          let tmp: PlaythroughState = {
+            ...probe(),
+            evidenceIds,
+            objectState,
+          };
+          tmp = takeIntoInventory(tmp, id);
+          evidenceIds = tmp.evidenceIds;
+          objectState = tmp.objectState;
+          objectState = applyInspectObjectEffects(
+            def,
+            locationId,
+            id,
+            objectState,
+            probe(),
+            insp.id
+          );
         } else {
           rejected.push(`Cannot obtain evidence "${id}" here`);
         }
@@ -279,21 +397,113 @@ export function validateAndApplyPatch(
     }
   }
 
+  if (patch.requestInventory) {
+    applied.requestInventory = true;
+  }
+
+  if (patch.examineItemId) {
+    const id = patch.examineItemId;
+    if (!evidenceIds.includes(id)) {
+      rejected.push(`Cannot examine item not in inventory: "${id}"`);
+    } else {
+      const os = ensureObjectState(
+        { ...probe(), evidenceIds, objectState },
+        id
+      );
+      objectState = {
+        ...objectState,
+        [id]: {
+          ...os,
+          timesExamined: os.timesExamined + 1,
+          holder: "player",
+          stage: "taken",
+        },
+      };
+      applied.examineItemId = id;
+    }
+  }
+
+  if (patch.useItemId) {
+    const id = patch.useItemId;
+    if (!evidenceIds.includes(id)) {
+      rejected.push(`Cannot use item not in inventory: "${id}"`);
+    } else {
+      const os = ensureObjectState(
+        { ...probe(), evidenceIds, objectState },
+        id
+      );
+      objectState = {
+        ...objectState,
+        [id]: {
+          ...os,
+          timesUsed: os.timesUsed + 1,
+          holder: "player",
+          stage: "taken",
+        },
+      };
+      applied.useItemId = id;
+    }
+  }
+
+  if (patch.setItemFlags) {
+    applied.setItemFlags = patch.setItemFlags;
+    for (const [itemId, flagsMap] of Object.entries(patch.setItemFlags)) {
+      if (!evidenceIds.includes(itemId) && !objectState[itemId]) continue;
+      const os = ensureObjectState(
+        { ...probe(), evidenceIds, objectState },
+        itemId
+      );
+      objectState = {
+        ...objectState,
+        [itemId]: {
+          ...os,
+          flags: { ...os.flags, ...flagsMap },
+        },
+      };
+    }
+  }
+
+  let accusation: AccusationResult | undefined;
+  let resolution = state.resolution;
+  let denouement = state.denouement;
+
   if (patch.accuse && status === "active") {
     applied.accuse = patch.accuse;
-    const score = scoreAccusation(def, patch.accuse);
+    const tempState: PlaythroughState = {
+      ...state,
+      flags,
+      evidenceIds,
+      presented,
+      status,
+    };
+    accusation = scoreAccusationDetailed(def, tempState, patch.accuse);
+    const score = accusation.score;
+
+    let outcome: "success" | "partial" | "failure";
+    let kind: string;
     if (score === "success") {
-      status = "solved";
-      flags = mergeFlags(flags, { case_solved: true });
-      endingId = def.endings.find((e) => e.when === "success")?.id;
+      outcome = "success";
+      kind = accusation.path === "lucky" ? "lucky_solve" : "solved";
     } else if (score === "partial") {
-      status = "solved";
-      flags = mergeFlags(flags, { case_solved: true });
-      endingId = def.endings.find((e) => e.when === "partial")?.id;
+      outcome = "partial";
+      kind = "partial";
     } else {
-      status = "failed";
-      endingId = def.endings.find((e) => e.when === "failure")?.id;
+      outcome = "failure";
+      kind = "wrong_accusation";
     }
+
+    const resolved = enterResolution(def, tempState, {
+      outcome,
+      kind,
+      path: accusation.path,
+    });
+    status = resolved.state.status;
+    endingId = resolved.state.endingId;
+    flags = resolved.state.flags;
+    resolution = resolved.state.resolution;
+    denouement = resolved.state.denouement;
+  } else if (patch.accuse && status === "denouement") {
+    rejected.push("Case already judged — talk through the aftermath instead");
   } else if (patch.accuse) {
     rejected.push("Cannot accuse when case is not active");
   }
@@ -311,42 +521,10 @@ export function validateAndApplyPatch(
     presented,
     visitedLocationIds: [...visited],
     endingId,
+    resolution,
+    denouement,
     updatedAt: nowIso,
   };
 
-  return { applied, rejected, nextState, evidenceAdded };
-}
-
-export function scoreAccusation(
-  def: MysteryDefinition,
-  accuse: NonNullable<StatePatch["accuse"]>
-): "success" | "partial" | "failure" {
-  const text = [
-    accuse.summary,
-    accuse.method ?? "",
-    accuse.motive ?? "",
-    ...(accuse.suspectIds ?? []),
-  ]
-    .join(" ")
-    .toLowerCase();
-
-  const facts = def.solution.rubric.requiredFacts;
-  if (!facts.length) {
-    const guilty = def.solution.guiltyPartyIds.some(
-      (id) =>
-        text.includes(id.toLowerCase()) ||
-        (accuse.suspectIds ?? []).includes(id)
-    );
-    return guilty ? "success" : "failure";
-  }
-
-  let hits = 0;
-  for (const fact of facts) {
-    const ok = fact.matchHints.some((h) => text.includes(h.toLowerCase()));
-    if (ok) hits += 1;
-  }
-
-  if (hits === facts.length) return "success";
-  if (def.solution.rubric.partialCredit && hits > 0) return "partial";
-  return "failure";
+  return { applied, rejected, nextState, evidenceAdded, accusation };
 }

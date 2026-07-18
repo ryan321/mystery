@@ -1,10 +1,13 @@
 # Case Definition Model
 
-**Status:** Design target (v2 direction)  
+**Status:** Conceptual design model (implemented; some sections are historical design notes)  
 **Date:** 2026-07-18  
-**Related:** [ARCHITECTURE.md](./ARCHITECTURE.md), [WHAT.md](../WHAT.md)
+**Authoring reference (write a case):** **[CASE_AUTHORING.md](./CASE_AUTHORING.md)** — field-by-field `definition.json` reference, conditions/effects catalogs, checklist  
+**Related:** [ARCHITECTURE.md](./ARCHITECTURE.md), [WHAT.md](../WHAT.md), example `content/cases/blackwood-inheritance/definition.json`
 
 A **case definition** is the authored mystery kit: sealed truth, world, people, objects, and the **dynamic investigation plot** (unlocks, reactions, developments). The AI performs inside the current state; it does not invent the culprit or the major plot graph.
+
+> **Writing a mystery?** Use [CASE_AUTHORING.md](./CASE_AUTHORING.md). This file explains *why* the model is shaped this way.
 
 ---
 
@@ -13,7 +16,7 @@ A **case definition** is the authored mystery kit: sealed truth, world, people, 
 1. **Fair play** — solution and unreleased secrets never drive freeform narration.
 2. **Closed world** — only defined places, people, objects, exits exist.
 3. **Dynamic story** — like a novel: discoveries chain, people change, the house changes, events fire.
-4. **Entity / world state** — not only a global bag of flags: **game**, **character**, **object**, **location**, **environment**, and **time** state (and later **relationship**).
+4. **Entity / world state** — not only a global bag of flags: **game**, **character**, **object**, **location**, **environment**, **time**, and **relationship** (social graph edges).
 5. **Engine authority** — conditions/effects are evaluated in code; AI narrates and fills texture.
 6. **Testable** — “if player has key, door unlocks; if letter presented to Henshaw, Vale’s stance shifts” is unit-testable.
 
@@ -60,6 +63,214 @@ Belongs to the run as a whole — *meta* of the investigation, not the weather o
 
 > **Note:** Prefer **environment** for weather/atmosphere and **time** for hour-of-day / schedule. Keep `game` for plot bookkeeping.
 
+### 3.1e Denouement (interactive wrap-up after judgment)
+
+Solving (or failing) should **not** hard-cut to a title card by default. After judgment the case enters **denouement**: still freeform, still characterful, but the mystery is **decided**.
+
+| | Investigation (`active`) | Wrap-up (`denouement`) | Closed (`solved` / `failed`) |
+|--|--------------------------|-------------------------|------------------------------|
+| Talk / look / move | Yes | Yes | No |
+| Accuse | Yes | No (already judged) | No |
+| Solution sealed | Yes | Partially lifted for aftermath | N/A |
+| Character behavior | Clue-gated | Consequence-driven (confess, freeze out, flee) | Frozen |
+
+```ts
+wrapUp?: {
+  enabled: true,           // default when omitted
+  maxTurns: 10,
+  allowEarlyExit: true,    // "I leave" / goodbye ends wrap-up
+  performanceNotes?: string
+}
+```
+
+**Flow**
+
+1. Accuse / fail beat → `enterResolution`  
+2. If `wrapUp.enabled` → `status: denouement` + `resolution` + optional denouement beats  
+3. Player talks to Vale, Mrs. Blackwood, etc. — guilty may confess using solution text  
+4. Turns tick down **or** player exits → `status: solved | failed` (hard close)
+
+**Authoring aftermath**
+
+```json
+{
+  "id": "wrap_success_vale_breaks",
+  "when": {
+    "type": "and",
+    "of": [
+      { "type": "in_denouement" },
+      { "type": "resolution_outcome", "is": "success" }
+    ]
+  },
+  "effects": [
+    { "type": "set_stance", "characterId": "vale", "value": "broken_confessing" },
+    { "type": "move_character", "characterId": "vale", "toLocationId": "entrance-hall" }
+  ],
+  "narrationHints": "Household gathers; Vale may confess in dialogue."
+}
+```
+
+Conditions: `in_denouement`, `resolution_outcome`, `resolution_kind`, `resolution_path`.  
+Effects: `end_denouement` / `finalize_case` to force hard close from a beat.  
+Set `wrapUp.enabled: false` for a hard cut if a case wants no aftermath.
+
+### 3.1d Accusations (cold guesses allowed)
+
+Players may accuse **at any time**, including before finding evidence, cracking suspects, or visiting the crime scene.
+
+| Principle | Rule |
+|-----------|------|
+| **Truth is scored, not homework** | Engine matches free-text / suspect ids to `solution.rubric` — **not** inventory |
+| **“Dr Jones did it with the knife!”** | If that is correct per rubric, case **solves** even if the knife was never found |
+| **Wrong still fails** | False names → `wrong_accusation` |
+| **Path quality** | `lucky` (no critical evidence) vs `earned` (held/presented critical evidence) — flavor endings, not gates |
+| **AI role** | Director maps natural language → accuse intent (cast names). Engine scores. Performer plays confession/epilogue from ending + path |
+
+```ts
+solution: {
+  guiltyPartyIds: ["vale"],
+  criticalEvidenceIds: ["vale-letter"],  // only for lucky vs earned flavor
+  rubric: {
+    allowWithoutEvidence: true,          // default
+    successPolicy: "identity" | "identity_plus_one" | "all_facts",
+    requiredFacts: [
+      { id: "killer", role: "identity", matchHints: ["vale", "jones"] },
+      { id: "method", role: "method", matchHints: ["knife", "hall", "struggle"] },
+      { id: "motive", role: "motive", matchHints: ["fraud", "money"] }
+    ]
+  }
+}
+```
+
+**successPolicy**
+
+| Policy | Full success when |
+|--------|-------------------|
+| `identity` | Correct culprit alone |
+| `identity_plus_one` (default) | Culprit + ≥1 method/motive/supporting fact |
+| `all_facts` | Every rubric fact matches |
+
+Never put “must have evidence X” on the success gate. Investigation still **matters** for pacing, failure clocks, earned endings, and richness — not for permission to win with a correct bluff.
+
+### 3.1c Failure (losing is part of the design)
+
+A case is not only “solve or wrong-accuse.” Classic mysteries punish **delay**, **overreach**, and **letting the killer act**. Failure is **authored** the same way as success: endings + beats + clocks.
+
+**Ending kinds** (especially under `when: "failure"`):
+
+| `kind` | Meaning |
+|--------|---------|
+| `wrong_accusation` | Named the wrong person / unsupportable theory (often via formal accuse) |
+| `time_expired` | Schedule or investigation clock ran out (culprit fled, dawn, train arrives) |
+| `murdered` | The detective was killed / neutralized before solving |
+| `arrested` | Overreach: detained, suspended, relieved of duty |
+| `escaped` | Culprit gone without necessarily killing you |
+| `custom` | Case-specific |
+
+```ts
+Ending {
+  id: string
+  when: "success" | "partial" | "failure" | "custom"
+  kind?: EndingKind
+  title?: string                 // "Out of time", "You were too late"
+  requiresFlags?: FlagRequirement
+  templateNotes: string          // performer + end-screen prose
+}
+```
+
+**How failure fires**
+
+1. **Formal accuse** scored as failure → `kind: wrong_accusation` (engine).  
+2. **Beat + `end_case`** when conditions hold:
+
+```json
+{
+  "id": "failure_vale_retaliation",
+  "when": {
+    "type": "and",
+    "of": [
+      { "type": "case_active" },
+      { "type": "clock_expired", "clockId": "vale_retaliation" }
+    ]
+  },
+  "effects": [
+    { "type": "set_player_threat", "threat": "assaulted" },
+    {
+      "type": "end_case",
+      "outcome": "failure",
+      "endingId": "failure_murdered",
+      "endingKind": "murdered"
+    }
+  ]
+}
+```
+
+3. **Countdown clocks** (`start_clock` → tick each turn → `clock_expired`) for “solve in N turns or die / get arrested.”  
+4. **Story time** (`time_at_least` after_midnight) for “dawn and the empty road.”
+
+**Author rules**
+
+- Always gate failure beats with `case_active` so they do not re-fire after close.  
+- Prefer **named** `endingId` / `endingKind` so multiple failures do not collapse into one generic blurb.  
+- Engine stops evaluating further beats once `status !== "active"`.  
+- Performer uses `ending.templateNotes` for a real epilogue — not an open investigation.  
+- Optional per case: cosies may only have wrong-accusation failure; thrillers add murdered / time / arrest.
+
+### 3.1f Social graph (character edges)
+
+Mystery fiction is people tangled together. We model **directed edges** — not a player relationship map or detective board.
+
+**Product stance:** no notebook/map/relationship HUD. Bonds surface the way a novel would: dialogue, glances, defenses, gossip. The engine still *owns* the graph so the AI cannot invent “I’ve always loved you” mid-case.
+
+```ts
+RelationshipEdge {
+  id: string
+  fromId, toId: characterId
+  type: string          // family | loyalty | debt | blackmail | alibi_with | fears | …
+  label?: string        // "business partner"
+  strength: 0–3
+  public: boolean       // social surface / gossip-ok
+  knownToPlayerByDefault: boolean
+  notes?: string        // private AI behavior guidance
+  startsActive: boolean
+}
+```
+
+Runtime `relationshipState[id]`: `{ active, strength, knownToPlayer, labelOverride? }`.
+
+| Visibility | AI use |
+|------------|--------|
+| `public` or `knownToPlayer` | May acknowledge in dialogue / light narration (`socialSurface`, `relationships`) |
+| private, unknown | **Behavior only** (`relationshipBehavior`) — subtext, not exposition |
+
+**Conditions:** `relationship` (from/to/type or id), `relationship_known`, `relationship_strength_at_least`  
+**Effects:** `reveal_relationship`, `set_relationship`, `set_relationship_strength`, `set_relationship_active`
+
+Example: letter found → `reveal_relationship(vale_debt_blackwood)`; after solve → break the debt edge, strengthen Henshaw’s loyalty to the widow.
+
+### 3.1b Player status (detective as target)
+
+The detective is not a full NPC, but **plot can happen to them**. Hostility, break-ins, and personal threats are engine-owned state — the AI performs them, it does not invent freeform assaults.
+
+```ts
+PlayerStatus {
+  threat: "none" | "watched" | "threatened" | "assaulted"  // escalates only by default
+  safeHavenCompromised: boolean   // room searched, safe place violated
+  tags: string[]                  // e.g. "room_searched", "vale_threat"
+  flags: Record<string, FlagValue>
+}
+```
+
+| Story moment | Representation |
+|--------------|----------------|
+| Suspect gets hostile | `set_willingness(hostile)` on NPC + optional `set_player_threat(threatened)` |
+| Room broken into while away | `player_not_at` + beat → `append_location_description` + `set_safe_haven_compromised` |
+| Something stolen from inventory | `remove_evidence` / `move_object` to a location |
+| Being watched / followed | `set_player_threat(watched)` + ambient / tags |
+| Physical confrontation | Beat with `set_player_threat(assaulted)` + optional fail ending — **authored**, not random |
+
+**Principle:** definition owns when the world hits back; ContextPack exposes `player.status`; Performer must not invent new attacks beyond status + `justHappened`.
+
 ### 3.2 Character state (per character, per run)
 
 Belongs to each person in *this* investigation.
@@ -79,22 +290,28 @@ Belongs to each person in *this* investigation.
 
 **Novel moment:** Henshaw is willing to talk at first (`willingness: open`). After you falsely accuse him or humiliate him in front of Mrs. Blackwood, beat fires → `willingness: silent`. The AI is told “Henshaw will not engage productively” — engine enforces (e.g. block useful reveals; optional hard reject of “he spills everything”).
 
-### 3.3 Object / evidence state (per object, per run)
+### 3.3 Object / evidence / inventory state (per item, per run)
 
-Belongs to each defined object or evidence item.
+**Inventory** is first-class: `evidenceIds[]` is the held-id index; each item also has **`objectState[id]`** with full runtime fields.
 
 | Field | Examples |
 |-------|----------|
 | `stage` | `hidden` / `visible` / `examined` / `taken` / `destroyed` / `given_away` |
-| `locationId` | Where it is if not in inventory |
+| `locationId` | World location when not held |
+| `holder` | `"player"` (inventory), character id, or omit (in world) |
 | `locked` | container still locked |
-| `ownerId` | whose possession (optional) |
-| `knownToPlayer` | player has seen it exists |
-| `flags` | object-local |
+| `condition` | `intact` / `torn` / `wet` / `opened` / `spent` … |
+| `tags` | `bloody`, `read`, `smudged` |
+| `flags` | item-local booleans/strings |
+| `timesExamined` | closer looks in hand or at scene |
+| `timesUsed` | key turned, match struck |
 
-**Novel moment:** Desk drawer starts `locked: true`. Player obtains brass key → beat or effect sets drawer `locked: false` and/or inspectable becomes available. Letter moves `stage: taken` into inventory.
+**Inventory action:** free text “what am I carrying?” → intent `inventory` → engine lists items (with state) via `justHappened` / ContextPack `inventory`. Novel-like prose, not a shop UI.
 
-Evidence in inventory is still “object state” with `stage: taken` and implicit `holder: player`.
+**Conditions:** `inventory_has` / `has_evidence`, `item_condition`, `item_flag`, `item_has_tag`, `item_examined_at_least`, `item_used_at_least`, `item_holder`  
+**Effects:** `grant_evidence`, `remove_evidence`, `move_object`, `set_item_condition`, `set_item_flag`, `add_item_tag`, `examine_item`, `use_item`
+
+**Novel moment:** Desk drawer starts `locked: true`. Key taken → inventory (`holder: player`, `stage: taken`). Use key on drawer → `timesUsed++`, drawer unlocks, letter enters inventory.
 
 ### 3.4 Location state (per place, per run)
 
@@ -306,7 +523,11 @@ Condition =
   | { type: "turn_at_least", n: number }
   | { type: "game_flag", id: string, equals: FlagValue }
   | { type: "beat_fired", beatId: string }
+  | { type: "case_active" }                     // status === "active"
+  | { type: "case_status", is: "active" | "solved" | "failed" | "abandoned" }
   | { type: "clock_expired", clockId: string }  // countdown timer, not story-time
+  | { type: "clock_running", clockId: string }  // turns remaining > 0
+  | { type: "clock_at_most", clockId: string, n: number }
   // Time (story clock)
   | { type: "time_slot_is", slotId: string }
   | { type: "time_at_least", slotId: string }   // current slot >= this in schedule order
@@ -317,11 +538,19 @@ Condition =
   | { type: "environment_flag", id: string, equals: FlagValue }
   | { type: "crowd_is", level: string }
   | { type: "light_is", light: string }
-  // Player progress
+  // Player progress / position
   | { type: "has_evidence", evidenceId: string }
   | { type: "visited", locationId: string }
   | { type: "presented", evidenceId: string, toCharacterId: string }
   | { type: "talked_to", characterId: string, minTimes?: number }
+  | { type: "player_at", locationId: string }
+  | { type: "player_not_at", locationId: string }   // off-screen events while elsewhere
+  // Player status (detective as target)
+  | { type: "player_threat_is", is: PlayerThreat }
+  | { type: "player_threat_at_least", is: PlayerThreat }
+  | { type: "player_safe_haven_compromised" }
+  | { type: "player_has_tag", tag: string }
+  | { type: "player_status_flag", id: string, equals: FlagValue }
   // Entity state
   | { type: "character_willingness", characterId: string, is: Willingness }
   | { type: "character_pressure_at_least", characterId: string, value: number }
@@ -345,7 +574,7 @@ Effect =
   | { type: "set_phase", phaseId: string }
   | { type: "start_clock", clockId: string, turns: number }
   | { type: "queue_beat", beatId: string, delayTurns?: number }
-  | { type: "end_case", outcome: "success" | "partial" | "failure" }
+  | { type: "end_case", outcome?: "success" | "partial" | "failure", endingId?: string, endingKind?: EndingKind }
   // Time
   | { type: "advance_time", toSlotId: string }           // jump (Colonel’s Bequest-style unlock)
   | { type: "advance_time", byMinutes: number }          // relative jump
@@ -368,12 +597,19 @@ Effect =
   // Object
   | { type: "set_object_stage", objectId: string, value: ObjectStage }
   | { type: "set_object_locked", objectId: string, value: boolean }
-  | { type: "move_object", objectId: string, to: "inventory" | { locationId: string } }
+  | { type: "move_object", objectId: string, to: "inventory" | locationId }
   | { type: "grant_evidence", evidenceId: string } // player inventory convenience
+  | { type: "remove_evidence", evidenceId: string } // theft / loss from inventory
   // Location
   | { type: "set_location_accessible", locationId: string, value: boolean }
   | { type: "set_exit_open", from: string, to: string, value: boolean }
   | { type: "append_location_description", locationId: string, text: string }
+  // Detective as target (player status)
+  | { type: "set_player_threat", threat: PlayerThreat, force?: boolean }  // escalates only unless force
+  | { type: "set_safe_haven_compromised", value: boolean }
+  | { type: "add_player_tag", tag: string }
+  | { type: "set_player_status_flag", id: string, value: FlagValue }
+  | { type: "notebook_append", text: string }  // auto notebook line
 ```
 
 ### 5.3 Story beat
@@ -416,7 +652,39 @@ StoryBeat {
 
 That is novel-like progression with **object state**, **location state**, and **character state** collaborating.
 
-### 5.5 Character shuts down (your example)
+### 5.5 Off-screen: detective’s room broken into
+
+```json
+{
+  "id": "inspector_room_ransacked",
+  "once": true,
+  "trigger": "on_turn",
+  "when": {
+    "type": "and",
+    "of": [
+      { "type": "has_evidence", "evidenceId": "vale-letter" },
+      { "type": "player_not_at", "locationId": "guest-room" },
+      { "type": "phase_is", "phaseId": "deepening" }
+    ]
+  },
+  "effects": [
+    {
+      "type": "append_location_description",
+      "locationId": "guest-room",
+      "text": "The desk drawers hang open; your coat has been searched."
+    },
+    { "type": "set_safe_haven_compromised", "value": true },
+    { "type": "set_player_threat", "threat": "watched" },
+    { "type": "add_player_tag", "tag": "room_searched" },
+    { "type": "notebook_append", "text": "My room was searched while I was downstairs." }
+  ],
+  "narrationHints": "Someone went through the detective’s room off-screen. Do not invent the culprit."
+}
+```
+
+When the player later moves to `guest-room`, the location description already includes the ransacked append. Fair play: **engine** decided the break-in; AI only performs discovery.
+
+### 5.6 Character shuts down (your example)
 
 ```ts
 {
@@ -692,14 +960,14 @@ Authors think in **“when the player does X / when Y becomes true → state cha
 | `drawer_unlockable` | has key | set desk-drawer unlocked |
 | `letter_taken` | inspect unlocked drawer | grant letter |
 | `henshaw_opens_up` | has letter | reveal knowledge saw-Vale; stance helpful |
-| `vale_cornered` | present letter to Vale | pressure+2; alibiStatus broken; willingness guarded |
-| `vale_hostile` | pressure high + talked again | willingness hostile |
+| `vale_cornered` | present letter to Vale | pressure+2; alibi broken; willingness hostile; player threat threatened |
+| `inspector_room_ransacked` | has letter + not in guest-room | safe haven compromised; room description; threat watched |
 | `wrong_accuse_henshaw` | accuse henshaw without claims | henshaw silent; mrs-b stance cold |
 | `crisis_constable` | turn ≥ N or phase crisis | add constable; set phase |
 
-Chains: **vase → print → library → key → drawer → letter → Henshaw knowledge → Vale pressure → accuse.**
+Chains: **vase → print → library → key → drawer → letter → Henshaw knowledge → (room searched / Vale cornered) → accuse.**
 
-Dynamics: wrong branch **changes character state** so the house “remembers.”
+Dynamics: wrong branch **changes character state** so the house “remembers.” Getting close makes the house push back on **you**.
 
 ---
 
@@ -754,6 +1022,13 @@ PlaythroughState {
   characterMemory: ...               // dialogue memory (performance)
   presented: { evidenceId, characterId, turn }[]
   visitedLocationIds: string[]
+  // Detective as target
+  playerStatus: {
+    threat: "none" | "watched" | "threatened" | "assaulted"
+    safeHavenCompromised: boolean
+    tags: string[]
+    flags: Record<string, FlagValue>
+  }
 }
 ```
 
@@ -778,16 +1053,45 @@ Leak tests (with LLM, nightly):
 
 ---
 
+## 14b. Engine turn loop (ticks & unlocks)
+
+```text
+1. advancePassiveTime     — minutes, slot, clocks--, clear pulses
+2. evaluateBeats(tick)    — time/clock failures BEFORE player acts
+3. Director → patch
+4. evaluateBeats(player)  — discover/present/talk/on_turn unlocks
+5. denouement exit/budget
+6. Performer
+7. turnCount++
+```
+
+**Beat triggers (honored):**
+
+| trigger | Fires when |
+|---------|------------|
+| `on_turn` | Condition true (tick or player pass) |
+| `on_discover` | Player pass + evidence gained this turn |
+| `on_present` | Player pass + present this turn |
+| `on_talk` | Player pass + talk this turn |
+| `on_phase_enter` | Phase id entered during this cascade |
+| `manual` | Only via `queue_beat` when due |
+
+**Knowledge gates (honored):** `requiresFlags`, `requiresEvidenceIds`, `requiresWillingnessIn`, `requiresTrust`, `requiresRelationshipIds` / `requiresRelationshipId`.
+
+**Canon** (`canon.timeline`) is sealed — not in ContextPack.
+
 ## 15. Principles (short)
 
-1. **Typed state slices:** character, object, location, **environment**, **time**, plus game bookkeeping.  
+1. **Typed state slices:** character, object, location, **environment**, **time**, **playerStatus**, plus game bookkeeping.  
 2. **Story beats** chain discoveries into developments (and can jump or latch onto the clock).  
 3. **Time marches** both as **unlock jumps** (find X → evening advances) and as **passive lateness** (turns cost minutes; dinner ends; midnight strikes).  
 4. **Environment** is first-class atmosphere (weather, crowd, wildlife pulses)—not only location blurbs.  
 5. **Conditions/effects** are the programming language of the mystery.  
-6. **AI performs** current time, weather, and `justHappened`; it does not decide whether midnight came.  
-7. **Doors, keys, silence, panic, storms, schedules** are state transitions—not vibes in a prompt.  
-8. **Canon stays sealed**; investigation plot + world weather/time are the living layer.
+6. **AI performs** current time, weather, player status, and `justHappened`; it does not decide whether midnight came or invent new attacks.  
+7. **Doors, keys, silence, panic, storms, schedules, break-ins** are state transitions—not vibes in a prompt.  
+8. **Canon stays sealed**; investigation plot + world weather/time + detective-as-target are the living layer.  
+9. **Plot can happen to the detective** (hostility, ransacked room, threats) via authored beats — optional per case, never freeform sandbox violence.  
+10. **Failure is first-class** — time runs out, you are killed, you are arrested, or you name the wrong person. Multiple `when: "failure"` endings distinguished by `kind` / `id`.
 
 ---
 

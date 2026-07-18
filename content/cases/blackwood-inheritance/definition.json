@@ -1,7 +1,8 @@
 {
+  "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "blackwood-inheritance",
-  "contentVersion": "0.2.0",
+  "contentVersion": "0.8.0",
   "meta": {
     "title": "The Blackwood Inheritance",
     "premise": "A stormy night, a locked manor, and violence at the foot of the stairs. The family was already at each other's throats.",
@@ -17,15 +18,22 @@
     "voiceNotes": "Professional, direct, observant",
     "startingLocationId": "entrance-hall",
     "startingEvidenceIds": [],
-    "startingKnowledge": "You were summoned after a crash and a body. Mr. Blackwood lies dead at the foot of the main stairs. The storm has cut the road; no one left the grounds after ten."
+    "startingKnowledge": "You were summoned after a crash and a body. Mr. Blackwood lies dead at the foot of the main stairs. The storm has cut the road; no one left the grounds after ten. Henshaw has put you in a small guest room upstairs — a place to leave your coat and notebook."
   },
-  "openingNarration": "The manor looms against the storm. Inside, the entrance hall smells of wax and old money. A crystal vase lies shattered on the marble. Rainwater pools near the east door, and the grandfather clock has stopped at eleven. Butler Henshaw stands by the pantry door, pale and silent. When he sees you looking his way, he straightens his jacket.",
+  "openingNarration": "The manor looms against the storm. Inside, the entrance hall smells of wax and old money. A crystal vase lies shattered on the marble. Rainwater pools near the east door, and the grandfather clock has stopped at eleven. Butler Henshaw stands by the pantry door, pale and silent. When he sees you looking his way, he straightens his jacket. Stairs climb to the guest room he prepared for you.",
   "phases": [
     { "id": "arrival", "description": "First look at the hall and household" },
     { "id": "deepening", "description": "Documents, alibis, contradictions" },
     { "id": "crisis", "description": "Pressure breaks someone" },
-    { "id": "confrontation", "description": "Accusation is in play" }
+    { "id": "confrontation", "description": "Accusation is in play" },
+    { "id": "denouement", "description": "Aftermath after judgment — still interactive" }
   ],
+  "wrapUp": {
+    "enabled": true,
+    "maxTurns": 10,
+    "allowEarlyExit": true,
+    "performanceNotes": "After judgment, stay with the household. The accused and others react: confession, rage, silence, logistics of custody. The inspector may still speak with anyone present and then leave. Do not reset the mystery."
+  },
   "time": {
     "startSlotId": "just_after_eleven",
     "minutesPerTurn": 8,
@@ -69,6 +77,12 @@
       "description": "Player wrongly pinned Henshaw",
       "aiVisible": true,
       "defaultValue": false
+    },
+    {
+      "id": "inspector_room_ransacked",
+      "description": "Someone searched the inspector's guest room",
+      "aiVisible": true,
+      "defaultValue": false
     }
   ],
   "locations": [
@@ -85,6 +99,10 @@
         {
           "toLocationId": "conservatory",
           "label": "conservatory doors (west)"
+        },
+        {
+          "toLocationId": "guest-room",
+          "label": "stairs up to your guest room"
         }
       ],
       "inspectables": [
@@ -176,6 +194,122 @@
         }
       ],
       "charactersPresent": []
+    },
+    {
+      "id": "guest-room",
+      "name": "Blackwood Manor — your guest room",
+      "description": "A spare room at the top of the stairs: narrow bed, washstand, a small desk with your coat over the chair. The window faces the storm. It is the only private place Henshaw offered you in this house.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "entrance-hall",
+          "label": "stairs down to the entrance hall"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "desk-notes",
+          "name": "desk and notebook",
+          "onInspect": {
+            "narrativeHints": "Your case notes sit on the desk if you left them. The lock on the desk drawer is ornamental — anyone could open it."
+          }
+        },
+        {
+          "id": "window-latch",
+          "name": "window latch",
+          "onInspect": {
+            "narrativeHints": "The latch is simple. From outside the roof is too steep; entry would be from the hall door."
+          }
+        }
+      ],
+      "charactersPresent": []
+    }
+  ],
+  "relationships": [
+    {
+      "id": "henshaw_loyalty_family",
+      "fromId": "henshaw",
+      "toId": "mrs-blackwood",
+      "type": "loyalty",
+      "label": "long service; protects the household's name",
+      "strength": 2,
+      "public": true,
+      "knownToPlayerByDefault": true,
+      "notes": "Henshaw will shield the family until evidence forces his hand."
+    },
+    {
+      "id": "henshaw_duty_clara",
+      "fromId": "henshaw",
+      "toId": "clara",
+      "type": "protects",
+      "label": "protective of Miss Clara",
+      "strength": 1,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "mrs_marriage_victim",
+      "fromId": "mrs-blackwood",
+      "toId": "vale",
+      "type": "distrusts",
+      "label": "dislikes Vale as a guest of her husband",
+      "strength": 1,
+      "public": true,
+      "knownToPlayerByDefault": false,
+      "notes": "Cool toward Vale; not necessarily accusing."
+    },
+    {
+      "id": "vale_business_blackwood",
+      "fromId": "vale",
+      "toId": "henshaw",
+      "type": "dismisses",
+      "label": "treats staff as furniture",
+      "strength": 1,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "vale_debt_blackwood",
+      "fromId": "vale",
+      "toId": "mrs-blackwood",
+      "type": "debt",
+      "label": "financial entanglement with the Blackwood name",
+      "strength": 3,
+      "public": false,
+      "knownToPlayerByDefault": false,
+      "notes": "Private: Vale's fraud/settlement pressure ran through the late Mr. Blackwood. Do not confess casually."
+    },
+    {
+      "id": "vale_fear_exposure",
+      "fromId": "vale",
+      "toId": "henshaw",
+      "type": "fears",
+      "label": "wary of what the butler may have seen",
+      "strength": 2,
+      "public": false,
+      "knownToPlayerByDefault": false,
+      "notes": "Private behavior: sharp when Henshaw is believed."
+    },
+    {
+      "id": "clara_daughter_mrs",
+      "fromId": "clara",
+      "toId": "mrs-blackwood",
+      "type": "family",
+      "label": "daughter and mother",
+      "strength": 2,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "clara_wary_vale",
+      "fromId": "clara",
+      "toId": "vale",
+      "type": "wary",
+      "label": "uneasy around the house guest",
+      "strength": 1,
+      "public": false,
+      "knownToPlayerByDefault": false,
+      "notes": "May open up after the letter is known."
     }
   ],
   "characters": [
@@ -201,7 +335,9 @@
             "id": "henshaw-saw-vale-earlier",
             "content": "Henshaw saw Mr. Vale near the east corridor before eleven, not in the conservatory. He is reluctant to accuse a guest without proof.",
             "requiresEvidenceIds": ["vale-letter"],
-            "requiresWillingnessIn": ["open", "guarded"]
+            "requiresWillingnessIn": ["open", "guarded"],
+            "requiresTrust": 1,
+            "requiresRelationshipIds": ["vale_debt_blackwood"]
           }
         ]
       },
@@ -322,12 +458,45 @@
       "canPresentTo": ["vale", "henshaw", "mrs-blackwood", "clara"]
     }
   ],
+  "canon": {
+    "timeline": [
+      {
+        "id": "quarrel",
+        "at": "Yesterday evening",
+        "event": "Vale and Blackwood quarrel over fraud exposure and a settlement.",
+        "locationId": "library",
+        "actorIds": ["vale"]
+      },
+      {
+        "id": "confrontation",
+        "at": "Just before eleven",
+        "event": "Vale confronts Blackwood in the entrance hall; struggle; vase shatters; Blackwood falls at the stairs.",
+        "locationId": "entrance-hall",
+        "actorIds": ["vale"]
+      },
+      {
+        "id": "flight",
+        "at": "Immediately after",
+        "event": "Vale flees toward the library, drops desk key in the hearth, claims conservatory alibi.",
+        "locationId": "library",
+        "actorIds": ["vale"]
+      },
+      {
+        "id": "discovery",
+        "at": "Just after eleven",
+        "event": "Henshaw hears the crash; body found; storm has cut the road.",
+        "locationId": "entrance-hall",
+        "actorIds": ["henshaw"]
+      }
+    ],
+    "notes": "Sealed crime history — never send to performer/director packs."
+  },
   "beats": [
     {
       "id": "trail_to_library",
       "title": "The print points east",
       "once": true,
-      "trigger": "on_turn",
+      "trigger": "on_discover",
       "when": { "type": "has_evidence", "evidenceId": "muddy-boot-print" },
       "effects": [
         { "type": "set_game_flag", "id": "found_boot_print", "value": true }
@@ -338,17 +507,22 @@
       "id": "letter_unlocks_deepening",
       "title": "The letter changes the house",
       "once": true,
-      "trigger": "on_turn",
+      "trigger": "on_discover",
       "when": { "type": "has_evidence", "evidenceId": "vale-letter" },
       "effects": [
         { "type": "set_phase", "phaseId": "deepening" },
         { "type": "advance_time", "toSlotId": "late_evening" },
         { "type": "set_willingness", "characterId": "henshaw", "value": "open" },
+        { "type": "add_trust", "characterId": "henshaw", "by": 2 },
         { "type": "reveal_knowledge", "characterId": "henshaw", "knowledgeId": "henshaw-saw-vale-earlier" },
         { "type": "move_character", "characterId": "clara", "toLocationId": "entrance-hall" },
-        { "type": "set_willingness", "characterId": "clara", "value": "open" }
+        { "type": "set_willingness", "characterId": "clara", "value": "open" },
+        { "type": "reveal_relationship", "relationshipId": "vale_debt_blackwood" },
+        { "type": "reveal_relationship", "relationshipId": "clara_wary_vale" },
+        { "type": "set_relationship_strength", "relationshipId": "vale_fear_exposure", "strength": 3 },
+        { "type": "set_relationship", "relationshipId": "mrs_marriage_victim", "knownToPlayer": true, "strength": 2 }
       ],
-      "narrationHints": "With the letter in hand, the household's careful manners start to crack. Clara appears from the conservatory wing, drawn by raised voices.",
+      "narrationHints": "With the letter in hand, the household's careful manners start to crack. Bonds strain: Vale's money trouble is no longer abstract; Clara's unease with him may show. No relationship menus — show it in looks and dialogue.",
       "reactions": [
         {
           "characterId": "henshaw",
@@ -361,7 +535,7 @@
       "id": "vale_cornered_by_letter",
       "title": "Vale's alibi breaks",
       "once": true,
-      "trigger": "on_turn",
+      "trigger": "on_present",
       "when": {
         "type": "presented",
         "evidenceId": "vale-letter",
@@ -373,16 +547,59 @@
         { "type": "set_willingness", "characterId": "vale", "value": "hostile" },
         { "type": "set_stance", "characterId": "vale", "value": "cornered" },
         { "type": "reveal_knowledge", "characterId": "vale", "knowledgeId": "vale-admits-argument" },
-        { "type": "set_phase", "phaseId": "crisis" }
+        { "type": "set_phase", "phaseId": "crisis" },
+        { "type": "set_player_threat", "threat": "threatened" },
+        { "type": "add_player_tag", "tag": "vale_threat" },
+        { "type": "start_clock", "clockId": "vale_retaliation", "turns": 10 }
       ],
-      "narrationHints": "Faced with his own hand on the page, Vale's conservatory story collapses into anger.",
+      "narrationHints": "Faced with his own hand on the page, Vale's conservatory story collapses into anger. He turns that anger on you — this is no longer a polite interview. You have a limited window to finish this before he acts.",
       "reactions": [
         {
           "characterId": "vale",
-          "lineHint": "That letter proves a quarrel — not a killing.",
+          "lineHint": "That letter proves a quarrel — not a killing. Push me again and you will regret how far this goes.",
           "stance": "cornered"
         }
       ]
+    },
+    {
+      "id": "inspector_room_ransacked",
+      "title": "Someone searched your room",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          { "type": "has_evidence", "evidenceId": "vale-letter" },
+          { "type": "beat_fired", "beatId": "letter_unlocks_deepening" },
+          { "type": "player_not_at", "locationId": "guest-room" },
+          {
+            "type": "or",
+            "of": [
+              { "type": "phase_is", "phaseId": "deepening" },
+              { "type": "phase_is", "phaseId": "crisis" }
+            ]
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "append_location_description",
+          "locationId": "guest-room",
+          "text": "The desk drawers hang open. Your coat has been pulled from the chair and searched. Papers on the desk are scattered; someone was looking for what you know. The door was left ajar."
+        },
+        { "type": "set_safe_haven_compromised", "value": true },
+        { "type": "set_player_threat", "threat": "watched" },
+        { "type": "add_player_tag", "tag": "room_searched" },
+        { "type": "set_player_status_flag", "id": "guest_room_ransacked", "value": true },
+        { "type": "set_game_flag", "id": "inspector_room_ransacked", "value": true },
+        { "type": "set_ambient", "ambient": "menacing" },
+        {
+          "type": "notebook_append",
+          "text": "My guest room was searched while I was downstairs. Someone in this house is tracking the investigation."
+        }
+      ],
+      "narrationHints": "Off-screen: while you were elsewhere, someone went through your guest room. Do not invent who did it. When the player next enters the guest room, the ransacked state is already in the location description. Elsewhere, they may only get a chill of being watched — not a full reveal until they return upstairs.",
+      "reactions": []
     },
     {
       "id": "henshaw_shuts_down",
@@ -423,6 +640,7 @@
       "when": {
         "type": "and",
         "of": [
+          { "type": "case_active" },
           { "type": "has_evidence", "evidenceId": "vale-letter" },
           { "type": "time_at_least", "slotId": "approaching_midnight" }
         ]
@@ -432,6 +650,226 @@
         { "type": "set_environment_flag", "id": "birds_startled", "value": true }
       ],
       "narrationHints": "A black cloud of birds erupts from the east wing, as if something moved where nothing should."
+    },
+    {
+      "id": "failure_vale_retaliation",
+      "title": "Vale strikes",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          { "type": "case_active" },
+          { "type": "clock_expired", "clockId": "vale_retaliation" },
+          { "type": "character_willingness", "characterId": "vale", "is": "hostile" }
+        ]
+      },
+      "effects": [
+        { "type": "set_player_threat", "threat": "assaulted" },
+        { "type": "add_player_tag", "tag": "killed" },
+        {
+          "type": "end_case",
+          "outcome": "failure",
+          "endingId": "failure_murdered",
+          "endingKind": "murdered"
+        }
+      ],
+      "narrationHints": "You waited too long after cornering Vale. He acts first. This is a failure ending — murdered. Perform the closing, do not continue the case.",
+      "reactions": [
+        {
+          "characterId": "vale",
+          "lineHint": "You should have left that letter alone.",
+          "stance": "violent"
+        }
+      ]
+    },
+    {
+      "id": "failure_time_runs_out",
+      "title": "Dawn and the empty road",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          { "type": "case_active" },
+          { "type": "time_at_least", "slotId": "after_midnight" },
+          {
+            "type": "not",
+            "of": { "type": "clock_running", "clockId": "vale_retaliation" }
+          }
+        ]
+      },
+      "effects": [
+        { "type": "set_character_available", "characterId": "vale", "value": false },
+        { "type": "set_willingness", "characterId": "vale", "value": "fled" },
+        {
+          "type": "end_case",
+          "outcome": "failure",
+          "endingId": "failure_time_expired",
+          "endingKind": "time_expired"
+        }
+      ],
+      "narrationHints": "After midnight the case slips away: Vale is gone when the roads begin to open. Failure by time. Perform the closing.",
+      "reactions": []
+    },
+    {
+      "id": "overreach_starts_inquiry",
+      "title": "The household turns on the detective",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          { "type": "case_active" },
+          { "type": "game_flag", "id": "inspector_room_ransacked", "equals": true },
+          {
+            "type": "or",
+            "of": [
+              { "type": "game_flag", "id": "falsely_accused_henshaw", "equals": true },
+              {
+                "type": "and",
+                "of": [
+                  { "type": "player_safe_haven_compromised" },
+                  { "type": "time_at_least", "slotId": "approaching_midnight" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "effects": [
+        { "type": "start_clock", "clockId": "professional_inquiry", "turns": 8 },
+        { "type": "set_willingness", "characterId": "mrs-blackwood", "value": "hostile" },
+        { "type": "set_ambient", "ambient": "hostile_house" },
+        {
+          "type": "notebook_append",
+          "text": "The household is complaining about my methods. If I do not close this cleanly, I may be the one in cuffs."
+        }
+      ],
+      "narrationHints": "Pressure from the family and the ransacked guest room have drawn official eyes. A professional-inquiry clock is running — finish the case or be relieved and detained for overreach."
+    },
+    {
+      "id": "failure_arrested",
+      "title": "You are relieved of the case",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          { "type": "case_active" },
+          { "type": "clock_expired", "clockId": "professional_inquiry" }
+        ]
+      },
+      "effects": [
+        {
+          "type": "end_case",
+          "outcome": "failure",
+          "endingId": "failure_arrested",
+          "endingKind": "arrested"
+        }
+      ],
+      "narrationHints": "The inquiry lands. You are ordered off the estate, suspended, and detained pending review. Failure by overreach/arrest. Enter wrap-up if enabled."
+    },
+    {
+      "id": "wrap_success_vale_breaks",
+      "title": "Vale under judgment",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          { "type": "in_denouement" },
+          {
+            "type": "or",
+            "of": [
+              { "type": "resolution_outcome", "is": "success" },
+              { "type": "resolution_outcome", "is": "partial" }
+            ]
+          }
+        ]
+      },
+      "effects": [
+        { "type": "set_willingness", "characterId": "vale", "value": "open" },
+        { "type": "set_stance", "characterId": "vale", "value": "broken_confessing" },
+        { "type": "set_alibi_status", "characterId": "vale", "value": "abandoned" },
+        { "type": "move_character", "characterId": "vale", "toLocationId": "entrance-hall" },
+        { "type": "move_character", "characterId": "henshaw", "toLocationId": "entrance-hall" },
+        { "type": "move_character", "characterId": "mrs-blackwood", "toLocationId": "entrance-hall" },
+        { "type": "set_willingness", "characterId": "henshaw", "value": "open" },
+        { "type": "set_stance", "characterId": "henshaw", "value": "relieved_shaken" },
+        { "type": "set_willingness", "characterId": "mrs-blackwood", "value": "guarded" },
+        { "type": "set_stance", "characterId": "mrs-blackwood", "value": "cold_practical" },
+        { "type": "set_relationship_active", "relationshipId": "vale_debt_blackwood", "active": false },
+        { "type": "set_relationship", "relationshipId": "henshaw_loyalty_family", "strength": 3 },
+        { "type": "set_ambient", "ambient": "aftermath" },
+        {
+          "type": "notebook_append",
+          "text": "Judgment entered. Vale remains under my eye until the roads open. The household is gathering in the hall."
+        }
+      ],
+      "narrationHints": "Aftermath of a correct (or partial) solve: Vale is broken and may confess in dialogue. Household gathers in the entrance hall. Still interactive — player can question him, speak to others, or leave.",
+      "reactions": [
+        {
+          "characterId": "vale",
+          "lineHint": "You have it. The quarrel — the hall — I never meant… God help me.",
+          "stance": "broken_confessing"
+        },
+        {
+          "characterId": "mrs-blackwood",
+          "lineHint": "Then keep him here until morning. I will not thank you.",
+          "stance": "cold_practical"
+        }
+      ]
+    },
+    {
+      "id": "wrap_failure_wrong_man",
+      "title": "Wrong name hangs in the air",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          { "type": "in_denouement" },
+          { "type": "resolution_kind", "is": "wrong_accusation" }
+        ]
+      },
+      "effects": [
+        { "type": "set_willingness", "characterId": "henshaw", "value": "silent" },
+        { "type": "set_willingness", "characterId": "mrs-blackwood", "value": "hostile" },
+        { "type": "set_stance", "characterId": "mrs-blackwood", "value": "dismissive" },
+        { "type": "set_ambient", "ambient": "cold_rejection" },
+        {
+          "type": "notebook_append",
+          "text": "I named the wrong person. The house has closed ranks. The real trail cools while I stand here."
+        }
+      ],
+      "narrationHints": "Wrong accusation aftermath: the household freezes you out. Vale (if present) may look almost relieved. Interactive but chilly — player can try to salvage dignity or leave.",
+      "reactions": [
+        {
+          "characterId": "mrs-blackwood",
+          "lineHint": "You have made a spectacle of yourself. We are finished answering questions tonight.",
+          "stance": "dismissive"
+        }
+      ]
+    },
+    {
+      "id": "wrap_failure_murdered",
+      "title": "Silence after violence",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          { "type": "in_denouement" },
+          { "type": "resolution_kind", "is": "murdered" }
+        ]
+      },
+      "effects": [
+        { "type": "set_character_available", "characterId": "vale", "value": false },
+        { "type": "set_ambient", "ambient": "grim" },
+        { "type": "set_willingness", "characterId": "henshaw", "value": "guarded" }
+      ],
+      "narrationHints": "If wrap-up runs after a murdered failure, keep it brief and dark — aftermath of the detective's fate, not a fresh investigation. Prefer short remaining turns."
     }
   ],
   "solution": {
@@ -439,42 +877,82 @@
     "guiltyPartyIds": ["vale"],
     "method": "Blow during a struggle in the entrance hall; Blackwood fell at the stairs",
     "motive": "Silence Blackwood before exposure of financial fraud",
+    "criticalEvidenceIds": ["vale-letter"],
     "rubric": {
       "partialCredit": true,
+      "allowWithoutEvidence": true,
+      "successPolicy": "identity_plus_one",
       "requiredFacts": [
         {
           "id": "killer-vale",
           "description": "Identifies Mr. Vale as the killer",
+          "role": "identity",
           "matchHints": ["vale"]
         },
         {
           "id": "motive-exposure",
           "description": "Motive related to exposure / letter / fraud / money",
+          "role": "motive",
           "matchHints": ["expose", "letter", "fraud", "money", "debt", "settlement", "quarrel", "argument"]
         },
         {
           "id": "method-hall",
           "description": "Violence in the hall / struggle / stairs",
-          "matchHints": ["hall", "struggle", "stairs", "vase", "crash", "entrance"]
+          "role": "method",
+          "matchHints": ["hall", "struggle", "stairs", "vase", "crash", "entrance", "blow", "push", "struck"]
         }
       ]
     }
   },
   "endings": [
     {
-      "id": "success",
+      "id": "success_earned",
       "when": "success",
-      "templateNotes": "Vale is taken into custody once the roads open. The letter, the boot print, and the broken alibi seal it. Mrs. Blackwood does not thank you. Outside, the storm finally begins to ease — or perhaps you only imagine it."
+      "kind": "solved",
+      "title": "Case closed",
+      "templateNotes": "Vale is taken into custody once the roads open. The letter, the boot print, and the broken alibi seal it — work you actually did. Mrs. Blackwood does not thank you. Outside, the storm finally begins to ease — or perhaps you only imagine it."
+    },
+    {
+      "id": "success_lucky",
+      "when": "success",
+      "kind": "lucky_solve",
+      "title": "A shot in the dark that hit",
+      "templateNotes": "You named Vale before the file was complete — little or no hard evidence in hand. Still, the truth is the truth: he breaks. Color drains from his face; the conservatory story collapses into a raw admission of the quarrel and the blow in the hall. Proof can come later for the magistrates; tonight the killer is unmasked by insight alone. Do not invent that the player waved evidence they never found."
     },
     {
       "id": "partial",
       "when": "partial",
-      "templateNotes": "You name Vale, but the case file is thin. He twists the story on the way to town. Enough to hold him for now — not enough for a clean conviction without more work."
+      "kind": "partial",
+      "title": "Thin file",
+      "templateNotes": "You have part of it — enough pressure to rattle the house, not enough for a clean conviction. Vale twists what he can. The storm is not finished with this story."
     },
     {
-      "id": "failure",
+      "id": "failure_wrong_accusation",
       "when": "failure",
-      "templateNotes": "You accuse the wrong person, or invent a theory the evidence cannot carry. In the morning the real trail is colder, and the manor's silences have rearranged themselves against you."
+      "kind": "wrong_accusation",
+      "title": "Wrong man",
+      "templateNotes": "You commit to the wrong name — or a theory the evidence cannot carry. The real trail cools while the household rearranges its silences. Your superiors will not call this a success."
+    },
+    {
+      "id": "failure_time_expired",
+      "when": "failure",
+      "kind": "time_expired",
+      "title": "Out of time",
+      "templateNotes": "After midnight the storm loosens its grip on the road. By the time you can act, Vale is gone — and with him the only living thread that still needed cutting. The case becomes someone else's cold file."
+    },
+    {
+      "id": "failure_murdered",
+      "when": "failure",
+      "kind": "murdered",
+      "title": "You were too late",
+      "templateNotes": "You pressed Vale without finishing the case. In the dark of the manor he finished it for you. There will be no report in your hand — only another body on Blackwood marble, and a storm that finally ends for everyone else."
+    },
+    {
+      "id": "failure_arrested",
+      "when": "failure",
+      "kind": "arrested",
+      "title": "Relieved of duty",
+      "templateNotes": "You pushed too hard in the wrong direction. Mrs. Blackwood's complaint and your own overreach catch up with you: you are ordered from the estate, suspended, and detained for inquiry. The murder remains unsolved under your watch."
     }
   ]
 }

@@ -1,0 +1,1182 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://mystery.local/schemas/case-definition.json",
+  "title": "Mystery Case Definition",
+  "description": "Authored mystery kit for the Mystery platform. See docs/CASE_AUTHORING.md. Generated from packages/shared Zod schemas — run `pnpm --filter @mystery/shared schema` to regenerate.",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "enum": [
+        "1",
+        "1.5"
+      ]
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contentVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "premise": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tone": {
+          "type": "string"
+        },
+        "estimatedMinutes": {
+          "type": "integer",
+          "exclusiveMinimum": 0
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "difficulty": {
+          "type": "string",
+          "enum": [
+            "easy",
+            "medium",
+            "hard"
+          ]
+        },
+        "contentWarnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "title",
+        "premise"
+      ],
+      "additionalProperties": false
+    },
+    "player": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "voiceNotes": {
+          "type": "string"
+        },
+        "startingLocationId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "startingEvidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "startingKnowledge": {
+          "type": "string",
+          "default": ""
+        }
+      },
+      "required": [
+        "displayName",
+        "role",
+        "startingLocationId"
+      ],
+      "additionalProperties": false
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "startsAccessible": {
+            "type": "boolean",
+            "default": true
+          },
+          "exits": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "toLocationId": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "label": {
+                  "type": "string"
+                },
+                "requiresFlags": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": [
+                      "boolean",
+                      "string",
+                      "number"
+                    ]
+                  }
+                },
+                "requiresEvidenceIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "startsClosed": {
+                  "type": "boolean",
+                  "default": false
+                }
+              },
+              "required": [
+                "toLocationId"
+              ],
+              "additionalProperties": false
+            },
+            "default": []
+          },
+          "inspectables": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "hiddenUntilFlags": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": [
+                      "boolean",
+                      "string",
+                      "number"
+                    ]
+                  }
+                },
+                "objectId": {
+                  "type": "string"
+                },
+                "onInspect": {
+                  "type": "object",
+                  "properties": {
+                    "narrativeHints": {
+                      "type": "string"
+                    },
+                    "revealsEvidenceIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "setsFlags": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": [
+                          "boolean",
+                          "string",
+                          "number"
+                        ]
+                      }
+                    },
+                    "requiresFlags": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": [
+                          "boolean",
+                          "string",
+                          "number"
+                        ]
+                      }
+                    },
+                    "requiresEvidenceIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "additionalProperties": false,
+                  "default": {}
+                }
+              },
+              "required": [
+                "id",
+                "name"
+              ],
+              "additionalProperties": false
+            },
+            "default": []
+          },
+          "charactersPresent": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "characterId": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "requiresFlags": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": [
+                      "boolean",
+                      "string",
+                      "number"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "characterId"
+              ],
+              "additionalProperties": false
+            },
+            "default": []
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "characters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "shortBio": {
+            "type": "string"
+          },
+          "voice": {
+            "type": "string"
+          },
+          "defaultLocationId": {
+            "type": "string"
+          },
+          "defaultWillingness": {
+            "type": "string",
+            "enum": [
+              "open",
+              "guarded",
+              "hostile",
+              "silent",
+              "fled"
+            ],
+            "default": "open"
+          },
+          "defaultStance": {
+            "type": "string"
+          },
+          "knowledge": {
+            "type": "object",
+            "properties": {
+              "public": {
+                "type": "string",
+                "default": ""
+              },
+              "private": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "content": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "requiresFlags": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": [
+                          "boolean",
+                          "string",
+                          "number"
+                        ]
+                      }
+                    },
+                    "requiresEvidenceIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "requiresTrust": {
+                      "type": "number"
+                    },
+                    "requiresWillingnessIn": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "open",
+                          "guarded",
+                          "hostile",
+                          "silent",
+                          "fled"
+                        ]
+                      }
+                    },
+                    "requiresRelationshipIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "requiresRelationshipId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "content"
+                  ],
+                  "additionalProperties": false
+                },
+                "default": []
+              },
+              "secrets": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "content": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "requiresFlags": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": [
+                          "boolean",
+                          "string",
+                          "number"
+                        ]
+                      }
+                    },
+                    "requiresEvidenceIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "requiresTrust": {
+                      "type": "number"
+                    },
+                    "requiresWillingnessIn": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "open",
+                          "guarded",
+                          "hostile",
+                          "silent",
+                          "fled"
+                        ]
+                      }
+                    },
+                    "requiresRelationshipIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "requiresRelationshipId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "content"
+                  ],
+                  "additionalProperties": false
+                },
+                "default": []
+              }
+            },
+            "additionalProperties": false
+          },
+          "defenses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": []
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "knowledge"
+        ],
+        "additionalProperties": false
+      },
+      "default": []
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "fromId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "toId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "type": "string"
+          },
+          "strength": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 3,
+            "default": 1
+          },
+          "public": {
+            "type": "boolean",
+            "default": false
+          },
+          "knownToPlayerByDefault": {
+            "type": "boolean",
+            "default": false
+          },
+          "notes": {
+            "type": "string"
+          },
+          "startsActive": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "id",
+          "fromId",
+          "toId",
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      "default": []
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "discoverableAt": {
+            "type": "object",
+            "properties": {
+              "locationId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "inspectableId": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "locationId",
+              "inspectableId"
+            ],
+            "additionalProperties": false
+          },
+          "canPresentTo": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              {
+                "type": "string",
+                "const": "*"
+              }
+            ]
+          },
+          "redHerring": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description"
+        ],
+        "additionalProperties": false
+      },
+      "default": []
+    },
+    "flags": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string"
+          },
+          "aiVisible": {
+            "type": "boolean",
+            "default": false
+          },
+          "defaultValue": {
+            "type": [
+              "boolean",
+              "string",
+              "number"
+            ]
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "default": []
+    },
+    "solution": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "guiltyPartyIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "method": {
+          "type": "string"
+        },
+        "motive": {
+          "type": "string"
+        },
+        "criticalEvidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "rubric": {
+          "type": "object",
+          "properties": {
+            "requiredFacts": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "matchHints": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "default": []
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "identity",
+                      "method",
+                      "motive",
+                      "supporting"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "description"
+                ],
+                "additionalProperties": false
+              },
+              "default": []
+            },
+            "partialCredit": {
+              "type": "boolean",
+              "default": true
+            },
+            "allowWithoutEvidence": {
+              "type": "boolean",
+              "default": true
+            },
+            "successPolicy": {
+              "type": "string",
+              "enum": [
+                "identity",
+                "identity_plus_one",
+                "all_facts"
+              ],
+              "default": "identity_plus_one"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "summary",
+        "rubric"
+      ],
+      "additionalProperties": false
+    },
+    "canon": {
+      "type": "object",
+      "properties": {
+        "timeline": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "at": {
+                "type": "string",
+                "minLength": 1
+              },
+              "event": {
+                "type": "string",
+                "minLength": 1
+              },
+              "locationId": {
+                "type": "string"
+              },
+              "actorIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              }
+            },
+            "required": [
+              "at",
+              "event"
+            ],
+            "additionalProperties": false
+          },
+          "default": []
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "endings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "when": {
+            "type": "string",
+            "enum": [
+              "success",
+              "partial",
+              "failure",
+              "custom"
+            ]
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "solved",
+              "lucky_solve",
+              "partial",
+              "wrong_accusation",
+              "time_expired",
+              "murdered",
+              "arrested",
+              "escaped",
+              "custom"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "requiresFlags": {
+            "type": "object",
+            "additionalProperties": {
+              "type": [
+                "boolean",
+                "string",
+                "number"
+              ]
+            }
+          },
+          "templateNotes": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "id",
+          "when",
+          "templateNotes"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "openingNarration": {
+      "type": "string",
+      "minLength": 1
+    },
+    "wrapUp": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "maxTurns": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "default": 10
+        },
+        "allowEarlyExit": {
+          "type": "boolean",
+          "default": true
+        },
+        "performanceNotes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "beats": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "type": "string"
+          },
+          "once": {
+            "type": "boolean",
+            "default": true
+          },
+          "trigger": {
+            "type": "string",
+            "enum": [
+              "on_turn",
+              "on_discover",
+              "on_present",
+              "on_talk",
+              "on_phase_enter",
+              "manual"
+            ],
+            "default": "on_turn"
+          },
+          "when": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "additionalProperties": true
+          },
+          "effects": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": [
+                    "boolean",
+                    "string",
+                    "number"
+                  ]
+                },
+                "phaseId": {
+                  "type": "string"
+                },
+                "clockId": {
+                  "type": "string"
+                },
+                "turns": {
+                  "type": "number"
+                },
+                "beatId": {
+                  "type": "string"
+                },
+                "delayTurns": {
+                  "type": "number"
+                },
+                "outcome": {
+                  "type": "string",
+                  "enum": [
+                    "success",
+                    "partial",
+                    "failure"
+                  ]
+                },
+                "endingId": {
+                  "type": "string"
+                },
+                "endingKind": {
+                  "type": "string"
+                },
+                "kind": {
+                  "type": "string"
+                },
+                "toSlotId": {
+                  "type": "string"
+                },
+                "byMinutes": {
+                  "type": "number"
+                },
+                "weather": {
+                  "type": "string"
+                },
+                "intensity": {
+                  "type": "string"
+                },
+                "light": {
+                  "type": "string"
+                },
+                "level": {
+                  "type": "string"
+                },
+                "ambient": {
+                  "type": "string"
+                },
+                "tag": {
+                  "type": "string"
+                },
+                "characterId": {
+                  "type": "string"
+                },
+                "by": {
+                  "type": "number"
+                },
+                "toLocationId": {
+                  "type": "string"
+                },
+                "knowledgeId": {
+                  "type": "string"
+                },
+                "objectId": {
+                  "type": "string"
+                },
+                "evidenceId": {
+                  "type": "string"
+                },
+                "locationId": {
+                  "type": "string"
+                },
+                "from": {
+                  "type": "string"
+                },
+                "to": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                },
+                "threat": {
+                  "type": "string"
+                },
+                "toLocationIdForObject": {
+                  "type": "string"
+                },
+                "force": {
+                  "type": "boolean"
+                },
+                "relationshipId": {
+                  "type": "string"
+                },
+                "fromId": {
+                  "type": "string"
+                },
+                "toId": {
+                  "type": "string"
+                },
+                "strength": {
+                  "type": "number"
+                },
+                "knownToPlayer": {
+                  "type": "boolean"
+                },
+                "active": {
+                  "type": "boolean"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "itemId": {
+                  "type": "string"
+                },
+                "condition": {
+                  "type": "string"
+                },
+                "holder": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "additionalProperties": false
+            },
+            "default": []
+          },
+          "narrationHints": {
+            "type": "string"
+          },
+          "reactions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "characterId": {
+                  "type": "string"
+                },
+                "lineHint": {
+                  "type": "string"
+                },
+                "stance": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "characterId"
+              ],
+              "additionalProperties": false
+            },
+            "default": []
+          }
+        },
+        "required": [
+          "id",
+          "when"
+        ],
+        "additionalProperties": false
+      },
+      "default": []
+    },
+    "phases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "default": []
+    },
+    "time": {
+      "type": "object",
+      "properties": {
+        "startSlotId": {
+          "type": "string"
+        },
+        "minutesPerTurn": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0
+        },
+        "schedule": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minutesFromStart": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "id",
+              "label",
+              "minutesFromStart"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "startSlotId",
+        "schedule"
+      ],
+      "additionalProperties": false
+    },
+    "environment": {
+      "type": "object",
+      "properties": {
+        "weather": {
+          "type": "string",
+          "default": "clear"
+        },
+        "weatherIntensity": {
+          "type": "string"
+        },
+        "light": {
+          "type": "string",
+          "default": "day"
+        },
+        "ambient": {
+          "type": "string"
+        },
+        "crowd": {
+          "type": "string",
+          "default": "none"
+        },
+        "flags": {
+          "type": "object",
+          "additionalProperties": {
+            "type": [
+              "boolean",
+              "string",
+              "number"
+            ]
+          },
+          "default": {}
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "id",
+    "contentVersion",
+    "meta",
+    "player",
+    "locations",
+    "solution",
+    "endings",
+    "openingNarration"
+  ],
+  "additionalProperties": false
+}

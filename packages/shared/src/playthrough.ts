@@ -3,11 +3,34 @@ import { FlagValueSchema } from "./definition.js";
 
 export const PlaythroughStatusSchema = z.enum([
   "active",
+  /**
+   * Judgment rendered (solved or failed), but the player may still interact:
+   * confessions, fallout, goodbyes. Not a second investigation.
+   */
+  "denouement",
   "solved",
   "failed",
   "abandoned",
 ]);
 export type PlaythroughStatus = z.infer<typeof PlaythroughStatusSchema>;
+
+/** Final judgment while still in denouement (or after close). */
+export const ResolutionSchema = z.object({
+  outcome: z.enum(["success", "partial", "failure", "custom"]),
+  endingId: z.string().optional(),
+  kind: z.string().optional(),
+  path: z.string().optional(),
+  title: z.string().optional(),
+});
+export type Resolution = z.infer<typeof ResolutionSchema>;
+
+export const DenouementStateSchema = z.object({
+  /** Turns left in wrap-up; 0 → finalize. null = until player exits. */
+  turnsRemaining: z.number().int().nullable(),
+  maxTurns: z.number().int().nonnegative(),
+  startedAtTurn: z.number().int().nonnegative(),
+});
+export type DenouementState = z.infer<typeof DenouementStateSchema>;
 
 export const WillingnessSchema = z.enum([
   "open",
@@ -45,6 +68,11 @@ export const CharacterRuntimeStateSchema = z.object({
   available: z.boolean().default(true),
   willingness: WillingnessSchema.default("open"),
   pressure: z.number().default(0),
+  /**
+   * Soft rapport with the player. Knowledge may requireTrust: N.
+   * Independent of pressure (can be high-pressure and high-trust when cornered honestly).
+   */
+  trust: z.number().default(0),
   stance: z.string().default(""),
   alibiStatus: z
     .enum(["claimed", "broken", "abandoned", "none"])
@@ -53,6 +81,23 @@ export const CharacterRuntimeStateSchema = z.object({
 });
 export type CharacterRuntimeState = z.infer<typeof CharacterRuntimeStateSchema>;
 
+/** Mutable instance of a definition relationship edge. */
+export const RelationshipRuntimeStateSchema = z.object({
+  active: z.boolean().default(true),
+  strength: z.number().int().min(0).max(3).default(1),
+  /** Player (and free narration) may treat this as known. */
+  knownToPlayer: z.boolean().default(false),
+  labelOverride: z.string().optional(),
+  flags: z.record(FlagValueSchema).default({}),
+});
+export type RelationshipRuntimeState = z.infer<
+  typeof RelationshipRuntimeStateSchema
+>;
+
+/**
+ * World object / inventory item state.
+ * When stage is "taken" and holder is "player", the item is in inventory.
+ */
 export const ObjectRuntimeStateSchema = z.object({
   stage: z
     .enum([
@@ -65,7 +110,23 @@ export const ObjectRuntimeStateSchema = z.object({
     ])
     .default("visible"),
   locked: z.boolean().default(false),
+  /** Where it is in the world (omit / clear when held). */
   locationId: z.string().optional(),
+  /**
+   * Who holds it: "player" = inventory; character id = on NPC;
+   * omit = in the world at locationId.
+   */
+  holder: z.string().optional(),
+  /** Physical/logical condition while held or in world e.g. intact, torn, wet, opened, spent. */
+  condition: z.string().default("intact"),
+  /** Free tags e.g. "bloody", "read", "smudged". */
+  tags: z.array(z.string()).default([]),
+  /** Item-local flags (opened_envelope, powder_tested, …). */
+  flags: z.record(FlagValueSchema).default({}),
+  /** Closer looks while in hand / at scene. */
+  timesExamined: z.number().int().nonnegative().default(0),
+  /** Uses (key turned, match struck, …). */
+  timesUsed: z.number().int().nonnegative().default(0),
 });
 export type ObjectRuntimeState = z.infer<typeof ObjectRuntimeStateSchema>;
 
@@ -103,6 +164,30 @@ export const PresentedRecordSchema = z.object({
 });
 export type PresentedRecord = z.infer<typeof PresentedRecordSchema>;
 
+/**
+ * How the world is pushing back on the detective (plot-as-target).
+ * Authored via beats/effects — not freeform AI inventing attacks.
+ */
+export const PlayerThreatSchema = z.enum([
+  "none",
+  "watched",
+  "threatened",
+  "assaulted",
+]);
+export type PlayerThreat = z.infer<typeof PlayerThreatSchema>;
+
+export const PlayerStatusSchema = z.object({
+  /** Escalating pressure aimed at the detective personally. */
+  threat: PlayerThreatSchema.default("none"),
+  /** True after room broken into / safe place compromised. */
+  safeHavenCompromised: z.boolean().default(false),
+  /** Case-specific tags e.g. "notes_stolen", "followed". */
+  tags: z.array(z.string()).default([]),
+  /** Case-specific booleans under player status. */
+  flags: z.record(FlagValueSchema).default({}),
+});
+export type PlayerStatus = z.infer<typeof PlayerStatusSchema>;
+
 export const PlaythroughStateSchema = z.object({
   id: z.string().min(1),
   caseId: z.string().min(1),
@@ -130,6 +215,8 @@ export const PlaythroughStateSchema = z.object({
     .default([]),
   clocks: z.record(z.number()).default({}),
   characterState: z.record(CharacterRuntimeStateSchema).default({}),
+  /** key = relationship edge id from definition */
+  relationshipState: z.record(RelationshipRuntimeStateSchema).default({}),
   objectState: z.record(ObjectRuntimeStateSchema).default({}),
   locationState: z.record(LocationRuntimeStateSchema).default({}),
   environment: EnvironmentStateSchema.default({
@@ -141,7 +228,18 @@ export const PlaythroughStateSchema = z.object({
   }),
   time: TimeStateSchema.optional(),
   presented: z.array(PresentedRecordSchema).default([]),
+  /** Plot pressure on the detective (hostility, room ransacked, etc.). */
+  playerStatus: PlayerStatusSchema.default({
+    threat: "none",
+    safeHavenCompromised: false,
+    tags: [],
+    flags: {},
+  }),
   endingId: z.string().optional(),
+  /** Set when judgment is rendered (accuse / fail beat), even during denouement. */
+  resolution: ResolutionSchema.optional(),
+  /** Present while status === denouement. */
+  denouement: DenouementStateSchema.optional(),
 });
 export type PlaythroughState = z.infer<typeof PlaythroughStateSchema>;
 
@@ -168,6 +266,16 @@ export const StatePatchSchema = z.object({
     )
     .optional(),
   talkToCharacterId: z.string().optional(),
+  /** Player asked to review what they are carrying. */
+  requestInventory: z.boolean().optional(),
+  /**
+   * Examine / use an inventory item (updates timesExamined / timesUsed + flags).
+   */
+  examineItemId: z.string().optional(),
+  useItemId: z.string().optional(),
+  setItemFlags: z
+    .record(z.record(FlagValueSchema))
+    .optional(), // itemId → flags
   accuse: z
     .object({
       summary: z.string(),

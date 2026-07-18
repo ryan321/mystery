@@ -10,7 +10,28 @@ export function allBeats(character: Character): KnowledgeBeat[] {
   return [...character.knowledge.private, ...character.knowledge.secrets];
 }
 
+function relationshipGatesMet(
+  def: MysteryDefinition,
+  state: PlaythroughState,
+  beat: KnowledgeBeat
+): boolean {
+  const relIds = [
+    ...(beat.requiresRelationshipIds ?? []),
+    ...(beat.requiresRelationshipId ? [beat.requiresRelationshipId] : []),
+  ];
+  for (const rid of relIds) {
+    const defEdge = def.relationships.find((r) => r.id === rid);
+    if (!defEdge) return false;
+    const rt = state.relationshipState[rid];
+    const active = rt?.active ?? defEdge.startsActive;
+    const known = rt?.knownToPlayer ?? defEdge.knownToPlayerByDefault;
+    if (!active || !known) return false;
+  }
+  return true;
+}
+
 export function beatIsReleased(
+  def: MysteryDefinition,
   beat: KnowledgeBeat,
   state: PlaythroughState,
   characterId: string
@@ -27,12 +48,17 @@ export function beatIsReleased(
   }
 
   if (beat.requiresWillingnessIn?.length) {
-    const w =
-      state.characterState[characterId]?.willingness ?? "open";
+    const w = state.characterState[characterId]?.willingness ?? "open";
     if (!beat.requiresWillingnessIn.includes(w)) return false;
   }
 
-  // Silent characters share almost nothing beyond public unless already revealed
+  if (beat.requiresTrust != null) {
+    const trust = state.characterState[characterId]?.trust ?? 0;
+    if (trust < beat.requiresTrust) return false;
+  }
+
+  if (!relationshipGatesMet(def, state, beat)) return false;
+
   const willingness =
     state.characterState[characterId]?.willingness ?? "open";
   if (willingness === "silent" || willingness === "fled") {
@@ -68,16 +94,49 @@ export function allowedKnowledgeForCharacter(
   }
 
   for (const beat of allBeats(character)) {
-    if (beatIsReleased(beat, state, characterId)) {
+    if (beatIsReleased(def, beat, state, characterId)) {
       allowed.push(beat.content);
     } else {
       mustNotReveal.push(`Withheld knowledge id: ${beat.id}`);
     }
   }
 
-  mustNotReveal.push(
-    "Do not name the true killer or full solution unless case is already solved."
-  );
+  const judged =
+    state.status === "denouement" ||
+    state.status === "solved" ||
+    state.status === "failed" ||
+    state.flags.case_solved === true ||
+    state.flags.case_failed === true;
+
+  if (!judged) {
+    mustNotReveal.push(
+      "Do not name the true killer or full solution unless case is already solved."
+    );
+  } else if (
+    state.flags.case_solved === true ||
+    state.resolution?.outcome === "success" ||
+    state.resolution?.outcome === "partial"
+  ) {
+    if (def.solution.guiltyPartyIds.includes(characterId)) {
+      allowed.push(
+        `CONFESSION / AFTERMATH (case judged): You are guilty. Truth: ${def.solution.summary}`
+      );
+      if (def.solution.method) {
+        allowed.push(`Method: ${def.solution.method}`);
+      }
+      if (def.solution.motive) {
+        allowed.push(`Motive: ${def.solution.motive}`);
+      }
+    } else {
+      allowed.push(
+        "The case has been judged. React as someone who just learned the official conclusion — shock, relief, anger, denial — without inventing a different killer."
+      );
+    }
+  } else {
+    allowed.push(
+      "The investigation failed or went wrong. React to consequences (escape, arrest of the detective, fear) without freely dumping the sealed solution unless your character would know it."
+    );
+  }
 
   return { allowed, mustNotReveal };
 }
@@ -99,5 +158,10 @@ export function canRevealBeat(
       if (!state.evidenceIds.includes(id)) return false;
     }
   }
+  if (beat.requiresTrust != null) {
+    const trust = state.characterState[characterId]?.trust ?? 0;
+    if (trust < beat.requiresTrust) return false;
+  }
+  if (!relationshipGatesMet(def, state, beat)) return false;
   return true;
 }

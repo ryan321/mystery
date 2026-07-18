@@ -173,37 +173,64 @@ export function directorIntentsToPatch(
       case "inspect":
       case "use": {
         const insp = resolveInspectable(def, state, intent);
-        if (!insp) {
-          notes.push(`${intent.type} unresolved`);
+        if (insp) {
+          const needsFlags = insp.onInspect.requiresFlags;
+          const needsEv = insp.onInspect.requiresEvidenceIds;
+          const flagOk = flagsMatch(state.flags, needsFlags);
+          const evOk =
+            !needsEv?.length ||
+            needsEv.every((id) => state.evidenceIds.includes(id));
+          if (!flagOk || !evOk) {
+            notes.push(
+              `inspect ${insp.id} requirements not met (still attempting)`
+            );
+          }
+          if (flagOk && evOk) {
+            for (const id of insp.onInspect.revealsEvidenceIds ?? []) {
+              addEvidence.add(id);
+            }
+            if (insp.onInspect.setsFlags) {
+              Object.assign(setFlags, insp.onInspect.setsFlags);
+            }
+          } else if (flagOk && needsEv?.length) {
+            for (const id of insp.onInspect.revealsEvidenceIds ?? []) {
+              addEvidence.add(id);
+            }
+            if (insp.onInspect.setsFlags) {
+              Object.assign(setFlags, insp.onInspect.setsFlags);
+            }
+          }
+          // Using a held key on a container also counts as use of that item
+          if (intent.type === "use" && needsEv?.length) {
+            const used = needsEv.find((id) => state.evidenceIds.includes(id));
+            if (used) patch.useItemId = used;
+          }
+          notes.push(`inspect→${insp.id}`);
           break;
         }
-        const needsFlags = insp.onInspect.requiresFlags;
-        const needsEv = insp.onInspect.requiresEvidenceIds;
-        const flagOk = flagsMatch(state.flags, needsFlags);
-        const evOk =
-          !needsEv?.length ||
-          needsEv.every((id) => state.evidenceIds.includes(id));
-        if (!flagOk || !evOk) {
-          notes.push(`inspect ${insp.id} requirements not met (still attempting)`);
+        // Inventory-only use/examine (no world target)
+        if (intent.type === "use") {
+          const held = def.evidence.filter((e) =>
+            state.evidenceIds.includes(e.id)
+          );
+          let useId = intent.evidenceId;
+          if (!useId && intent.targetHint) {
+            const h = intent.targetHint.toLowerCase();
+            useId = held.find(
+              (e) =>
+                e.name.toLowerCase().includes(h) ||
+                e.id.includes(h.replace(/\s+/g, "-"))
+            )?.id;
+          }
+          if (useId && state.evidenceIds.includes(useId)) {
+            patch.useItemId = useId;
+            notes.push(`use ${useId}`);
+          } else {
+            notes.push("use unresolved");
+          }
+        } else {
+          notes.push("inspect unresolved");
         }
-        // Only propose grants if requirements look met (engine re-checks)
-        if (flagOk && evOk) {
-          for (const id of insp.onInspect.revealsEvidenceIds ?? []) {
-            addEvidence.add(id);
-          }
-          if (insp.onInspect.setsFlags) {
-            Object.assign(setFlags, insp.onInspect.setsFlags);
-          }
-        } else if (flagOk && needsEv?.length) {
-          // still try if they have items — engine validates
-          for (const id of insp.onInspect.revealsEvidenceIds ?? []) {
-            addEvidence.add(id);
-          }
-          if (insp.onInspect.setsFlags) {
-            Object.assign(setFlags, insp.onInspect.setsFlags);
-          }
-        }
-        notes.push(`inspect→${insp.id}`);
         break;
       }
       case "talk": {
@@ -246,6 +273,7 @@ export function directorIntentsToPatch(
         notes.push("look");
         break;
       case "inventory":
+        patch.requestInventory = true;
         notes.push("inventory");
         break;
       case "accuse": {
@@ -258,9 +286,17 @@ export function directorIntentsToPatch(
         notes.push("accuse");
         break;
       }
-      case "other":
-        notes.push(intent.note ?? "other");
+      case "other": {
+        const note = intent.note ?? "other";
+        notes.push(note);
+        if (
+          /exit_denouement|leave_case|end_wrap/i.test(note) ||
+          /\b(goodbye|i leave|end case)\b/i.test(playerInput)
+        ) {
+          notes.push("exit_denouement");
+        }
         break;
+      }
     }
   }
 

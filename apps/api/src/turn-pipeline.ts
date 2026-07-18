@@ -10,6 +10,12 @@ import {
   appendDialogueMemory,
   advancePassiveTime,
   evaluateBeats,
+  accusationNarrationHints,
+  finalizeDenouement,
+  tickDenouement,
+  isInteractive,
+  inventoryNarrationHints,
+  listInventory,
 } from "@mystery/engine";
 import { runDirector, runPerformer, type LlmConfig } from "@mystery/llm";
 
@@ -35,8 +41,13 @@ export type TurnPipelineResult = {
 };
 
 /**
- * Two-call turn with simulation tick:
- *  time march → director → engine patch → beats → performer
+ * Turn loop:
+ *  1. Passive time + clock tick
+ *  2. Beats on tick (time_expired, clock_expired — before player acts)
+ *  3. Director → engine patch
+ *  4. Beats on player events (discover/present/talk/on_turn)
+ *  5. Denouement exit/budget
+ *  6. Performer
  */
 export async function runTurnPipeline(args: {
   def: MysteryDefinition;
@@ -45,7 +56,20 @@ export async function runTurnPipeline(args: {
   llmConfig: LlmConfig | null;
 }): Promise<TurnPipelineResult> {
   const { def, playerInput, llmConfig } = args;
+  if (!isInteractive(args.state)) {
+    throw new Error("case_not_interactive");
+  }
+
   let state = advancePassiveTime(def, args.state);
+
+  // --- Beat pass 1: world ticks (clocks/time) fire before the player acts ---
+  const tickBeats = evaluateBeats(def, state, 3, { source: "tick" });
+  state = tickBeats.state;
+  const justHappened: JustHappened[] = [...tickBeats.justHappened];
+  const allFired = [...tickBeats.fired];
+
+  // If tick ended the investigation (e.g. murdered on clock), still allow
+  // denouement interaction with this input — strip investigate-only intents later.
 
   const directorPack = buildContextPack(def, state);
 
@@ -61,7 +85,6 @@ export async function runTurnPipeline(args: {
     playerInput
   );
 
-  // Detect false accusation of Henshaw for beat
   if (
     patch.accuse?.suspectIds?.includes("henshaw") &&
     !patch.accuse.suspectIds.includes("vale")
@@ -72,14 +95,29 @@ export async function runTurnPipeline(args: {
     };
   }
 
-  const { applied, rejected, nextState, evidenceAdded } =
+  if (state.status === "denouement" && patch.accuse) {
+    delete patch.accuse;
+    notes.push("accuse ignored — denouement");
+  }
+
+  // If tick already judged the case into denouement, block new accuse
+  if (args.state.status === "active" && state.status === "denouement") {
+    delete patch.accuse;
+  }
+
+  const { applied, rejected, nextState, evidenceAdded, accusation } =
     validateAndApplyPatch(def, state, patch);
 
-  // Story beats cascade after player-caused changes
-  const beatResult = evaluateBeats(def, nextState, 3);
-  let simState = beatResult.state;
-
-  const justHappened: JustHappened[] = [...beatResult.justHappened];
+  // --- Beat pass 2: player-caused unlocks ---
+  const playerBeats = evaluateBeats(def, nextState, 3, {
+    source: "player",
+    discoveredEvidenceIds: evidenceAdded,
+    presented: applied.presented,
+    talkedToCharacterId: applied.talkToCharacterId,
+  });
+  let simState = playerBeats.state;
+  justHappened.push(...playerBeats.justHappened);
+  allFired.push(...playerBeats.fired);
 
   if (applied.setLocationId) {
     const loc = def.locations.find((l) => l.id === applied.setLocationId);
@@ -108,22 +146,117 @@ export async function runTurnPipeline(args: {
       });
     }
   }
-  if (applied.accuse) {
+  if (applied.accuse && accusation) {
+    justHappened.push({
+      id: "accusation",
+      summary: `Accusation ${accusation.score} (${accusation.path})`,
+      narrationHints: accusationNarrationHints(def, accusation),
+    });
+  } else if (applied.accuse) {
     justHappened.push({
       id: "accusation",
       summary: "Player made an accusation",
       narrationHints: "You commit to an accusation.",
     });
   }
+  if (applied.requestInventory || notes.includes("inventory")) {
+    justHappened.push({
+      id: "inventory",
+      summary: "Player checks inventory",
+      narrationHints: inventoryNarrationHints(def, simState),
+    });
+  }
+  if (applied.examineItemId) {
+    const item = listInventory(def, simState).find(
+      (i) => i.id === applied.examineItemId
+    );
+    justHappened.push({
+      id: `examine_item_${applied.examineItemId}`,
+      summary: `Examined ${item?.name ?? applied.examineItemId}`,
+      narrationHints: item
+        ? `You examine ${item.name} in your possession. Condition: ${item.condition}. ${item.description}`
+        : `You examine ${applied.examineItemId}.`,
+    });
+  }
+  if (applied.useItemId) {
+    const item = listInventory(def, simState).find(
+      (i) => i.id === applied.useItemId
+    );
+    justHappened.push({
+      id: `use_item_${applied.useItemId}`,
+      summary: `Used ${item?.name ?? applied.useItemId}`,
+      narrationHints: item
+        ? `You make use of ${item.name} (uses: ${item.timesUsed}).`
+        : `You use ${applied.useItemId}.`,
+    });
+  }
 
-  // Ending performance material
-  if (simState.status !== "active" && simState.endingId) {
+  const enteredDenouementThisTurn =
+    args.state.status === "active" && simState.status === "denouement";
+
+  if (simState.status === "denouement" && simState.endingId) {
+    const ending = def.endings.find((e) => e.id === simState.endingId);
+    if (ending && enteredDenouementThisTurn) {
+      justHappened.push({
+        id: "denouement_start",
+        summary: `Wrap-up begins: ${ending.title ?? ending.id}`,
+        narrationHints: [
+          ending.templateNotes,
+          def.wrapUp?.performanceNotes,
+          "Judgment is in. Stay with the household for the aftermath — confessions, reactions, consequences. Still interactive.",
+        ]
+          .filter(Boolean)
+          .join("\n"),
+      });
+    } else if (ending && args.state.status === "denouement") {
+      justHappened.push({
+        id: "denouement_continue",
+        summary: "Aftermath continues",
+        narrationHints:
+          "Still in wrap-up. Characters remain in the fallout of the judgment.",
+      });
+    }
+  } else if (
+    (simState.status === "solved" || simState.status === "failed") &&
+    simState.endingId
+  ) {
     const ending = def.endings.find((e) => e.id === simState.endingId);
     if (ending) {
       justHappened.push({
         id: "ending",
         summary: `Ending: ${ending.id}`,
         narrationHints: ending.templateNotes,
+      });
+    }
+  }
+
+  const exitWrapUp =
+    simState.status === "denouement" &&
+    def.wrapUp?.allowEarlyExit !== false &&
+    (notes.some((n) => /exit_denouement/i.test(n)) ||
+      /\b(i('m| am)? (done|leaving)|goodbye|good night|end (the )?case|close the case|that('s| is) enough|i leave)\b/i.test(
+        playerInput
+      ));
+  if (exitWrapUp) {
+    simState = finalizeDenouement(def, simState, "player_exit");
+    justHappened.push({
+      id: "denouement_end",
+      summary: "You leave the aftermath",
+      narrationHints:
+        "The player steps away. Close the wrap-up with a final image; case fully closed.",
+    });
+  } else if (
+    args.state.status === "denouement" &&
+    simState.status === "denouement"
+  ) {
+    const before = simState;
+    simState = tickDenouement(def, simState);
+    if (before.status === "denouement" && simState.status !== "denouement") {
+      justHappened.push({
+        id: "denouement_end",
+        summary: "Wrap-up time runs out",
+        narrationHints:
+          "The aftermath has run its course. Give a final closing image.",
       });
     }
   }
@@ -169,7 +302,7 @@ export async function runTurnPipeline(args: {
       performerLatencyMs: performer.latencyMs,
       intentNotes: notes,
       focusCharacterId,
-      beatsFired: beatResult.fired,
+      beatsFired: allFired,
     },
   };
 }

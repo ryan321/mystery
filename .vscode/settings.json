@@ -1,0 +1,11 @@
+{
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "/content/cases/*/definition.json",
+        "content/cases/*/definition.json"
+      ],
+      "url": "./content/cases/definition.schema.json"
+    }
+  ]
+}

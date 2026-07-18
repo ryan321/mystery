@@ -3,6 +3,7 @@ import type {
   MysteryDefinition,
   PlaythroughState,
 } from "@mystery/shared";
+import { hasRelationship } from "./relationships.js";
 
 function slotIndex(def: MysteryDefinition, slotId: string): number {
   if (!def.time) return -1;
@@ -42,9 +43,67 @@ export function evaluateCondition(
     case "beat_fired":
       return state.firedBeatIds.includes(String(condition.beatId));
     case "clock_expired":
-      return (state.clocks[String(condition.clockId)] ?? 1) <= 0;
+      return (
+        state.clocks[String(condition.clockId)] !== undefined &&
+        (state.clocks[String(condition.clockId)] ?? 1) <= 0
+      );
+    case "clock_running":
+      return (state.clocks[String(condition.clockId)] ?? 0) > 0;
+    case "clock_at_most":
+      return (
+        state.clocks[String(condition.clockId)] !== undefined &&
+        (state.clocks[String(condition.clockId)] ?? Infinity) <=
+          Number(condition.n)
+      );
+    case "case_status":
+      return state.status === condition.is;
+    case "case_active":
+      return state.status === "active";
+    case "in_denouement":
+      return state.status === "denouement";
+    case "case_interactive":
+      return state.status === "active" || state.status === "denouement";
+    case "resolution_outcome":
+      return state.resolution?.outcome === condition.is;
+    case "resolution_kind":
+      return state.resolution?.kind === condition.is;
+    case "resolution_path":
+      return state.resolution?.path === condition.is;
     case "has_evidence":
-      return state.evidenceIds.includes(String(condition.evidenceId));
+    case "inventory_has":
+      return state.evidenceIds.includes(
+        String(condition.evidenceId ?? condition.itemId)
+      );
+    case "item_condition": {
+      const id = String(condition.itemId ?? condition.objectId);
+      const os = state.objectState[id];
+      return (os?.condition ?? "intact") === condition.is;
+    }
+    case "item_flag": {
+      const id = String(condition.itemId ?? condition.objectId);
+      const os = state.objectState[id];
+      return os?.flags?.[String(condition.id)] === condition.equals;
+    }
+    case "item_has_tag": {
+      const id = String(condition.itemId ?? condition.objectId);
+      const os = state.objectState[id];
+      return (os?.tags ?? []).includes(String(condition.tag));
+    }
+    case "item_examined_at_least": {
+      const id = String(condition.itemId ?? condition.objectId);
+      const os = state.objectState[id];
+      return (os?.timesExamined ?? 0) >= Number(condition.n ?? condition.value);
+    }
+    case "item_used_at_least": {
+      const id = String(condition.itemId ?? condition.objectId);
+      const os = state.objectState[id];
+      return (os?.timesUsed ?? 0) >= Number(condition.n ?? condition.value);
+    }
+    case "item_holder": {
+      const id = String(condition.itemId ?? condition.objectId);
+      const os = state.objectState[id];
+      return (os?.holder ?? "") === String(condition.is ?? condition.holder);
+    }
     case "visited":
       return state.visitedLocationIds.includes(String(condition.locationId));
     case "presented":
@@ -65,6 +124,10 @@ export function evaluateCondition(
     case "character_pressure_at_least": {
       const cs = state.characterState[String(condition.characterId)];
       return (cs?.pressure ?? 0) >= Number(condition.value);
+    }
+    case "character_trust_at_least": {
+      const cs = state.characterState[String(condition.characterId)];
+      return (cs?.trust ?? 0) >= Number(condition.value);
     }
     case "character_at": {
       const cs = state.characterState[String(condition.characterId)];
@@ -119,6 +182,74 @@ export function evaluateCondition(
       return state.environment.crowd === condition.level;
     case "player_at":
       return state.locationId === condition.locationId;
+    case "player_not_at":
+      return state.locationId !== condition.locationId;
+    case "player_threat_is":
+      return (state.playerStatus?.threat ?? "none") === condition.is;
+    case "player_threat_at_least": {
+      const order = ["none", "watched", "threatened", "assaulted"] as const;
+      const cur = state.playerStatus?.threat ?? "none";
+      const need = String(condition.is ?? condition.threat ?? "none");
+      const ci = order.indexOf(cur as (typeof order)[number]);
+      const ni = order.indexOf(need as (typeof order)[number]);
+      return ci >= 0 && ni >= 0 && ci >= ni;
+    }
+    case "player_safe_haven_compromised":
+      return state.playerStatus?.safeHavenCompromised === true;
+    case "player_has_tag":
+      return (state.playerStatus?.tags ?? []).includes(String(condition.tag));
+    case "player_status_flag":
+      return (
+        state.playerStatus?.flags?.[String(condition.id)] === condition.equals
+      );
+    case "relationship": {
+      const rid = condition.relationshipId
+        ? String(condition.relationshipId)
+        : undefined;
+      if (rid) {
+        const rt = state.relationshipState[rid];
+        const defEdge = def.relationships.find((r) => r.id === rid);
+        if (!defEdge) return false;
+        const active = rt?.active ?? defEdge.startsActive;
+        if (!active) return false;
+        if (condition.relationshipType || condition.edgeType) {
+          const want = String(
+            condition.relationshipType ?? condition.edgeType
+          );
+          if (defEdge.type !== want) return false;
+        }
+        return true;
+      }
+      return hasRelationship(def, state, {
+        fromId: String(condition.fromId),
+        toId: String(condition.toId),
+        type: condition.relationshipType
+          ? String(condition.relationshipType)
+          : condition.edgeType
+            ? String(condition.edgeType)
+            : undefined,
+        minStrength:
+          condition.minStrength != null
+            ? Number(condition.minStrength)
+            : undefined,
+      });
+    }
+    case "relationship_known": {
+      const rid = String(condition.relationshipId ?? condition.id);
+      const rt = state.relationshipState[rid];
+      const defEdge = def.relationships.find((r) => r.id === rid);
+      if (!defEdge) return false;
+      return rt?.knownToPlayer ?? defEdge.knownToPlayerByDefault;
+    }
+    case "relationship_strength_at_least": {
+      const rid = String(condition.relationshipId ?? condition.id);
+      const rt = state.relationshipState[rid];
+      const defEdge = def.relationships.find((r) => r.id === rid);
+      if (!defEdge) return false;
+      if (rt && !rt.active) return false;
+      const strength = rt?.strength ?? defEdge.strength;
+      return strength >= Number(condition.value ?? condition.n ?? 0);
+    }
     default:
       return false;
   }

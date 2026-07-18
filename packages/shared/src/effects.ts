@@ -11,6 +11,12 @@ export const EffectSchema = z.object({
   beatId: z.string().optional(),
   delayTurns: z.number().optional(),
   outcome: z.enum(["success", "partial", "failure"]).optional(),
+  /** Prefer a specific authored ending id (failure branches). */
+  endingId: z.string().optional(),
+  /** Prefer ending by kind e.g. murdered | time_expired | arrested */
+  endingKind: z.string().optional(),
+  /** Alias for endingKind on end_case */
+  kind: z.string().optional(),
   toSlotId: z.string().optional(),
   byMinutes: z.number().optional(),
   weather: z.string().optional(),
@@ -29,6 +35,24 @@ export const EffectSchema = z.object({
   from: z.string().optional(),
   to: z.string().optional(),
   text: z.string().optional(),
+  /** Player threat level: none | watched | threatened | assaulted */
+  threat: z.string().optional(),
+  /** move_object target location when not inventory */
+  toLocationIdForObject: z.string().optional(),
+  /** Allow set_player_threat to decrease threat when true */
+  force: z.boolean().optional(),
+  /** Relationship edge id */
+  relationshipId: z.string().optional(),
+  fromId: z.string().optional(),
+  toId: z.string().optional(),
+  strength: z.number().optional(),
+  knownToPlayer: z.boolean().optional(),
+  active: z.boolean().optional(),
+  label: z.string().optional(),
+  /** Inventory / object item id (usually evidence id). */
+  itemId: z.string().optional(),
+  condition: z.string().optional(),
+  holder: z.string().optional(),
 });
 
 export type Effect = {

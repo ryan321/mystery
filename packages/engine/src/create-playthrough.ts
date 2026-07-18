@@ -4,6 +4,7 @@ import type {
   CharacterRuntimeState,
   ObjectRuntimeState,
   LocationRuntimeState,
+  RelationshipRuntimeState,
 } from "@mystery/shared";
 import { randomUUID } from "node:crypto";
 
@@ -32,18 +33,36 @@ export function createInitialPlaythrough(
       available: true,
       willingness: c.defaultWillingness ?? "open",
       pressure: 0,
+      trust: 0,
       stance: c.defaultStance ?? "",
       alibiStatus: "none",
       timesTalked: 0,
     };
   }
 
+  const relationshipState: Record<string, RelationshipRuntimeState> = {};
+  for (const rel of def.relationships) {
+    relationshipState[rel.id] = {
+      active: rel.startsActive ?? true,
+      strength: rel.strength ?? 1,
+      knownToPlayer: rel.knownToPlayerByDefault ?? false,
+      flags: {},
+    };
+  }
+
   const objectState: Record<string, ObjectRuntimeState> = {};
   for (const e of def.evidence) {
+    const held = def.player.startingEvidenceIds.includes(e.id);
     objectState[e.id] = {
-      stage: def.player.startingEvidenceIds.includes(e.id) ? "taken" : "visible",
+      stage: held ? "taken" : "visible",
       locked: false,
-      locationId: e.discoverableAt?.locationId,
+      locationId: held ? undefined : e.discoverableAt?.locationId,
+      holder: held ? "player" : undefined,
+      condition: "intact",
+      tags: [],
+      flags: {},
+      timesExamined: 0,
+      timesUsed: 0,
     };
   }
   // locked containers from inspectables with objectId
@@ -54,6 +73,11 @@ export function createInitialPlaythrough(
           stage: "visible",
           locked: (insp.onInspect.requiresEvidenceIds?.length ?? 0) > 0,
           locationId: loc.id,
+          condition: "intact",
+          tags: [],
+          flags: {},
+          timesExamined: 0,
+          timesUsed: 0,
         };
       }
     }
@@ -113,6 +137,7 @@ export function createInitialPlaythrough(
     beatQueue: [],
     clocks: {},
     characterState,
+    relationshipState,
     objectState,
     locationState,
     environment: {
@@ -126,5 +151,11 @@ export function createInitialPlaythrough(
     },
     time,
     presented: [],
+    playerStatus: {
+      threat: "none",
+      safeHavenCompromised: false,
+      tags: [],
+      flags: {},
+    },
   };
 }

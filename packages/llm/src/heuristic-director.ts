@@ -15,23 +15,59 @@ export function heuristicDirector(args: {
       presentCharacters?: ({ id: string; name: string } | null)[];
     };
     evidenceHeld?: { id: string; name: string }[];
+    cast?: { id: string; name: string }[];
   };
 
   const intents: DirectorOutput["intents"] = [];
   let focusCharacterId: string | undefined;
 
-  if (/\b(accuse|i know who|killer is|did it)\b/i.test(args.playerInput)) {
+  const accuseLike =
+    /\b(accuse|i know who|killer is|murdered by|did it|it was|is the killer|is guilty|committed (the )?murder|i charge|responsible for)\b/i.test(
+      args.playerInput
+    );
+
+  if (accuseLike) {
     const suspectIds: string[] = [];
-    if (/\bvale\b/i.test(args.playerInput)) suspectIds.push("vale");
-    if (/\bhenshaw\b/i.test(args.playerInput)) suspectIds.push("henshaw");
-    if (/\bmrs\.?\s*blackwood\b/i.test(args.playerInput))
+    const cast =
+      pack.cast ??
+      (pack.location?.presentCharacters ?? []).filter(Boolean).map((c) => ({
+        id: c!.id,
+        name: c!.name,
+      }));
+    for (const ch of cast) {
+      const name = ch.name.toLowerCase();
+      const parts = name.split(/\s+/);
+      const last = parts[parts.length - 1] ?? "";
+      if (
+        input.includes(name) ||
+        input.includes(ch.id.replace(/-/g, " ")) ||
+        (last.length > 2 && input.includes(last))
+      ) {
+        if (!suspectIds.includes(ch.id)) suspectIds.push(ch.id);
+      }
+    }
+    // Blackwood-specific fallbacks if cast missing
+    if (/\bvale\b/i.test(args.playerInput) && !suspectIds.includes("vale"))
+      suspectIds.push("vale");
+    if (
+      /\bhenshaw\b/i.test(args.playerInput) &&
+      !suspectIds.includes("henshaw")
+    )
+      suspectIds.push("henshaw");
+    if (
+      /\bmrs\.?\s*blackwood\b/i.test(args.playerInput) &&
+      !suspectIds.includes("mrs-blackwood")
+    )
       suspectIds.push("mrs-blackwood");
-    if (/\bclara\b/i.test(args.playerInput)) suspectIds.push("clara");
+    if (/\bclara\b/i.test(args.playerInput) && !suspectIds.includes("clara"))
+      suspectIds.push("clara");
+
     intents.push({
       type: "accuse",
       summary: args.playerInput,
       suspectIds,
     });
+    if (suspectIds[0]) focusCharacterId = suspectIds[0];
     return { intents, reasoning: "heuristic accuse", focusCharacterId };
   }
 
@@ -133,6 +169,14 @@ export function heuristicDirector(args: {
 
   if (/\blook\b|\bwhere am i\b|survey|examine room/i.test(input)) {
     intents.push({ type: "look" });
+  }
+
+  if (
+    /\binventory\b|\bwhat (do )?i (have|carry|holding)\b|\bwhat('s| is) in my (pocket|bag|hand)\b|\bcheck (my )?pockets\b/i.test(
+      input
+    )
+  ) {
+    intents.push({ type: "inventory" });
   }
 
   if (intents.length === 0) {

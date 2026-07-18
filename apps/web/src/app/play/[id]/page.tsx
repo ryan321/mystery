@@ -20,6 +20,31 @@ type Playthrough = {
   turnCount: number;
   phaseId?: string;
   endingId?: string;
+  ending?: {
+    id: string;
+    when: string;
+    kind?: string;
+    title?: string;
+    templateNotes?: string;
+  };
+  resolution?: {
+    outcome?: string;
+    endingId?: string;
+    kind?: string;
+    path?: string;
+    title?: string;
+  };
+  denouement?: {
+    turnsRemaining?: number | null;
+    maxTurns?: number;
+  };
+  interactive?: boolean;
+  clocks?: Record<string, number>;
+  playerStatus?: {
+    threat?: string;
+    safeHavenCompromised?: boolean;
+    tags?: string[];
+  };
   time?: { slotId: string; minutesFromStart: number };
   environment?: {
     weather?: string;
@@ -132,16 +157,27 @@ export default function PlaythroughPage() {
             }
           }
         }
-        if (data.playthrough?.status === "solved") {
+        if (data.playthrough?.status === "denouement") {
+          const end = data.playthrough.ending;
+          const title = end?.title ?? data.playthrough.resolution?.title ?? "Judgment";
           next.push({
             kind: "system",
-            text: "Case closed.",
+            text: `— ${title} — Aftermath (you may still talk, look around, or leave)`,
           });
-        }
-        if (data.playthrough?.status === "failed") {
+        } else if (
+          data.playthrough?.status === "solved" ||
+          data.playthrough?.status === "failed"
+        ) {
+          const end = data.playthrough.ending;
+          const title =
+            end?.title ??
+            (data.playthrough.status === "solved"
+              ? "Case closed"
+              : "Case failed");
+          const kind = end?.kind ? ` (${end.kind})` : "";
           next.push({
             kind: "system",
-            text: "Case closed — the accusation did not hold.",
+            text: `— ${title}${kind} — Fully closed`,
           });
         }
         return next;
@@ -202,6 +238,67 @@ export default function PlaythroughPage() {
             {playthrough.environment?.weather
               ? ` · ${playthrough.environment.weather}`
               : ""}
+            {playthrough.playerStatus?.threat &&
+            playthrough.playerStatus.threat !== "none"
+              ? ` · threat: ${playthrough.playerStatus.threat}`
+              : ""}
+            {playthrough.clocks && Object.keys(playthrough.clocks).length
+              ? ` · clocks: ${Object.entries(playthrough.clocks)
+                  .map(([k, v]) => `${k}:${v}`)
+                  .join(", ")}`
+              : ""}
+          </div>
+        ) : null}
+        {playthrough?.status === "denouement" ? (
+          <div
+            style={{
+              marginTop: 8,
+              padding: "0.6rem 0.75rem",
+              borderRadius: 6,
+              background: "#2a2410",
+              color: "#e8d090",
+              fontSize: 14,
+            }}
+          >
+            <strong>
+              {playthrough.ending?.title ??
+                playthrough.resolution?.title ??
+                "Aftermath"}
+            </strong>
+            <span style={{ opacity: 0.85 }}>
+              {" "}
+              · wrap-up
+              {playthrough.denouement?.turnsRemaining != null
+                ? ` · ${playthrough.denouement.turnsRemaining} turns left`
+                : ""}
+              {" · still interactive"}
+            </span>
+            <div style={{ fontSize: 12, opacity: 0.75, marginTop: 4 }}>
+              Talk to people, witness the fallout, or type “I leave” / goodbye
+              to end.
+            </div>
+          </div>
+        ) : null}
+        {playthrough?.status === "failed" || playthrough?.status === "solved" ? (
+          <div
+            style={{
+              marginTop: 8,
+              padding: "0.6rem 0.75rem",
+              borderRadius: 6,
+              background:
+                playthrough.status === "failed" ? "#3a1a1a" : "#1a2a1a",
+              color: playthrough.status === "failed" ? "#ffb0a0" : "#b0e0b0",
+              fontSize: 14,
+            }}
+          >
+            <strong>
+              {playthrough.ending?.title ??
+                (playthrough.status === "failed" ? "Failed" : "Solved")}
+            </strong>
+            {playthrough.ending?.kind ? (
+              <span style={{ opacity: 0.8 }}> · {playthrough.ending.kind}</span>
+            ) : null}
+            <span style={{ opacity: 0.7 }}> · closed</span>
           </div>
         ) : null}
       </header>
@@ -258,7 +355,11 @@ export default function PlaythroughPage() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type what you say or do…"
-          disabled={busy || playthrough?.status !== "active"}
+          disabled={
+            busy ||
+            (playthrough?.status !== "active" &&
+              playthrough?.status !== "denouement")
+          }
           style={{
             flex: 1,
             padding: "0.75rem 1rem",
@@ -270,7 +371,12 @@ export default function PlaythroughPage() {
         />
         <button
           type="submit"
-          disabled={busy || !input.trim() || playthrough?.status !== "active"}
+          disabled={
+            busy ||
+            !input.trim() ||
+            (playthrough?.status !== "active" &&
+              playthrough?.status !== "denouement")
+          }
           style={{
             background: "#b83a3a",
             color: "#fff",

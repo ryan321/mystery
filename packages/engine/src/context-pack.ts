@@ -1,6 +1,11 @@
 import type { MysteryDefinition, PlaythroughState } from "@mystery/shared";
 import { flagsMatch } from "./flags.js";
 import { allowedKnowledgeForCharacter } from "./knowledge.js";
+import {
+  behaviorEdgesForCharacter,
+  sceneSocialSurface,
+} from "./relationships.js";
+import { listInventory } from "./inventory.js";
 
 export function buildContextPack(
   def: MysteryDefinition,
@@ -106,14 +111,18 @@ export function buildContextPack(
     })
     .filter(Boolean);
 
-  const evidenceHeld = state.evidenceIds
-    .map((id) => def.evidence.find((e) => e.id === id))
-    .filter(Boolean)
-    .map((e) => ({
-      id: e!.id,
-      name: e!.name,
-      description: e!.description,
-    }));
+  const inventory = listInventory(def, state);
+  /** @deprecated prefer inventory — kept for older prompts */
+  const evidenceHeld = inventory.map((i) => ({
+    id: i.id,
+    name: i.name,
+    description: i.description,
+    condition: i.condition,
+    tags: i.tags,
+    flags: i.flags,
+    timesExamined: i.timesExamined,
+    timesUsed: i.timesUsed,
+  }));
 
   const flagsPublic: Record<string, unknown> = {};
   for (const f of def.flags) {
@@ -131,6 +140,18 @@ export function buildContextPack(
     .map((p) => (p ? characterSlice(def, state, p.id) : null))
     .filter(Boolean);
 
+  const presentIdList = presentCharacters
+    .map((p) => p?.id)
+    .filter(Boolean) as string[];
+  if (
+    options?.focusCharacterId &&
+    !presentIdList.includes(options.focusCharacterId)
+  ) {
+    presentIdList.push(options.focusCharacterId);
+  }
+
+  const socialSurface = sceneSocialSurface(def, state, presentIdList);
+
   const timeLabel =
     def.time?.schedule.find((s) => s.id === state.time?.slotId)?.label ??
     state.time?.slotId;
@@ -140,12 +161,60 @@ export function buildContextPack(
       title: def.meta.title,
       tone: def.meta.tone ?? "",
       phase: state.phaseId,
+      caseStatus: state.status,
     },
+    /** Public cast directory for name→id (accuse). Never includes guilt. */
+    cast: def.characters.map((c) => ({
+      id: c.id,
+      name: c.name,
+    })),
+    /**
+     * Novel-like social texture for the scene — not a player relationship map.
+     * Public or player-known edges among people here.
+     */
+    socialSurface,
     player: {
       displayName: def.player.displayName,
       role: def.player.role,
       startingKnowledge: def.player.startingKnowledge,
+      status: {
+        threat: state.playerStatus?.threat ?? "none",
+        safeHavenCompromised:
+          state.playerStatus?.safeHavenCompromised ?? false,
+        tags: state.playerStatus?.tags ?? [],
+        flags: state.playerStatus?.flags ?? {},
+      },
     },
+    resolution: state.resolution,
+    denouement:
+      state.status === "denouement" && state.denouement
+        ? {
+            turnsRemaining: state.denouement.turnsRemaining,
+            maxTurns: state.denouement.maxTurns,
+            allowEarlyExit: def.wrapUp?.allowEarlyExit !== false,
+          }
+        : undefined,
+    ending:
+      state.status !== "active" && state.endingId
+        ? (() => {
+            const e = def.endings.find((x) => x.id === state.endingId);
+            return e
+              ? {
+                  id: e.id,
+                  when: e.when,
+                  kind: e.kind,
+                  title: e.title,
+                  templateNotes: e.templateNotes,
+                }
+              : { id: state.endingId };
+          })()
+        : undefined,
+    clocks: Object.fromEntries(
+      Object.entries(state.clocks).map(([k, v]) => [
+        k,
+        { turnsRemaining: v, expired: v <= 0 },
+      ])
+    ),
     time: state.time
       ? {
           slotId: state.time.slotId,
@@ -169,6 +238,8 @@ export function buildContextPack(
       exits,
       presentCharacters,
     },
+    /** Full inventory with per-item state (condition, tags, flags, uses). */
+    inventory,
     evidenceHeld,
     flagsPublic,
     activeCharacter,
@@ -185,6 +256,14 @@ export function buildContextPack(
         "Characters may only state facts listed in their allowedKnowledge. Do not invent secret plot facts.",
       respectWillingness:
         "If willingness is silent or hostile, they share little; silent gives almost nothing useful.",
+      detectiveAsTarget:
+        "Player status (threat, safeHavenCompromised, tags) is engine-owned. Perform pressure already in status and justHappened. Do not invent new attacks, break-ins, or thefts unless listed in justHappened or status.",
+      denouement:
+        state.status === "denouement"
+          ? "WRAP-UP MODE: The case has been judged (see resolution/ending). Stay interactive: characters react, the accused may confess or rage, household falls out. Player may still talk, look, move, and leave. Do NOT treat the mystery as unsolved. Do NOT invent a new killer. Consequences matter."
+          : "Investigation mode: solution sealed until judged.",
+      socialGraph:
+        "socialSurface and per-character relationships shape behavior and subtext. Private edges (public:false, knownToPlayer:false) inform how people act — do NOT lecture the player about them unless a character would say so. No relationship HUD; reveal bonds in prose and dialogue like a novel.",
     },
   };
 }
@@ -203,6 +282,24 @@ function characterSlice(
     characterId
   );
   const memory = state.characterMemory[characterId];
+  const relationships = behaviorEdgesForCharacter(def, state, characterId);
+  const privateRelNotes = relationships
+    .filter((r) => !r.public && !r.knownToPlayer)
+    .map(
+      (r) =>
+        `[private behavior only] ${r.direction === "out" ? "→" : "←"} ${r.type}: ${r.label}${r.notes ? ` — ${r.notes}` : ""}`
+    );
+  const speakableRels = relationships
+    .filter((r) => r.public || r.knownToPlayer)
+    .map((r) => ({
+      id: r.id,
+      type: r.type,
+      label: r.label,
+      strength: r.strength,
+      withId: r.direction === "out" ? r.toId : r.fromId,
+      direction: r.direction,
+    }));
+
   return {
     id: c.id,
     name: c.name,
@@ -213,7 +310,23 @@ function characterSlice(
     pressure: cs?.pressure ?? 0,
     alibiStatus: cs?.alibiStatus ?? "none",
     allowedKnowledge: allowed,
-    mustNotReveal,
+    mustNotReveal: [...mustNotReveal, ...privateRelNotes],
+    /** Bonds they may acknowledge or that are already social knowledge */
+    relationships: speakableRels,
+    /**
+     * Full bond list for acting (includes private). Prefer subtext over exposition.
+     */
+    relationshipBehavior: relationships.map((r) => ({
+      id: r.id,
+      type: r.type,
+      label: r.label,
+      strength: r.strength,
+      public: r.public,
+      knownToPlayer: r.knownToPlayer,
+      withId: r.direction === "out" ? r.toId : r.fromId,
+      direction: r.direction,
+      notes: r.notes,
+    })),
     memorySummary: memory?.summary ?? "",
     recentTurns: memory?.recentTurns ?? [],
   };
