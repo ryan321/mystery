@@ -82,8 +82,8 @@
     let nextFlashAt = 0;
     let autoplayFailed = false;
 
-    const RAIN_VOLUME = 0.5;
-    const THUNDER_VOLUME = 0.75;
+    const RAIN_VOLUME = 0.85;
+    const THUNDER_VOLUME = 0.9;
 
     function createAudio(src) {
       const audio = new Audio(src);
