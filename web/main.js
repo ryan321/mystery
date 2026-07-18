@@ -1,4 +1,105 @@
 (function () {
+  // Canvas rain overlay
+  const canvas = document.querySelector(".rain-canvas");
+  if (canvas) {
+    const ctx = canvas.getContext("2d");
+    let width = 0;
+    let height = 0;
+    let drops = [];
+    let rafId = null;
+    let lastTime = 0;
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    function resize() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = Math.floor(rect.width * dpr);
+      height = Math.floor(rect.height * dpr);
+      canvas.width = width;
+      canvas.height = height;
+      ctx.scale(dpr, dpr);
+      initDrops(rect.width, rect.height);
+    }
+
+    function initDrops(w, h) {
+      const count = Math.floor((w * h) / 6500); // density
+      drops = [];
+      for (let i = 0; i < count; i++) {
+        drops.push(createDrop(w, h, true));
+      }
+    }
+
+    function createDrop(w, h, randomY) {
+      const z = Math.random(); // depth 0..1
+      const depth = 0.2 + z * 0.8;
+      return {
+        x: Math.random() * w,
+        y: randomY ? Math.random() * h : -40,
+        len: 8 + z * 24,
+        speed: (340 + z * 460) / 1000, // px per ms
+        opacity: 0.06 + z * 0.22,
+        width: 0.5 + z * 1.3,
+        angle: 0.12 + z * 0.07, // slight slant
+      };
+    }
+
+    function draw(dt, w, h) {
+      ctx.clearRect(0, 0, w, h);
+      ctx.lineCap = "round";
+
+      for (let i = 0; i < drops.length; i++) {
+        const d = drops[i];
+        d.y += d.speed * dt;
+        d.x += d.speed * dt * d.angle;
+
+        if (d.y > h + d.len || d.x > w + 20) {
+          drops[i] = createDrop(w, h, false);
+          continue;
+        }
+
+        const grad = ctx.createLinearGradient(d.x, d.y, d.x - d.len * d.angle, d.y - d.len);
+        grad.addColorStop(0, `rgba(200, 215, 235, ${d.opacity})`);
+        grad.addColorStop(1, "rgba(200, 215, 235, 0)");
+
+        ctx.beginPath();
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = d.width;
+        ctx.moveTo(d.x, d.y);
+        ctx.lineTo(d.x - d.len * d.angle, d.y - d.len);
+        ctx.stroke();
+      }
+    }
+
+    function loop(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      const dt = timestamp - lastTime;
+      lastTime = timestamp;
+
+      const rect = canvas.getBoundingClientRect();
+      draw(dt, rect.width, rect.height);
+      rafId = requestAnimationFrame(loop);
+    }
+
+    if (!prefersReducedMotion) {
+      resize();
+      window.addEventListener("resize", resize);
+      rafId = requestAnimationFrame(loop);
+
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+          if (rafId) cancelAnimationFrame(rafId);
+          rafId = null;
+        } else if (!rafId) {
+          lastTime = 0;
+          rafId = requestAnimationFrame(loop);
+        }
+      });
+    }
+  }
+
   // Waitlist
   const form = document.getElementById("waitlist-form");
   const status = document.getElementById("form-status");
