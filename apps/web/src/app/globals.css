@@ -1,0 +1,27 @@
+:root {
+  color-scheme: dark;
+  --bg: #0a0e14;
+  --paper: #e6eef6;
+  --fog: #9aafc4;
+  --blood: #b83a3a;
+  --panel: #121a24;
+  --edge: #2a3a4a;
+  --font: "Source Sans 3", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--paper);
+  font-family: var(--font);
+}
+
+a {
+  color: #d4b56a;
+}

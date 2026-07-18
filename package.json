@@ -1,0 +1,15 @@
+{
+  "name": "mystery",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "build": "pnpm -r run build",
+    "test": "pnpm -r run test",
+    "typecheck": "pnpm -r run typecheck",
+    "dev:api": "pnpm --filter @mystery/api dev",
+    "dev:web": "pnpm --filter @mystery/web dev"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

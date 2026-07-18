@@ -24,14 +24,35 @@ python3 -m http.server 5173
 - Subscription mentioned; **pricing TBD**
 - Waitlist emails stored in `localStorage` for now (wire a real backend later)
 
-## Near-term plan
+## Architecture
 
-1. Landing page (this repo)
-2. Minimal Mystery Definition schema
-3. Founder-authored free short case + a few paid cases
-4. Playable runtime (move / inspect / talk / inventory / solve / end)
-5. Subscription (TBD)
-6. Later: community-published definitions
+See **[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)** for the full technical design:
+monorepo layout, Mystery Definition schema, turn pipeline (context pack →
+OpenRouter → engine validation), API surface, and phased delivery.
+
+## Monorepo
+
+```
+apps/web          Next.js player UI
+apps/api          Hono API (turns, playthroughs)
+packages/shared   Zod schemas + types
+packages/engine   Pure game logic (gates, patches, context pack)
+packages/llm      OpenRouter client (stub → narrator)
+content/cases     Authored mystery definitions
+web/              Static marketing landing page
+```
+
+### Dev
+
+```bash
+pnpm install
+pnpm --filter @mystery/shared build
+pnpm --filter @mystery/engine test
+pnpm dev:api    # http://localhost:8787
+pnpm dev:web    # http://localhost:3000
+```
+
+Set `OPENROUTER_API_KEY` when the live narrator is wired (mock narrator works offline).
 
 ## Principle
 
