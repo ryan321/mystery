@@ -45,14 +45,20 @@ web/              Static marketing landing page
 ### Dev
 
 ```bash
+# once: create local DB
+psql -d postgres -c "CREATE DATABASE mystery;"
+
 pnpm install
-pnpm --filter @mystery/shared build
-pnpm --filter @mystery/engine test
-pnpm dev:api    # http://localhost:8787
-pnpm dev:web    # http://localhost:3000
+cp .env.example .env   # optional: set OPENROUTER_API_KEY, DATABASE_URL
+
+pnpm test
+pnpm dev:api           # http://localhost:8787  (builds packages, migrates, serves)
+pnpm dev:web           # http://localhost:3000 → /play
 ```
 
-Set `OPENROUTER_API_KEY` when the live narrator is wired (mock narrator works offline).
+- **Postgres:** default `postgres://localhost:5432/mystery` (override with `DATABASE_URL`)
+- **Narrator:** OpenRouter when `OPENROUTER_API_KEY` is set; otherwise closed-world **heuristic** (still engine-validated)
+- Migrations run on API boot (`apps/api/sql/001_init.sql`)
 
 ## Principle
 

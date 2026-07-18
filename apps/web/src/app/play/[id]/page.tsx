@@ -8,6 +8,7 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
 type LogItem =
   | { kind: "narration"; text: string }
   | { kind: "you"; text: string }
+  | { kind: "npc"; name: string; text: string }
   | { kind: "system"; text: string };
 
 type Playthrough = {
@@ -28,6 +29,7 @@ export default function PlaythroughPage() {
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [narratorMode, setNarratorMode] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -41,13 +43,32 @@ export default function PlaythroughPage() {
       if (cancelled) return;
       setPlaythrough(data.playthrough);
       setLocationName(data.locationName ?? data.playthrough.locationId);
+      const items: LogItem[] = [];
       const opening =
         sessionStorage.getItem(`mystery:opening:${id}`) ??
         data.openingNarration ??
         "";
       if (opening) {
-        setLog([{ kind: "narration", text: opening }]);
+        items.push({ kind: "narration", text: opening });
       }
+      for (const t of data.turns ?? []) {
+        items.push({ kind: "you", text: t.playerInput });
+        items.push({ kind: "narration", text: t.narration });
+        for (const d of t.dialogue ?? []) {
+          items.push({
+            kind: "npc",
+            name: d.characterName ?? d.characterId,
+            text: d.text,
+          });
+        }
+        if (t.evidenceAdded?.length) {
+          items.push({
+            kind: "system",
+            text: `Evidence added: ${t.evidenceAdded.join(", ")}`,
+          });
+        }
+      }
+      setLog(items);
     })();
     return () => {
       cancelled = true;
@@ -73,15 +94,35 @@ export default function PlaythroughPage() {
       }
       setPlaythrough(data.playthrough);
       setLocationName(data.locationName ?? data.playthrough.locationId);
+      if (data._debug?.model) setNarratorMode(data._debug.model);
       setLog((prev) => {
         const next: LogItem[] = [
           ...prev,
           { kind: "narration", text: data.narration },
         ];
+        for (const d of data.dialogue ?? []) {
+          next.push({
+            kind: "npc",
+            name: d.characterName ?? d.characterId,
+            text: d.text,
+          });
+        }
         if (data.evidenceAdded?.length) {
           next.push({
             kind: "system",
             text: `Evidence added: ${data.evidenceAdded.join(", ")}`,
+          });
+        }
+        if (data.playthrough?.status === "solved") {
+          next.push({
+            kind: "system",
+            text: "Case closed — you committed to a solution.",
+          });
+        }
+        if (data.playthrough?.status === "failed") {
+          next.push({
+            kind: "system",
+            text: "Case closed — the accusation did not hold.",
           });
         }
         return next;
@@ -148,9 +189,11 @@ export default function PlaythroughPage() {
               color:
                 item.kind === "you"
                   ? "#f0c0c0"
-                  : item.kind === "system"
-                    ? "#d4b56a"
-                    : "#c5d0de",
+                  : item.kind === "npc"
+                    ? "#e6eef6"
+                    : item.kind === "system"
+                      ? "#d4b56a"
+                      : "#c5d0de",
               lineHeight: 1.55,
             }}
           >
@@ -159,7 +202,19 @@ export default function PlaythroughPage() {
                 YOU
               </strong>
             ) : null}
-            {item.text}
+            {item.kind === "npc" ? (
+              <strong
+                style={{
+                  display: "block",
+                  fontSize: 11,
+                  opacity: 0.8,
+                  color: "#d4b56a",
+                }}
+              >
+                {item.name.toUpperCase()}
+              </strong>
+            ) : null}
+            {item.kind === "npc" ? item.text : item.text}
           </div>
         ))}
       </div>
@@ -189,7 +244,7 @@ export default function PlaythroughPage() {
         />
         <button
           type="submit"
-          disabled={busy || !input.trim()}
+          disabled={busy || !input.trim() || playthrough?.status !== "active"}
           style={{
             background: "#b83a3a",
             color: "#fff",
@@ -203,8 +258,8 @@ export default function PlaythroughPage() {
         </button>
       </form>
       <p style={{ fontSize: 12, color: "#5c6b80", marginTop: 8 }}>
-        Dev slice: mock narrator until OpenRouter is wired. Engine still
-        validates state patches.
+        Free text · engine-validated state
+        {narratorMode ? ` · narrator: ${narratorMode}` : ""}
       </p>
     </main>
   );
