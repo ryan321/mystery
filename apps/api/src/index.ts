@@ -1,3 +1,4 @@
+import { config as loadEnv } from "dotenv";
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -9,17 +10,8 @@ import {
   type MysteryDefinition,
   type PlaythroughState,
 } from "@mystery/shared";
-import {
-  createInitialPlaythrough,
-  validateAndApplyPatch,
-  buildContextPack,
-  appendDialogueMemory,
-} from "@mystery/engine";
-import {
-  tryCreateOpenRouterConfig,
-  narrateTurn,
-  heuristicNarrate,
-} from "@mystery/llm";
+import { createInitialPlaythrough } from "@mystery/engine";
+import { tryCreateOpenRouterConfig } from "@mystery/llm";
 import {
   createPool,
   migrate,
@@ -30,9 +22,14 @@ import {
   listTurns,
   databaseUrl,
 } from "./db.js";
+import { runTurnPipeline } from "./turn-pipeline.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const contentRoot = join(__dirname, "../../../content/cases");
+const repoRoot = join(__dirname, "../../..");
+// Load repo-root .env (OPENROUTER_API_KEY, DATABASE_URL, LLM_NARRATOR_MODEL, …)
+loadEnv({ path: join(repoRoot, ".env") });
+
+const contentRoot = join(repoRoot, "content/cases");
 
 function loadCases(): Map<string, MysteryDefinition> {
   const map = new Map<string, MysteryDefinition>();
@@ -157,53 +154,26 @@ app.post("/v1/playthroughs/:id/turns", async (c) => {
     return c.json({ error: "input_too_long" }, 400);
   }
 
-  const contextPack = buildContextPack(def, state);
-
-  let narrate;
+  let result;
   try {
-    narrate = await narrateTurn(llmConfig, {
-      contextPack,
+    result = await runTurnPipeline({
+      def,
+      state,
       playerInput: input,
-    }, {
-      heuristicFallback: (a) =>
-        heuristicNarrate({
-          contextPack: a.contextPack as Parameters<
-            typeof heuristicNarrate
-          >[0]["contextPack"],
-          playerInput: a.playerInput,
-        }),
+      llmConfig,
     });
   } catch (err) {
-    console.error("narrator failed", err);
-    // fall back to heuristic
-    const output = heuristicNarrate({
-      contextPack: contextPack as Parameters<
-        typeof heuristicNarrate
-      >[0]["contextPack"],
-      playerInput: input,
-    });
-    narrate = {
-      output,
-      model: "heuristic-fallback",
-      mock: true,
-      latencyMs: 0,
-    };
+    console.error("turn pipeline failed", err);
+    return c.json(
+      {
+        error: "turn_failed",
+        message: err instanceof Error ? err.message : "unknown",
+      },
+      500
+    );
   }
 
-  const modelOut = narrate.output;
-  const { applied, rejected, nextState, evidenceAdded } =
-    validateAndApplyPatch(def, state, modelOut.patch ?? {});
-
-  let committed: PlaythroughState = appendDialogueMemory(
-    nextState,
-    input,
-    modelOut
-  );
-  committed = {
-    ...committed,
-    turnCount: state.turnCount + 1,
-    updatedAt: new Date().toISOString(),
-  };
+  const committed = result.state;
 
   try {
     await updatePlaythrough(pool, committed);
@@ -218,30 +188,28 @@ app.post("/v1/playthroughs/:id/turns", async (c) => {
     playthroughId: committed.id,
     turnIndex: committed.turnCount,
     playerInput: input,
-    narration: modelOut.narration,
-    dialogue: modelOut.dialogue ?? [],
-    appliedPatch: applied,
-    rejected,
-    evidenceAdded,
-    model: narrate.model,
-    mock: narrate.mock,
-    latencyMs: narrate.latencyMs,
+    narration: result.narration,
+    dialogue: result.dialogue,
+    appliedPatch: result.appliedPatch,
+    rejected: result.rejected,
+    evidenceAdded: result.evidenceAdded,
+    model: `${result.debug.directorModel}+${result.debug.performerModel}`,
+    mock: result.debug.directorMock || result.debug.performerMock,
+    latencyMs:
+      result.debug.directorLatencyMs + result.debug.performerLatencyMs,
   });
 
   return c.json({
-    narration: modelOut.narration,
-    dialogue: modelOut.dialogue ?? [],
+    narration: result.narration,
+    dialogue: result.dialogue,
     playthrough: publicState(committed),
-    appliedPatch: applied,
-    rejected,
-    evidenceAdded,
+    appliedPatch: result.appliedPatch,
+    rejected: result.rejected,
+    evidenceAdded: result.evidenceAdded,
+    justHappened: result.justHappened,
     locationName: def.locations.find((l) => l.id === committed.locationId)
       ?.name,
-    _debug: {
-      mock: narrate.mock,
-      model: narrate.model,
-      latencyMs: narrate.latencyMs,
-    },
+    _debug: result.debug,
   });
 });
 
@@ -257,6 +225,32 @@ function publicState(state: PlaythroughState) {
     notebook: state.notebook,
     visitedLocationIds: state.visitedLocationIds,
     turnCount: state.turnCount,
+    phaseId: state.phaseId,
+    endingId: state.endingId,
+    time: state.time
+      ? {
+          slotId: state.time.slotId,
+          minutesFromStart: state.time.minutesFromStart,
+        }
+      : undefined,
+    environment: {
+      weather: state.environment.weather,
+      light: state.environment.light,
+      crowd: state.environment.crowd,
+      ambient: state.environment.ambient,
+    },
+    // character willingness for UI hints
+    characters: Object.fromEntries(
+      Object.entries(state.characterState).map(([id, cs]) => [
+        id,
+        {
+          locationId: cs.locationId,
+          willingness: cs.willingness,
+          stance: cs.stance,
+          pressure: cs.pressure,
+        },
+      ])
+    ),
   };
 }
 

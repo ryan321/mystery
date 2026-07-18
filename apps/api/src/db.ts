@@ -24,14 +24,12 @@ export function createPool(url: string = databaseUrl()): Db {
 }
 
 export async function migrate(pool: Db): Promise<void> {
-  const sqlPath = join(
-    dirname(fileURLToPath(import.meta.url)),
-    "../sql/001_init.sql"
-  );
-  const sql = readFileSync(sqlPath, "utf8");
-  // gen_random_uuid needs pgcrypto on older PG; PG 13+ has it built-in as of 13
+  const dir = join(dirname(fileURLToPath(import.meta.url)), "../sql");
   await pool.query(`CREATE EXTENSION IF NOT EXISTS pgcrypto`);
-  await pool.query(sql);
+  for (const file of ["001_init.sql", "002_state_json.sql"]) {
+    const sql = readFileSync(join(dir, file), "utf8");
+    await pool.query(sql);
+  }
 }
 
 type PlaythroughRow = {
@@ -49,9 +47,15 @@ type PlaythroughRow = {
   opening_narration: string;
   created_at: Date;
   updated_at: Date;
+  state_json: unknown;
+  phase_id: string | null;
 };
 
 function rowToState(row: PlaythroughRow): PlaythroughState {
+  if (row.state_json && typeof row.state_json === "object") {
+    return PlaythroughStateSchema.parse(row.state_json);
+  }
+  // Legacy rows without state_json
   return PlaythroughStateSchema.parse({
     id: row.id,
     caseId: row.case_id,
@@ -72,6 +76,7 @@ function rowToState(row: PlaythroughRow): PlaythroughState {
       row.updated_at instanceof Date
         ? row.updated_at.toISOString()
         : String(row.updated_at),
+    phaseId: row.phase_id ?? "arrival",
   });
 }
 
@@ -84,10 +89,10 @@ export async function insertPlaythrough(
     `INSERT INTO playthroughs (
       id, case_id, content_version, status, location_id,
       evidence_ids, flags, notebook, character_memory, visited_location_ids,
-      turn_count, opening_narration, created_at, updated_at
+      turn_count, opening_narration, created_at, updated_at, state_json, phase_id
     ) VALUES (
       $1,$2,$3,$4,$5,$6::jsonb,$7::jsonb,$8::jsonb,$9::jsonb,$10::jsonb,
-      $11,$12,$13,$14
+      $11,$12,$13,$14,$15::jsonb,$16
     )`,
     [
       state.id,
@@ -104,6 +109,8 @@ export async function insertPlaythrough(
       openingNarration,
       state.createdAt,
       state.updatedAt,
+      JSON.stringify(state),
+      state.phaseId,
     ]
   );
 }
@@ -138,8 +145,10 @@ export async function updatePlaythrough(
       character_memory = $7::jsonb,
       visited_location_ids = $8::jsonb,
       turn_count = $9,
-      updated_at = $10
-    WHERE id = $1 AND turn_count = $11`,
+      updated_at = $10,
+      state_json = $11::jsonb,
+      phase_id = $12
+    WHERE id = $1 AND turn_count = $13`,
     [
       state.id,
       state.status,
@@ -151,7 +160,9 @@ export async function updatePlaythrough(
       JSON.stringify(state.visitedLocationIds),
       state.turnCount,
       state.updatedAt,
-      state.turnCount - 1, // optimistic concurrency: previous count
+      JSON.stringify(state),
+      state.phaseId,
+      state.turnCount - 1,
     ]
   );
   if (res.rowCount !== 1) {

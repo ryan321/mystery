@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { StoryBeatSchema, TimeConfigSchema, EnvironmentDefaultsSchema } from "./beats.js";
 
 /** Flag value stored on a playthrough or set by definition effects. */
 export const FlagValueSchema = z.union([
@@ -27,6 +28,10 @@ export const KnowledgeBeatSchema = z.object({
   requiresEvidenceIds: z.array(z.string()).optional(),
   /** Optional soft gate; engine may ignore in v1. */
   requiresTrust: z.number().optional(),
+  /** If set, character must have this willingness or looser to share. */
+  requiresWillingnessIn: z
+    .array(z.enum(["open", "guarded", "hostile", "silent", "fled"]))
+    .optional(),
 });
 export type KnowledgeBeat = z.infer<typeof KnowledgeBeatSchema>;
 
@@ -35,6 +40,11 @@ export const CharacterSchema = z.object({
   name: z.string().min(1),
   shortBio: z.string().optional(),
   voice: z.string().optional(),
+  defaultLocationId: z.string().optional(),
+  defaultWillingness: z
+    .enum(["open", "guarded", "hostile", "silent", "fled"])
+    .default("open"),
+  defaultStance: z.string().optional(),
   knowledge: z.object({
     public: z.string().default(""),
     private: z.array(KnowledgeBeatSchema).default([]),
@@ -48,6 +58,10 @@ export const ExitSchema = z.object({
   toLocationId: z.string().min(1),
   label: z.string().optional(),
   requiresFlags: FlagRequirementSchema.optional(),
+  /** Player must hold all of these evidence ids (e.g. key). */
+  requiresEvidenceIds: z.array(z.string()).optional(),
+  /** Starts closed until set_exit_open effect. */
+  startsClosed: z.boolean().default(false),
 });
 export type Exit = z.infer<typeof ExitSchema>;
 
@@ -56,6 +70,8 @@ export const InspectEffectSchema = z.object({
   revealsEvidenceIds: z.array(z.string()).optional(),
   setsFlags: FlagRequirementSchema.optional(),
   requiresFlags: FlagRequirementSchema.optional(),
+  /** Must hold these items (keys, tools) to succeed. */
+  requiresEvidenceIds: z.array(z.string()).optional(),
 });
 export type InspectEffect = z.infer<typeof InspectEffectSchema>;
 
@@ -64,6 +80,8 @@ export const InspectableSchema = z.object({
   name: z.string().min(1),
   /** Hidden until a flag reveals it, if set. */
   hiddenUntilFlags: FlagRequirementSchema.optional(),
+  /** Optional object id for locked containers. */
+  objectId: z.string().optional(),
   onInspect: InspectEffectSchema.default({}),
 });
 export type Inspectable = z.infer<typeof InspectableSchema>;
@@ -78,6 +96,7 @@ export const LocationSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   description: z.string().min(1),
+  startsAccessible: z.boolean().default(true),
   exits: z.array(ExitSchema).default([]),
   inspectables: z.array(InspectableSchema).default([]),
   charactersPresent: z.array(CharacterPresenceSchema).default([]),
@@ -148,7 +167,7 @@ export type CaseMeta = z.infer<typeof CaseMetaSchema>;
 
 export const MysteryDefinitionSchema = z
   .object({
-    schemaVersion: z.literal("1"),
+    schemaVersion: z.union([z.literal("1"), z.literal("1.5")]),
     id: z.string().min(1),
     contentVersion: z.string().min(1),
     meta: CaseMetaSchema,
@@ -160,12 +179,24 @@ export const MysteryDefinitionSchema = z
     solution: SolutionSchema,
     endings: z.array(EndingSchema).min(1),
     openingNarration: z.string().min(1),
+    /** Plot dynamics */
+    beats: z.array(StoryBeatSchema).default([]),
+    phases: z
+      .array(
+        z.object({
+          id: z.string(),
+          description: z.string().optional(),
+        })
+      )
+      .default([]),
+    time: TimeConfigSchema.optional(),
+    environment: EnvironmentDefaultsSchema.optional(),
   })
   .superRefine((def, ctx) => {
     const locationIds = new Set(def.locations.map((l) => l.id));
     const characterIds = new Set(def.characters.map((c) => c.id));
     const evidenceIds = new Set(def.evidence.map((e) => e.id));
-    const flagIds = new Set(def.flags.map((f) => f.id));
+    const beatIds = new Set(def.beats.map((b) => b.id));
 
     if (!locationIds.has(def.player.startingLocationId)) {
       ctx.addIssue({
@@ -194,6 +225,15 @@ export const MysteryDefinitionSchema = z
             path: ["locations"],
           });
         }
+        for (const eid of exit.requiresEvidenceIds ?? []) {
+          if (!evidenceIds.has(eid)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `Exit requires unknown evidence "${eid}"`,
+              path: ["locations"],
+            });
+          }
+        }
       }
       for (const presence of loc.charactersPresent) {
         if (!characterIds.has(presence.characterId)) {
@@ -214,12 +254,20 @@ export const MysteryDefinitionSchema = z
             });
           }
         }
+        for (const eid of insp.onInspect.requiresEvidenceIds ?? []) {
+          if (!evidenceIds.has(eid)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `Inspectable "${insp.id}" requires unknown evidence "${eid}"`,
+              path: ["locations"],
+            });
+          }
+        }
       }
     }
 
     for (const eid of def.solution.guiltyPartyIds) {
       if (!characterIds.has(eid) && eid !== "unknown") {
-        // allow non-character ids only if we later expand; warn soft — for now require character
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: `solution.guiltyPartyIds references unknown character "${eid}"`,
@@ -228,8 +276,18 @@ export const MysteryDefinitionSchema = z
       }
     }
 
-    // flag ids referenced loosely — only validate known flag defs when present
-    void flagIds;
+    if (def.time) {
+      const slotIds = new Set(def.time.schedule.map((s) => s.id));
+      if (!slotIds.has(def.time.startSlotId)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `time.startSlotId "${def.time.startSlotId}" not in schedule`,
+          path: ["time", "startSlotId"],
+        });
+      }
+    }
+
+    void beatIds;
   });
 
 export type MysteryDefinition = z.infer<typeof MysteryDefinitionSchema>;

@@ -18,6 +18,15 @@ type Playthrough = {
   locationId: string;
   evidenceIds: string[];
   turnCount: number;
+  phaseId?: string;
+  endingId?: string;
+  time?: { slotId: string; minutesFromStart: number };
+  environment?: {
+    weather?: string;
+    light?: string;
+    crowd?: string;
+    ambient?: string;
+  };
 };
 
 export default function PlaythroughPage() {
@@ -113,10 +122,20 @@ export default function PlaythroughPage() {
             text: `Evidence added: ${data.evidenceAdded.join(", ")}`,
           });
         }
+        if (data.justHappened?.length) {
+          for (const j of data.justHappened) {
+            if (j.id?.startsWith("pulse_") || j.id === "ending" || j.id === "midnight_strikes" || j.summary?.includes("Phase")) {
+              next.push({
+                kind: "system",
+                text: j.narrationHints ?? j.summary,
+              });
+            }
+          }
+        }
         if (data.playthrough?.status === "solved") {
           next.push({
             kind: "system",
-            text: "Case closed — you committed to a solution.",
+            text: "Case closed.",
           });
         }
         if (data.playthrough?.status === "failed") {
@@ -176,6 +195,13 @@ export default function PlaythroughPage() {
               ? playthrough.evidenceIds.join(", ")
               : "none yet"}{" "}
             · Turns: {playthrough.turnCount} · {playthrough.status}
+            {playthrough.phaseId ? ` · phase: ${playthrough.phaseId}` : ""}
+            {playthrough.time?.slotId
+              ? ` · time: ${playthrough.time.slotId}`
+              : ""}
+            {playthrough.environment?.weather
+              ? ` · ${playthrough.environment.weather}`
+              : ""}
           </div>
         ) : null}
       </header>

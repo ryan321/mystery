@@ -26,13 +26,25 @@ export function beatIsReleased(
     }
   }
 
-  // Conditions satisfied (or none required) → AI may use this beat.
+  if (beat.requiresWillingnessIn?.length) {
+    const w =
+      state.characterState[characterId]?.willingness ?? "open";
+    if (!beat.requiresWillingnessIn.includes(w)) return false;
+  }
+
+  // Silent characters share almost nothing beyond public unless already revealed
+  const willingness =
+    state.characterState[characterId]?.willingness ?? "open";
+  if (willingness === "silent" || willingness === "fled") {
+    return false;
+  }
+
   return true;
 }
 
 /**
  * Beats the AI may freely use as known facts for this character.
- * Public knowledge is always allowed.
+ * Public knowledge is always allowed unless silent/fled.
  */
 export function allowedKnowledgeForCharacter(
   def: MysteryDefinition,
@@ -42,36 +54,34 @@ export function allowedKnowledgeForCharacter(
   const character = def.characters.find((c) => c.id === characterId);
   if (!character) return { allowed: [], mustNotReveal: [] };
 
+  const willingness =
+    state.characterState[characterId]?.willingness ?? "open";
   const allowed: string[] = [];
-  if (character.knowledge.public) {
-    allowed.push(character.knowledge.public);
-  }
-
   const mustNotReveal: string[] = [];
+
+  if (willingness !== "silent" && willingness !== "fled") {
+    if (character.knowledge.public) {
+      allowed.push(character.knowledge.public);
+    }
+  } else {
+    mustNotReveal.push("Character is unwilling to share useful information.");
+  }
 
   for (const beat of allBeats(character)) {
     if (beatIsReleased(beat, state, characterId)) {
       allowed.push(beat.content);
     } else {
-      // Do not put full secret text in mustNotReveal if we can avoid it —
-      // use a short id-based constraint for the model.
-      mustNotReveal.push(
-        `Do not reveal knowledge beat "${beat.id}" (${beat.content.slice(0, 80)}…)`
-      );
+      mustNotReveal.push(`Withheld knowledge id: ${beat.id}`);
     }
   }
 
-  // Also block solution dump
   mustNotReveal.push(
-    "Do not name the true killer or solution unless the player has already solved the case."
+    "Do not name the true killer or full solution unless case is already solved."
   );
 
   return { allowed, mustNotReveal };
 }
 
-/**
- * Whether a beat may be marked revealed this turn (conditions currently satisfied).
- */
 export function canRevealBeat(
   def: MysteryDefinition,
   state: PlaythroughState,
@@ -83,13 +93,11 @@ export function canRevealBeat(
   const beat = allBeats(character).find((b) => b.id === beatId);
   if (!beat) return false;
 
-  // Conditions must hold now (player earned it this turn via flags/evidence).
   if (!flagsMatch(state.flags, beat.requiresFlags)) return false;
   if (beat.requiresEvidenceIds?.length) {
     for (const id of beat.requiresEvidenceIds) {
       if (!state.evidenceIds.includes(id)) return false;
     }
   }
-  // Unconditional private beats can always be revealed once talked to
   return true;
 }

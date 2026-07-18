@@ -1,8 +1,10 @@
 # Mystery — Architecture & Technical Design
 
-**Status:** Design draft (pre-implementation)  
+**Status:** Design draft (living)  
 **Date:** 2026-07-18  
-**Sources of truth:** `WHAT.md`, `docs/PRODUCT.md`, landing page play model (`web/index.html`)
+**Sources of truth:** `WHAT.md`, `docs/PRODUCT.md`, landing page play model (`web/index.html`), **[CASE_DEFINITION.md](./CASE_DEFINITION.md)** (content model: entity state + dynamic beats)
+
+> **Case content model:** Mysteries are not only a static map. Definitions describe **canon** (sealed), **world**, **entity state** (game / character / object / location), and a **plot graph** of story beats (conditions → effects). See [CASE_DEFINITION.md](./CASE_DEFINITION.md).
 
 ---
 

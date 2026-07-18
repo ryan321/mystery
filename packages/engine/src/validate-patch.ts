@@ -17,18 +17,56 @@ function locationById(def: MysteryDefinition, id: string) {
   return def.locations.find((l) => l.id === id);
 }
 
+function holdsEvidence(state: PlaythroughState, ids?: string[]): boolean {
+  if (!ids?.length) return true;
+  return ids.every((id) => state.evidenceIds.includes(id));
+}
+
+function exitIsOpen(
+  def: MysteryDefinition,
+  state: PlaythroughState,
+  fromId: string,
+  toId: string
+): boolean {
+  const key = `${fromId}->${toId}`;
+  const ls = state.locationState[fromId];
+  if (ls?.exitOpen[key] !== undefined) return ls.exitOpen[key];
+  const from = locationById(def, fromId);
+  const exit = from?.exits.find((e) => e.toLocationId === toId);
+  if (!exit) return false;
+  return !exit.startsClosed;
+}
+
 function legalExit(
   def: MysteryDefinition,
+  state: PlaythroughState,
   fromId: string,
-  toId: string,
-  flags: PlaythroughState["flags"]
+  toId: string
 ): boolean {
   if (fromId === toId) return true;
   const from = locationById(def, fromId);
   if (!from) return false;
-  return from.exits.some(
-    (e) => e.toLocationId === toId && flagsMatch(flags, e.requiresFlags)
-  );
+  const destState = state.locationState[toId];
+  if (destState && !destState.accessible) return false;
+
+  for (const exit of from.exits) {
+    if (exit.toLocationId !== toId) continue;
+    if (!flagsMatch(state.flags, exit.requiresFlags)) continue;
+    if (!holdsEvidence(state, exit.requiresEvidenceIds)) continue;
+    if (!exitIsOpen(def, state, fromId, toId)) continue;
+    return true;
+  }
+  return false;
+}
+
+function inspectRequirementsMet(
+  state: PlaythroughState,
+  requiresFlags?: Record<string, unknown>,
+  requiresEvidenceIds?: string[]
+): boolean {
+  if (!flagsMatch(state.flags, requiresFlags as never)) return false;
+  if (!holdsEvidence(state, requiresEvidenceIds)) return false;
+  return true;
 }
 
 function evidenceDiscoverableHere(
@@ -40,9 +78,7 @@ function evidenceDiscoverableHere(
   if (!item) return false;
   if (state.evidenceIds.includes(evidenceId)) return false;
 
-  // Starting evidence is fine if already held — already filtered
   if (!item.discoverableAt) {
-    // abstract / awarded by flags only
     return true;
   }
 
@@ -53,15 +89,25 @@ function evidenceDiscoverableHere(
   const insp = loc?.inspectables.find((i) => i.id === inspectableId);
   if (!insp) return false;
 
-  if (!flagsMatch(state.flags, insp.onInspect.requiresFlags)) return false;
+  if (
+    !inspectRequirementsMet(
+      state,
+      insp.onInspect.requiresFlags,
+      insp.onInspect.requiresEvidenceIds
+    )
+  ) {
+    return false;
+  }
   if (!flagsMatch(state.flags, insp.hiddenUntilFlags)) return false;
+
+  // Locked container: requiresEvidenceIds already checked above (e.g. key in hand).
+  // object.locked is bookkeeping only once requirements are met.
 
   return insp.onInspect.revealsEvidenceIds?.includes(evidenceId) ?? false;
 }
 
 /**
- * Validate and apply a model-proposed state patch.
- * Illegal operations are dropped and recorded in `rejected`.
+ * Validate and apply a model/director-proposed state patch.
  */
 export function validateAndApplyPatch(
   def: MysteryDefinition,
@@ -77,17 +123,27 @@ export function validateAndApplyPatch(
   let evidenceIds = [...state.evidenceIds];
   let flags = { ...state.flags };
   let visited = new Set(state.visitedLocationIds);
-  const characterMemory = { ...state.characterMemory };
+  let characterMemory = { ...state.characterMemory };
+  let characterState = { ...state.characterState };
+  let objectState = { ...state.objectState };
+  let presented = [...state.presented];
   const notebook = [...state.notebook];
   let status = state.status;
+  let endingId = state.endingId;
 
-  // Special: possessing brass-key sets helper flag for desk drawer
-  if (evidenceIds.includes("brass-key")) {
-    flags = mergeFlags(flags, { has_brass_key: true });
-  }
+  const probe = (): PlaythroughState => ({
+    ...state,
+    locationId,
+    evidenceIds,
+    flags,
+    characterMemory,
+    characterState,
+    objectState,
+    presented,
+  });
 
   if (patch.setLocationId) {
-    if (legalExit(def, locationId, patch.setLocationId, flags)) {
+    if (legalExit(def, probe(), locationId, patch.setLocationId)) {
       locationId = patch.setLocationId;
       applied.setLocationId = patch.setLocationId;
       visited.add(locationId);
@@ -99,60 +155,43 @@ export function validateAndApplyPatch(
   }
 
   if (patch.setFlags) {
-    const known = new Set(def.flags.map((f) => f.id));
-    // allow engine helper flags not in def
-    known.add("has_brass_key");
-    known.add("case_solved");
-    const next: Record<string, (typeof flags)[string]> = {};
-    for (const [k, v] of Object.entries(patch.setFlags)) {
-      if (!known.has(k)) {
-        rejected.push(`Unknown flag "${k}"`);
-        continue;
-      }
-      next[k] = v;
-    }
-    if (Object.keys(next).length) {
-      flags = mergeFlags(flags, next);
-      applied.setFlags = next;
-    }
+    flags = mergeFlags(flags, patch.setFlags);
+    applied.setFlags = patch.setFlags;
   }
 
-  // Re-check brass key after flag/evidence updates below
   if (patch.addEvidenceIds?.length) {
     const added: string[] = [];
-    // Apply location-sensitive discovery against *current* location after move
-    const probeState: PlaythroughState = {
-      ...state,
-      locationId,
-      evidenceIds,
-      flags,
-    };
     for (const id of patch.addEvidenceIds) {
       if (evidenceIds.includes(id)) continue;
-      if (evidenceDiscoverableHere(def, probeState, id)) {
+      if (evidenceDiscoverableHere(def, probe(), id)) {
         evidenceIds.push(id);
         added.push(id);
         evidenceAdded.push(id);
-        if (id === "brass-key") {
-          flags = mergeFlags(flags, { has_brass_key: true });
+        const os = objectState[id];
+        if (os) {
+          objectState = {
+            ...objectState,
+            [id]: { ...os, stage: "taken" },
+          };
         }
       } else {
-        // Allow if inspect effect at current location lists it and requires satisfied
-        // Second chance: any inspectable at current location that reveals it
+        // second chance via inspectable that reveals it with requirements met
         const loc = locationById(def, locationId);
         const viaInspect = loc?.inspectables.some(
           (insp) =>
-            flagsMatch(flags, insp.onInspect.requiresFlags) &&
+            inspectRequirementsMet(
+              probe(),
+              insp.onInspect.requiresFlags,
+              insp.onInspect.requiresEvidenceIds
+            ) &&
             flagsMatch(flags, insp.hiddenUntilFlags) &&
+            !(insp.objectId && objectState[insp.objectId]?.locked) &&
             insp.onInspect.revealsEvidenceIds?.includes(id)
         );
         if (viaInspect) {
           evidenceIds.push(id);
           added.push(id);
           evidenceAdded.push(id);
-          if (id === "brass-key") {
-            flags = mergeFlags(flags, { has_brass_key: true });
-          }
         } else {
           rejected.push(`Cannot obtain evidence "${id}" here`);
         }
@@ -161,26 +200,61 @@ export function validateAndApplyPatch(
     if (added.length) applied.addEvidenceIds = added;
   }
 
+  if (patch.presented?.length) {
+    const ok: { evidenceId: string; characterId: string }[] = [];
+    for (const p of patch.presented) {
+      if (!evidenceIds.includes(p.evidenceId)) {
+        rejected.push(`Cannot present missing evidence "${p.evidenceId}"`);
+        continue;
+      }
+      const ch = characterState[p.characterId];
+      if (!ch?.available || ch.willingness === "fled") {
+        rejected.push(`Cannot present to unavailable "${p.characterId}"`);
+        continue;
+      }
+      // must be at same location
+      if (ch.locationId !== locationId) {
+        rejected.push(`Character "${p.characterId}" not here`);
+        continue;
+      }
+      presented.push({
+        evidenceId: p.evidenceId,
+        characterId: p.characterId,
+        turn: state.turnCount + 1,
+      });
+      ok.push(p);
+    }
+    if (ok.length) applied.presented = ok;
+  }
+
+  if (patch.talkToCharacterId) {
+    const cid = patch.talkToCharacterId;
+    const cs = characterState[cid];
+    if (cs && cs.locationId === locationId && cs.available) {
+      characterState = {
+        ...characterState,
+        [cid]: { ...cs, timesTalked: cs.timesTalked + 1 },
+      };
+      applied.talkToCharacterId = cid;
+    }
+  }
+
   if (patch.revealBeats?.length) {
     const ok: { characterId: string; beatId: string }[] = [];
-    const probe: PlaythroughState = {
-      ...state,
-      locationId,
-      evidenceIds,
-      flags,
-      characterMemory,
-    };
     for (const rb of patch.revealBeats) {
-      if (canRevealBeat(def, probe, rb.characterId, rb.beatId)) {
+      if (canRevealBeat(def, probe(), rb.characterId, rb.beatId)) {
         const mem = characterMemory[rb.characterId] ?? {
           revealedBeatIds: [],
           summary: "",
           recentTurns: [],
         };
         if (!mem.revealedBeatIds.includes(rb.beatId)) {
-          characterMemory[rb.characterId] = {
-            ...mem,
-            revealedBeatIds: [...mem.revealedBeatIds, rb.beatId],
+          characterMemory = {
+            ...characterMemory,
+            [rb.characterId]: {
+              ...mem,
+              revealedBeatIds: [...mem.revealedBeatIds, rb.beatId],
+            },
           };
         }
         ok.push(rb);
@@ -211,11 +285,14 @@ export function validateAndApplyPatch(
     if (score === "success") {
       status = "solved";
       flags = mergeFlags(flags, { case_solved: true });
+      endingId = def.endings.find((e) => e.when === "success")?.id;
     } else if (score === "partial") {
       status = "solved";
       flags = mergeFlags(flags, { case_solved: true });
+      endingId = def.endings.find((e) => e.when === "partial")?.id;
     } else {
       status = "failed";
+      endingId = def.endings.find((e) => e.when === "failure")?.id;
     }
   } else if (patch.accuse) {
     rejected.push("Cannot accuse when case is not active");
@@ -229,7 +306,11 @@ export function validateAndApplyPatch(
     flags,
     notebook,
     characterMemory,
+    characterState,
+    objectState,
+    presented,
     visitedLocationIds: [...visited],
+    endingId,
     updatedAt: nowIso,
   };
 

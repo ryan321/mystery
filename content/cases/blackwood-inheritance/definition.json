@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "1",
+  "schemaVersion": "1.5",
   "id": "blackwood-inheritance",
-  "contentVersion": "0.1.0",
+  "contentVersion": "0.2.0",
   "meta": {
     "title": "The Blackwood Inheritance",
     "premise": "A stormy night, a locked manor, and violence at the foot of the stairs. The family was already at each other's throats.",
@@ -20,6 +20,31 @@
     "startingKnowledge": "You were summoned after a crash and a body. Mr. Blackwood lies dead at the foot of the main stairs. The storm has cut the road; no one left the grounds after ten."
   },
   "openingNarration": "The manor looms against the storm. Inside, the entrance hall smells of wax and old money. A crystal vase lies shattered on the marble. Rainwater pools near the east door, and the grandfather clock has stopped at eleven. Butler Henshaw stands by the pantry door, pale and silent. When he sees you looking his way, he straightens his jacket.",
+  "phases": [
+    { "id": "arrival", "description": "First look at the hall and household" },
+    { "id": "deepening", "description": "Documents, alibis, contradictions" },
+    { "id": "crisis", "description": "Pressure breaks someone" },
+    { "id": "confrontation", "description": "Accusation is in play" }
+  ],
+  "time": {
+    "startSlotId": "just_after_eleven",
+    "minutesPerTurn": 8,
+    "schedule": [
+      { "id": "just_after_eleven", "label": "Just after eleven", "minutesFromStart": 0 },
+      { "id": "late_evening", "label": "Late evening", "minutesFromStart": 40 },
+      { "id": "approaching_midnight", "label": "Approaching midnight", "minutesFromStart": 80 },
+      { "id": "midnight", "label": "Midnight", "minutesFromStart": 120 },
+      { "id": "after_midnight", "label": "After midnight", "minutesFromStart": 160 }
+    ]
+  },
+  "environment": {
+    "weather": "storm",
+    "weatherIntensity": "heavy",
+    "light": "lamplight",
+    "ambient": "tense",
+    "crowd": "none",
+    "flags": {}
+  },
   "flags": [
     {
       "id": "examined_vase",
@@ -40,14 +65,8 @@
       "defaultValue": false
     },
     {
-      "id": "henshaw_interviewed",
-      "description": "Player questioned Henshaw",
-      "aiVisible": true,
-      "defaultValue": false
-    },
-    {
-      "id": "vale_confronted",
-      "description": "Player confronted Vale with the letter",
+      "id": "falsely_accused_henshaw",
+      "description": "Player wrongly pinned Henshaw",
       "aiVisible": true,
       "defaultValue": false
     }
@@ -56,7 +75,8 @@
     {
       "id": "entrance-hall",
       "name": "Blackwood Manor — the entrance hall",
-      "description": "Marble floor, storm-lashed windows, a stopped grandfather clock, and a shattered crystal vase. The east door leads toward the library wing. Stairs rise to the private rooms. Butler Henshaw keeps near the pantry door.",
+      "description": "Marble floor, storm-lashed windows, a stopped grandfather clock, and a shattered crystal vase. The east door leads toward the library wing. Stairs rise to the private rooms.",
+      "startsAccessible": true,
       "exits": [
         {
           "toLocationId": "library",
@@ -98,6 +118,7 @@
       "id": "library",
       "name": "Blackwood Manor — the library",
       "description": "Cold and dark. A fire smolders. A ledger lies open on the desk to tonight's date. Ash in the hearth glints with metal.",
+      "startsAccessible": true,
       "exits": [
         {
           "toLocationId": "entrance-hall",
@@ -116,11 +137,12 @@
         {
           "id": "desk-drawer",
           "name": "desk drawer",
+          "objectId": "desk-drawer",
           "onInspect": {
-            "narrativeHints": "Locked until the brass key is used. Inside: a letter signed by Mr. Vale dated yesterday: 'If you expose me, I will have no choice.'",
+            "narrativeHints": "The brass key turns. Inside: a letter signed by Mr. Vale dated yesterday: 'If you expose me, I will have no choice.'",
             "revealsEvidenceIds": ["vale-letter"],
             "setsFlags": { "found_vale_letter": true },
-            "requiresFlags": { "has_brass_key": true }
+            "requiresEvidenceIds": ["brass-key"]
           }
         },
         {
@@ -137,6 +159,7 @@
       "id": "conservatory",
       "name": "Blackwood Manor — the conservatory",
       "description": "Glass walls drum with rain. Ferns drip. Far from the east door and the crash.",
+      "startsAccessible": true,
       "exits": [
         {
           "toLocationId": "entrance-hall",
@@ -161,20 +184,24 @@
       "name": "Butler Henshaw",
       "shortBio": "Long-serving butler; formal, careful, protective of the household's image.",
       "voice": "Measured, deferential, slightly shaken",
+      "defaultLocationId": "entrance-hall",
+      "defaultWillingness": "open",
+      "defaultStance": "professional",
       "knowledge": {
         "public": "He heard a crash just after the clock struck eleven. He was in the pantry. When he arrived, the east door stood open and Mr. Blackwood was at the top of the stairs — already falling or already down.",
         "private": [
           {
             "id": "henshaw-who-home",
             "content": "Only Mrs. Blackwood, Miss Clara, Mr. Vale the guest, and Henshaw himself were in the house.",
-            "requiresFlags": { "henshaw_interviewed": true }
+            "requiresWillingnessIn": ["open", "guarded"]
           }
         ],
         "secrets": [
           {
             "id": "henshaw-saw-vale-earlier",
             "content": "Henshaw saw Mr. Vale near the east corridor before eleven, not in the conservatory. He is reluctant to accuse a guest without proof.",
-            "requiresEvidenceIds": ["vale-letter"]
+            "requiresEvidenceIds": ["vale-letter"],
+            "requiresWillingnessIn": ["open", "guarded"]
           }
         ]
       },
@@ -188,22 +215,20 @@
       "name": "Mr. Vale",
       "shortBio": "House guest with business ties to Mr. Blackwood.",
       "voice": "Smooth, defensive when cornered",
+      "defaultLocationId": "entrance-hall",
+      "defaultWillingness": "guarded",
+      "defaultStance": "polite_mask",
       "knowledge": {
         "public": "Claims he was in the conservatory all evening. Calls any letter a 'business disagreement.'",
         "private": [
           {
             "id": "vale-admits-argument",
             "content": "He argued with Mr. Blackwood yesterday about money and exposure of a fraud.",
-            "requiresEvidenceIds": ["vale-letter"]
+            "requiresEvidenceIds": ["vale-letter"],
+            "requiresWillingnessIn": ["open", "guarded", "hostile"]
           }
         ],
-        "secrets": [
-          {
-            "id": "vale-is-killer",
-            "content": "Vale struck Blackwood after a confrontation in the hall; the vase broke in the struggle. He fled toward the library, burned a scrap, and dropped the key in the ash. He is the killer.",
-            "requiresFlags": { "case_solved": true }
-          }
-        ]
+        "secrets": []
       },
       "defenses": [
         "Denies murder",
@@ -216,6 +241,8 @@
       "name": "Mrs. Blackwood",
       "shortBio": "The widow. Composed, watchful.",
       "voice": "Cool, precise",
+      "defaultLocationId": "entrance-hall",
+      "defaultWillingness": "guarded",
       "knowledge": {
         "public": "She was upstairs when she heard the crash. She came down after Henshaw shouted.",
         "private": [
@@ -240,9 +267,17 @@
       "name": "Miss Clara Blackwood",
       "shortBio": "Daughter of the house.",
       "voice": "Young, strained",
+      "defaultLocationId": "conservatory",
+      "defaultWillingness": "guarded",
       "knowledge": {
-        "public": "She was in her room writing letters. She liked her father more than she liked Vale.",
-        "private": [],
+        "public": "She was writing letters earlier. She liked her father more than she liked Vale.",
+        "private": [
+          {
+            "id": "clara-overheard",
+            "content": "She overheard her father and Vale arguing about 'exposure' yesterday afternoon.",
+            "requiresWillingnessIn": ["open"]
+          }
+        ],
         "secrets": []
       },
       "defenses": []
@@ -284,7 +319,119 @@
         "locationId": "library",
         "inspectableId": "desk-drawer"
       },
-      "canPresentTo": ["vale", "henshaw", "mrs-blackwood"]
+      "canPresentTo": ["vale", "henshaw", "mrs-blackwood", "clara"]
+    }
+  ],
+  "beats": [
+    {
+      "id": "trail_to_library",
+      "title": "The print points east",
+      "once": true,
+      "trigger": "on_turn",
+      "when": { "type": "has_evidence", "evidenceId": "muddy-boot-print" },
+      "effects": [
+        { "type": "set_game_flag", "id": "found_boot_print", "value": true }
+      ],
+      "narrationHints": "The boot print is a direction as much as a clue — toward the library wing."
+    },
+    {
+      "id": "letter_unlocks_deepening",
+      "title": "The letter changes the house",
+      "once": true,
+      "trigger": "on_turn",
+      "when": { "type": "has_evidence", "evidenceId": "vale-letter" },
+      "effects": [
+        { "type": "set_phase", "phaseId": "deepening" },
+        { "type": "advance_time", "toSlotId": "late_evening" },
+        { "type": "set_willingness", "characterId": "henshaw", "value": "open" },
+        { "type": "reveal_knowledge", "characterId": "henshaw", "knowledgeId": "henshaw-saw-vale-earlier" },
+        { "type": "move_character", "characterId": "clara", "toLocationId": "entrance-hall" },
+        { "type": "set_willingness", "characterId": "clara", "value": "open" }
+      ],
+      "narrationHints": "With the letter in hand, the household's careful manners start to crack. Clara appears from the conservatory wing, drawn by raised voices.",
+      "reactions": [
+        {
+          "characterId": "henshaw",
+          "lineHint": "If you have that letter, sir… I can no longer pretend I saw nothing.",
+          "stance": "reluctant_ally"
+        }
+      ]
+    },
+    {
+      "id": "vale_cornered_by_letter",
+      "title": "Vale's alibi breaks",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "presented",
+        "evidenceId": "vale-letter",
+        "toCharacterId": "vale"
+      },
+      "effects": [
+        { "type": "set_alibi_status", "characterId": "vale", "value": "broken" },
+        { "type": "add_pressure", "characterId": "vale", "by": 2 },
+        { "type": "set_willingness", "characterId": "vale", "value": "hostile" },
+        { "type": "set_stance", "characterId": "vale", "value": "cornered" },
+        { "type": "reveal_knowledge", "characterId": "vale", "knowledgeId": "vale-admits-argument" },
+        { "type": "set_phase", "phaseId": "crisis" }
+      ],
+      "narrationHints": "Faced with his own hand on the page, Vale's conservatory story collapses into anger.",
+      "reactions": [
+        {
+          "characterId": "vale",
+          "lineHint": "That letter proves a quarrel — not a killing.",
+          "stance": "cornered"
+        }
+      ]
+    },
+    {
+      "id": "henshaw_shuts_down",
+      "title": "Henshaw refuses further help",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "game_flag",
+        "id": "falsely_accused_henshaw",
+        "equals": true
+      },
+      "effects": [
+        { "type": "set_willingness", "characterId": "henshaw", "value": "silent" },
+        { "type": "set_stance", "characterId": "henshaw", "value": "wounded_pride" },
+        { "type": "set_willingness", "characterId": "mrs-blackwood", "value": "hostile" }
+      ],
+      "narrationHints": "Accusing the butler freezes the staff. Henshaw will not be drawn out again. Mrs. Blackwood's manners turn to ice."
+    },
+    {
+      "id": "midnight_strikes",
+      "title": "Midnight",
+      "once": true,
+      "trigger": "on_turn",
+      "when": { "type": "time_at_least", "slotId": "midnight" },
+      "effects": [
+        { "type": "set_light", "light": "night" },
+        { "type": "set_weather", "weather": "storm", "intensity": "peak" },
+        { "type": "set_ambient", "ambient": "ominous" },
+        { "type": "pulse_environment", "tag": "thunder" }
+      ],
+      "narrationHints": "The long-case clock should be striking twelve — and thunder answers from the grounds. The night tightens around the house."
+    },
+    {
+      "id": "birds_from_the_east",
+      "title": "Birds from the east wing",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          { "type": "has_evidence", "evidenceId": "vale-letter" },
+          { "type": "time_at_least", "slotId": "approaching_midnight" }
+        ]
+      },
+      "effects": [
+        { "type": "pulse_environment", "tag": "birds_flock" },
+        { "type": "set_environment_flag", "id": "birds_startled", "value": true }
+      ],
+      "narrationHints": "A black cloud of birds erupts from the east wing, as if something moved where nothing should."
     }
   ],
   "solution": {
@@ -298,17 +445,17 @@
         {
           "id": "killer-vale",
           "description": "Identifies Mr. Vale as the killer",
-          "matchHints": ["vale", "guest"]
+          "matchHints": ["vale"]
         },
         {
           "id": "motive-exposure",
           "description": "Motive related to exposure / letter / fraud / money",
-          "matchHints": ["expose", "letter", "fraud", "money", "debt", "settlement"]
+          "matchHints": ["expose", "letter", "fraud", "money", "debt", "settlement", "quarrel", "argument"]
         },
         {
           "id": "method-hall",
-          "description": "Violence in the hall / struggle / stairs, not a distant sniper fantasy",
-          "matchHints": ["hall", "struggle", "stairs", "vase", "crash"]
+          "description": "Violence in the hall / struggle / stairs",
+          "matchHints": ["hall", "struggle", "stairs", "vase", "crash", "entrance"]
         }
       ]
     }
@@ -317,17 +464,17 @@
     {
       "id": "success",
       "when": "success",
-      "templateNotes": "Vale is taken into custody. The letter and boot print seal it. The storm keeps the road closed until morning. Mrs. Blackwood does not thank you."
+      "templateNotes": "Vale is taken into custody once the roads open. The letter, the boot print, and the broken alibi seal it. Mrs. Blackwood does not thank you. Outside, the storm finally begins to ease — or perhaps you only imagine it."
     },
     {
       "id": "partial",
       "when": "partial",
-      "templateNotes": "You name Vale but miss key facts; he twists the story. Enough to hold him, not enough for a clean case file."
+      "templateNotes": "You name Vale, but the case file is thin. He twists the story on the way to town. Enough to hold him for now — not enough for a clean conviction without more work."
     },
     {
       "id": "failure",
       "when": "failure",
-      "templateNotes": "You accuse the wrong person or invent a theory the evidence cannot support. The real trail cools in the rain."
+      "templateNotes": "You accuse the wrong person, or invent a theory the evidence cannot carry. In the morning the real trail is colder, and the manor's silences have rearranged themselves against you."
     }
   ]
 }

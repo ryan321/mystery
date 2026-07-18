@@ -1,4 +1,10 @@
-import type { MysteryDefinition, PlaythroughState } from "@mystery/shared";
+import type {
+  MysteryDefinition,
+  PlaythroughState,
+  CharacterRuntimeState,
+  ObjectRuntimeState,
+  LocationRuntimeState,
+} from "@mystery/shared";
 import { randomUUID } from "node:crypto";
 
 export function createInitialPlaythrough(
@@ -12,6 +18,81 @@ export function createInitialPlaythrough(
       flags[f.id] = f.defaultValue;
     }
   }
+
+  const characterState: Record<string, CharacterRuntimeState> = {};
+  for (const c of def.characters) {
+    const defaultLoc =
+      c.defaultLocationId ??
+      def.locations.find((l) =>
+        l.charactersPresent.some((p) => p.characterId === c.id)
+      )?.id ??
+      def.player.startingLocationId;
+    characterState[c.id] = {
+      locationId: defaultLoc,
+      available: true,
+      willingness: c.defaultWillingness ?? "open",
+      pressure: 0,
+      stance: c.defaultStance ?? "",
+      alibiStatus: "none",
+      timesTalked: 0,
+    };
+  }
+
+  const objectState: Record<string, ObjectRuntimeState> = {};
+  for (const e of def.evidence) {
+    objectState[e.id] = {
+      stage: def.player.startingEvidenceIds.includes(e.id) ? "taken" : "visible",
+      locked: false,
+      locationId: e.discoverableAt?.locationId,
+    };
+  }
+  // locked containers from inspectables with objectId
+  for (const loc of def.locations) {
+    for (const insp of loc.inspectables) {
+      if (insp.objectId) {
+        objectState[insp.objectId] = {
+          stage: "visible",
+          locked: (insp.onInspect.requiresEvidenceIds?.length ?? 0) > 0,
+          locationId: loc.id,
+        };
+      }
+    }
+  }
+
+  const locationState: Record<string, LocationRuntimeState> = {};
+  for (const loc of def.locations) {
+    const exitOpen: Record<string, boolean> = {};
+    for (const exit of loc.exits) {
+      const key = `${loc.id}->${exit.toLocationId}`;
+      exitOpen[key] = !exit.startsClosed;
+    }
+    locationState[loc.id] = {
+      accessible: loc.startsAccessible ?? true,
+      descriptionAppend: "",
+      exitOpen,
+    };
+  }
+
+  const env = def.environment ?? {
+    weather: "storm",
+    light: "night",
+    crowd: "none",
+    flags: {},
+  };
+
+  let time: PlaythroughState["time"];
+  if (def.time) {
+    const start =
+      def.time.schedule.find((s) => s.id === def.time!.startSlotId) ??
+      def.time.schedule[0]!;
+    time = {
+      slotId: start.id,
+      minutesFromStart: start.minutesFromStart,
+      reachedSlotIdsThisTurn: [],
+    };
+  }
+
+  const phaseId = def.phases[0]?.id ?? "arrival";
 
   return {
     id,
@@ -27,5 +108,23 @@ export function createInitialPlaythrough(
     turnCount: 0,
     createdAt: now,
     updatedAt: now,
+    phaseId,
+    firedBeatIds: [],
+    beatQueue: [],
+    clocks: {},
+    characterState,
+    objectState,
+    locationState,
+    environment: {
+      weather: env.weather ?? "clear",
+      weatherIntensity: env.weatherIntensity,
+      light: env.light ?? "day",
+      ambient: env.ambient,
+      crowd: env.crowd ?? "none",
+      flags: { ...(env.flags ?? {}) },
+      activePulses: [],
+    },
+    time,
+    presented: [],
   };
 }
