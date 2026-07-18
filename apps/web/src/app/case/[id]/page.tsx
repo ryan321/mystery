@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import Atmosphere from "../../../components/Atmosphere";
 import { assetUrl, getCase, startCase } from "../../../lib/api";
 import { difficultyLabel } from "../../../lib/format";
-import { markBeingPlayed } from "../../../lib/playState";
+import { getPlayState, markBeingPlayed } from "../../../lib/playState";
 import type { CaseDetail } from "../../../lib/types";
 import styles from "./page.module.css";
 
@@ -50,9 +50,20 @@ export default function CaseDetailPage() {
     return null;
   }
 
+  const playState = getPlayState(id);
+  const playStateStatus = playState?.status;
+
   async function handleStart() {
     setStarting(true);
     setError(null);
+
+    // If already playing, continue the existing playthrough
+    if (playStateStatus === "being_played" && playState?.playthroughId) {
+      router.push(`/play/${playState.playthroughId}`);
+      return;
+    }
+
+    // If completed, start a new playthrough (replay)
     try {
       const data = await startCase(id);
       markBeingPlayed(id, data.playthrough.id);
@@ -66,6 +77,13 @@ export default function CaseDetailPage() {
       setStarting(false);
     }
   }
+
+  const buttonLabel =
+    playStateStatus === "being_played"
+      ? "Continue"
+      : playStateStatus === "completed"
+        ? "Replay"
+        : "Start";
 
   const difficultyClass =
     detail.meta.difficulty === "hard"
@@ -137,7 +155,7 @@ export default function CaseDetailPage() {
                   onClick={handleStart}
                   disabled={starting}
                 >
-                  {starting ? "Starting…" : "Play free case"}
+                  {starting ? "Starting…" : buttonLabel}
                 </button>
                 {error ? <p className={styles.playMeta}>{error}</p> : null}
               </div>
