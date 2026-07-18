@@ -351,34 +351,4 @@
     });
   }
 
-  // Sample play tabs
-  const demo = document.querySelector("[data-play-demo]");
-  if (!demo) return;
-
-  const tabs = Array.from(demo.querySelectorAll("[data-tab]"));
-  const panels = Array.from(demo.querySelectorAll("[data-panel]"));
-
-  function activate(name) {
-    tabs.forEach(function (tab) {
-      const on = tab.getAttribute("data-tab") === name;
-      tab.classList.toggle("is-active", on);
-      tab.setAttribute("aria-selected", on ? "true" : "false");
-    });
-
-    panels.forEach(function (panel) {
-      const on = panel.getAttribute("data-panel") === name;
-      panel.classList.toggle("is-active", on);
-      if (on) {
-        panel.removeAttribute("hidden");
-      } else {
-        panel.setAttribute("hidden", "");
-      }
-    });
-  }
-
-  tabs.forEach(function (tab) {
-    tab.addEventListener("click", function () {
-      activate(tab.getAttribute("data-tab"));
-    });
-  });
 })();

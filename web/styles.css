@@ -128,28 +128,33 @@ body {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 0;
+  top: 0;
   width: 100%;
-  height: min(70vh, 640px);
+  height: min(92vh, 760px);
   object-fit: cover;
-  object-position: 50% 100%;
+  object-position: 50% 25%;
   mask-image: linear-gradient(
     to bottom,
-    transparent 0%,
-    black 25%,
-    black 85%,
+    black 0%,
+    black 70%,
     transparent 100%
   );
   -webkit-mask-image: linear-gradient(
     to bottom,
-    transparent 0%,
-    black 25%,
-    black 85%,
+    black 0%,
+    black 70%,
     transparent 100%
   );
   opacity: 0.95;
   filter: brightness(1);
   will-change: filter;
+}
+
+@media (max-width: 900px) {
+  .manor-img {
+    height: min(70vh, 520px);
+    object-position: 55% 30%;
+  }
 }
 
 /* Animated rain canvas overlay */
@@ -455,35 +460,40 @@ a:hover {
   background: rgba(20, 30, 45, 0.65);
 }
 
-/* Hero */
+/* Hero — house is the main visual, text sits above it */
 
 .hero {
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: clamp(2rem, 5vw, 4rem);
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: flex-end;
+  min-height: min(92vh, 760px);
   max-width: var(--max);
   margin: 0 auto;
-  padding: clamp(2.5rem, 6vw, 5rem) clamp(1rem, 4vw, 2rem) 3rem;
-  min-height: min(88vh, 820px);
+  padding: clamp(2.5rem, 6vw, 5rem) clamp(1rem, 4vw, 2rem) clamp(3rem, 8vh, 6rem);
+  text-align: center;
 }
 
 @media (max-width: 900px) {
   .hero {
-    grid-template-columns: 1fr;
-    min-height: auto;
+    min-height: min(70vh, 520px);
+    padding-bottom: clamp(2.5rem, 6vh, 4rem);
   }
+}
 
-  .manor-img {
-    opacity: 0.7;
-    height: min(45vh, 360px);
-  }
+.hero-copy {
+  max-width: 44rem;
+}
+
+.hero-copy > * {
+  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.7);
 }
 
 .eyebrow {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 0.65rem;
   margin: 0 0 1rem;
   font-family: var(--font-mono);
@@ -507,17 +517,16 @@ a:hover {
   margin: 0 0 1.25rem;
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: clamp(2.1rem, 5vw, 3.15rem);
-  line-height: 1.18;
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  line-height: 1.1;
   letter-spacing: 0.02em;
   color: #f2f6fa;
-  text-shadow: 0 2px 40px rgba(0, 0, 0, 0.6);
 }
 
-.hero h1 em {
-  font-style: italic;
-  font-weight: 400;
-  color: var(--candle);
+.hero-tagline {
+  margin: 0 0 1.75rem;
+  font-size: clamp(1.1rem, 2.2vw, 1.4rem);
+  color: #c8d4e0;
 }
 
 .lede {
@@ -549,123 +558,44 @@ a:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
+  justify-content: center;
   margin-bottom: 1rem;
 }
 
 .hero-note {
   margin: 0;
   font-size: 0.9rem;
-  color: var(--fog);
+  color: #aabbcf;
+}
+
+/* Intro — value prop below the hero image */
+
+.intro {
+  padding-top: clamp(2rem, 5vw, 3rem);
+  padding-bottom: clamp(2rem, 5vw, 3rem);
+}
+
+.intro-panel {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  text-align: center;
+  background: var(--glass);
+  border: 1px solid rgba(154, 175, 196, 0.15);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+}
+
+.intro-panel .lede {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.intro-panel .lede:last-child {
+  margin-bottom: 0;
 }
 
 /* Dossier — weathered case file */
-
-.dossier {
-  position: relative;
-  display: flex;
-  filter: drop-shadow(0 28px 50px rgba(0, 0, 0, 0.55));
-}
-
-.dossier-spine {
-  width: 14px;
-  flex-shrink: 0;
-  background: linear-gradient(180deg, #6e2418 0%, var(--blood) 45%, #4a1810 100%);
-  border-radius: 2px 0 0 2px;
-}
-
-.dossier-body {
-  flex: 1;
-  padding: 1.5rem 1.5rem 1.25rem;
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.08), transparent 40%),
-    linear-gradient(180deg, #e4d9c4 0%, #d8cbb0 100%);
-  color: var(--ink);
-  border: 1px solid #c4b59a;
-  border-left: none;
-  border-radius: 0 4px 4px 0;
-}
-
-.dossier-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  align-items: flex-start;
-  padding-bottom: 1rem;
-  border-bottom: 1px dashed var(--ink-soft);
-  margin-bottom: 1rem;
-}
-
-.dossier-label {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-
-.dossier-title {
-  margin: 0.25rem 0 0;
-  font-family: var(--font-display);
-  font-size: 1.45rem;
-  font-weight: 600;
-  line-height: 1.25;
-  color: var(--ink);
-  letter-spacing: 0.02em;
-}
-
-.dossier-id {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--blood);
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.dossier-hook {
-  margin: 0 0 1.15rem;
-  font-size: 0.98rem;
-  line-height: 1.5;
-  color: var(--ink-soft);
-}
-
-.dossier-meta {
-  display: grid;
-  gap: 0.75rem;
-  margin: 0 0 1.25rem;
-}
-
-.dossier-meta div {
-  display: grid;
-  grid-template-columns: 5.5rem 1fr;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-}
-
-.dossier-meta dt {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  padding-top: 0.2rem;
-}
-
-.dossier-meta dd {
-  margin: 0;
-  color: var(--ink);
-}
-
-.dossier-footer {
-  margin: 0;
-  padding-top: 0.85rem;
-  border-top: 1px solid rgba(28, 24, 20, 0.12);
-  font-size: 0.8rem;
-  font-style: italic;
-  color: var(--ink-soft);
-}
 
 /* Sections */
 
@@ -719,49 +649,6 @@ a:hover {
 .play-demo {
   max-width: 46rem;
   margin: 0 auto;
-}
-
-/* Manor-library tabs */
-.play-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  margin-bottom: 0.35rem;
-  padding: 0 0.5rem;
-}
-
-.play-tab {
-  appearance: none;
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 0.55rem 1rem;
-  color: rgba(212, 181, 106, 0.65);
-  background:
-    linear-gradient(180deg, rgba(50, 35, 30, 0.85), rgba(35, 22, 18, 0.9));
-  border: 1px solid rgba(160, 120, 80, 0.35);
-  border-bottom: 1px solid rgba(120, 80, 50, 0.45);
-  border-radius: 4px 4px 0 0;
-  cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
-}
-
-.play-tab:hover {
-  color: var(--paper);
-  background:
-    linear-gradient(180deg, rgba(65, 45, 38, 0.9), rgba(45, 30, 25, 0.95));
-  border-color: rgba(180, 140, 95, 0.5);
-}
-
-.play-tab.is-active {
-  color: var(--paper);
-  background:
-    linear-gradient(180deg, rgba(85, 58, 48, 0.95), rgba(60, 40, 32, 0.98));
-  border-color: rgba(200, 165, 110, 0.55);
-  border-bottom-color: rgba(60, 40, 32, 0.98);
-  z-index: 2;
 }
 
 /* Mahogany frame terminal */
@@ -988,6 +875,25 @@ a:hover {
   height: 2.5rem;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid rgba(200, 165, 110, 0.35);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
+}
+
+.play-avatar-initial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--candle);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(212, 181, 106, 0.18), transparent 60%),
+    rgba(12, 18, 28, 0.85);
   border: 2px solid rgba(200, 165, 110, 0.35);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
   flex-shrink: 0;
@@ -1276,11 +1182,6 @@ a:hover {
 
   .play-composer {
     margin-bottom: 6px;
-  }
-
-  .play-tab {
-    font-size: 0.6rem;
-    padding: 0.5rem 0.8rem;
   }
 }
 
