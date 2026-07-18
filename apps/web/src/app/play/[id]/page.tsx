@@ -13,8 +13,6 @@ import SideDrawer from "../../../components/SideDrawer";
 import EvidencePanel, {
   type EvidenceItem,
 } from "../../../components/EvidencePanel";
-import NotebookPanel from "../../../components/NotebookPanel";
-import MapPanel from "../../../components/MapPanel";
 import CastPanel, {
   type CastCharacter,
 } from "../../../components/CastPanel";
@@ -28,11 +26,10 @@ import {
   CASE_TITLES,
   CHARACTER_NAMES,
   EVIDENCE_DESCRIPTIONS,
-  LOCATION_NAMES,
 } from "../../../lib/content";
 import styles from "./page.module.css";
 
-type Drawer = "evidence" | "notebook" | "map" | "cast" | null;
+type Drawer = "evidence" | "cast" | null;
 
 function buildLog(
   opening: string | undefined,
@@ -226,48 +223,6 @@ export default function PlaythroughPage() {
         </div>
       </Panel>
 
-      <Panel
-        title="Notebook"
-        action={
-          <button
-            type="button"
-            className={styles.linkBtn}
-            onClick={() => setDrawer("notebook")}
-          >
-            Open
-          </button>
-        }
-      >
-        <div className={styles.miniList}>
-          {playthrough?.notebook.slice(-3).map((n) => (
-            <div key={n.id} className={styles.miniItem}>
-              {n.text}
-            </div>
-          ))}
-          {playthrough?.notebook.length === 0 ? (
-            <div className={styles.miniEmpty}>Empty</div>
-          ) : null}
-        </div>
-      </Panel>
-
-      <Panel
-        title="Map"
-        action={
-          <button
-            type="button"
-            className={styles.linkBtn}
-            onClick={() => setDrawer("map")}
-          >
-            Open
-          </button>
-        }
-      >
-        <MapPanel
-          visitedLocationIds={playthrough?.visitedLocationIds ?? []}
-          currentLocationId={playthrough?.locationId ?? ""}
-          locationNames={LOCATION_NAMES}
-        />
-      </Panel>
     </>
   );
 
@@ -341,20 +296,6 @@ export default function PlaythroughPage() {
         </button>
         <button
           type="button"
-          onClick={() => setDrawer("notebook")}
-          className={drawer === "notebook" ? styles.mobileBarActive : ""}
-        >
-          Notebook
-        </button>
-        <button
-          type="button"
-          onClick={() => setDrawer("map")}
-          className={drawer === "map" ? styles.mobileBarActive : ""}
-        >
-          Map
-        </button>
-        <button
-          type="button"
           onClick={() => setDrawer("cast")}
           className={drawer === "cast" ? styles.mobileBarActive : ""}
         >
@@ -369,28 +310,6 @@ export default function PlaythroughPage() {
         onClose={() => setDrawer(null)}
       >
         <EvidencePanel items={evidenceItems} />
-      </SideDrawer>
-
-      <SideDrawer
-        side="left"
-        title="Notebook"
-        open={drawer === "notebook"}
-        onClose={() => setDrawer(null)}
-      >
-        <NotebookPanel entries={playthrough?.notebook ?? []} />
-      </SideDrawer>
-
-      <SideDrawer
-        side="left"
-        title="Map"
-        open={drawer === "map"}
-        onClose={() => setDrawer(null)}
-      >
-        <MapPanel
-          visitedLocationIds={playthrough?.visitedLocationIds ?? []}
-          currentLocationId={playthrough?.locationId ?? ""}
-          locationNames={LOCATION_NAMES}
-        />
       </SideDrawer>
 
       <SideDrawer
