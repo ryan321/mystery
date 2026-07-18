@@ -25,8 +25,8 @@
         Mystery
       </a>
       <nav class="nav">
+        <a href="#sample">Sample play</a>
         <a href="#how">How you play</a>
-        <a href="#case">Free case</a>
         <a class="nav-cta" href="#play">Play free</a>
       </nav>
     </header>
@@ -52,7 +52,7 @@
           </p>
           <div class="hero-actions">
             <a class="btn btn-primary" href="#play">Play the free case</a>
-            <a class="btn btn-ghost" href="#case">See tonight’s murder</a>
+            <a class="btn btn-ghost" href="#sample">See how it plays</a>
           </div>
           <p class="hero-note">Free · ~30 min · In your browser</p>
         </div>
@@ -81,25 +81,276 @@
                 <dd>~30 minutes</dd>
               </div>
             </dl>
-            <div class="snippet" aria-label="Example of play">
-              <p class="snippet-label">In the game</p>
-              <p class="snippet-line">
-                <span class="who">You</span> Where were you when he died?
-              </p>
-              <p class="snippet-line">
-                <span class="who npc">Mara</span> Home. Ask anyone.
-              </p>
-              <p class="snippet-line">
-                <span class="who">You</span>
-                <em>show her the receipt from her locker</em>
-              </p>
-              <p class="snippet-line">
-                <span class="who npc">Mara</span> …
-                <em>her voice changes</em>
-              </p>
-            </div>
+            <p class="dossier-footer">
+              Scroll for real sample play from this case — explore, inspect, talk,
+              accuse.
+            </p>
           </div>
         </aside>
+      </section>
+
+      <!-- SAMPLE PLAY -->
+      <section id="sample" class="section sample">
+        <div class="section-head">
+          <p class="eyebrow">From the free case</p>
+          <h2>A few moments on the pier.</h2>
+          <p class="section-lede">
+            Type what you’d say or do in plain language. Here are four beats
+            from <em>The Pier at Low Tide</em>.
+          </p>
+        </div>
+
+        <div class="play-demo" data-play-demo>
+          <div
+            class="play-tabs"
+            role="tablist"
+            aria-label="Sample moments from the game"
+          >
+            <button
+              type="button"
+              class="play-tab is-active"
+              role="tab"
+              id="tab-explore"
+              aria-selected="true"
+              aria-controls="panel-explore"
+              data-tab="explore"
+            >
+              Explore
+            </button>
+            <button
+              type="button"
+              class="play-tab"
+              role="tab"
+              id="tab-inspect"
+              aria-selected="false"
+              aria-controls="panel-inspect"
+              data-tab="inspect"
+            >
+              Investigate
+            </button>
+            <button
+              type="button"
+              class="play-tab"
+              role="tab"
+              id="tab-talk"
+              aria-selected="false"
+              aria-controls="panel-talk"
+              data-tab="talk"
+            >
+              Question
+            </button>
+            <button
+              type="button"
+              class="play-tab"
+              role="tab"
+              id="tab-accuse"
+              aria-selected="false"
+              aria-controls="panel-accuse"
+              data-tab="accuse"
+            >
+              Accuse
+            </button>
+          </div>
+
+          <div class="play-terminal">
+            <header class="play-chrome">
+              <span class="play-dot" aria-hidden="true"></span>
+              <span class="play-dot" aria-hidden="true"></span>
+              <span class="play-dot" aria-hidden="true"></span>
+              <p class="play-case-name">The Pier at Low Tide</p>
+            </header>
+
+            <!-- EXPLORE -->
+            <div
+              class="play-panel is-active"
+              role="tabpanel"
+              id="panel-explore"
+              aria-labelledby="tab-explore"
+              data-panel="explore"
+            >
+              <p class="play-status">
+                <span class="play-status-label">You are in</span>
+                the harbormaster’s office
+              </p>
+              <div class="play-log">
+                <p class="play-sys">
+                  A desk lamp still burns. Charts curl on the wall. Through the
+                  salt-streaked window you can see the black water where they
+                  pulled him out. The door to the pier stands half open; cold air
+                  slides in with the smell of diesel and low tide.
+                </p>
+                <div class="play-bubble play-bubble-you">
+                  <span class="play-bubble-label">You</span>
+                  I’m going out onto the pier.
+                </div>
+                <p class="play-sys">
+                  Wet planks under your shoes. Rope, cold metal, the slap of
+                  water against the pilings. Mara leans against a post, smoking.
+                  Old Tom sits on an overturned crate, eyes anywhere but the
+                  water. Near the edge of the dock, a dark stain hasn’t quite
+                  rinsed clean.
+                </p>
+              </div>
+              <div class="play-composer" aria-hidden="true">
+                <span class="play-composer-label">Your message</span>
+                <p class="play-composer-line">
+                  I want a closer look at that stain on the dock…
+                  <span class="play-cursor"></span>
+                </p>
+              </div>
+            </div>
+
+            <!-- INVESTIGATE -->
+            <div
+              class="play-panel"
+              role="tabpanel"
+              id="panel-inspect"
+              aria-labelledby="tab-inspect"
+              data-panel="inspect"
+              hidden
+            >
+              <p class="play-status">
+                <span class="play-status-label">You are on</span>
+                the pier
+              </p>
+              <div class="play-log">
+                <div class="play-bubble play-bubble-you">
+                  <span class="play-bubble-label">You</span>
+                  I kneel and check the dark stain on the edge of the dock.
+                </div>
+                <p class="play-sys">
+                  Not rust. Darker — sticky where the wood hasn’t fully dried.
+                  Someone tried to scrub it in a hurry and missed the groove
+                  between the boards.
+                </p>
+                <div class="play-bubble play-bubble-you">
+                  <span class="play-bubble-label">You</span>
+                  What’s under the ladder for the skiff?
+                </div>
+                <p class="play-sys">
+                  Wedged in a rung: a crumpled receipt, still damp.
+                  <strong>Pier Locker 3 · 4:12 a.m. · paid cash.</strong>
+                </p>
+                <p class="play-sys play-item">
+                  You pocket the receipt. It’s in your evidence now.
+                </p>
+              </div>
+              <div class="play-composer" aria-hidden="true">
+                <span class="play-composer-label">Your message</span>
+                <p class="play-composer-line">
+                  Mara, I need to ask you something…
+                  <span class="play-cursor"></span>
+                </p>
+              </div>
+            </div>
+
+            <!-- QUESTION -->
+            <div
+              class="play-panel"
+              role="tabpanel"
+              id="panel-talk"
+              aria-labelledby="tab-talk"
+              data-panel="talk"
+              hidden
+            >
+              <p class="play-status">
+                <span class="play-status-label">With</span>
+                Mara · on the pier
+              </p>
+              <div class="play-log">
+                <div class="play-bubble play-bubble-you">
+                  <span class="play-bubble-label">You</span>
+                  Where were you when he died?
+                </div>
+                <div class="play-bubble play-bubble-npc">
+                  <span class="play-bubble-label">Mara</span>
+                  Home. Asleep. Ask anyone on Dock Three — they saw my lights
+                  out.
+                </div>
+                <div class="play-bubble play-bubble-you">
+                  <span class="play-bubble-label">You</span>
+                  Then explain this. I found a receipt for locker 3 at 4:12 a.m.
+                  That’s your locker, isn’t it?
+                </div>
+                <div class="play-bubble play-bubble-npc">
+                  <span class="play-bubble-label">Mara</span>
+                  She laughs once, thin. “Plenty of people use those lockers.”
+                </div>
+                <div class="play-bubble play-bubble-you">
+                  <span class="play-bubble-label">You</span>
+                  Number 3 is yours. You said you were home.
+                </div>
+                <div class="play-bubble play-bubble-npc">
+                  <span class="play-bubble-label">Mara</span>
+                  The cigarette burns down to the filter. She doesn’t look at
+                  the water. “Fine. I was here. But I didn’t kill him.”
+                </div>
+                <p class="play-sys play-item">
+                  Her alibi doesn’t hold. She admits she was on the pier.
+                </p>
+              </div>
+              <div class="play-composer" aria-hidden="true">
+                <span class="play-composer-label">Your message</span>
+                <p class="play-composer-line">
+                  Why were you really here that early?
+                  <span class="play-cursor"></span>
+                </p>
+              </div>
+            </div>
+
+            <!-- ACCUSE -->
+            <div
+              class="play-panel"
+              role="tabpanel"
+              id="panel-accuse"
+              aria-labelledby="tab-accuse"
+              data-panel="accuse"
+              hidden
+            >
+              <p class="play-status">
+                <span class="play-status-label">Closing the case</span>
+                when you’re ready
+              </p>
+              <div class="play-log">
+                <p class="play-sys">
+                  You’ve walked the pier, broken an alibi, and the receipt still
+                  smells like the sea. When you’re sure, you say so.
+                </p>
+                <div class="play-bubble play-bubble-you">
+                  <span class="play-bubble-label">You</span>
+                  I know who did it. Mara killed the harbormaster. She was here
+                  at low tide, struck him on the dock, tried to scrub the stain,
+                  and needed him quiet about the night runs.
+                </div>
+                <p class="play-sys play-end">
+                  You lay it out: the stain between the boards, locker 3 at
+                  4:12, the alibi that only held until the paper came out of your
+                  pocket. Mara doesn’t run. She looks at the black water and
+                  nods once, small and tired.<br /><br />
+                  “He was going to sink the whole crew,” she says. “I only meant
+                  to stop him talking. The rail was wet. He went over before I
+                  could—” Her voice fails. Old Tom turns away. Somewhere inland,
+                  a siren starts the long road down to the harbor.<br /><br />
+                  <strong>Mara Voss — manslaughter on the pier at low tide.</strong>
+                  The harbormaster’s ledger will name the night runs. The town
+                  will pretend it never knew. You close your notebook. The case
+                  is finished.
+                </p>
+              </div>
+              <div class="play-composer" aria-hidden="true">
+                <span class="play-composer-label">Your message</span>
+                <p class="play-composer-line play-composer-idle">
+                  …
+                  <span class="play-cursor"></span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <p class="sample-caption">
+            You write in plain language. The mystery answers.
+          </p>
+        </div>
       </section>
 
       <section id="how" class="section how">
