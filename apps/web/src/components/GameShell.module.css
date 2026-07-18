@@ -1,7 +1,7 @@
 .shell {
   position: relative;
   z-index: 1;
-  height: 100vh;
+  height: calc(100vh - 3.5rem);
   display: flex;
   flex-direction: column;
 }
@@ -206,7 +206,7 @@
     display: none;
   }
   .shell {
-    height: 100dvh;
+    height: calc(100dvh - 3.5rem);
   }
   .center {
     flex: 1;
