@@ -3,6 +3,8 @@
   z-index: 1;
   min-height: 100vh;
   padding: clamp(1.5rem, 4vw, 3rem);
+  overflow-y: auto;
+  max-height: calc(100vh - 3.5rem);
 }
 
 .lobbyInner {
