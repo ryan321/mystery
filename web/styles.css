@@ -124,15 +124,12 @@ body {
   }
 }
 
-/* Hero visual: manor image sits in the right column */
+/* Hero visual: manor image blends into the background on the right */
 .hero-visual {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: 360px;
-  overflow: hidden;
-  border-radius: 4px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
 }
 
 .hero-visual::after {
@@ -140,10 +137,10 @@ body {
   position: absolute;
   inset: 0;
   background: radial-gradient(
-    ellipse 70% 65% at 50% 40%,
+    ellipse 80% 80% at 70% 50%,
     transparent 0%,
-    rgba(5, 8, 14, 0.25) 55%,
-    rgba(5, 8, 14, 0.7) 100%
+    rgba(5, 8, 14, 0.2) 50%,
+    rgba(5, 8, 14, 0.65) 100%
   );
   pointer-events: none;
 }
@@ -158,6 +155,16 @@ body {
   opacity: 0.95;
   filter: brightness(1);
   will-change: filter;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 58%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 58%
+  );
 }
 
 /* Animated rain canvas overlay */
@@ -466,6 +473,7 @@ a:hover {
 /* Hero — text on the left, manor image on the right */
 
 .hero {
+  position: relative;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: clamp(2rem, 5vw, 4rem);
