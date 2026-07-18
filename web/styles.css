@@ -130,19 +130,19 @@ body {
   right: 0;
   top: 0;
   width: 100%;
-  height: min(92vh, 760px);
+  height: min(64vh, 540px);
   object-fit: cover;
-  object-position: 50% 25%;
+  object-position: 50% 28%;
   mask-image: linear-gradient(
     to bottom,
     black 0%,
-    black 70%,
+    black 48%,
     transparent 100%
   );
   -webkit-mask-image: linear-gradient(
     to bottom,
     black 0%,
-    black 70%,
+    black 48%,
     transparent 100%
   );
   opacity: 0.95;
@@ -152,8 +152,8 @@ body {
 
 @media (max-width: 900px) {
   .manor-img {
-    height: min(70vh, 520px);
-    object-position: 55% 30%;
+    height: min(52vh, 400px);
+    object-position: 55% 22%;
   }
 }
 
@@ -256,6 +256,25 @@ body {
     rgba(5, 8, 14, 0.35) 55%,
     rgba(5, 8, 14, 0.85) 100%
   );
+}
+
+/* Bottom gradient so hero text sits on a dark, readable band */
+.sky::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 56%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(5, 8, 14, 0.55) 25%,
+    rgba(5, 8, 14, 0.9) 65%,
+    var(--night) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
 }
 
 .grain {
@@ -467,26 +486,28 @@ a:hover {
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  min-height: min(92vh, 760px);
+  min-height: min(100vh, 800px);
   max-width: var(--max);
   margin: 0 auto;
-  padding: clamp(2.5rem, 6vw, 5rem) clamp(1rem, 4vw, 2rem) clamp(3rem, 8vh, 6rem);
+  padding: clamp(2.5rem, 6vw, 5rem) clamp(1rem, 4vw, 2rem) clamp(5rem, 18vh, 11rem);
   text-align: center;
 }
 
 @media (max-width: 900px) {
   .hero {
-    min-height: min(70vh, 520px);
-    padding-bottom: clamp(2.5rem, 6vh, 4rem);
+    min-height: min(92vh, 620px);
+    padding-bottom: clamp(3.5rem, 10vh, 6rem);
   }
 }
 
 .hero-copy {
+  position: relative;
+  z-index: 2;
   max-width: 44rem;
 }
 
 .hero-copy > * {
-  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.7);
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
 }
 
 .eyebrow {
