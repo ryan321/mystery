@@ -50,12 +50,20 @@ function Toggle({
   );
 }
 
+const THEMES = [
+  { id: "manor-night", name: "Manor Night" },
+];
+
 export default function TopNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [ambienceOpen, setAmbienceOpen] = useState(false);
+  const [themeOpen, setThemeOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const ambienceRef = useRef<HTMLDivElement>(null);
+  const themeRef = useRef<HTMLDivElement>(null);
+
+  const [themeId, setThemeId] = useState("manor-night");
 
   const {
     packId,
@@ -73,6 +81,9 @@ export default function TopNav() {
       }
       if (ambienceRef.current && !ambienceRef.current.contains(e.target as Node)) {
         setAmbienceOpen(false);
+      }
+      if (themeRef.current && !themeRef.current.contains(e.target as Node)) {
+        setThemeOpen(false);
       }
     }
     document.addEventListener("mousedown", onClickOutside);
@@ -99,6 +110,35 @@ export default function TopNav() {
           Shelf
         </Link>
 
+        <div className={styles.avatarWrap} ref={themeRef}>
+          <button
+            type="button"
+            className={styles.iconBtn}
+            onClick={() => setThemeOpen((v) => !v)}
+            aria-label="Theme settings"
+            aria-expanded={themeOpen}
+            title="Theme"
+          >
+            ◐
+          </button>
+          {themeOpen ? (
+            <div className={styles.dropdown} role="menu">
+              <DropdownSection title="UI Theme">
+                {THEMES.map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    className={`${styles.dropdownItem} ${themeId === t.id ? styles.dropdownItemActive : ""}`}
+                    onClick={() => setThemeId(t.id)}
+                  >
+                    {t.name}
+                  </button>
+                ))}
+              </DropdownSection>
+            </div>
+          ) : null}
+        </div>
+
         <div className={styles.avatarWrap} ref={ambienceRef}>
           <button
             type="button"
@@ -112,7 +152,7 @@ export default function TopNav() {
           </button>
           {ambienceOpen ? (
             <div className={styles.dropdown} role="menu">
-              <DropdownSection title="Ambience">
+              <DropdownSection title="Sounds & Music">
                 <Toggle
                   label="Ambient sounds"
                   checked={soundsEnabled}
@@ -134,12 +174,6 @@ export default function TopNav() {
                     {p.name}
                   </button>
                 ))}
-              </DropdownSection>
-              <hr />
-              <DropdownSection title="Theme">
-                <button type="button" className={styles.dropdownItemDisabled} disabled>
-                  Manor night (only theme)
-                </button>
               </DropdownSection>
             </div>
           ) : null}
