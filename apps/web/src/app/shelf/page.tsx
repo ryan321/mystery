@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Atmosphere from "../../components/Atmosphere";
 import { listCases } from "../../lib/api";
-import { difficultyClass, difficultyLabel } from "../../lib/format";
+import { difficultyClass, difficultyLabel, themeTags } from "../../lib/format";
 import { getAllPlayStates } from "../../lib/playState";
 import type { CaseSummary } from "../../lib/types";
 import styles from "./page.module.css";
@@ -73,7 +73,7 @@ export default function ShelfPage() {
   const allTags = useMemo(() => {
     const tags = new Set<string>();
     for (const c of cases) {
-      for (const t of c.meta.tags) tags.add(t);
+      for (const t of themeTags(c.meta.tags)) tags.add(t);
     }
     return [...tags].sort();
   }, [cases]);
@@ -85,7 +85,8 @@ export default function ShelfPage() {
         c.meta.title.toLowerCase().includes(q) ||
         c.meta.premise.toLowerCase().includes(q) ||
         c.meta.tags.some((t) => t.toLowerCase().includes(q));
-      const matchesTag = !activeTag || c.meta.tags.includes(activeTag);
+      const matchesTag =
+        !activeTag || themeTags(c.meta.tags).includes(activeTag);
 
       const status = playStates[c.id]?.status;
       const matchesStatus =
@@ -236,7 +237,7 @@ export default function ShelfPage() {
                         </div>
                         <p className={styles.premise}>{c.meta.premise}</p>
                         <div className={styles.meta}>
-                          {c.meta.tags.map((t) => (
+                          {themeTags(c.meta.tags).map((t) => (
                             <span key={t} className={styles.tag}>
                               {t}
                             </span>

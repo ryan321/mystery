@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Atmosphere from "../components/Atmosphere";
 import { listCases } from "../lib/api";
-import { difficultyClass, difficultyLabel } from "../lib/format";
+import { difficultyClass, difficultyLabel, themeTags } from "../lib/format";
 import type { CaseSummary } from "../lib/types";
 import styles from "./page.module.css";
 
@@ -127,7 +127,7 @@ export default function HomePage() {
                         </div>
                         <p className={styles.premise}>{c.meta.premise}</p>
                         <div className={styles.meta}>
-                          {c.meta.tags.map((t) => (
+                          {themeTags(c.meta.tags).map((t) => (
                             <span key={t} className={styles.tag}>
                               {t}
                             </span>

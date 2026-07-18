@@ -6,6 +6,14 @@ export function difficultyLabel(difficulty?: CaseSummary["meta"]["difficulty"]):
   return "Easy";
 }
 
+/** Difficulty lives on meta.difficulty — never as a theme tag chip. */
+const DIFFICULTY_TAG_RE = /^(easy|medium|hard|difficult)$/i;
+
+export function themeTags(tags: string[] | undefined): string[] {
+  if (!tags?.length) return [];
+  return tags.filter((t) => !DIFFICULTY_TAG_RE.test(t.trim()));
+}
+
 export function difficultyClass(
   difficulty?: CaseSummary["meta"]["difficulty"]
 ): string {

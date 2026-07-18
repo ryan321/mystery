@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import Atmosphere from "../../../components/Atmosphere";
 import { assetUrl, getCase, startCase } from "../../../lib/api";
-import { difficultyLabel } from "../../../lib/format";
+import { difficultyLabel, themeTags } from "../../../lib/format";
 import { getPlayState, markBeingPlayed } from "../../../lib/playState";
 import type { CaseDetail } from "../../../lib/types";
 import styles from "./page.module.css";
@@ -70,7 +70,7 @@ export default function CaseDetailPage() {
 
   useEffect(() => {
     if (!loading && !detail) {
-      router.replace("/play");
+      router.replace("/shelf");
     }
   }, [loading, detail, router]);
 
@@ -145,7 +145,7 @@ export default function CaseDetailPage() {
       <Atmosphere />
       <main className={styles.detail}>
         <div className={styles.inner}>
-          <Link href="/play" className={styles.back}>
+          <Link href="/shelf" className={styles.back}>
             ← Back to shelf
           </Link>
 
@@ -274,7 +274,7 @@ export default function CaseDetailPage() {
               <div className={styles.section}>
                 <h2 className={styles.sectionTitle}>Tags</h2>
                 <div className={styles.tags}>
-                  {detail.meta.tags.map((t) => (
+                  {themeTags(detail.meta.tags).map((t) => (
                     <span key={t} className={styles.tag}>
                       {t}
                     </span>

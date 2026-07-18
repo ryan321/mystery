@@ -104,8 +104,8 @@ export default function TopNav() {
 
       <div className={styles.right}>
         <Link
-          href="/play"
-          className={`${styles.link} ${isActive("/play") ? styles.active : ""}`}
+          href="/shelf"
+          className={`${styles.link} ${isActive("/shelf") ? styles.active : ""}`}
         >
           Shelf
         </Link>
