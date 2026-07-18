@@ -157,6 +157,11 @@
   background: rgba(212, 181, 106, 0.15);
 }
 
+.iconBtnActive {
+  border-color: var(--candle);
+  background: rgba(212, 181, 106, 0.18);
+}
+
 .dropdownSection {
   padding: 0.35rem 0;
 }

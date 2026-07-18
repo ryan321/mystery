@@ -117,9 +117,11 @@ export default function TopNav() {
         </Link>
         <Link
           href="/help"
-          className={`${styles.link} ${isActive("/help") ? styles.active : ""}`}
+          className={`${styles.iconBtn} ${isActive("/help") ? styles.iconBtnActive : ""}`}
+          aria-label="Help"
+          title="Help"
         >
-          Help
+          ?
         </Link>
 
         <div className={styles.avatarWrap} ref={themeRef}>
