@@ -77,6 +77,7 @@
 
     let audioCtx = null;
     let rainBuffer = null;
+    let rainBufferPromise = null;
     let rainSource = null;
     let rainGain = null;
     let thunderAudios = [];
@@ -193,12 +194,13 @@
 
     function initRainBuffer() {
       if (rainBuffer) return Promise.resolve(rainBuffer);
+      if (rainBufferPromise) return rainBufferPromise;
       if (!audioCtx) {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (!AudioContext) return Promise.reject(new Error("Web Audio not supported"));
         audioCtx = new AudioContext();
       }
-      return fetch("audio/rain.opus")
+      rainBufferPromise = fetch("audio/rain.opus")
         .then(function (res) {
           if (!res.ok) throw new Error("Rain audio fetch failed");
           return res.arrayBuffer();
@@ -210,6 +212,7 @@
           rainBuffer = buffer;
           return rainBuffer;
         });
+      return rainBufferPromise;
     }
 
     function setEnabled(on) {
@@ -245,7 +248,19 @@
 
     toggle.addEventListener("click", function () {
       autoplayFailed = false;
-      setEnabled(!enabled);
+      // Create and resume the AudioContext synchronously inside the user gesture.
+      // Browsers require resume() to be called from a user interaction for autoplay.
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (AudioContext && !audioCtx) {
+        audioCtx = new AudioContext();
+      }
+      if (audioCtx && audioCtx.state === "suspended") {
+        audioCtx.resume().then(function () {
+          setEnabled(!enabled);
+        }).catch(function () {});
+      } else {
+        setEnabled(!enabled);
+      }
     });
 
     // Pause/resume rain when the tab is hidden to be polite
