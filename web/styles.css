@@ -1970,13 +1970,35 @@ a:hover {
   padding: clamp(1.25rem, 3vw, 1.5rem);
 }
 
-.case-status {
-  margin: 0 0 0.5rem;
+.case-difficulty {
+  display: inline-block;
+  margin: 0 0 0.65rem;
+  padding: 0.2rem 0.55rem;
   font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--candle);
+  border-radius: var(--radius);
+  border: 1px solid;
+}
+
+.difficulty-easy {
+  color: #8fb98f;
+  border-color: rgba(143, 185, 143, 0.45);
+  background: rgba(143, 185, 143, 0.1);
+}
+
+.difficulty-medium {
+  color: #d4b56a;
+  border-color: rgba(212, 181, 106, 0.45);
+  background: rgba(212, 181, 106, 0.1);
+}
+
+.difficulty-hard {
+  color: #e08a8a;
+  border-color: rgba(224, 138, 138, 0.45);
+  background: rgba(224, 138, 138, 0.1);
 }
 
 .case-card h3 {
@@ -1989,21 +2011,8 @@ a:hover {
 }
 
 .case-body p {
-  margin: 0 0 0.75rem;
+  margin: 0;
   font-size: 0.95rem;
   color: var(--fog);
   line-height: 1.55;
-}
-
-.case-body p:last-child {
-  margin-bottom: 0;
-}
-
-.case-meta {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--candle);
 }
