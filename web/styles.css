@@ -131,19 +131,19 @@ body {
   right: 0;
   top: 0;
   width: 100%;
-  height: min(92vh, 760px);
+  height: min(88vh, 720px);
   object-fit: cover;
   object-position: 80% 30%;
   mask-image: linear-gradient(
     to bottom,
     black 0%,
-    black 70%,
+    black 65%,
     transparent 100%
   );
   -webkit-mask-image: linear-gradient(
     to bottom,
     black 0%,
-    black 70%,
+    black 65%,
     transparent 100%
   );
   opacity: 0.95;
@@ -492,7 +492,7 @@ a:hover {
   grid-template-columns: 1fr 1fr;
   gap: clamp(2rem, 5vw, 4rem);
   align-items: center;
-  min-height: min(92vh, 760px);
+  min-height: min(88vh, 720px);
   max-width: var(--max);
   margin: 0 auto;
   padding: clamp(2.5rem, 6vw, 5rem) clamp(1rem, 4vw, 2rem);
@@ -598,28 +598,60 @@ a:hover {
 /* Intro — value prop below the hero image */
 
 .intro {
-  padding-top: clamp(2rem, 5vw, 3rem);
-  padding-bottom: clamp(2rem, 5vw, 3rem);
+  padding-top: clamp(1.5rem, 4vw, 2.5rem);
+  padding-bottom: clamp(2.5rem, 6vw, 4rem);
 }
 
 .intro-panel {
-  max-width: 46rem;
+  max-width: var(--max);
   margin: 0 auto;
-  padding: clamp(1.5rem, 4vw, 2.5rem);
-  text-align: center;
-  background: var(--glass);
-  border: 1px solid rgba(154, 175, 196, 0.15);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+  text-align: left;
+}
+
+.intro-panel .eyebrow {
+  margin-bottom: 0.85rem;
+}
+
+.intro-panel h2 {
+  margin: 0 0 1.5rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 3.8vw, 2.6rem);
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: 0.02em;
+  color: #f0f4f8;
+  max-width: 34rem;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.45);
+}
+
+.intro-columns {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: start;
+}
+
+@media (max-width: 760px) {
+  .intro-columns {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .intro-panel h2 {
+    max-width: none;
+  }
 }
 
 .intro-panel .lede {
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0;
+  max-width: none;
+  font-size: clamp(1.05rem, 2vw, 1.2rem);
+  line-height: 1.6;
 }
 
-.intro-panel .lede:last-child {
-  margin-bottom: 0;
+.intro-panel .lede-secondary {
+  color: #8a9db0;
+  font-size: clamp(1rem, 1.8vw, 1.1rem);
 }
 
 /* Dossier — weathered case file */
