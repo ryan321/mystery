@@ -1,4 +1,66 @@
 (function () {
+  "use strict";
+
+  document.documentElement.classList.add("js");
+
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+
+  // Scroll reveal
+  function initReveal() {
+    const reveals = document.querySelectorAll(".reveal");
+    if (!reveals.length) return;
+
+    const observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("reveal-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+    );
+
+    reveals.forEach(function (el) {
+      observer.observe(el);
+    });
+  }
+
+  // Manor parallax
+  function initParallax() {
+    const manor = document.querySelector(".manor-img");
+    if (!manor || prefersReducedMotion) return;
+
+    let ticking = false;
+    function update() {
+      const scrollY = window.scrollY || window.pageYOffset;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? scrollY / docHeight : 0;
+      const yShift = progress * 28; // px
+      manor.style.transform = `translateY(${yShift}px) scale(1.02)`;
+      ticking = false;
+    }
+
+    window.addEventListener(
+      "scroll",
+      function () {
+        if (!ticking) {
+          requestAnimationFrame(update);
+          ticking = true;
+        }
+      },
+      { passive: true }
+    );
+
+    update();
+  }
+
+  initReveal();
+  initParallax();
+
   // Canvas rain overlay
   const canvas = document.querySelector(".rain-canvas");
   if (canvas) {
