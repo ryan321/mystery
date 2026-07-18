@@ -1,24 +1,23 @@
 .shell {
   position: relative;
   z-index: 1;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
 .shellInner {
   width: min(1400px, 100%);
+  height: 100%;
   margin: 0 auto;
   padding: clamp(0.75rem, 2vw, 1.5rem);
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
 }
 
 .desk {
   flex: 1;
-  display: grid;
-  grid-template-columns: 260px minmax(0, 1fr) 280px;
+  display: flex;
   gap: clamp(0.75rem, 2vw, 1.25rem);
   min-height: 0;
 }
@@ -29,6 +28,15 @@
   flex-direction: column;
   gap: 0.75rem;
   min-width: 0;
+  flex-shrink: 0;
+}
+
+.leftRail {
+  width: 260px;
+}
+
+.rightRail {
+  width: 280px;
 }
 
 /* Mahogany frame — center investigation terminal */
@@ -36,7 +44,9 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  flex: 1;
   min-width: 0;
+  max-height: 100%;
   background:
     linear-gradient(
       90deg,
@@ -181,8 +191,8 @@
 }
 
 @media (max-width: 1100px) {
-  .desk {
-    grid-template-columns: 220px minmax(0, 1fr);
+  .leftRail {
+    width: 220px;
   }
   .rightRail {
     display: none;
@@ -190,14 +200,11 @@
 }
 
 @media (max-width: 860px) {
-  .desk {
-    grid-template-columns: 1fr;
-  }
   .leftRail,
   .rightRail {
     display: none;
   }
-  .center {
-    min-height: calc(100vh - 2rem);
+  .shell {
+    height: 100dvh;
   }
 }

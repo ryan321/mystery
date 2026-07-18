@@ -176,39 +176,20 @@ export default function PlaythroughPage() {
     );
   }
 
-  const left = (
+  const center = (
     <>
-      <Panel
-        title="Case"
-        action={
+      <header className={styles.chrome}>
+        <div className={styles.chromeTop}>
+          <div className={styles.caseEyebrow}>
+            {CASE_TITLES[playthrough?.caseId ?? ""] ?? "Case"}
+          </div>
           <button
             type="button"
             className={styles.linkBtn}
             onClick={() => setDrawer("evidence")}
           >
-            Open
+            Evidence ({playthrough?.evidenceIds.length ?? 0})
           </button>
-        }
-      >
-        <div className={styles.caseInfo}>
-          <div className={styles.caseTitle}>
-            {CASE_TITLES[playthrough?.caseId ?? ""] ?? "Case"}
-          </div>
-          <div className={styles.caseMeta}>
-            Evidence: {playthrough?.evidenceIds.length ?? 0} · Turns:{" "}
-            {playthrough?.turnCount ?? 0}
-          </div>
-        </div>
-      </Panel>
-
-    </>
-  );
-
-  const center = (
-    <>
-      <header className={styles.chrome}>
-        <div className={styles.caseEyebrow}>
-          {CASE_TITLES[playthrough?.caseId ?? ""] ?? "Case"}
         </div>
         <StatusBar
           locationName={locationName}
@@ -245,7 +226,7 @@ export default function PlaythroughPage() {
   return (
     <>
       <Atmosphere />
-      <GameShell left={left} center={center} />
+      <GameShell center={center} />
 
       <nav className={styles.mobileBar} aria-label="Investigation panels">
         <button
