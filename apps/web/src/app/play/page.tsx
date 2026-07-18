@@ -173,7 +173,7 @@ export default function ShelfPage() {
               {filtered.map((c) => {
                 const status = playStates[c.id]?.status;
                 return (
-                  <Link key={c.id} href={`/case/${c.id}`} className={styles.caseCardLink}>
+                  <Link key={c.id} href={`/mystery/${c.id}`} className={styles.caseCardLink}>
                     <article className={styles.caseCard}>
                       {status === "being_played" ? (
                         <span className={`${styles.statusBanner} ${styles.statusBeingPlayed}`}>
