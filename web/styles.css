@@ -1884,7 +1884,7 @@ a:hover {
 }
 
 .case-card {
-  padding: clamp(1.25rem, 3vw, 1.75rem);
+  overflow: hidden;
   background: var(--glass);
   border: 1px solid rgba(154, 175, 196, 0.15);
   border-top: 2px solid rgba(212, 181, 106, 0.45);
@@ -1900,6 +1900,42 @@ a:hover {
   transform: translateY(-4px);
   box-shadow: 0 20px 44px rgba(0, 0, 0, 0.35);
   border-color: rgba(154, 175, 196, 0.28);
+}
+
+.case-image {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--night-2);
+}
+
+.case-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      transparent 60%,
+      rgba(10, 16, 24, 0.55) 100%
+    );
+  pointer-events: none;
+}
+
+.case-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.case-card:hover .case-image img {
+  transform: scale(1.04);
+}
+
+.case-body {
+  padding: clamp(1.25rem, 3vw, 1.5rem);
 }
 
 .case-status {
@@ -1920,14 +1956,14 @@ a:hover {
   color: #f0f4f8;
 }
 
-.case-card p {
+.case-body p {
   margin: 0 0 0.75rem;
   font-size: 0.95rem;
   color: var(--fog);
   line-height: 1.55;
 }
 
-.case-card p:last-child {
+.case-body p:last-child {
   margin-bottom: 0;
 }
 
