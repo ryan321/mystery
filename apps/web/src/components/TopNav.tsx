@@ -32,45 +32,39 @@ export default function TopNav() {
         Mystery
       </Link>
 
-      <div className={styles.links}>
-        <Link
-          href="/"
-          className={`${styles.link} ${isActive("/") ? styles.active : ""}`}
-        >
-          Home
-        </Link>
+      <div className={styles.right}>
         <Link
           href="/play"
           className={`${styles.link} ${isActive("/play") ? styles.active : ""}`}
         >
-          Case files
+          Shelf
         </Link>
-      </div>
 
-      <div className={styles.avatarWrap} ref={ref}>
-        <button
-          type="button"
-          className={styles.avatarBtn}
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Account menu"
-          aria-expanded={open}
-        >
-          I
-        </button>
-        {open ? (
-          <div className={styles.dropdown} role="menu">
-            <Link href="/account" onClick={() => setOpen(false)}>
-              Account
-            </Link>
-            <Link href="/settings" onClick={() => setOpen(false)}>
-              Settings
-            </Link>
-            <hr />
-            <button type="button" onClick={() => setOpen(false)}>
-              Sign out
-            </button>
-          </div>
-        ) : null}
+        <div className={styles.avatarWrap} ref={ref}>
+          <button
+            type="button"
+            className={styles.avatarBtn}
+            onClick={() => setOpen((v) => !v)}
+            aria-label="Account menu"
+            aria-expanded={open}
+          >
+            I
+          </button>
+          {open ? (
+            <div className={styles.dropdown} role="menu">
+              <Link href="/account" onClick={() => setOpen(false)}>
+                Account
+              </Link>
+              <Link href="/settings" onClick={() => setOpen(false)}>
+                Settings
+              </Link>
+              <hr />
+              <button type="button" onClick={() => setOpen(false)}>
+                Sign out
+              </button>
+            </div>
+          ) : null}
+        </div>
       </div>
     </nav>
   );
