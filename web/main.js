@@ -61,7 +61,7 @@
   initReveal();
   initParallax();
 
-  // Ambient audio (rain loop + thunder on lightning)
+  // Ambient audio (seamless rain loop via Web Audio API + thunder on lightning)
   function initAudio() {
     const toggle = document.getElementById("audio-toggle");
     const lightning = document.querySelector(".lightning");
@@ -75,11 +75,13 @@
       "audio/thunder-4.mp3",
     ];
 
-    let rainAudio = null;
+    let audioCtx = null;
+    let rainBuffer = null;
+    let rainSource = null;
+    let rainGain = null;
     let thunderAudios = [];
     let enabled = false;
     let flashTimer = null;
-    let nextFlashAt = 0;
     let autoplayFailed = false;
 
     const RAIN_VOLUME = 0.85;
@@ -126,7 +128,6 @@
 
     function scheduleFlash() {
       const delay = enabled ? 5000 + Math.random() * 7000 : Infinity;
-      nextFlashAt = Date.now() + delay;
       if (flashTimer) clearTimeout(flashTimer);
       flashTimer = setTimeout(function () {
         triggerFlash();
@@ -148,32 +149,93 @@
       );
     }
 
+    function stopRain() {
+      if (rainSource) {
+        try {
+          rainSource.stop();
+        } catch (e) {
+          // Already stopped
+        }
+        rainSource = null;
+      }
+      if (audioCtx && audioCtx.state !== "closed") {
+        audioCtx.suspend();
+      }
+    }
+
+    function startRain() {
+      if (!audioCtx || !rainBuffer) return Promise.resolve();
+      function connectAndStart() {
+        if (rainSource) {
+          try {
+            rainSource.stop();
+          } catch (e) {}
+        }
+        rainSource = audioCtx.createBufferSource();
+        rainSource.buffer = rainBuffer;
+        rainSource.loop = true;
+        if (!rainGain) {
+          rainGain = audioCtx.createGain();
+          rainGain.gain.value = RAIN_VOLUME;
+          rainGain.connect(audioCtx.destination);
+        }
+        rainSource.connect(rainGain);
+        rainSource.start(0);
+      }
+      if (audioCtx.state === "suspended") {
+        return audioCtx.resume().then(function () {
+          connectAndStart();
+        });
+      }
+      connectAndStart();
+      return Promise.resolve();
+    }
+
+    function initRainBuffer() {
+      if (rainBuffer) return Promise.resolve(rainBuffer);
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return Promise.reject(new Error("Web Audio not supported"));
+        audioCtx = new AudioContext();
+      }
+      return fetch("audio/rain.opus")
+        .then(function (res) {
+          if (!res.ok) throw new Error("Rain audio fetch failed");
+          return res.arrayBuffer();
+        })
+        .then(function (arrayBuffer) {
+          return audioCtx.decodeAudioData(arrayBuffer);
+        })
+        .then(function (buffer) {
+          rainBuffer = buffer;
+          return rainBuffer;
+        });
+    }
+
     function setEnabled(on) {
       enabled = on;
       updateToggleUI(on);
 
       if (on) {
-        if (!rainAudio) rainAudio = createAudio("audio/rain.mp3");
         if (thunderAudios.length === 0) {
           thunderAudios = THUNDER_VARIANTS.map(createAudio);
         }
-        rainAudio.loop = true;
-        rainAudio.volume = RAIN_VOLUME;
-        const play = rainAudio.play();
-        if (play && typeof play.catch === "function") {
-          play.catch(function () {
-            // Browser blocked autoplay; mute UI until user toggles
+        initRainBuffer()
+          .then(function () {
+            if (!enabled) return;
+            return startRain();
+          })
+          .then(function () {
+            if (!enabled) return;
+            scheduleFlash();
+          })
+          .catch(function () {
             autoplayFailed = true;
             enabled = false;
             updateToggleUI(false);
           });
-        }
-        scheduleFlash();
       } else {
-        if (rainAudio) {
-          rainAudio.pause();
-          rainAudio.currentTime = 0;
-        }
+        stopRain();
         thunderAudios.forEach(function (audio) {
           audio.pause();
         });
@@ -186,13 +248,13 @@
       setEnabled(!enabled);
     });
 
-    // Pause rain when the tab is hidden to be polite
+    // Pause/resume rain when the tab is hidden to be polite
     document.addEventListener("visibilitychange", function () {
-      if (!enabled || !rainAudio) return;
+      if (!enabled || !audioCtx) return;
       if (document.hidden) {
-        rainAudio.pause();
+        audioCtx.suspend();
       } else {
-        rainAudio.play().catch(function () {});
+        audioCtx.resume();
       }
     });
 
