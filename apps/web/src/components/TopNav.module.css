@@ -136,6 +136,34 @@
   border-top: 1px solid rgba(200, 165, 110, 0.15);
 }
 
+.dropdownUser {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.7rem 0.9rem 0.55rem;
+  border-bottom: 1px solid rgba(200, 165, 110, 0.12);
+  max-width: 16rem;
+}
+
+.dropdownUserName {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--paper);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdownUserEmail {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.02em;
+  color: var(--fog);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .iconBtn {
   display: flex;
   align-items: center;

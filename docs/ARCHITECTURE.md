@@ -118,7 +118,7 @@ MysteryDefinition {
   schemaVersion: "1"
   id: string                    // "blackwood-inheritance"
   contentVersion: string        // "1.0.0" or git sha
-  meta: { title, premise, tone, estimatedMinutes, tags, difficulty, contentWarnings }
+  meta: { title, premise, tone, tags, difficulty, contentWarnings }
   player: {
     displayName, role, voiceNotes
     startingLocationId

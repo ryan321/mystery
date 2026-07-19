@@ -99,3 +99,9 @@
 .switch a {
   color: var(--candle);
 }
+
+.error {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #ff8a7a;
+}

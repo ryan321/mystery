@@ -509,7 +509,7 @@ export const CaseMetaSchema = z.object({
    */
   theMystery: z.string().optional(),
   tone: z.string().optional(),
-  estimatedMinutes: z.number().int().positive().optional(),
+
   tags: z.array(z.string()).default([]),
   difficulty: z.enum(["easy", "medium", "hard"]).optional(),
   contentWarnings: z.array(z.string()).default([]),

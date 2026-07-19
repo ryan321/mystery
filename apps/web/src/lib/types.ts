@@ -12,7 +12,7 @@ export type CaseMeta = {
   difficulty?: "easy" | "medium" | "hard";
   contentWarnings: string[];
   artStyle?: string;
-  estimatedMinutes?: number;
+
 };
 
 export type CaseSummary = {

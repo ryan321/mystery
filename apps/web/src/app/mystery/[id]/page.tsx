@@ -39,6 +39,9 @@ const CASE_IMAGES: Record<string, string> = {
   "cant-trick-rick": "/images/cases/cant-trick-rick.jpg",
 };
 
+/** Only The Blackwood Inheritance is free for now. */
+const FREE_CASE_IDS = new Set(["blackwood-inheritance"]);
+
 export default function CaseDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -226,10 +229,9 @@ export default function CaseDetailPage() {
               <div className={styles.playCard}>
                 <h2 className={styles.playTitle}>Start investigating</h2>
                 <p className={styles.playMeta}>
-                  Free mystery · Plays in your browser · No download
-                  {detail.meta.estimatedMinutes
-                    ? ` · ~${detail.meta.estimatedMinutes} min`
-                    : ""}
+                  {FREE_CASE_IDS.has(detail.id)
+                    ? "Free mystery · Plays in your browser · No download"
+                    : "Plays in your browser · No download"}
                 </p>
                 {playStateStatus === "being_played" ? (
                   <p className={styles.restartHint}>
@@ -272,7 +274,7 @@ export default function CaseDetailPage() {
               </div>
 
               <div className={styles.section}>
-                <h2 className={styles.sectionTitle}>Tags</h2>
+                <h2 className={styles.sectionTitle}>Themes</h2>
                 <div className={styles.tags}>
                   {themeTags(detail.meta.tags).map((t) => (
                     <span key={t} className={styles.tag}>

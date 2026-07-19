@@ -1,8 +1,35 @@
+"use client";
+
+import { FormEvent, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Atmosphere from "../../components/Atmosphere";
+import { signIn } from "../../lib/auth";
 import styles from "./page.module.css";
 
 export default function SignInPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    setError(null);
+    const trimmed = email.trim();
+    if (!trimmed || !trimmed.includes("@")) {
+      setError("Enter a valid email.");
+      return;
+    }
+    if (!password) {
+      setError("Enter your password.");
+      return;
+    }
+    // Stub: accept any credentials and open a local session.
+    signIn(trimmed);
+    router.push("/shelf");
+  }
+
   return (
     <>
       <Atmosphere />
@@ -12,7 +39,7 @@ export default function SignInPage() {
             <h1 className={styles.cardTitle}>Sign in</h1>
           </div>
           <div className={styles.cardBody}>
-            <form className={styles.cardBody}>
+            <form className={styles.cardBody} onSubmit={onSubmit}>
               <div className={styles.field}>
                 <label className={styles.label} htmlFor="email">
                   Email
@@ -22,6 +49,10 @@ export default function SignInPage() {
                   type="email"
                   className={styles.input}
                   placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  required
                 />
               </div>
               <div className={styles.field}>
@@ -33,8 +64,13 @@ export default function SignInPage() {
                   type="password"
                   className={styles.input}
                   placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                  required
                 />
               </div>
+              {error ? <p className={styles.error}>{error}</p> : null}
               <button type="submit" className={styles.btnPrimary}>
                 Sign in
               </button>

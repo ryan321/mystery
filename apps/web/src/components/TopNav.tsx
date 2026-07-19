@@ -5,6 +5,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAmbience } from "./AmbienceProvider";
 import { AMBIENCE_PACKS } from "../lib/ambience";
+import {
+  getSession,
+  signOut,
+  subscribeAuth,
+  type AuthSession,
+} from "../lib/auth";
 import styles from "./TopNav.module.css";
 
 function DropdownSection({
@@ -59,6 +65,7 @@ export default function TopNav() {
   const [open, setOpen] = useState(false);
   const [ambienceOpen, setAmbienceOpen] = useState(false);
   const [themeOpen, setThemeOpen] = useState(false);
+  const [session, setSession] = useState<AuthSession | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const ambienceRef = useRef<HTMLDivElement>(null);
   const themeRef = useRef<HTMLDivElement>(null);
@@ -73,6 +80,11 @@ export default function TopNav() {
     setMusicEnabled,
     setPackId,
   } = useAmbience();
+
+  useEffect(() => {
+    setSession(getSession());
+    return subscribeAuth(() => setSession(getSession()));
+  }, []);
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
@@ -201,27 +213,53 @@ export default function TopNav() {
             aria-label="Account menu"
             aria-expanded={open}
           >
-            I
+            {session
+              ? session.displayName.trim().charAt(0).toUpperCase() || "?"
+              : "?"}
           </button>
           {open ? (
             <div className={styles.dropdown} role="menu">
-              <Link href="/account" onClick={() => setOpen(false)}>
-                Account
-              </Link>
-              <Link href="/settings" onClick={() => setOpen(false)}>
-                Settings
-              </Link>
-              <hr />
-              <Link href="/signin" onClick={() => setOpen(false)}>
-                Sign in
-              </Link>
-              <Link href="/signup" onClick={() => setOpen(false)}>
-                Sign up
-              </Link>
-              <hr />
-              <button type="button" onClick={() => setOpen(false)}>
-                Sign out
-              </button>
+              {session ? (
+                <>
+                  <div className={styles.dropdownUser}>
+                    <span className={styles.dropdownUserName}>
+                      {session.displayName}
+                    </span>
+                    <span className={styles.dropdownUserEmail}>
+                      {session.email}
+                    </span>
+                  </div>
+                  <Link href="/account" onClick={() => setOpen(false)}>
+                    Account
+                  </Link>
+                  <Link href="/settings" onClick={() => setOpen(false)}>
+                    Settings
+                  </Link>
+                  <hr />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      signOut();
+                      setOpen(false);
+                    }}
+                  >
+                    Sign out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link href="/signin" onClick={() => setOpen(false)}>
+                    Sign in
+                  </Link>
+                  <Link href="/signup" onClick={() => setOpen(false)}>
+                    Sign up
+                  </Link>
+                  <hr />
+                  <Link href="/settings" onClick={() => setOpen(false)}>
+                    Settings
+                  </Link>
+                </>
+              )}
             </div>
           ) : null}
         </div>

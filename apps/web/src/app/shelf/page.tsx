@@ -134,7 +134,7 @@ export default function ShelfPage() {
             <input
               type="search"
               className={styles.searchInput}
-              placeholder="Search mysteries, tags, or themes…"
+              placeholder="Search mysteries or themes…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />

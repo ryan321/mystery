@@ -66,7 +66,6 @@ Validate by parsing with `parseMysteryDefinition` (shared package) or loading th
     "summary": "Longer jacket blurb: scene, stakes, cast, no spoilers",
     "theMystery": "The central question the player must answer",
     "tone": "how it should feel",
-    "estimatedMinutes": 40,
     "tags": ["Manor"],
     "difficulty": "medium",
     "contentWarnings": ["murder"]

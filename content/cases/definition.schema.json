@@ -43,10 +43,6 @@
         "tone": {
           "type": "string"
         },
-        "estimatedMinutes": {
-          "type": "integer",
-          "exclusiveMinimum": 0
-        },
         "tags": {
           "type": "array",
           "items": {

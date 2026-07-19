@@ -85,7 +85,7 @@ export default function HomePage() {
             <input
               type="search"
               className={styles.searchInput}
-              placeholder="Search cases, tags, or themes…"
+              placeholder="Search cases or themes…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
