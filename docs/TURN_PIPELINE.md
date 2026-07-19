@@ -10,29 +10,53 @@ Player free text
     │
     ▼
 ┌───────────────────┐
-│ Call #1 DIRECTOR  │  structured intents only (JSON)
+│ Call #1 DIRECTOR  │  intents + physical (world→player classify)
 └─────────┬─────────┘
           ▼
 ┌───────────────────┐
-│ ENGINE            │  intents → patch → accuse gate →
-│                   │  validateAndApplyPatch
-│                   │  (doors, evidence, flags, accuse…)
-│                   │  build justHappened
+│ ENGINE            │
+│  1 intents→patch  │
+│  2 accuse gate    │
+│  3 apply patch    │  doors, evidence, flags, accuse…
+│  4 evaluate beats │  authored plot effects (incl. harm/hold/steal)
+│  5 WORLD→PLAYER   │  resolveWorldToPlayer — core phase
+│                   │  assault / provoke / eject / hazard / seize
+│                   │  + defaults when no case beat handled it
+│  6 justHappened   │  discoveries, inventory, accuse…
 └─────────┬─────────┘
           ▼
 ┌───────────────────┐
-│ Call #2 PERFORMER │  narration + dialogue only (JSON)
-│                   │  sees post-commit ContextPack
+│ Call #2 PERFORMER │  narration + dialogue only
+│                   │  must stage world→player events
 └─────────┬─────────┘
           ▼
      Persist + UI
 ```
 
+## World → player (core engine phase)
+
+**Code:** `packages/engine/src/resolve-world-to-player.ts`
+
+The player is not only an actor. Each turn the engine asks: *what happens TO them?*
+
+**Open situations, fixed tools.** We do not maintain a catalog of every possible trouble.
+The AI proposes compositions of allowlisted effects; the engine validates and applies.
+
+| Input | Engine result |
+|-------|----------------|
+| Director `worldToPlayer.effects[]` | Sanitize allowlist + apply |
+| Authored beats (`harm_player`, `hold_player`, `move_player`, `steal_…`) | Beat pass |
+| Location `hazards` | Fall / soak / injure |
+| Move while `control ≠ free` | Blocked |
+
+Effect allowlist: `WORLD_TO_PLAYER_EFFECT_TYPES` (move, harm, hold, steal, threat, willingness, …).  
+Ids must exist in the closed-world pack.
+
 ## Rules
 
 1. **Presentation never mutates authoritative state.**
-2. **Director** may suggest a patch; **engine** is authority.
-3. **Performer** must honor `justHappened` and default-deny character knowledge.
+2. **Director** may suggest a patch and must classify `physical`; **engine** is authority.
+3. **Performer** must honor `justHappened` (including world→player) and default-deny knowledge.
 4. Without `OPENROUTER_API_KEY`, both calls use heuristics.
 5. **Accuse gate** (`packages/engine/src/accuse-gate.ts`): informal accusations
    become `pendingAccusation` and must be confirmed in-fiction (or worded

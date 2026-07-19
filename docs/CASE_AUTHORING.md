@@ -708,15 +708,27 @@ Compose with `and` / `or` / `not`.
 - `set_safe_haven_compromised` / `add_player_tag` / `set_player_status_flag`
 - `notebook_append` — `{ text }` (quiet bookkeeping)
 
-### Physical force (universal — no per-case requirement)
-Player shove/hit/grab is an **assault** intent in every mystery. The engine:
-1. Sets flags (`player_assaulted_staff`, `assault_attempts`, `last_assault_target`, …)
-2. Runs case beats if you authored them (preferred for special institutions, clocks, etc.)
-3. Otherwise applies **default consequences** from `player.authority`:
-   - `civilian` / `guest`: first force → bruised + **held** by target; repeat → downed + restrained
-   - `official` / `professional`: first force → target hostile/rattled, player still free; repeat → held
+### Plot hits the player (core engine — open situations, fixed tools)
 
-Author case beats when you need special flavor (chemical restraint, servants, failure clocks). Defaults keep every other mystery from soft-prose-only fights. Director + Performer system prompts also treat physical force as universal.
+**Do not catalog every way the world can act on the player.**  
+AI + story invent situations. The engine only exposes fixed **effects**.
+
+```json
+"worldToPlayer": {
+  "active": true,
+  "summary": "Bouncer throws you onto the street",
+  "effects": [
+    { "type": "set_player_threat", "threat": "threatened" },
+    { "type": "move_player", "toLocationId": "street" },
+    { "type": "set_willingness", "characterId": "bouncer", "value": "hostile" }
+  ]
+}
+```
+
+Allowlist: `move_player`, `harm_player`, `hold_player`, `steal_from_player`, `set_player_threat`, …  
+(`WORLD_TO_PLAYER_EFFECT_TYPES` in engine). Ids must exist in the pack.
+
+Turn phase **`resolveWorldToPlayer`** always runs after beats. Authored beats + `location.hazards` remain for fair-play set pieces.
 
 ### Relationships
 - `reveal_relationship` / `set_relationship` / `set_relationship_strength` / `set_relationship_active`

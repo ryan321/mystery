@@ -168,6 +168,35 @@ export const CharacterPresenceSchema = z.object({
 });
 export type CharacterPresence = z.infer<typeof CharacterPresenceSchema>;
 
+/**
+ * Environmental danger at a location — rickety pier, ice, open shaft.
+ * Engine + AI can dump the player into fallToLocationId / harm them.
+ */
+export const LocationHazardSchema = z.object({
+  id: z.string().min(1),
+  /** What the AI/pack should know is dangerous here. */
+  description: z.string().min(1),
+  /**
+   * on_enter — fire when player arrives here
+   * on_inspect — fire when inspecting inspectableId
+   * on_act — AI may trigger when player acts carelessly here (default)
+   */
+  trigger: z
+    .enum(["on_enter", "on_inspect", "on_act"])
+    .default("on_act"),
+  inspectableId: z.string().optional(),
+  /** Where they land if they fall / are swept (must be a location id). */
+  fallToLocationId: z.string().optional(),
+  /** Player condition after: shaken | bruised | injured … */
+  condition: z.string().optional(),
+  /** Tag e.g. soaked, smoke_choked */
+  tag: z.string().optional(),
+  once: z.boolean().default(true),
+  /** scare = threat only; soak = wet/shaken + optional fall; injure = bruised/injured + fall */
+  severity: z.enum(["scare", "soak", "injure"]).default("soak"),
+});
+export type LocationHazard = z.infer<typeof LocationHazardSchema>;
+
 export const LocationSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
@@ -176,6 +205,8 @@ export const LocationSchema = z.object({
   exits: z.array(ExitSchema).default([]),
   inspectables: z.array(InspectableSchema).default([]),
   charactersPresent: z.array(CharacterPresenceSchema).default([]),
+  /** Optional environmental dangers (planks give way, ice, etc.). */
+  hazards: z.array(LocationHazardSchema).default([]),
 });
 export type Location = z.infer<typeof LocationSchema>;
 

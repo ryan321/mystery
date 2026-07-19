@@ -60,6 +60,43 @@ async function onceChatJson(args: {
 }
 
 /**
+ * Parse model JSON even when wrapped in markdown fences or prose.
+ * DeepSeek and others often return ```json ... ``` despite json_object mode.
+ */
+export function parseModelJson(raw: string): unknown {
+  let s = (raw ?? "").trim();
+  if (!s) throw new SyntaxError("Empty model JSON");
+
+  // Full-string markdown fence
+  const fenceAll = /^```(?:json|JSON)?\s*\r?\n?([\s\S]*?)\r?\n?```\s*$/;
+  const fm = s.match(fenceAll);
+  if (fm) s = fm[1]!.trim();
+
+  // Leading fence without clean end
+  if (/^```/.test(s)) {
+    s = s.replace(/^```(?:json|JSON)?\s*\r?\n?/, "");
+    s = s.replace(/\r?\n?```\s*$/, "").trim();
+  }
+
+  try {
+    return JSON.parse(s) as unknown;
+  } catch {
+    // Extract outermost object/array
+    const objStart = s.indexOf("{");
+    const arrStart = s.indexOf("[");
+    let start = -1;
+    if (objStart >= 0 && (arrStart < 0 || objStart < arrStart)) start = objStart;
+    else if (arrStart >= 0) start = arrStart;
+    if (start < 0) throw new SyntaxError("No JSON object in model reply");
+    const open = s[start];
+    const close = open === "{" ? "}" : "]";
+    const end = s.lastIndexOf(close);
+    if (end <= start) throw new SyntaxError("Unclosed JSON in model reply");
+    return JSON.parse(s.slice(start, end + 1)) as unknown;
+  }
+}
+
+/**
  * Call chat completions expecting a JSON object.
  * - Retries transient transport failures with backoff
  * - One repair pass if the model returns non-JSON
@@ -93,7 +130,7 @@ export async function completeJson(
       });
 
       try {
-        const parsed = JSON.parse(raw) as unknown;
+        const parsed = parseModelJson(raw);
         attempts.push({
           kind,
           attempt: transportAttempt,
@@ -131,11 +168,11 @@ export async function completeJson(
               {
                 role: "user",
                 content:
-                  "Your previous reply was not valid JSON. Reply again with ONLY a valid JSON object matching the required shape. No markdown, no commentary.",
+                  "Your previous reply was not valid JSON. Reply again with ONLY a valid JSON object matching the required shape. No markdown fences, no commentary, no ``` wrappers.",
               },
             ],
           });
-          const parsed = JSON.parse(repairedRaw) as unknown;
+          const parsed = parseModelJson(repairedRaw);
           attempts.push({
             kind: "json_repair",
             attempt: 0,
@@ -282,7 +319,7 @@ export async function completeJsonValidated<T>(
         });
         let parsed: unknown;
         try {
-          parsed = JSON.parse(raw);
+          parsed = parseModelJson(raw);
         } catch {
           allAttempts.push({
             kind,

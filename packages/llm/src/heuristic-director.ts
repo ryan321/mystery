@@ -68,17 +68,28 @@ export function heuristicDirector(args: {
       suspectIds,
     });
     if (suspectIds[0]) focusCharacterId = suspectIds[0];
-    return { intents, reasoning: "heuristic accuse", focusCharacterId };
+    return {
+      intents,
+      physical: { kind: "none" },
+      worldToPlayer: { active: false, effects: [] },
+      reasoning: "heuristic accuse",
+      focusCharacterId,
+    };
   }
 
-  // physical assault (shove / push / knock down)
+  // physical assault (shove / push / slap / knee / knock down)
   if (
-    /\b(push|shove|hit|punch|kick|grab|tackle|strike|slap)\b/.test(input) ||
+    /\b(push|shove|hit|punch|kick|knee|elbow|grab|tackle|strike|slap|smack|attack|fight|pummel|stomp)\b/.test(
+      input
+    ) ||
     /\bknock\s+(him|her|them|down)\b/.test(input) ||
     /\bout of (the |my )?way\b/.test(input) ||
-    /\bonto the (ground|floor)\b/.test(input)
+    /\bonto the (ground|floor)\b/.test(input) ||
+    /\bin the (nuts|groin|balls)\b/.test(input) ||
+    /\bh[iu]m\b/.test(input)
   ) {
-    for (const ch of pack.location?.presentCharacters ?? []) {
+    const present = (pack.location?.presentCharacters ?? []).filter(Boolean);
+    for (const ch of present) {
       if (!ch) continue;
       const name = ch.name.toLowerCase();
       const last = name.split(/\s+/).pop() ?? "";
@@ -86,21 +97,117 @@ export function heuristicDirector(args: {
         input.includes(name) ||
         input.includes(ch.id.replace(/-/g, " ")) ||
         (last.length > 2 && input.includes(last)) ||
-        /\b(him|her|them|doctor)\b/.test(input)
+        /\b(him|her|them|hium|doctor|nurse)\b/.test(input) ||
+        present.length === 1
       ) {
         intents.push({
           type: "assault",
           characterId: ch.id,
           manner: /\bground\b|\bfloor\b|\bknock\b/.test(input)
             ? "knock_down"
-            : /\bgrab\b/.test(input)
-              ? "grab"
-              : "shove",
+            : /\b(slap|smack|hit|punch)\b/.test(input)
+              ? "hit"
+              : /\bgrab\b/.test(input)
+                ? "grab"
+                : "shove",
         });
         focusCharacterId = ch.id;
-        return { intents, reasoning: "heuristic assault", focusCharacterId };
+        return {
+          intents,
+          physical: {
+            kind: "assault",
+            characterId: ch.id,
+            manner: "assault",
+          },
+          worldToPlayer: {
+            active: true,
+            summary: `Force against ${ch.name}`,
+            effects: [
+              {
+                type: "hold_player",
+                byCharacterId: ch.id,
+                text: "They seize you after the attack.",
+              },
+              { type: "harm_player", condition: "bruised" },
+              { type: "set_player_threat", threat: "threatened" },
+              {
+                type: "set_willingness",
+                characterId: ch.id,
+                value: "hostile",
+              },
+            ],
+          },
+          reasoning: "heuristic assault",
+          focusCharacterId,
+        };
       }
     }
+    // Violence words + people present → assault first present
+    if (present[0]) {
+      intents.push({
+        type: "assault",
+        characterId: present[0].id,
+        manner: "assault",
+      });
+      return {
+        intents,
+        physical: {
+          kind: "assault",
+          characterId: present[0].id,
+          manner: "assault",
+        },
+        worldToPlayer: {
+          active: true,
+          summary: `Force against ${present[0].name}`,
+          effects: [
+            {
+              type: "hold_player",
+              byCharacterId: present[0].id,
+            },
+            { type: "harm_player", condition: "bruised" },
+            { type: "set_player_threat", threat: "threatened" },
+          ],
+        },
+        reasoning: "heuristic assault fallback",
+        focusCharacterId: present[0].id,
+      };
+    }
+  }
+
+  // Disruptive misconduct
+  if (
+    /\b(pee|piss|urinate|spit on|vomit|strip naked|trash the|smash the)\b/.test(
+      input
+    )
+  ) {
+    intents.push({ type: "other", note: "misconduct:disrupt" });
+    const wit = (pack.location?.presentCharacters ?? []).find(Boolean);
+    return {
+      intents,
+      physical: { kind: "misconduct", misconductKind: "disrupt" },
+      worldToPlayer: {
+        active: true,
+        summary: "Staff react to the disruption",
+        effects: [
+          { type: "harm_player", condition: "shaken" },
+          { type: "set_player_threat", threat: "threatened" },
+          ...(wit
+            ? [
+                {
+                  type: "hold_player",
+                  byCharacterId: wit.id,
+                },
+                {
+                  type: "set_willingness",
+                  characterId: wit.id,
+                  value: "hostile",
+                },
+              ]
+            : []),
+        ],
+      },
+      reasoning: "heuristic misconduct",
+    };
   }
 
   // present evidence
@@ -217,6 +324,8 @@ export function heuristicDirector(args: {
 
   return {
     intents,
+    physical: { kind: "none" },
+    worldToPlayer: { active: false, effects: [] },
     focusCharacterId,
     reasoning: "heuristic-director",
   };

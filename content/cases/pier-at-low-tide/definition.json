@@ -2,7 +2,7 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "pier-at-low-tide",
-  "contentVersion": "0.1.3",
+  "contentVersion": "0.2.0",
   "meta": {
     "title": "The Pier at Low Tide",
     "premise": "The harbormaster is dead in the water. Five people were on the pier before dawn. Each one has a story.",
@@ -157,6 +157,23 @@
         {
           "toLocationId": "outer-walk",
           "label": "along the outer walk into the fog"
+        },
+        {
+          "toLocationId": "under-pier-water",
+          "label": "down the slick ladder toward the water"
+        }
+      ],
+      "hazards": [
+        {
+          "id": "slick-ladder",
+          "description": "The ladder rungs are slick with tide and algae. A careless climb can put you in the black water under the pier.",
+          "trigger": "on_act",
+          "inspectableId": "ladder",
+          "fallToLocationId": "under-pier-water",
+          "condition": "shaken",
+          "tag": "soaked",
+          "severity": "soak",
+          "once": true
         }
       ],
       "inspectables": [
@@ -322,12 +339,28 @@
     {
       "id": "outer-walk",
       "name": "Outer walk — fog end",
-      "description": "Planks vanish into white. Somewhere a bell buoy clangs. Dr. Cole stands with a coat too fine for this weather, staring where the bay should be. Jess Pike paces, hands in pockets, jaw set.",
+      "description": "Planks vanish into white. Some of the boards flex underfoot — soft with rot where the fog never dries. Somewhere a bell buoy clangs. Dr. Cole stands with a coat too fine for this weather, staring where the bay should be. Jess Pike paces, hands in pockets, jaw set.",
       "startsAccessible": true,
       "exits": [
         {
           "toLocationId": "pier-deck",
           "label": "back toward the main pier"
+        },
+        {
+          "toLocationId": "under-pier-water",
+          "label": "over the edge into the black water (not a good idea)"
+        }
+      ],
+      "hazards": [
+        {
+          "id": "rotten-outer-planks",
+          "description": "The outer walk's planks are rotten and slick. Weight in the wrong place can put you through the wood into the water under the pier.",
+          "trigger": "on_enter",
+          "fallToLocationId": "under-pier-water",
+          "condition": "bruised",
+          "tag": "soaked",
+          "severity": "injure",
+          "once": true
         }
       ],
       "inspectables": [
@@ -336,6 +369,13 @@
           "name": "scrape on the outer rail",
           "onInspect": {
             "narrativeHints": "Fresh gouge in the wood — something heavy dragged or braced. Points back toward Briggs's mooring, not the open bay."
+          }
+        },
+        {
+          "id": "soft-plank",
+          "name": "soft plank underfoot",
+          "onInspect": {
+            "narrativeHints": "The board bows. Fibers are black with rot. One hard step could open a hole to the tide."
           }
         }
       ],
@@ -347,6 +387,28 @@
           "characterId": "jess-pike"
         }
       ]
+    },
+    {
+      "id": "under-pier-water",
+      "name": "Under the pier — black water",
+      "description": "Cold, brackish, and loud with the slap of waves against piles. Kelp brushes your legs. The underside of the pier is a ribcage of wet wood. The ladder is a dark rectangle above. Low tide mud sucks at anything that stands still.",
+      "startsAccessible": true,
+      "exits": [
+        {
+          "toLocationId": "pier-deck",
+          "label": "haul yourself up the ladder to the deck"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "piling-scrapes",
+          "name": "scrapes on a piling",
+          "onInspect": {
+            "narrativeHints": "Fresh gouges at waterline height — as if a body or a boat pole slammed here hard before dawn."
+          }
+        }
+      ],
+      "charactersPresent": []
     }
   ],
   "relationships": [

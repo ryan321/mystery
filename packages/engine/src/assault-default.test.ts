@@ -6,8 +6,13 @@ import { parseMysteryDefinition } from "@mystery/shared";
 import { createInitialPlaythrough } from "./create-playthrough.js";
 import {
   applyDefaultAssaultConsequences,
+  applyDefaultMisconductConsequences,
   assaultCaseHandled,
 } from "./assault-default.js";
+import {
+  directorIntentsToPatch,
+  inputLooksLikeMisconduct,
+} from "./intents-to-patch.js";
 
 const blackwood = parseMysteryDefinition(
   JSON.parse(
@@ -97,5 +102,94 @@ describe("default assault consequences (universal)", () => {
     expect(r.state.playerStatus.control).toBe("restrained");
     expect(r.state.playerStatus.condition).toBe("injured");
     expect(r.state.playerStatus.threat).toBe("assaulted");
+  });
+
+  it("slap hium typo resolves to present doctor and holds", () => {
+    let state = createInitialPlaythrough(whiteRoom, "def-slap-typo");
+    state = {
+      ...state,
+      locationId: "ward-office",
+      characterState: {
+        ...state.characterState,
+        "dr-silas-more": {
+          ...state.characterState["dr-silas-more"]!,
+          locationId: "ward-office",
+        },
+        "june-pell": {
+          ...state.characterState["june-pell"]!,
+          locationId: "ward-office",
+        },
+      },
+    };
+    const { patch, notes } = directorIntentsToPatch(
+      whiteRoom,
+      state,
+      { intents: [{ type: "other", note: "unclear" }] },
+      "slap hium"
+    );
+    expect(notes.some((n) => n.includes("assault→"))).toBe(true);
+    expect(patch.setFlags?.last_assault_target).toBe("dr-silas-more");
+  });
+
+  it("knee him in the nuts is assault", () => {
+    let state = createInitialPlaythrough(whiteRoom, "def-knee");
+    state = {
+      ...state,
+      locationId: "ward-office",
+      characterState: {
+        ...state.characterState,
+        "dr-silas-more": {
+          ...state.characterState["dr-silas-more"]!,
+          locationId: "ward-office",
+        },
+        "june-pell": {
+          ...state.characterState["june-pell"]!,
+          locationId: "ward-office",
+        },
+      },
+    };
+    const { patch, notes } = directorIntentsToPatch(
+      whiteRoom,
+      state,
+      { intents: [{ type: "other", note: "x" }] },
+      "knee him in the nuts"
+    );
+    expect(notes.some((n) => n.includes("assault→"))).toBe(true);
+    expect(patch.setFlags?.last_assault_target).toBe("dr-silas-more");
+    expect(patch.setFlags?.last_assault_manner).toBe("kick");
+  });
+
+  it("pee on the floor is misconduct and seizes civilian", () => {
+    expect(inputLooksLikeMisconduct("pee on the floor")).toBe(true);
+    let state = createInitialPlaythrough(whiteRoom, "def-pee");
+    state = {
+      ...state,
+      locationId: "ward-office",
+      characterState: {
+        ...state.characterState,
+        "dr-silas-more": {
+          ...state.characterState["dr-silas-more"]!,
+          locationId: "ward-office",
+        },
+      },
+    };
+    const { patch, notes } = directorIntentsToPatch(
+      whiteRoom,
+      state,
+      { intents: [{ type: "other", note: "gross" }] },
+      "pee on the floor"
+    );
+    expect(notes.some((n) => n.startsWith("misconduct→"))).toBe(true);
+    expect(patch.setFlags?.player_misconduct).toBe(true);
+
+    const r = applyDefaultMisconductConsequences(whiteRoom, state, {
+      kind: "urinate",
+      attempts: 1,
+      witnessId: "dr-silas-more",
+      caseHandled: false,
+    });
+    expect(r.state.playerStatus.control).toBe("held");
+    expect(r.state.playerStatus.condition).toBe("shaken");
+    expect(r.state.playerStatus.threat).toBe("threatened");
   });
 });

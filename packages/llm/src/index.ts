@@ -4,6 +4,7 @@ export * from "./retry.js";
 export * from "./director.js";
 export * from "./performer.js";
 export * from "./heuristic-director.js";
+export * from "./classify-physical.js";
 export * from "./heuristic.js";
 // legacy single-call path (deprecated)
 export * from "./narrator.js";

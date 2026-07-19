@@ -163,21 +163,36 @@ export default function PlaythroughPage() {
         appendDialogue(data.dialogue, data.playthrough);
         if (data.justHappened?.length) {
           for (const j of data.justHappened) {
-            // Phase changes stay engine-only — never surface in the player log.
+            // Phase / engine bookkeeping — never in the player log.
             if (
               j.id?.startsWith("phase") ||
               j.summary?.toLowerCase().includes("phase")
             ) {
               continue;
             }
-            // Player-facing plot events (world acts on you)
-            const playerFacing =
-              j.id?.startsWith("pulse_") ||
+            // Status changes (threat, harm, hold, assault) are for the AI
+            // performer + StatusBar only. Do NOT echo as system chips in the
+            // log — they should read as narrator prose, not a HUD.
+            if (
               j.id?.startsWith("player_threat_") ||
-              j.id?.startsWith("player_moved_") ||
               j.id?.startsWith("player_harm_") ||
               j.id?.startsWith("player_control_") ||
               j.id?.startsWith("assault_attempt_") ||
+              j.id?.startsWith("assault_default_") ||
+              j.id?.startsWith("world_to_player") ||
+              j.id?.startsWith("social_pushback_") ||
+              j.id?.startsWith("misconduct_default_") ||
+              j.id?.startsWith("hazard_") ||
+              j.id?.startsWith("will_") ||
+              j.id?.startsWith("move_char_")
+            ) {
+              continue;
+            }
+            // Rare log-worthy beats: boundaries, endings, force-moves that
+            // might need a short cue if prose is thin.
+            const playerFacing =
+              j.id?.startsWith("pulse_") ||
+              j.id?.startsWith("player_moved_") ||
               j.id?.startsWith("stolen_") ||
               j.id?.startsWith("item_damaged_") ||
               j.id?.startsWith("lost_ev_") ||
@@ -192,7 +207,6 @@ export default function PlaythroughPage() {
                 ...prev,
                 {
                   kind: "system",
-                  // Prefer short summary for the log; full hints go to the AI
                   text: j.summary,
                 },
               ]);

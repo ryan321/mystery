@@ -254,7 +254,13 @@ Example: letter found → `reveal_relationship(vale_debt_blackwood)`; after solv
 
 ### 3.1b Player status (detective as target)
 
-The detective is not a full NPC, but **plot can happen to them**. Hostility, break-ins, and personal threats are engine-owned state — the AI performs them, it does not invent freeform assaults.
+The detective is not a full NPC, but **plot must be able to happen to them**. That is a **core engine phase** (`resolveWorldToPlayer`), not optional flavor:
+
+- Authored beats: `harm_player`, `hold_player`, `move_player`, `steal_from_player`, location `hazards`
+- Free-text pressure: director `physical` (assault / provoke / misconduct / trespass / hazard) → engine defaults
+- Status: `playerStatus.threat`, `.condition`, `.control`, inventory
+
+Hostility, break-ins, ejects, pier falls, and restraints are engine-owned — the AI classifies and performs them; it does not invent freeform outcomes.
 
 ```ts
 PlayerStatus {

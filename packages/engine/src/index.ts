@@ -16,3 +16,7 @@ export * from "./relationships.js";
 export * from "./inventory.js";
 export * from "./boundaries.js";
 export * from "./assault-default.js";
+export * from "./player-impact.js";
+/** Core turn phase: world acts on the player (force, eject, hazard, seize). */
+export * from "./resolve-world-to-player.js";
+export * from "./world-to-player-effects.js";

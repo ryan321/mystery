@@ -324,6 +324,17 @@ export function buildContextPack(
       presentCharacters,
       /** Convenience: ids only, same as presentCharacters. */
       presentCharacterIds: presentIdList,
+      /**
+       * Environmental dangers here (rickety planks, ice, open shaft).
+       * If the player walks/climbs/leans carelessly, physical.kind may be "hazard".
+       */
+      hazards: (location.hazards ?? []).map((h) => ({
+        id: h.id,
+        description: h.description,
+        trigger: h.trigger,
+        fallToLocationId: h.fallToLocationId,
+        severity: h.severity,
+      })),
     },
     /**
      * People who exist in the case but are NOT in this room.
@@ -357,7 +368,7 @@ export function buildContextPack(
       detectiveAsTarget:
         "Player status (threat, condition/harm, control, controlledBy, safeHavenCompromised, tags) is engine-owned. control: free|held|downed|restrained|unconscious — if not free, the player is physically controlled and cannot simply walk away. Stage holds, knockdowns, restraint, knockouts, harm, theft, and force-moves from status + justHappened (player_moved_*, player_threat_*, player_harm_*, player_control_*, assault_*, stolen_*, item_damaged_*, safe_haven_*) as events that happen TO the player — not only dialogue. Keep reflecting active condition/control every turn until cleared. Do not invent new attacks, restraints, thefts, or injuries beyond status + justHappened.",
       physicalForce:
-        "UNIVERSAL (all mysteries): When the player uses force on someone, the engine records assault and may set control/harm/threat. Stage real contact. Outcomes follow player.authority (official/professional can rattle someone; civilian/guest/patient usually get seized). Never invent a player knockout or free brawl win unless justHappened says so. Never rewrite a shove into a soft verbal scene. Things also happen TO the player (dragged rooms, stolen items, injury) via justHappened — always stage those in the body of the prose.",
+        "UNIVERSAL (all mysteries): Plot can happen TO the player — people, institutions, and environment. Assault, misconduct, provoke (annoy bouncer), trespass, and hazard (rickety pier fall, ice, shaft) are engine-classified. Stage warn/eject/fall/hold/harm from justHappened (hazard_*, social_pushback_*, assault_*, player_moved_*, player_control_*). location.hazards lists authored dangers. Never invent a free win or off-map rooms.",
       denouement:
         state.status === "denouement"
           ? "WRAP-UP MODE: The case has been judged (see resolution/ending). Stay interactive: characters react, the accused may confess or rage, household falls out. Player may still talk, look, move, and leave. Do NOT treat the mystery as unsolved. Do NOT invent a new killer. Consequences matter."

@@ -133,15 +133,35 @@ function resolveEvidenceId(
 export function inputLooksLikeAssault(playerInput: string): boolean {
   const s = playerInput.toLowerCase();
   if (/\bknock\s+on\b/.test(s)) return false;
-  return (
-    /\b(push|shove|hit|punch|kick|grab|tackle|strike|slap|wrestle|throttle|choke)\b/.test(
+  const violenceVerb =
+    /\b(push|shove|hit|punch|kick|knee|elbow|headbutt|grab|tackle|strike|slap|smack|wrestle|throttle|choke|strangle|attack|fight|pummel|beat|stomp|slam|clobber|whack)\b/.test(
       s
     ) ||
     /\bknock\s+(him|her|them|down|over)\b/.test(s) ||
     /\bout of (the |my )?way\b/.test(s) ||
     /\bforce\s+(my way|past|through)\b/.test(s) ||
     /\bthrow\s+(him|her|them)\b/.test(s) ||
-    /\bonto the (ground|floor)\b/.test(s)
+    /\bonto the (ground|floor)\b/.test(s) ||
+    /\bfight me\b/.test(s) ||
+    /\bin the (nuts|groin|balls|face|gut|stomach)\b/.test(s);
+  // "knee him" / "kick them" style even if verb is thin
+  const bodyAttack =
+    /\b(knee|kick|elbow|headbutt)\s+\w+/.test(s) ||
+    /\b\w+\s+(him|her|them|hium)\s+in the\b/.test(s);
+  return violenceVerb || bodyAttack;
+}
+
+/**
+ * Disruptive / gross / self-sabotage acts that institutions and households
+ * react to — not sexual abuse, not magic. Universal across mysteries.
+ */
+export function inputLooksLikeMisconduct(playerInput: string): boolean {
+  const s = playerInput.toLowerCase();
+  // Avoid matching "file" investigations etc.
+  return (
+    /\b(pee|piss|urinate|defecat|shit on|crap on|spit on|vomit|puke|strip naked|take off my clothes|scream at|trash the|destroy the|smash the|set fire|start a fire)\b/.test(
+      s
+    ) || /\b(pee|piss)\s+on\b/.test(s)
   );
 }
 
@@ -150,20 +170,136 @@ function assaultMannerFromInput(playerInput: string): string {
   if (/\bknock\b/.test(s) || /\bground\b/.test(s) || /\bfloor\b/.test(s))
     return "knock_down";
   if (/\bgrab\b/.test(s)) return "grab";
-  if (/\b(hit|punch|strike|slap)\b/.test(s)) return "hit";
+  if (/\b(knee|kick|nuts|groin|balls)\b/.test(s)) return "kick";
+  if (/\b(hit|punch|strike|slap|smack|elbow|headbutt)\b/.test(s)) return "hit";
   if (/\b(shove|push)\b/.test(s)) return "shove";
   if (/\bout of (the |my )?way\b/.test(s) || /\bforce\s+past\b/.test(s))
     return "force_past";
+  if (/\b(attack|fight)\b/.test(s)) return "attack";
   return "assault";
+}
+
+function misconductKindFromInput(playerInput: string): string {
+  const s = playerInput.toLowerCase();
+  if (/\b(pee|piss|urinate)\b/.test(s)) return "urinate";
+  if (/\b(shit|defecat|crap)\b/.test(s)) return "defecate";
+  if (/\bspit\b/.test(s)) return "spit";
+  if (/\b(vomit|puke)\b/.test(s)) return "vomit";
+  if (/\bstrip\b|\btake off my clothes\b/.test(s)) return "strip";
+  if (/\bscream\b/.test(s)) return "scream";
+  if (/\b(trash|destroy|smash)\b/.test(s)) return "vandalize";
+  if (/\bfire\b|\bburn\b/.test(s)) return "arson_attempt";
+  return "disrupt";
+}
+
+/** Present, available living characters at the player's location. */
+export function presentCharacterIds(
+  def: MysteryDefinition,
+  state: PlaythroughState
+): string[] {
+  return Object.entries(state.characterState)
+    .filter(
+      ([id, cs]) =>
+        cs.locationId === state.locationId &&
+        cs.available !== false &&
+        def.characters.find((c) => c.id === id)?.storyRole !== "victim"
+    )
+    .map(([id]) => id);
+}
+
+/**
+ * Resolve who the player is directing force at.
+ * Tolerates typos (hium→him), pronouns, director focus, and single-person rooms.
+ */
+export function resolveAssaultTarget(
+  def: MysteryDefinition,
+  state: PlaythroughState,
+  playerInput: string,
+  hints?: {
+    characterId?: string;
+    characterHint?: string;
+    focusCharacterId?: string;
+  }
+): string | undefined {
+  const presentIds = presentCharacterIds(def, state);
+  if (!presentIds.length) return undefined;
+
+  // Explicit director id if present here
+  if (hints?.characterId && presentIds.includes(hints.characterId)) {
+    return hints.characterId;
+  }
+  if (hints?.focusCharacterId && presentIds.includes(hints.focusCharacterId)) {
+    return hints.focusCharacterId;
+  }
+
+  const inputL = playerInput.toLowerCase();
+  // Fuzzy pronoun: him/her/them + common typos (hium, hem, thr)
+  const pronounLike =
+    /\b(him|her|them|hium|hem|hir|thy|the|doctor|nurse|orderly|sir|ma'am|madam)\b/.test(
+      inputL
+    ) || /\bh[iu]m\b/.test(inputL);
+
+  let best: { id: string; score: number } | undefined;
+  for (const id of presentIds) {
+    const ch = def.characters.find((c) => c.id === id);
+    if (!ch) continue;
+    const last = ch.name.split(/\s+/).pop()?.toLowerCase() ?? "";
+    let score = Math.max(
+      scoreMatch(ch.name, inputL),
+      scoreMatch(ch.id, inputL),
+      scoreMatch(last, inputL),
+      hints?.characterHint
+        ? scoreMatch(ch.name, hints.characterHint)
+        : 0
+    );
+    // Authority / staff bias when pronoun or typo-pronoun
+    if (score < 15 && pronounLike) {
+      if (
+        /doctor|dr\.|nurse|orderly|director|inspector|captain|butler|guard/i.test(
+          ch.name + " " + id
+        ) ||
+        /more|holt|crane|henshaw|vale|briggs/i.test(ch.name + id)
+      ) {
+        score = 28;
+      } else {
+        score = Math.max(score, 16);
+      }
+    }
+    // Only one other person in the room
+    if (score < 15 && presentIds.length === 1) score = 30;
+    if (!best || score > best.score) best = { id, score };
+  }
+
+  // Still nothing named — if force words + people present, pick staff-ish or first
+  if ((!best || best.score < 15) && presentIds.length >= 1) {
+    const staff = presentIds.find((id) => {
+      const ch = def.characters.find((c) => c.id === id);
+      return /doctor|dr\.|nurse|orderly|director|butler|guard|inspector/i.test(
+        (ch?.name ?? "") + id
+      );
+    });
+    return staff ?? presentIds[0];
+  }
+
+  return best && best.score >= 15 ? best.id : undefined;
 }
 
 /**
  * Convert director intents into a single StatePatch for engine validation.
  */
+/** Accept full director output or a partial (tests / degraded paths). */
+export type DirectorIntentsInput = {
+  intents: DirectorOutput["intents"];
+  physical?: DirectorOutput["physical"];
+  suggestedPatch?: DirectorOutput["suggestedPatch"];
+  focusCharacterId?: string;
+  reasoning?: string;
+};
+
 export function directorIntentsToPatch(
   def: MysteryDefinition,
   state: PlaythroughState,
-  director: DirectorOutput,
+  director: DirectorIntentsInput,
   playerInput: string
 ): { patch: StatePatch; focusCharacterId?: string; notes: string[] } {
   const notes: string[] = [];
@@ -186,6 +322,83 @@ export function directorIntentsToPatch(
   }
   if (director.suggestedPatch?.accuse) {
     patch.accuse = director.suggestedPatch.accuse;
+  }
+
+  // AI world-pushback classification (primary) — not verb lists
+  const physical = director.physical ?? { kind: "none" as const };
+  if (physical.kind === "assault") {
+    assaultTarget = resolveAssaultTarget(def, state, playerInput, {
+      characterId: physical.characterId,
+      characterHint: physical.characterHint,
+      focusCharacterId,
+    });
+    assaultManner = physical.manner ?? assaultMannerFromInput(playerInput);
+    if (assaultTarget) {
+      focusCharacterId = assaultTarget;
+      notes.push(`assault→${assaultTarget} (physical.ai)`);
+    } else {
+      notes.push("assault unresolved (physical.ai, no present target)");
+    }
+  } else if (
+    physical.kind === "misconduct" ||
+    physical.kind === "provoke" ||
+    physical.kind === "trespass" ||
+    physical.kind === "hazard"
+  ) {
+    const kindLabel =
+      physical.kind === "misconduct"
+        ? (physical.misconductKind ?? misconductKindFromInput(playerInput))
+        : (physical.manner ?? physical.kind);
+    if (physical.kind === "misconduct") {
+      const prev = Number(state.flags.misconduct_attempts ?? 0);
+      setFlags.player_misconduct = true;
+      setFlags.misconduct_attempts = prev + 1;
+      setFlags.last_misconduct = kindLabel;
+    } else {
+      setFlags.player_world_push = true;
+      setFlags.last_world_push_kind = physical.kind;
+      setFlags.last_world_push_manner = kindLabel;
+    }
+    if (physical.pushback) {
+      setFlags.last_pushback = physical.pushback;
+    }
+    if (physical.ejectToLocationId) {
+      setFlags.eject_to_location = physical.ejectToLocationId;
+    }
+    if (physical.hazardId) {
+      setFlags.last_hazard_id = physical.hazardId;
+    }
+    // Prefer authored hazard fall target if AI omitted one
+    if (physical.kind === "hazard" && !physical.ejectToLocationId) {
+      const loc = def.locations.find((l) => l.id === state.locationId);
+      const h =
+        (physical.hazardId
+          ? loc?.hazards?.find((x) => x.id === physical.hazardId)
+          : undefined) ?? loc?.hazards?.[0];
+      if (h?.fallToLocationId) {
+        setFlags.eject_to_location = h.fallToLocationId;
+      }
+      if (h?.id) setFlags.last_hazard_id = h.id;
+      if (h?.condition) setFlags.hazard_condition = h.condition;
+      if (h?.tag) setFlags.hazard_tag = h.tag;
+    }
+    if (physical.kind !== "hazard") {
+      const witness =
+        resolveAssaultTarget(def, state, playerInput, {
+          characterId: physical.characterId,
+          characterHint: physical.characterHint,
+          focusCharacterId,
+        }) ?? presentCharacterIds(def, state)[0];
+      if (witness) {
+        setFlags.misconduct_witness = witness;
+        setFlags.world_push_target = witness;
+        focusCharacterId = focusCharacterId ?? witness;
+      }
+    }
+    notes.push(`${physical.kind}→${kindLabel} (physical.ai)`);
+    if (physical.pushback) {
+      notes.push(`pushback→${physical.pushback}`);
+    }
   }
 
   for (const intent of director.intents) {
@@ -317,12 +530,18 @@ export function directorIntentsToPatch(
         break;
       }
       case "assault": {
-        const cid = resolveCharacterId(
-          def,
-          state,
-          intent.characterId,
-          intent.characterHint
-        );
+        const cid =
+          resolveAssaultTarget(def, state, playerInput, {
+            characterId: intent.characterId,
+            characterHint: intent.characterHint,
+            focusCharacterId,
+          }) ??
+          resolveCharacterId(
+            def,
+            state,
+            intent.characterId,
+            intent.characterHint
+          );
         if (cid) {
           assaultTarget = cid;
           focusCharacterId = cid;
@@ -342,61 +561,94 @@ export function directorIntentsToPatch(
         ) {
           notes.push("exit_denouement");
         }
+        // Director may emit misconduct:<kind>
+        const mis = /^misconduct[:\s]+(\w+)/i.exec(note);
+        if (mis && !inputLooksLikeAssault(playerInput)) {
+          const kind = mis[1]!.toLowerCase();
+          const prev = Number(state.flags.misconduct_attempts ?? 0);
+          setFlags.player_misconduct = true;
+          setFlags.misconduct_attempts = prev + 1;
+          setFlags.last_misconduct = kind;
+          const witness =
+            resolveAssaultTarget(def, state, playerInput, {
+              focusCharacterId,
+            }) ?? presentCharacterIds(def, state)[0];
+          if (witness) {
+            setFlags.misconduct_witness = witness;
+            focusCharacterId = focusCharacterId ?? witness;
+          }
+          notes.push(`misconduct→${kind}`);
+        }
         break;
       }
     }
   }
 
-  // Local fallback: director often maps "push X" to talk — catch physical force
-  if (!assaultTarget && inputLooksLikeAssault(playerInput)) {
-    const inputL = playerInput.toLowerCase();
-    const presentIds = Object.entries(state.characterState)
-      .filter(
-        ([, cs]) =>
-          cs.locationId === state.locationId && cs.available !== false
-      )
-      .map(([id]) => id);
-
-    let best: { id: string; score: number } | undefined;
-    for (const id of presentIds) {
-      const ch = def.characters.find((c) => c.id === id);
-      if (!ch) continue;
-      const last = ch.name.split(/\s+/).pop()?.toLowerCase() ?? "";
-      let score = Math.max(
-        scoreMatch(ch.name, inputL),
-        scoreMatch(ch.id, inputL),
-        scoreMatch(last, inputL)
-      );
-      // "him/her/them" with single present adult staff
-      if (score < 15 && presentIds.length === 1) score = 20;
-      if (score < 15 && /\b(him|her|them|doctor|nurse|orderly)\b/.test(inputL)) {
-        // Prefer non-player-friendly authority roles when ambiguous
-        if (/more|holt|crane|doctor|orderly|nurse/i.test(ch.name + ch.id))
-          score = 25;
-        else score = Math.max(score, 18);
-      }
-      if (!best || score > best.score) best = { id, score };
-    }
-    if (best && best.score >= 15) {
-      assaultTarget = best.id;
-      focusCharacterId = best.id;
-      assaultManner = assaultMannerFromInput(playerInput);
-      notes.push(`assault→${best.id} (heuristic)`);
-    }
+  // Assault intent without physical field (older models)
+  if (!assaultTarget) {
+    // filled by assault intent case in loop below — re-check notes
   }
+
+  // Intent loop may have set assaultTarget via case "assault"
+  // (handled in switch). If still unset but we had assault intent earlier...
+  // (already handled in switch)
 
   if (assaultTarget) {
     const prev = Number(state.flags.assault_attempts ?? 0);
     setFlags.player_assaulted_staff = true;
+    setFlags.player_assaulted_someone = true;
     setFlags.assault_attempts = prev + 1;
     setFlags.last_assault_target = assaultTarget;
     setFlags.last_assault_manner = assaultManner ?? "assault";
     setFlags[`assaulted_${assaultTarget}`] = true;
-    // Trying to leave past someone you just shoved is not a free move this turn
-    if (assaultManner === "force_past" || assaultManner === "shove") {
-      // keep any move intent only if separate; physical block is case-beat owned
-    }
     notes.push(`assault_flags→${assaultTarget}`);
+  }
+
+  // Offline/degraded only: if AI never set physical, keep a thin safety net
+  // for obvious force/misconduct when no API physical classification ran.
+  if (
+    physical.kind === "none" &&
+    !assaultTarget &&
+    !setFlags.player_misconduct &&
+    inputLooksLikeAssault(playerInput)
+  ) {
+    const cid =
+      resolveAssaultTarget(def, state, playerInput, { focusCharacterId }) ??
+      patch.talkToCharacterId;
+    if (cid) {
+      assaultTarget = cid;
+      focusCharacterId = cid;
+      assaultManner = assaultMannerFromInput(playerInput);
+      const prev = Number(state.flags.assault_attempts ?? 0);
+      setFlags.player_assaulted_staff = true;
+      setFlags.player_assaulted_someone = true;
+      setFlags.assault_attempts = prev + 1;
+      setFlags.last_assault_target = cid;
+      setFlags.last_assault_manner = assaultManner;
+      setFlags[`assaulted_${cid}`] = true;
+      notes.push(`assault→${cid} (offline safety net)`);
+      notes.push(`assault_flags→${cid}`);
+    }
+  }
+  if (
+    physical.kind === "none" &&
+    !assaultTarget &&
+    !setFlags.player_misconduct &&
+    inputLooksLikeMisconduct(playerInput)
+  ) {
+    const kind = misconductKindFromInput(playerInput);
+    const prev = Number(state.flags.misconduct_attempts ?? 0);
+    setFlags.player_misconduct = true;
+    setFlags.misconduct_attempts = prev + 1;
+    setFlags.last_misconduct = kind;
+    const witness =
+      resolveAssaultTarget(def, state, playerInput, { focusCharacterId }) ??
+      presentCharacterIds(def, state)[0];
+    if (witness) {
+      setFlags.misconduct_witness = witness;
+      focusCharacterId = focusCharacterId ?? witness;
+    }
+    notes.push(`misconduct→${kind} (offline safety net)`);
   }
 
   if (addEvidence.size) patch.addEvidenceIds = [...addEvidence];

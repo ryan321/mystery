@@ -25,7 +25,8 @@ A **single-player browser game** where:
 |------------|---------------------------|
 | Definition owns truth | Solution/secrets never fully enter the narrator prompt |
 | Engine owns state | Location, evidence, flags, end conditions are authoritative in DB/code, not left to LLM prose |
-| AI performs | LLM produces narrative + proposed deltas; engine accepts/rejects |
+| **World acts on player** | Threat, injury, control (held/restrained), eject, hazard falls, theft — engine phase `resolveWorldToPlayer`, not prose-only |
+| AI performs | LLM classifies intents + `physical`; produces narrative; does not invent state |
 | Freeform input | No parser verb grammar; NLU is model-assisted but outcomes are schema-validated |
 | Single-player | No realtime multiplayer; one playthrough per session owner |
 | No runtime case generation | Definitions are content artifacts, versioned and loaded |

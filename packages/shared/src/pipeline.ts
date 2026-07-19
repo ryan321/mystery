@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { EffectSchema } from "./effects.js";
 import { StatePatchSchema } from "./playthrough.js";
 
 /** Call #1 — Director: interpret free text into structured intents (no prose authority). */
@@ -62,8 +63,56 @@ export const DirectorIntentSchema = z.discriminatedUnion("type", [
 ]);
 export type DirectorIntent = z.infer<typeof DirectorIntentSchema>;
 
+/**
+ * @deprecated Prefer worldToPlayer.effects — kept so older models still work.
+ * Open-ended free text; engine maps loosely when effects[] is empty.
+ */
+export const DirectorPhysicalSchema = z.object({
+  kind: z.string().default("none"),
+  characterId: z.string().optional(),
+  characterHint: z.string().optional(),
+  manner: z.string().optional(),
+  misconductKind: z.string().optional(),
+  pushback: z.string().optional(),
+  ejectToLocationId: z.string().optional(),
+  hazardId: z.string().optional(),
+});
+export type DirectorPhysical = z.infer<typeof DirectorPhysicalSchema>;
+
+/**
+ * Core: the world acts on the player this turn.
+ * AI proposes engine effects (from the allowlist); engine validates & applies.
+ * Do NOT enumerate every story situation — compose effects as needed.
+ */
+export const DirectorWorldToPlayerSchema = z.object({
+  /** True when something should happen TO the player this turn. */
+  active: z.boolean().default(false),
+  /** Short player-facing summary e.g. "Thrown out by the bouncer" */
+  summary: z.string().optional(),
+  /**
+   * Engine effects to apply (validated allowlist in resolve-world-to-player).
+   * Examples: harm_player, hold_player, move_player, set_player_threat,
+   * steal_from_player, add_player_tag, set_willingness, move_character, …
+   */
+  effects: z.array(EffectSchema).default([]),
+});
+export type DirectorWorldToPlayer = z.infer<typeof DirectorWorldToPlayerSchema>;
+
 export const DirectorOutputSchema = z.object({
   intents: z.array(DirectorIntentSchema).min(1),
+  /**
+   * Preferred: free-form world→player effects. Engine owns application.
+   * When active + effects[], that is authoritative for free-text pressure.
+   */
+  worldToPlayer: DirectorWorldToPlayerSchema.default({
+    active: false,
+    effects: [],
+  }),
+  /**
+   * @deprecated Soft hint when worldToPlayer.effects is empty.
+   * kind is free string (assault, hazard, provoke, …) — not a closed enum.
+   */
+  physical: DirectorPhysicalSchema.default({ kind: "none" }),
   /** Optional soft suggestions; engine still validates. */
   suggestedPatch: StatePatchSchema.optional(),
   focusCharacterId: z.string().optional(),
