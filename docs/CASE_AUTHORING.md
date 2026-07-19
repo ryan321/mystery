@@ -708,6 +708,22 @@ Compose with `and` / `or` / `not`.
 - `set_safe_haven_compromised` / `add_player_tag` / `set_player_status_flag`
 - `notebook_append` — `{ text }` (quiet bookkeeping)
 
+### Progress UI (optional)
+
+```json
+"meta": {
+  "progressUi": "off" | "subtle" | "full"
+}
+```
+
+| Mode | Behavior |
+|------|----------|
+| `off` (default if omitted) | No progress cues |
+| `subtle` | Spoiler-light toasts when something unblocks |
+| `full` | Toasts + coarse depth meter (not a solve %) |
+
+Players pick Off / Subtle / Full **per playthrough** via the gear icon in the play chrome (Play settings), not as a global account setting. Different mystery runs keep different choices. If the author sets `off`, progress UI stays off for that mystery. Engine computes signals from phase, story beats, and critical evidence — never solution spoilers.
+
 ### Plot hits the player (core engine — open situations, fixed tools)
 
 **Do not catalog every way the world can act on the player.**  

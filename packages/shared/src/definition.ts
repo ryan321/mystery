@@ -518,6 +518,13 @@ export const CaseMetaSchema = z.object({
    * Authors generate assets offline; engine does not invent images.
    */
   artStyle: z.string().optional(),
+  /**
+   * Optional progress UI for this mystery (player can only reduce visibility).
+   * off — never show progress
+   * subtle — unlock toasts only (default for most shelf cases we enable)
+   * full — toasts + coarse depth meter
+   */
+  progressUi: z.enum(["off", "subtle", "full"]).optional(),
 });
 export type CaseMeta = z.infer<typeof CaseMetaSchema>;
 

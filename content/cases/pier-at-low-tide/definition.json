@@ -15,6 +15,7 @@
       "Maritime"
     ],
     "difficulty": "medium",
+    "progressUi": "full",
     "contentWarnings": [
       "murder",
       "violence",

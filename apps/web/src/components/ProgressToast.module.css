@@ -1,0 +1,63 @@
+.stack {
+  position: fixed;
+  bottom: 5.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  pointer-events: none;
+  max-width: min(22rem, calc(100vw - 2rem));
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0.85rem;
+  background: rgba(18, 22, 28, 0.92);
+  border: 1px solid rgba(212, 181, 106, 0.4);
+  border-radius: 4px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  animation: rise 0.35s ease-out;
+}
+
+.mark {
+  color: var(--candle, #d4b56a);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.text {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
+  color: var(--paper, #e8e4dc);
+  line-height: 1.3;
+}
+
+.toast[data-kind="judgment"] {
+  border-color: rgba(224, 138, 138, 0.45);
+}
+
+.toast[data-kind="judgment"] .mark {
+  color: #e08a8a;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .stack {
+    bottom: 6.5rem;
+  }
+}

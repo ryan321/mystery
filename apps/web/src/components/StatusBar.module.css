@@ -74,3 +74,58 @@
 .turns {
   margin-left: auto;
 }
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 10.5rem;
+  max-width: 16rem;
+  flex: 1 1 10rem;
+}
+
+.progressTrack {
+  flex: 1;
+  height: 6px;
+  min-width: 3.5rem;
+  border-radius: 3px;
+  background: rgba(154, 175, 196, 0.15);
+  overflow: hidden;
+  border: 1px solid rgba(212, 181, 106, 0.2);
+}
+
+.progressFill {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    rgba(212, 181, 106, 0.45),
+    rgba(212, 181, 106, 0.95)
+  );
+  transition: width 0.45s ease;
+}
+
+.progressLabel {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: var(--fog);
+  white-space: nowrap;
+  max-width: 9.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.progressChip {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--candle);
+  border: 1px solid rgba(212, 181, 106, 0.35);
+  border-radius: 999px;
+  padding: 0.12rem 0.55rem;
+  background: rgba(212, 181, 106, 0.08);
+  white-space: nowrap;
+}

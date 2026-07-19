@@ -1,0 +1,95 @@
+.page {
+  padding: 3rem 1.5rem 4rem;
+  max-width: 36rem;
+  margin: 0 auto;
+}
+
+.title {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 1.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--paper, #e8e4dc);
+  margin: 0 0 0.5rem;
+}
+
+.lead {
+  color: var(--fog, #9aafc4);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0 0 2rem;
+}
+
+.section {
+  border: 1px solid rgba(200, 165, 110, 0.18);
+  border-radius: 4px;
+  padding: 1.25rem 1.15rem;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.heading {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--candle, #d4b56a);
+  margin: 0 0 0.4rem;
+}
+
+.help {
+  margin: 0 0 1rem;
+  font-size: 0.88rem;
+  color: var(--fog, #9aafc4);
+  line-height: 1.45;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.option {
+  text-align: left;
+  padding: 0.75rem 0.85rem;
+  border-radius: 3px;
+  border: 1px solid rgba(154, 175, 196, 0.2);
+  background: rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  color: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.option:hover {
+  border-color: rgba(212, 181, 106, 0.35);
+}
+
+.optionOn {
+  border-color: rgba(212, 181, 106, 0.55);
+  background: rgba(212, 181, 106, 0.08);
+}
+
+.optionLabel {
+  display: block;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 1rem;
+  color: var(--paper, #e8e4dc);
+  margin-bottom: 0.25rem;
+}
+
+.optionDesc {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--fog, #9aafc4);
+  line-height: 1.4;
+}
+
+.saved {
+  margin: 0.85rem 0 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--candle, #d4b56a);
+}

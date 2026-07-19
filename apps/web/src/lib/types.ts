@@ -199,6 +199,8 @@ export type PlaythroughState = {
     portrait?: string;
     portraitUrl?: string;
   }[];
+  /** Case default for progress UI */
+  progressUi?: "off" | "subtle" | "full";
 };
 
 export type TurnLogEntry = {
@@ -210,11 +212,32 @@ export type TurnLogEntry = {
   createdAt: string;
 };
 
+export type ProgressPulse = {
+  id: string;
+  text: string;
+  kind: "evidence" | "unlock" | "depth" | "judgment";
+};
+
+export type MysteryProgress = {
+  caseMode: "off" | "subtle" | "full";
+  depth: "surface" | "deepening" | "closing" | "judgment" | "aftermath";
+  depthLabel: string;
+  fraction: number;
+  /** e.g. "About two-thirds through" */
+  throughLabel: string;
+  /** e.g. "≈⅔" */
+  throughCompact: string;
+  criticalHeld: number;
+  criticalTotal: number;
+  pulses: ProgressPulse[];
+};
+
 export type StartCaseResponse = {
   playthrough: PlaythroughState;
   openingNarration: string;
   briefing?: MysteryBriefing;
   locationName?: string;
+  progress?: MysteryProgress;
 };
 
 export type GetPlaythroughResponse = {
@@ -223,6 +246,7 @@ export type GetPlaythroughResponse = {
   briefing?: MysteryBriefing;
   locationName?: string;
   turns: TurnLogEntry[];
+  progress?: MysteryProgress;
 };
 
 export type SendTurnResponse = {
@@ -234,6 +258,7 @@ export type SendTurnResponse = {
   evidenceAdded: string[];
   justHappened: JustHappened[];
   locationName?: string;
+  progress?: MysteryProgress;
   _debug?: {
     directorModel?: string;
     performerModel?: string;

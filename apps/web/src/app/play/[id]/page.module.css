@@ -71,57 +71,93 @@
   font-size: 0.9rem;
 }
 
-.linkBtn {
-  background: none;
-  border: none;
+.chromeActions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  position: relative;
+  z-index: 5;
+}
+
+.iconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid rgba(212, 181, 106, 0.28);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.2);
   color: var(--candle);
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   cursor: pointer;
-  padding: 0.25rem 0.5rem;
-  transition: color 0.15s ease;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
 
-.linkBtn:hover {
+.iconBtn:hover {
   color: var(--paper);
+  border-color: rgba(212, 181, 106, 0.55);
+  background: rgba(212, 181, 106, 0.08);
 }
 
-.mobileBar {
-  display: none;
+.iconBtnActive {
+  color: var(--paper);
+  border-color: rgba(212, 181, 106, 0.65);
+  background: rgba(212, 181, 106, 0.12);
 }
 
-@media (max-width: 860px) {
-  .mobileBar {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 30;
-    display: flex;
-    justify-content: space-around;
-    padding: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom));
-    background: rgba(8, 12, 20, 0.92);
-    border-top: 1px solid rgba(154, 175, 196, 0.18);
-    backdrop-filter: blur(12px);
-  }
+.iconSvg {
+  display: block;
+  pointer-events: none;
+}
 
-  .mobileBar button {
-    background: none;
-    border: none;
-    color: var(--fog);
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 0.4rem 0.6rem;
-    border-radius: var(--radius);
-  }
+/* Fixed so the mahogany frame overflow:hidden cannot clip the menu */
+.settingsPanel {
+  position: fixed;
+  z-index: 200;
+  width: min(20rem, calc(100vw - 2rem));
+  background: rgba(14, 20, 28, 0.98);
+  border: 1px solid rgba(212, 181, 106, 0.35);
+  border-radius: 6px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
 
-  .mobileBar button:hover,
-  .mobileBar button.mobileBarActive {
-    color: var(--candle);
-    background: rgba(212, 181, 106, 0.1);
-  }
+.settingsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid rgba(154, 175, 196, 0.12);
+  background: rgba(8, 12, 20, 0.55);
+}
+
+.settingsTitle {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--candle);
+}
+
+.settingsClose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--fog);
+  background: transparent;
+  border: 1px solid rgba(154, 175, 196, 0.25);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.settingsClose:hover {
+  color: var(--paper);
+  border-color: var(--candle-dim);
 }

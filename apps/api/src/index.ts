@@ -10,7 +10,10 @@ import {
   type MysteryDefinition,
   type PlaythroughState,
 } from "@mystery/shared";
-import { createInitialPlaythrough } from "@mystery/engine";
+import {
+  createInitialPlaythrough,
+  computeMysteryProgress,
+} from "@mystery/engine";
 import { tryCreateOpenRouterConfig } from "@mystery/llm";
 import {
   createPool,
@@ -182,6 +185,7 @@ app.post("/v1/playthroughs", async (c) => {
     openingNarration: def.openingNarration,
     briefing: buildBriefing(def, state),
     locationName: def.locations.find((l) => l.id === state.locationId)?.name,
+    progress: computeMysteryProgress(def, state),
   });
 });
 
@@ -196,6 +200,7 @@ app.get("/v1/playthroughs/:id", async (c) => {
     briefing: def ? buildBriefing(def, row.state) : undefined,
     locationName: def?.locations.find((l) => l.id === row.state.locationId)
       ?.name,
+    progress: def ? computeMysteryProgress(def, row.state) : undefined,
     turns: turns.map((t) => ({
       turnIndex: t.turn_index,
       playerInput: t.player_input,
@@ -286,6 +291,11 @@ app.post("/v1/playthroughs/:id/turns", async (c) => {
     justHappened: result.justHappened,
     locationName: def.locations.find((l) => l.id === committed.locationId)
       ?.name,
+    progress: computeMysteryProgress(def, committed, {
+      previous: row.state,
+      justHappened: result.justHappened,
+      evidenceAdded: result.evidenceAdded,
+    }),
     _debug: result.debug,
   });
 });
@@ -356,6 +366,8 @@ function publicState(state: PlaythroughState, def?: MysteryDefinition) {
       crowd: state.environment.crowd,
       ambient: state.environment.ambient,
     },
+    /** Case author progress UI default (player can only reduce). */
+    progressUi: def?.meta.progressUi ?? "off",
     // character willingness + portraits for UI
     characters: Object.fromEntries(
       Object.entries(state.characterState).map(([id, cs]) => {
