@@ -148,11 +148,15 @@
   border-radius: 50%;
   color: var(--candle);
   font-size: 0.95rem;
+  text-decoration: none;
   cursor: pointer;
   transition: border-color 0.15s ease, background 0.15s ease;
 }
 
-.iconBtn:hover {
+.iconBtn:hover,
+.iconBtn:focus,
+.iconBtn:active {
+  text-decoration: none;
   border-color: var(--candle);
   background: rgba(212, 181, 106, 0.15);
 }

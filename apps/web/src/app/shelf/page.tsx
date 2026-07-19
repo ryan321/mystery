@@ -28,7 +28,8 @@ export default function ShelfPage() {
   const [cases, setCases] = useState<CaseSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [themesOpen, setThemesOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [difficultyFilter, setDifficultyFilter] = useState<DifficultyFilter>("all");
   const [playStates, setPlayStates] = useState<Record<string, { status: string }>>({});
@@ -85,8 +86,11 @@ export default function ShelfPage() {
         c.meta.title.toLowerCase().includes(q) ||
         c.meta.premise.toLowerCase().includes(q) ||
         c.meta.tags.some((t) => t.toLowerCase().includes(q));
-      const matchesTag =
-        !activeTag || themeTags(c.meta.tags).includes(activeTag);
+      // OR: case matches if it has any selected theme
+      const caseTags = themeTags(c.meta.tags);
+      const matchesTags =
+        selectedTags.length === 0 ||
+        selectedTags.some((t) => caseTags.includes(t));
 
       const status = playStates[c.id]?.status;
       const matchesStatus =
@@ -98,9 +102,19 @@ export default function ShelfPage() {
       const matchesDifficulty =
         difficultyFilter === "all" || c.meta.difficulty === difficultyFilter;
 
-      return matchesSearch && matchesTag && matchesStatus && matchesDifficulty;
+      return matchesSearch && matchesTags && matchesStatus && matchesDifficulty;
     });
-  }, [cases, search, activeTag, statusFilter, difficultyFilter, playStates]);
+  }, [cases, search, selectedTags, statusFilter, difficultyFilter, playStates]);
+
+  function toggleTag(tag: string) {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  }
+
+  function removeTag(tag: string) {
+    setSelectedTags((prev) => prev.filter((t) => t !== tag));
+  }
 
   return (
     <>
@@ -185,17 +199,77 @@ export default function ShelfPage() {
               </button>
             </div>
             {allTags.length > 0 ? (
-              <div className={styles.tagFilters}>
-                {allTags.map((t) => (
+              <div className={styles.themesBlock}>
+                <div className={styles.themesBar}>
                   <button
-                    key={t}
                     type="button"
-                    className={`${styles.tagFilter} ${activeTag === t ? styles.tagFilterActive : ""}`}
-                    onClick={() => setActiveTag(activeTag === t ? null : t)}
+                    className={`${styles.themesToggle} ${themesOpen ? styles.themesToggleOpen : ""} ${selectedTags.length > 0 ? styles.themesToggleActive : ""}`}
+                    onClick={() => setThemesOpen((o) => !o)}
+                    aria-expanded={themesOpen}
                   >
-                    {t}
+                    <span>
+                      Themes
+                      {selectedTags.length > 0
+                        ? ` · ${selectedTags.length}`
+                        : ""}
+                    </span>
+                    <span className={styles.themesChevron} aria-hidden>
+                      {themesOpen ? "▴" : "▾"}
+                    </span>
                   </button>
-                ))}
+                  {selectedTags.length > 0 ? (
+                    <button
+                      type="button"
+                      className={styles.clearThemes}
+                      onClick={() => setSelectedTags([])}
+                    >
+                      Clear
+                    </button>
+                  ) : null}
+                </div>
+
+                {selectedTags.length > 0 ? (
+                  <div className={styles.selectedTags} aria-label="Selected themes">
+                    {selectedTags.map((t) => (
+                      <button
+                        key={t}
+                        type="button"
+                        className={styles.selectedChip}
+                        onClick={() => removeTag(t)}
+                        title={`Remove ${t}`}
+                      >
+                        <span>{t}</span>
+                        <span className={styles.selectedChipX} aria-hidden>
+                          ×
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+
+                {themesOpen ? (
+                  <div className={styles.themesPanel}>
+                    <p className={styles.themesHint}>
+                      Match any selected theme
+                    </p>
+                    <div className={styles.tagFilters}>
+                      {allTags.map((t) => {
+                        const on = selectedTags.includes(t);
+                        return (
+                          <button
+                            key={t}
+                            type="button"
+                            className={`${styles.tagFilter} ${on ? styles.tagFilterActive : ""}`}
+                            onClick={() => toggleTag(t)}
+                            aria-pressed={on}
+                          >
+                            {t}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : null}
               </div>
             ) : null}
           </div>

@@ -100,6 +100,133 @@
   border-color: rgba(212, 181, 106, 0.5);
 }
 
+.themesBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.themesBar {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.themesToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.35rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fog);
+  background: rgba(154, 175, 196, 0.08);
+  border: 1px solid rgba(154, 175, 196, 0.22);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.themesToggle:hover,
+.themesToggleOpen {
+  color: var(--paper);
+  border-color: rgba(212, 181, 106, 0.4);
+}
+
+.themesToggleActive {
+  color: var(--candle);
+  border-color: rgba(212, 181, 106, 0.5);
+  background: rgba(212, 181, 106, 0.1);
+}
+
+.themesChevron {
+  font-size: 0.7rem;
+  opacity: 0.85;
+}
+
+.clearThemes {
+  padding: 0.25rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fog);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.clearThemes:hover {
+  color: var(--candle);
+}
+
+.selectedTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.selectedChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.45rem 0.28rem 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--candle);
+  background: rgba(212, 181, 106, 0.12);
+  border: 1px solid rgba(212, 181, 106, 0.45);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.selectedChip:hover {
+  background: rgba(212, 181, 106, 0.2);
+  border-color: rgba(212, 181, 106, 0.65);
+}
+
+.selectedChipX {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.05rem;
+  height: 1.05rem;
+  font-size: 0.95rem;
+  line-height: 1;
+  color: var(--fog);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.selectedChip:hover .selectedChipX {
+  color: var(--paper);
+}
+
+.themesPanel {
+  padding: 0.75rem 0.85rem 0.9rem;
+  background: rgba(8, 12, 18, 0.55);
+  border: 1px solid rgba(154, 175, 196, 0.15);
+  border-radius: 4px;
+}
+
+.themesHint {
+  margin: 0 0 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft, #6a7a8c);
+}
+
 .empty {
   margin: 0;
   color: var(--ink-soft);

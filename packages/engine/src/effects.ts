@@ -108,21 +108,22 @@ function controlFromEffectType(t: string, effect: Effect): PlayerControl | null 
   return null;
 }
 
+/** Short labels for AI justHappened — never player-facing HUD chrome. */
 function controlLabel(c: PlayerControl, by?: string): string {
-  const who = by ? ` by ${by}` : "";
+  const who = by ? ` (${by})` : "";
   switch (c) {
     case "held":
-      return `You are being held${who}`;
+      return `Seized${who}`;
     case "downed":
-      return "You are knocked down";
+      return "Knocked down";
     case "restrained":
-      return `You are restrained${who}`;
+      return `Restrained${who}`;
     case "unconscious":
-      return "You are knocked out";
+      return "Knocked out";
     case "free":
-      return "You break free";
+      return "Released";
     default:
-      return `Control: ${c}`;
+      return `Control ${c}`;
   }
 }
 

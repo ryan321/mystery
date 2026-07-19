@@ -21,7 +21,6 @@ import {
   type ProgressUiMode,
 } from "../../../lib/progressPrefs";
 import type {
-  DialogueLine,
   MysteryBriefing,
   MysteryProgress,
   PlaythroughState,
@@ -51,7 +50,7 @@ function buildLog(
 ): LogItem[] {
   const items: LogItem[] = [];
   if (opening) {
-    items.push({ kind: "narration", text: opening });
+    items.push({ id: "opening", kind: "narration", text: opening });
   }
   // Slim start card only (full dossier is on the mystery detail page).
   // Opening narration already sets scene + who's here; don't restate it.
@@ -60,24 +59,26 @@ function buildLog(
     (briefing.theMystery || briefing.objective || briefing.displayName);
   if (hasBriefing && !(turns && turns.length > 0)) {
     items.push({
+      id: "briefing",
       kind: "briefing",
       theMystery: briefing.theMystery,
       objective: briefing.objective,
       displayName: briefing.displayName,
     });
   }
-  for (const t of turns ?? []) {
-    items.push({ kind: "you", text: t.playerInput });
-    items.push({ kind: "narration", text: t.narration });
-    for (const d of t.dialogue ?? []) {
+  (turns ?? []).forEach((t, ti) => {
+    items.push({ id: `t${ti}-you`, kind: "you", text: t.playerInput });
+    items.push({ id: `t${ti}-n`, kind: "narration", text: t.narration });
+    (t.dialogue ?? []).forEach((d, di) => {
       items.push({
+        id: `t${ti}-d${di}`,
         kind: "npc",
         name: d.characterName ?? d.characterId,
         text: d.text,
         avatarUrl: portraitFor(playthrough, d.characterId),
       });
-    }
-  }
+    });
+  });
   return items;
 }
 
@@ -202,31 +203,16 @@ export default function PlaythroughPage() {
     }
   }, [playthrough]);
 
-  const appendDialogue = useCallback(
-    (
-      dialogue: DialogueLine[] | undefined,
-      pt?: PlaythroughState | null
-    ) => {
-      if (!dialogue?.length) return;
-      setLog((prev) => [
-        ...prev,
-        ...dialogue.map((d) => ({
-          kind: "npc" as const,
-          name: d.characterName ?? d.characterId,
-          text: d.text,
-          avatarUrl: portraitFor(pt ?? playthrough, d.characterId),
-        })),
-      ]);
-    },
-    [playthrough]
-  );
-
   const send = useCallback(
     async (text: string) => {
       if (busy || !playthrough) return;
+      const ti = playthrough.turnCount;
       setBusy(true);
       setError(null);
-      setLog((prev) => [...prev, { kind: "you", text }]);
+      setLog((prev) => [
+        ...prev,
+        { id: `t${ti}-you`, kind: "you", text },
+      ]);
       try {
         const data = await sendTurn(id, text);
         setPlaythrough(data.playthrough);
@@ -245,55 +231,65 @@ export default function PlaythroughPage() {
             setToastKey((k) => k + 1);
           }
         }
-        setLog((prev) => [...prev, { kind: "narration", text: data.narration }]);
-        appendDialogue(data.dialogue, data.playthrough);
+        const dialogue = data.dialogue ?? [];
+        setLog((prev) => [
+          ...prev,
+          { id: `t${ti}-n`, kind: "narration", text: data.narration },
+          ...dialogue.map((d, di) => ({
+            id: `t${ti}-d${di}`,
+            kind: "npc" as const,
+            name: d.characterName ?? d.characterId,
+            text: d.text,
+            avatarUrl: portraitFor(data.playthrough, d.characterId),
+          })),
+        ]);
         if (data.justHappened?.length) {
           for (const j of data.justHappened) {
-            // Phase / engine bookkeeping — never in the player log.
+            // Default-deny: engine status (hold, harm, threat, restraint, assault,
+            // force-moves, hazards) is for the AI performer only. Stage it in
+            // narration — never as HUD/system chips in the log.
+            const jid = j.id ?? "";
+            const summary = (j.summary ?? "").trim();
+            if (!summary) continue;
             if (
-              j.id?.startsWith("phase") ||
-              j.summary?.toLowerCase().includes("phase")
+              jid.startsWith("phase") ||
+              jid.startsWith("player_") ||
+              jid.startsWith("assault_") ||
+              jid.startsWith("world_to_player") ||
+              jid.startsWith("social_pushback_") ||
+              jid.startsWith("misconduct_") ||
+              jid.startsWith("hazard_") ||
+              jid.startsWith("will_") ||
+              jid.startsWith("move_char_") ||
+              jid.startsWith("move_obj_") ||
+              jid === "moved" ||
+              /phase/i.test(summary) ||
+              // Safety net: AI/director may put HUD-like control lines in summary
+              /\b(held|restrained|unconscious|knocked down|escape actions?|blocked until free|chemical restraint)\b/i.test(
+                summary
+              )
             ) {
               continue;
             }
-            // Status changes (threat, harm, hold, assault) are for the AI
-            // performer + StatusBar only. Do NOT echo as system chips in the
-            // log — they should read as narrator prose, not a HUD.
-            if (
-              j.id?.startsWith("player_threat_") ||
-              j.id?.startsWith("player_harm_") ||
-              j.id?.startsWith("player_control_") ||
-              j.id?.startsWith("assault_attempt_") ||
-              j.id?.startsWith("assault_default_") ||
-              j.id?.startsWith("world_to_player") ||
-              j.id?.startsWith("social_pushback_") ||
-              j.id?.startsWith("misconduct_default_") ||
-              j.id?.startsWith("hazard_") ||
-              j.id?.startsWith("will_") ||
-              j.id?.startsWith("move_char_")
-            ) {
-              continue;
-            }
-            // Rare log-worthy beats: boundaries, endings, force-moves that
-            // might need a short cue if prose is thin.
+            // Rare log-worthy cues only (boundaries, endings, theft).
             const playerFacing =
-              j.id?.startsWith("pulse_") ||
-              j.id?.startsWith("player_moved_") ||
-              j.id?.startsWith("stolen_") ||
-              j.id?.startsWith("item_damaged_") ||
-              j.id?.startsWith("lost_ev_") ||
-              j.id?.startsWith("boundary_") ||
-              j.id === "safe_haven_compromised" ||
-              j.id === "ending" ||
-              j.id === "midnight_strikes" ||
-              j.id === "denouement_start" ||
-              j.id === "denouement_end";
-            if (playerFacing && j.summary) {
+              jid.startsWith("pulse_") ||
+              jid.startsWith("stolen_") ||
+              jid.startsWith("item_damaged_") ||
+              jid.startsWith("lost_ev_") ||
+              jid.startsWith("boundary_") ||
+              jid === "safe_haven_compromised" ||
+              jid === "ending" ||
+              jid === "midnight_strikes" ||
+              jid === "denouement_start" ||
+              jid === "denouement_end";
+            if (playerFacing) {
               setLog((prev) => [
                 ...prev,
                 {
+                  id: `t${ti}-sys-${jid}`,
                   kind: "system",
-                  text: j.summary,
+                  text: summary,
                 },
               ]);
             }
@@ -305,7 +301,7 @@ export default function PlaythroughPage() {
         setBusy(false);
       }
     },
-    [busy, id, playthrough, appendDialogue]
+    [busy, id, playthrough]
   );
 
   const closed = playthrough
@@ -418,7 +414,7 @@ export default function PlaythroughPage() {
       </header>
 
       <div className={styles.logWrap}>
-        <Log items={log} busy={busy} />
+        <Log items={log} busy={busy} resetKey={id} />
       </div>
 
       {error ? <p className={styles.error}>{error}</p> : null}
