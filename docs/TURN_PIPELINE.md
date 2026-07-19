@@ -49,8 +49,35 @@ Player free text
 | `LLM_DIRECTOR_MODEL` | Call #1 (optional; defaults to narrator model) |
 | `LLM_NARRATOR_MODEL` | Call #2 performer |
 
+## Boundaries (anti-sidestep / abuse)
+
+Free-text play can try to jailbreak, spoil, abuse, use magic, or abandon the case.
+Handling is layered:
+
+1. **Local detector** (`packages/engine/src/boundaries.ts`) — high-precision regex pre-scan  
+2. **Director** — may emit `{ type: "other", note: "blocked_*" }`  
+3. **Engine** — `neutralizePatchForBoundary` strips moves/evidence/accuse; adds `justHappened` with performer hints  
+4. **Performer** — brief in-world refusal; no spoilers, no depicting abuse, no successful superpowers  
+
+Codes: `blocked_ooc` | `blocked_solution` | `blocked_abuse` | `blocked_impossible` | `blocked_illegal`  
+Legitimate investigation and normal accusations are never blocked.
+
+## Retries & failure handling
+
+Implemented in `packages/llm` (`client.ts`, `retry.ts`):
+
+1. **Transport** — 429 / 5xx / network / timeout: up to **3** attempts with exponential backoff (+ `Retry-After` when present).
+2. **Invalid JSON** — one repair turn: “reply with ONLY valid JSON”.
+3. **Schema (Zod)** — one repair turn with validation issues listed.
+4. **Soft failures** — one full re-ask:
+   - Director: substantive input but only empty `other` intent
+   - Performer: empty / tiny narration
+5. **Last resort** — heuristic fallback (`degraded: true` on the call result; not silent forever-retries).
+
+Non-retryable: 401/403, most 400s (wrong model / bad request).
+
 ## Code
 
-- `packages/llm/src/director.ts` / `performer.ts`
+- `packages/llm/src/director.ts` / `performer.ts` / `client.ts` / `retry.ts`
 - `packages/engine/src/intents-to-patch.ts`
 - `apps/api/src/turn-pipeline.ts`

@@ -13,7 +13,6 @@ import styles from "./StatusBar.module.css";
 
 export default function StatusBar({
   locationName,
-  phaseId,
   time,
   environment,
   playerStatus,
@@ -21,6 +20,7 @@ export default function StatusBar({
   turnCount,
 }: {
   locationName: string;
+  /** Kept for API compatibility; phases are engine-only (not shown to players). */
   phaseId?: string;
   time?: TimeState;
   environment?: EnvironmentState;
@@ -30,6 +30,7 @@ export default function StatusBar({
 }) {
   const threat = playerStatus?.threat ?? "none";
   const clockEntries = Object.entries(clocks ?? {});
+  void phaseId;
 
   return (
     <div className={styles.bar}>
@@ -37,12 +38,6 @@ export default function StatusBar({
         <span className={styles.label}>Location</span>
         <span className={styles.locationName}>{locationName}</span>
       </div>
-
-      {phaseId ? (
-        <div className={styles.item}>
-          <span className={styles.phaseChip}>{phaseId}</span>
-        </div>
-      ) : null}
 
       {time ? (
         <div className={styles.item}>

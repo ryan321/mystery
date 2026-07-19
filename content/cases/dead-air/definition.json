@@ -2,7 +2,7 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "dead-air",
-  "contentVersion": "0.1.3",
+  "contentVersion": "0.1.4",
   "meta": {
     "title": "Dead Air",
     "premise": "A research station orbiting Jupiter goes silent. The one survivor swears the killer is still aboard.",
@@ -11,8 +11,7 @@
     "tags": [
       "Space",
       "Sci-fi",
-      "Isolated",
-      "Hard"
+      "Isolated"
     ],
     "difficulty": "hard",
     "contentWarnings": [

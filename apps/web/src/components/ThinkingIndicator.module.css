@@ -1,109 +1,232 @@
 .wrap {
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  padding: 0.9rem 1rem;
-  margin-bottom: 0.9rem;
-  color: var(--fog);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  padding: 0.35rem 0 1.1rem;
 }
 
-.watch {
+.card {
   position: relative;
-  width: 28px;
-  height: 28px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 0.9rem;
+  row-gap: 0.55rem;
+  align-items: center;
+  width: min(100%, 22rem);
+  padding: 0.85rem 1rem 0.75rem;
+  background: linear-gradient(
+    145deg,
+    rgba(18, 24, 36, 0.92),
+    rgba(10, 14, 22, 0.88)
+  );
+  border: 1px solid rgba(200, 165, 110, 0.18);
+  border-radius: 10px;
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
 }
 
-.case {
+.card::before {
+  content: "";
   position: absolute;
   inset: 0;
-  border: 2px solid rgba(200, 165, 110, 0.5);
+  background: radial-gradient(
+    120% 80% at 0% 0%,
+    rgba(200, 165, 110, 0.08),
+    transparent 55%
+  );
+  pointer-events: none;
+}
+
+/* —— orb —— */
+.orb {
+  position: relative;
+  grid-row: 1;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+}
+
+.ring {
+  position: absolute;
+  inset: 0;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, rgba(200, 165, 110, 0.15), rgba(8, 12, 20, 0.9));
+  border: 1.5px solid transparent;
+  border-top-color: rgba(200, 165, 110, 0.85);
+  border-right-color: rgba(200, 165, 110, 0.25);
+  animation: spin 1.1s linear infinite;
+}
+
+.ring2 {
+  inset: 4px;
+  border-top-color: rgba(154, 175, 196, 0.7);
+  border-right-color: rgba(154, 175, 196, 0.15);
+  animation-duration: 1.7s;
+  animation-direction: reverse;
+}
+
+.core {
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 40% 35%,
+    rgba(255, 220, 160, 0.95),
+    rgba(200, 140, 70, 0.75) 45%,
+    rgba(80, 50, 30, 0.4) 100%
+  );
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.4),
-    inset 0 1px 2px rgba(255, 255, 255, 0.08);
+    0 0 12px rgba(200, 165, 110, 0.45),
+    0 0 22px rgba(200, 140, 70, 0.2);
+  animation: pulse 1.6s ease-in-out infinite;
 }
 
-.crown {
+.spark {
   position: absolute;
-  top: -4px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 6px;
-  height: 5px;
-  background: rgba(200, 165, 110, 0.5);
-  border-radius: 2px 2px 0 0;
-}
-
-.hand {
-  position: absolute;
-  left: 50%;
   top: 50%;
-  transform-origin: 0 100%;
-  background: var(--candle);
-  border-radius: 1px;
+  left: 50%;
+  width: 3px;
+  height: 3px;
+  margin: -1.5px 0 0 -1.5px;
+  border-radius: 50%;
+  background: var(--candle, #c8a56e);
+  box-shadow: 0 0 6px rgba(200, 165, 110, 0.9);
+  animation: orbit 2.2s linear infinite;
 }
 
-.hour {
+.spark2 {
+  animation-duration: 2.8s;
+  animation-delay: -0.7s;
   width: 2px;
-  height: 7px;
-  margin-left: -1px;
-  margin-top: -7px;
-  animation: rotate 6s linear infinite;
+  height: 2px;
+  opacity: 0.75;
 }
 
-.minute {
-  width: 1.5px;
-  height: 10px;
-  margin-left: -0.75px;
-  margin-top: -10px;
-  animation: rotate 1.2s linear infinite;
+.spark3 {
+  animation-duration: 3.4s;
+  animation-delay: -1.4s;
+  width: 2px;
+  height: 2px;
+  opacity: 0.55;
 }
 
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
+/* —— copy —— */
+.copy {
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+  z-index: 1;
+}
+
+.label {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--paper, #e8eef6);
+  animation: fadeIn 0.45s ease;
+}
+
+.sub {
+  font-size: 0.72rem;
+  color: var(--fog, #9aafc4);
+  letter-spacing: 0.02em;
+}
+
+/* —— indeterminate bar —— */
+.bar {
+  grid-column: 1 / -1;
+  position: relative;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(154, 175, 196, 0.12);
+  overflow: hidden;
+  z-index: 1;
+}
+
+.barFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 40%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(200, 165, 110, 0.85),
+    transparent
+  );
+  animation: sweep 1.5s ease-in-out infinite;
+}
+
+@keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
 
-.dots {
-  display: inline-flex;
-  gap: 0.25rem;
-}
-
-.dots span {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--candle);
-  animation: dotPulse 1.2s infinite;
-}
-
-.dots span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.dots span:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes dotPulse {
+@keyframes pulse {
   0%,
-  60%,
   100% {
-    opacity: 0.25;
-    transform: scale(0.85);
+    transform: scale(0.92);
+    opacity: 0.85;
   }
-  30% {
+  50% {
+    transform: scale(1.05);
     opacity: 1;
-    transform: scale(1.1);
+  }
+}
+
+@keyframes orbit {
+  from {
+    transform: rotate(0deg) translateX(11px) rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg) translateX(11px) rotate(-360deg);
+  }
+}
+
+@keyframes sweep {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring,
+  .ring2,
+  .core,
+  .spark,
+  .spark2,
+  .spark3,
+  .barFill,
+  .label {
+    animation: none;
+  }
+
+  .barFill {
+    width: 100%;
+    opacity: 0.45;
+    transform: none;
   }
 }

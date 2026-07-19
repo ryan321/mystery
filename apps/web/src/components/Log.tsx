@@ -13,19 +13,10 @@ export type LogItem =
   | { kind: "system"; text: string }
   | {
       kind: "briefing";
+      /** Short in-play card only — full dossier lives on the mystery page. */
       theMystery?: string;
       objective?: string;
-      startingKnowledge?: string;
-      setting?: string;
-      role?: string;
       displayName?: string;
-      addressAs?: string;
-      appearance?: string;
-      age?: string;
-      gender?: string;
-      background?: string;
-      publicPerception?: string;
-      authority?: string;
     };
 
 export default function Log({
@@ -72,73 +63,26 @@ export default function Log({
             );
           case "system":
             return <SystemCard key={i}>{item.text}</SystemCard>;
-          case "briefing":
+          case "briefing": {
+            // Prefer the central question; fall back to objective.
+            const goal = item.theMystery || item.objective;
             return (
               <SystemCard key={i}>
                 <div className={styles.briefing}>
-                  <p className={styles.briefingTitle}>Your briefing</p>
-                  {item.setting ? (
-                    <p>
-                      <strong>Setting.</strong> {item.setting}
+                  {item.displayName ? (
+                    <p className={styles.briefingYou}>
+                      You are <em>{item.displayName}</em>
                     </p>
                   ) : null}
-                  {item.displayName || item.role ? (
-                    <p>
-                      <strong>You are.</strong>{" "}
-                      {item.displayName ? (
-                        <>
-                          <em>{item.displayName}</em>
-                          {item.role ? ` — ${item.role}` : ""}
-                        </>
-                      ) : (
-                        item.role
-                      )}
-                      {item.age || item.gender || item.appearance ? (
-                        <>
-                          {" "}
-                          (
-                          {[item.age, item.gender, item.appearance]
-                            .filter(Boolean)
-                            .join("; ")}
-                          )
-                        </>
-                      ) : null}
-                    </p>
-                  ) : null}
-                  {item.background ? (
-                    <p>
-                      <strong>Background.</strong> {item.background}
-                    </p>
-                  ) : null}
-                  {item.publicPerception ? (
-                    <p>
-                      <strong>How they see you.</strong> {item.publicPerception}
-                    </p>
-                  ) : null}
-                  {item.theMystery ? (
-                    <p>
-                      <strong>The mystery.</strong> {item.theMystery}
-                    </p>
-                  ) : null}
-                  {item.objective ? (
-                    <p>
-                      <strong>Your job.</strong> {item.objective}
-                    </p>
-                  ) : null}
-                  {item.startingKnowledge ? (
-                    <p>
-                      <strong>What you know.</strong> {item.startingKnowledge}
-                    </p>
-                  ) : null}
+                  {goal ? <p className={styles.briefingGoal}>{goal}</p> : null}
                   <p className={styles.briefingHint}>
-                    Explore, question people, examine the scene, and present
-                    evidence. When you are ready, accuse with a name — and if
-                    you can, method and motive. Stay in character: the world
-                    treats you as this persona, not a generic blank detective.
+                    Look around, talk to people, examine the scene. Accuse when
+                    ready.
                   </p>
                 </div>
               </SystemCard>
             );
+          }
         }
       })}
       {busy ? <ThinkingIndicator /> : null}

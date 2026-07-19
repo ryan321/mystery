@@ -14,3 +14,4 @@ export * from "./accuse-gate.js";
 export * from "./resolve-case.js";
 export * from "./relationships.js";
 export * from "./inventory.js";
+export * from "./boundaries.js";

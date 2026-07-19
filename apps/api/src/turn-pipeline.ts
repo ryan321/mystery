@@ -17,6 +17,11 @@ import {
   isInteractive,
   inventoryNarrationHints,
   listInventory,
+  detectBoundaryLocal,
+  boundaryFromDirectorNotes,
+  mergeBoundary,
+  neutralizePatchForBoundary,
+  boundaryJustHappened,
 } from "@mystery/engine";
 import { runDirector, runPerformer, type LlmConfig } from "@mystery/llm";
 
@@ -33,8 +38,12 @@ export type TurnPipelineResult = {
     performerModel: string;
     directorMock: boolean;
     performerMock: boolean;
+    directorDegraded?: boolean;
+    performerDegraded?: boolean;
     directorLatencyMs: number;
     performerLatencyMs: number;
+    directorAttempts?: number;
+    performerAttempts?: number;
     intentNotes: string[];
     focusCharacterId?: string;
     beatsFired: string[];
@@ -74,17 +83,40 @@ export async function runTurnPipeline(args: {
 
   const directorPack = buildContextPack(def, state);
 
+  // High-precision local boundary scan (jailbreak, solution fishing, abuse, powers…)
+  const localBoundary = detectBoundaryLocal(playerInput);
+
   const director = await runDirector(llmConfig, {
     contextPack: directorPack,
     playerInput,
+    boundaryHint: localBoundary?.kind ?? null,
   });
 
-  const { patch, focusCharacterId, notes } = directorIntentsToPatch(
+  let { patch, focusCharacterId, notes } = directorIntentsToPatch(
     def,
     state,
     director.output,
     playerInput
   );
+
+  const directorBoundary = boundaryFromDirectorNotes(
+    notes,
+    director.output.intents.map((i) => ({
+      type: i.type,
+      note: "note" in i ? i.note : undefined,
+    }))
+  );
+  const boundary = mergeBoundary(localBoundary, directorBoundary);
+
+  if (boundary) {
+    patch = neutralizePatchForBoundary(patch);
+    notes.push(`boundary:${boundary.kind}`);
+    justHappened.push(boundaryJustHappened(boundary));
+    // No focus on victims of abuse attempts as "conversation targets"
+    if (boundary.kind === "blocked_abuse") {
+      focusCharacterId = undefined;
+    }
+  }
 
   if (state.status === "denouement" && patch.accuse) {
     delete patch.accuse;
@@ -99,7 +131,15 @@ export async function runTurnPipeline(args: {
   // Accusation confirmation gate: informal accusations go pending and must be
   // confirmed (or worded formally) before they are scored. Also records
   // generic accused_<id> flags for definition-driven reactions.
-  const gate = applyAccuseGate(def, state, patch, playerInput);
+  // Skip accuse gate entirely when boundary already neutralized the turn.
+  const gate = boundary
+    ? {
+        state,
+        patch,
+        justHappened: [] as typeof justHappened,
+        notes: [] as string[],
+      }
+    : applyAccuseGate(def, state, patch, playerInput);
   state = gate.state;
   justHappened.push(...gate.justHappened);
   notes.push(...gate.notes);
@@ -297,8 +337,12 @@ export async function runTurnPipeline(args: {
       performerModel: performer.model,
       directorMock: director.mock,
       performerMock: performer.mock,
+      directorDegraded: director.degraded,
+      performerDegraded: performer.degraded,
       directorLatencyMs: director.latencyMs,
       performerLatencyMs: performer.latencyMs,
+      directorAttempts: director.attempts?.length,
+      performerAttempts: performer.attempts?.length,
       intentNotes: notes,
       focusCharacterId,
       beatsFired: allFired,

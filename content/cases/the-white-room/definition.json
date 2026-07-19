@@ -2,7 +2,7 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "the-white-room",
-  "contentVersion": "0.1.3",
+  "contentVersion": "0.1.4",
   "meta": {
     "title": "The White Room",
     "premise": "You wake in a silent asylum with no name, no file, and no way out. The staff insist you belong here. One of them is lying.",
@@ -11,8 +11,7 @@
     "tags": [
       "Psychological",
       "Asylum",
-      "Identity",
-      "Hard"
+      "Identity"
     ],
     "difficulty": "hard",
     "contentWarnings": [

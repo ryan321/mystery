@@ -2,7 +2,7 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "blackwood-inheritance",
-  "contentVersion": "0.9.3",
+  "contentVersion": "0.9.5",
   "meta": {
     "title": "The Blackwood Inheritance",
     "premise": "A stormy night, a locked manor, and violence at the foot of the stairs. The family was already at each other’s throats.",
@@ -42,10 +42,10 @@
     "performanceNotes": "NPCs call him Inspector. Staff may be formally cooperative; family may be cold. He has no friends in this house yet.",
     "startingLocationId": "entrance-hall",
     "startingEvidenceIds": [],
-    "startingKnowledge": "You were summoned after a crash and a body. Mr. Blackwood lies dead at the foot of the main stairs. The storm has cut the road; no one left the grounds after ten. Henshaw has put you in a small guest room upstairs — a place to leave your coat and notebook.",
+    "startingKnowledge": "You were summoned after a crash and a body. Mr. Blackwood lies dead at the foot of the main stairs. The storm has cut the road; no one left the grounds after ten. Henshaw waits in the entrance hall with the body. Mr. Vale is in the library. Mrs. Blackwood and Miss Clara are in the conservatory. Henshaw has put you in a small guest room upstairs — a place to leave your coat and notebook.",
     "objective": "Investigate the manor, question everyone still on the grounds, gather evidence, and formally accuse the killer with enough of the how and why to hold."
   },
-  "openingNarration": "The manor looms against the storm. Inside, the entrance hall smells of wax and old money. A crystal vase lies shattered on the marble. Rainwater pools near the east door. Mr. Blackwood lies at the foot of the main stairs, already cold. The household has gathered in stiff silence: Henshaw the butler, Mrs. Blackwood in black silk, Clara with wet eyes that do not look like grief, and Mr. Vale clutching a leather portfolio. The road out is impassable. No one is coming. You were summoned to find who among them did this — and prove it.",
+  "openingNarration": "The manor looms against the storm. Inside, the entrance hall smells of wax and old money. A crystal vase lies shattered on the marble. Rainwater pools near the east door. Mr. Blackwood lies at the foot of the main stairs, already cold. Butler Henshaw stands alone with you at the body — pale, formal, waiting for your questions. Mrs. Blackwood and Miss Clara are elsewhere in the house; Mr. Vale the guest as well. The road out is impassable. No one is coming. You were summoned to find who among them did this — and prove it.",
   "phases": [
     {
       "id": "arrival",
@@ -192,12 +192,6 @@
       "charactersPresent": [
         {
           "characterId": "henshaw"
-        },
-        {
-          "characterId": "vale"
-        },
-        {
-          "characterId": "mrs-blackwood"
         }
       ]
     },
@@ -248,7 +242,11 @@
           }
         }
       ],
-      "charactersPresent": []
+      "charactersPresent": [
+        {
+          "characterId": "vale"
+        }
+      ]
     },
     {
       "id": "conservatory",
@@ -270,7 +268,14 @@
           }
         }
       ],
-      "charactersPresent": []
+      "charactersPresent": [
+        {
+          "characterId": "mrs-blackwood"
+        },
+        {
+          "characterId": "clara"
+        }
+      ]
     },
     {
       "id": "guest-room",
@@ -456,7 +461,7 @@
       "shortBio": "House guest with business ties to Mr. Blackwood.",
       "voice": "Smooth, defensive when cornered",
       "portrait": "portraits/vale.jpg",
-      "defaultLocationId": "entrance-hall",
+      "defaultLocationId": "library",
       "defaultWillingness": "guarded",
       "defaultStance": "polite_mask",
       "knowledge": {
@@ -490,7 +495,7 @@
       "shortBio": "The widow. Composed, watchful.",
       "voice": "Cool, precise",
       "portrait": "portraits/mrs-blackwood.jpg",
-      "defaultLocationId": "entrance-hall",
+      "defaultLocationId": "conservatory",
       "defaultWillingness": "guarded",
       "knowledge": {
         "public": "She was upstairs when she heard the crash. She came down after Henshaw shouted.",

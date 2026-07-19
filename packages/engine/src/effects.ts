@@ -60,11 +60,8 @@ export function applyEffect(
     const value = t === "set_game_flag_true" ? true : effect.value;
     next = { ...next, flags: { ...next.flags, [id]: value as never } };
   } else if (t === "set_phase") {
+    // Phase is engine/AI context only (caseMeta.phase) — never player-facing.
     next = { ...next, phaseId: String(effect.phaseId) };
-    justHappened.push({
-      id: `phase_${effect.phaseId}`,
-      summary: `Phase → ${effect.phaseId}`,
-    });
   } else if (t === "start_clock") {
     next = {
       ...next,

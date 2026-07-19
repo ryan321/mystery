@@ -51,31 +51,17 @@ function buildLog(
   if (opening) {
     items.push({ kind: "narration", text: opening });
   }
-  // Opening dossier — only on a fresh play (no turns yet) so reloads stay clean
-  // once the investigation is underway; still show if there are turns but
-  // player is reviewing the start by keeping briefing only when no turns.
+  // Slim start card only (full dossier is on the mystery detail page).
+  // Opening narration already sets scene + who's here; don't restate it.
   const hasBriefing =
     briefing &&
-    (briefing.theMystery ||
-      briefing.objective ||
-      briefing.startingKnowledge ||
-      briefing.setting);
+    (briefing.theMystery || briefing.objective || briefing.displayName);
   if (hasBriefing && !(turns && turns.length > 0)) {
     items.push({
       kind: "briefing",
-      setting: briefing.setting,
       theMystery: briefing.theMystery,
       objective: briefing.objective,
-      startingKnowledge: briefing.startingKnowledge,
-      role: briefing.role,
       displayName: briefing.displayName,
-      addressAs: briefing.addressAs,
-      appearance: briefing.appearance,
-      age: briefing.age,
-      gender: briefing.gender,
-      background: briefing.background,
-      publicPerception: briefing.publicPerception,
-      authority: briefing.authority,
     });
   }
   for (const t of turns ?? []) {
@@ -177,11 +163,17 @@ export default function PlaythroughPage() {
         appendDialogue(data.dialogue, data.playthrough);
         if (data.justHappened?.length) {
           for (const j of data.justHappened) {
+            // Phase changes stay engine-only — never surface in the player log.
+            if (
+              j.id?.startsWith("phase") ||
+              j.summary?.toLowerCase().includes("phase")
+            ) {
+              continue;
+            }
             if (
               j.id?.startsWith("pulse_") ||
               j.id === "ending" ||
-              j.id === "midnight_strikes" ||
-              j.summary?.includes("Phase")
+              j.id === "midnight_strikes"
             ) {
               setLog((prev) => [
                 ...prev,
