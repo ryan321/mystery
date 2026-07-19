@@ -163,8 +163,6 @@ export function isInInventory(
   state: PlaythroughState,
   itemId: string
 ): boolean {
-  if (!state.evidenceIds.includes(itemId)) return false;
-  const os = state.objectState[itemId];
-  // evidenceIds is authoritative; holder should be player when taken
-  return !os || os.holder === "player" || os.stage === "taken";
+  // evidenceIds is authoritative for "player holds this"
+  return state.evidenceIds.includes(itemId);
 }

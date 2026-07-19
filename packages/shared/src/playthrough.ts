@@ -191,9 +191,53 @@ export const PlayerThreatSchema = z.enum([
 ]);
 export type PlayerThreat = z.infer<typeof PlayerThreatSchema>;
 
+/**
+ * Physical / bodily state of the player (engine-owned).
+ * Escalates only unless set_player_condition force: true.
+ */
+export const PlayerConditionSchema = z.enum([
+  "unharmed",
+  "shaken",
+  "bruised",
+  "injured",
+  "incapacitated",
+]);
+export type PlayerCondition = z.infer<typeof PlayerConditionSchema>;
+
+/**
+ * Physical control / restraint of the player (engine-owned).
+ * Orthogonal to condition (you can be held without injury, or injured but free).
+ * Escalates only unless set_player_control force: true (release uses force).
+ */
+export const PlayerControlSchema = z.enum([
+  /** Free to act and move. */
+  "free",
+  /** Grabbed / held by someone — cannot walk away cleanly. */
+  "held",
+  /** Knocked to the floor — still conscious. */
+  "downed",
+  /** Bound, pinned, or otherwise restrained. */
+  "restrained",
+  /** Knocked out / senseless. */
+  "unconscious",
+]);
+export type PlayerControl = z.infer<typeof PlayerControlSchema>;
+
 export const PlayerStatusSchema = z.object({
   /** Escalating pressure aimed at the detective personally. */
   threat: PlayerThreatSchema.default("none"),
+  /**
+   * Bodily condition after violence or shock.
+   * Separate from threat (you can be threatened without injury, or bruised after a shove).
+   */
+  condition: PlayerConditionSchema.default("unharmed"),
+  /**
+   * Who has physical control of the player body.
+   * free | held | downed | restrained | unconscious
+   */
+  control: PlayerControlSchema.default("free"),
+  /** Character id currently holding/restraining the player, if known. */
+  controlledBy: z.string().optional(),
   /** True after room broken into / safe place compromised. */
   safeHavenCompromised: z.boolean().default(false),
   /** Case-specific tags e.g. "notes_stolen", "followed". */
@@ -246,6 +290,8 @@ export const PlaythroughStateSchema = z.object({
   /** Plot pressure on the detective (hostility, room ransacked, etc.). */
   playerStatus: PlayerStatusSchema.default({
     threat: "none",
+    condition: "unharmed",
+    control: "free",
     safeHavenCompromised: false,
     tags: [],
     flags: {},

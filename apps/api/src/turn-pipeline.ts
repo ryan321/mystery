@@ -22,6 +22,8 @@ import {
   mergeBoundary,
   neutralizePatchForBoundary,
   boundaryJustHappened,
+  applyDefaultAssaultConsequences,
+  assaultCaseHandled,
 } from "@mystery/engine";
 import { runDirector, runPerformer, type LlmConfig } from "@mystery/llm";
 
@@ -157,6 +159,74 @@ export async function runTurnPipeline(args: {
   let simState = playerBeats.state;
   justHappened.push(...playerBeats.justHappened);
   allFired.push(...playerBeats.fired);
+
+  // Physical control blocked a voluntary leave — stage the failed attempt
+  const controlBlock = rejected.find(
+    (r) =>
+      /held|restrained|unconscious|on the floor|under your own power/i.test(r)
+  );
+  if (controlBlock && !applied.setLocationId) {
+    const control = simState.playerStatus?.control ?? "free";
+    justHappened.push({
+      id: `player_control_block_${control}`,
+      summary: controlBlock,
+      narrationHints: `The player tried to leave or move freely but cannot: ${controlBlock} Reflect status.control (${control}) and controlledBy if set. Stage the struggle or failed escape — do not let them walk out of the room.`,
+    });
+  }
+
+  // Player physical assault — case beats first; else universal default consequences
+  const assaultThisTurn = Boolean(
+    notes.some((n) => n.startsWith("assault→") || n.startsWith("assault_flags")) ||
+      applied.setFlags?.player_assaulted_staff ||
+      applied.setFlags?.player_assaulted_someone
+  );
+  if (assaultThisTurn) {
+    const targetId = String(
+      applied.setFlags?.last_assault_target ??
+        simState.flags.last_assault_target ??
+        ""
+    );
+    const manner = String(
+      applied.setFlags?.last_assault_manner ??
+        simState.flags.last_assault_manner ??
+        "assault"
+    );
+    const attempts = Number(simState.flags.assault_attempts ?? 0);
+    const caseHandled = assaultCaseHandled(playerBeats.fired, justHappened);
+
+    if (targetId) {
+      const defAssault = applyDefaultAssaultConsequences(def, simState, {
+        targetId,
+        manner,
+        attempts,
+        caseHandled,
+      });
+      simState = defAssault.state;
+      justHappened.push(...defAssault.justHappened);
+    }
+
+    const targetName =
+      def.characters.find((c) => c.id === targetId)?.name ??
+      (targetId || "them");
+    const control = simState.playerStatus?.control ?? "free";
+    const authority = def.player.authority ?? "civilian";
+    justHappened.push({
+      id: `assault_attempt_${targetId || "unknown"}`,
+      summary:
+        control !== "free"
+          ? `You try force on ${targetName} — and lose free movement`
+          : `You use force on ${targetName}`,
+      narrationHints: [
+        `PHYSICAL FORCE (universal rules): player authority=${authority}; manner=${manner}; attempt #${attempts}.`,
+        `Stage real contact — shove, grab, strike. Not a polite verbal spat.`,
+        control !== "free"
+          ? `player.status.control=${control}. They are physically controlled. Stage grip/floor/pin. They cannot calmly leave.`
+          : `Player still free this turn — clash only, no free knockout of the NPC.`,
+        `Never invent that the player knocks someone unconscious or wins a brawl unless justHappened explicitly says so.`,
+        `Reflect condition/threat/control already on player.status. Weave all player_control_* / player_harm_* / player_threat_* events.`,
+      ].join(" "),
+    });
+  }
 
   if (applied.setLocationId) {
     const loc = def.locations.find((l) => l.id === applied.setLocationId);

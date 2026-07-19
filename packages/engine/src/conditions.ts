@@ -194,6 +194,53 @@ export function evaluateCondition(
       const ni = order.indexOf(need as (typeof order)[number]);
       return ci >= 0 && ni >= 0 && ci >= ni;
     }
+    case "player_condition_is":
+      return (
+        (state.playerStatus?.condition ?? "unharmed") ===
+        String(condition.is ?? condition.condition)
+      );
+    case "player_condition_at_least": {
+      const order = [
+        "unharmed",
+        "shaken",
+        "bruised",
+        "injured",
+        "incapacitated",
+      ] as const;
+      const cur = state.playerStatus?.condition ?? "unharmed";
+      const need = String(
+        condition.is ?? condition.condition ?? "unharmed"
+      );
+      const ci = order.indexOf(cur as (typeof order)[number]);
+      const ni = order.indexOf(need as (typeof order)[number]);
+      return ci >= 0 && ni >= 0 && ci >= ni;
+    }
+    case "player_control_is":
+      return (
+        (state.playerStatus?.control ?? "free") ===
+        String(condition.is ?? condition.control)
+      );
+    case "player_control_at_least": {
+      const order = [
+        "free",
+        "held",
+        "downed",
+        "restrained",
+        "unconscious",
+      ] as const;
+      const cur = state.playerStatus?.control ?? "free";
+      const need = String(condition.is ?? condition.control ?? "free");
+      const ci = order.indexOf(cur as (typeof order)[number]);
+      const ni = order.indexOf(need as (typeof order)[number]);
+      return ci >= 0 && ni >= 0 && ci >= ni;
+    }
+    case "player_not_free":
+      return (state.playerStatus?.control ?? "free") !== "free";
+    case "player_controlled_by":
+      return (
+        state.playerStatus?.controlledBy ===
+        String(condition.characterId ?? condition.is)
+      );
     case "player_safe_haven_compromised":
       return state.playerStatus?.safeHavenCompromised === true;
     case "player_has_tag":

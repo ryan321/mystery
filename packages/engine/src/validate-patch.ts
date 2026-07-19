@@ -240,7 +240,21 @@ export function validateAndApplyPatch(
   });
 
   if (patch.setLocationId) {
-    if (legalExit(def, probe(), locationId, patch.setLocationId)) {
+    const control = state.playerStatus?.control ?? "free";
+    if (control !== "free") {
+      // Physical control blocks voluntary exits; force moves use move_player effects.
+      const reason =
+        control === "held"
+          ? "You cannot walk away — you are being held."
+          : control === "downed"
+            ? "You cannot leave — you are on the floor."
+            : control === "restrained"
+              ? "You cannot leave — you are restrained."
+              : control === "unconscious"
+                ? "You cannot move — you are unconscious."
+                : "You cannot leave under your own power.";
+      rejected.push(reason);
+    } else if (legalExit(def, probe(), locationId, patch.setLocationId)) {
       locationId = patch.setLocationId;
       applied.setLocationId = patch.setLocationId;
       visited.add(locationId);

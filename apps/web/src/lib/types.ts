@@ -106,6 +106,17 @@ export type CharacterState = {
 
 export type PlayerStatus = {
   threat: "none" | "watched" | "threatened" | "assaulted";
+  /** Bodily state after shock or violence */
+  condition?:
+    | "unharmed"
+    | "shaken"
+    | "bruised"
+    | "injured"
+    | "incapacitated";
+  /** Physical control of the body */
+  control?: "free" | "held" | "downed" | "restrained" | "unconscious";
+  /** Character id holding/restraining the player, if known */
+  controlledBy?: string;
   safeHavenCompromised: boolean;
   tags: string[];
   flags: Record<string, string | number | boolean>;

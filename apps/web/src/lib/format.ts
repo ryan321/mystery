@@ -49,6 +49,36 @@ export function threatColor(threat?: string): string {
   }
 }
 
+export function conditionColor(condition?: string): string {
+  switch (condition) {
+    case "shaken":
+      return "#d4b56a";
+    case "bruised":
+      return "#e08a8a";
+    case "injured":
+      return "#ff6a5a";
+    case "incapacitated":
+      return "#ff3d2e";
+    default:
+      return "#9aafc4";
+  }
+}
+
+export function controlColor(control?: string): string {
+  switch (control) {
+    case "held":
+      return "#d4b56a";
+    case "downed":
+      return "#e08a8a";
+    case "restrained":
+      return "#ff6a5a";
+    case "unconscious":
+      return "#ff3d2e";
+    default:
+      return "#9aafc4";
+  }
+}
+
 export function willingnessLabel(w: string): string {
   switch (w) {
     case "open":

@@ -2,7 +2,7 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "blackwood-inheritance",
-  "contentVersion": "0.9.5",
+  "contentVersion": "0.9.8",
   "meta": {
     "title": "The Blackwood Inheritance",
     "premise": "A stormy night, a locked manor, and violence at the foot of the stairs. The family was already at each other’s throats.",
@@ -141,6 +141,12 @@
     {
       "id": "inspector_room_ransacked",
       "description": "Someone searched the inspector's guest room",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "falsely_accused_vale",
+      "description": "Player wrongly accused Vale",
       "aiVisible": true,
       "defaultValue": false
     }
@@ -713,6 +719,10 @@
           "relationshipId": "mrs_marriage_victim",
           "knownToPlayer": true,
           "strength": 2
+        },
+        {
+          "type": "set_player_threat",
+          "threat": "watched"
         }
       ],
       "narrationHints": "With the letter in hand, the household's careful manners start to crack. Bonds strain: Vale's money trouble is no longer abstract; Clara's unease with him may show. No relationship menus — show it in looks and dialogue.",
@@ -769,6 +779,16 @@
           "threat": "threatened"
         },
         {
+          "type": "harm_player",
+          "condition": "bruised",
+          "text": "Vale's composure snaps. He shoves you hard into the banister — a real blow to the shoulder, not a gesture. Pain blooms. Henshaw is close enough to see it."
+        },
+        {
+          "type": "hold_player",
+          "byCharacterId": "vale",
+          "text": "Before you can step clear, Vale has your arm — a hard grip that does not let you walk away. You are held."
+        },
+        {
           "type": "add_player_tag",
           "tag": "vale_threat"
         },
@@ -776,9 +796,24 @@
           "type": "start_clock",
           "clockId": "vale_retaliation",
           "turns": 10
+        },
+        {
+          "type": "move_character",
+          "characterId": "vale",
+          "toLocationId": "entrance-hall"
+        },
+        {
+          "type": "move_character",
+          "characterId": "henshaw",
+          "toLocationId": "entrance-hall"
+        },
+        {
+          "type": "move_player",
+          "toLocationId": "entrance-hall",
+          "text": "The confrontation spills into the entrance hall. Whether you meant to or not, you are there with him under the broken clock — the house has closed the distance."
         }
       ],
-      "narrationHints": "Faced with his own hand on the page, Vale's conservatory story collapses into anger. He turns that anger on you — this is no longer a polite interview. You have a limited window to finish this before he acts.",
+      "narrationHints": "Faced with his own hand on the page, Vale's conservatory story collapses into anger. He does not only speak — he shoves you (bruised) and holds you (control: held). You are in the entrance hall with him (and Henshaw nearby). Stage the shove and grip as events that happen TO the player. They cannot calmly leave. Limited window before he acts again.",
       "reactions": [
         {
           "characterId": "vale",
@@ -837,6 +872,25 @@
           "threat": "watched"
         },
         {
+          "type": "harm_player",
+          "condition": "shaken",
+          "text": "Seeing your private room torn open hits you in the gut — this is no longer a polite inquiry. Someone has put their hands through your things."
+        },
+        {
+          "type": "steal_from_player",
+          "preferItemIds": [
+            "brass-key",
+            "black-thread",
+            "muddy-boot-print"
+          ],
+          "exceptItemIds": [
+            "vale-letter"
+          ],
+          "toLocationId": "guest-room",
+          "holder": "unknown",
+          "text": "After the search, something you were carrying is gone — lifted from a pocket or taken from the desk. The letter, if you still hold it, is what they wanted most and may still be on you; lesser proof is missing."
+        },
+        {
           "type": "add_player_tag",
           "tag": "room_searched"
         },
@@ -856,10 +910,20 @@
         },
         {
           "type": "notebook_append",
-          "text": "My guest room was searched while I was downstairs. Someone in this house is tracking the investigation."
+          "text": "My guest room was searched while I was downstairs. Someone in this house is tracking the investigation — and may have taken something from me."
+        },
+        {
+          "type": "move_player",
+          "toLocationId": "guest-room",
+          "text": "A servant finds you — or Henshaw does — and insists you come upstairs at once. You are brought to your guest room. The door stands ajar. Someone has been through your things."
+        },
+        {
+          "type": "move_character",
+          "characterId": "henshaw",
+          "toLocationId": "guest-room"
         }
       ],
-      "narrationHints": "Off-screen: while you were elsewhere, someone went through your guest room. Do not invent who did it. When the player next enters the guest room, the ransacked state is already in the location description. Elsewhere, they may only get a chill of being watched — not a full reveal until they return upstairs.",
+      "narrationHints": "THIS HAPPENS TO THE PLAYER NOW: they are taken to the guest room, see it ransacked, feel shaken, and may discover something stolen from them (see justHappened stolen_*). Desk open, coat searched, papers scattered. Henshaw may be present, shaken. Do not invent who searched it. The violation must land as an event this turn — not a vague chill for later.",
       "reactions": []
     },
     {
@@ -983,6 +1047,16 @@
           "threat": "assaulted"
         },
         {
+          "type": "harm_player",
+          "condition": "incapacitated",
+          "text": "Vale does not speak first. The blow lands hard enough to drop you. The manor floor rises. This is how the case ends for you."
+        },
+        {
+          "type": "knock_out_player",
+          "byCharacterId": "vale",
+          "text": "The lights go out. You are knocked unconscious — the investigation ends with you on the cold marble."
+        },
+        {
           "type": "add_player_tag",
           "tag": "killed"
         },
@@ -993,11 +1067,95 @@
           "endingKind": "murdered"
         }
       ],
-      "narrationHints": "You waited too long after cornering Vale. He acts first. This is a failure ending — murdered. Perform the closing, do not continue the case.",
+      "narrationHints": "You waited too long after cornering Vale. He acts first — real violence, knock-out (unconscious), incapacitated. This is a failure ending — murdered. Perform the closing, do not continue the case.",
       "reactions": [
         {
           "characterId": "vale",
           "lineHint": "You should have left that letter alone.",
+          "stance": "violent"
+        }
+      ]
+    },
+    {
+      "id": "vale_warning_assault",
+      "title": "Vale strikes a warning blow",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "case_active"
+          },
+          {
+            "type": "clock_at_most",
+            "clockId": "vale_retaliation",
+            "n": 4
+          },
+          {
+            "type": "clock_running",
+            "clockId": "vale_retaliation"
+          },
+          {
+            "type": "character_willingness",
+            "characterId": "vale",
+            "is": "hostile"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_player_threat",
+          "threat": "assaulted"
+        },
+        {
+          "type": "harm_player",
+          "condition": "injured",
+          "text": "Vale does not wait for the magistrates. He strikes you — a short, vicious blow. Blood on your lip. This is a warning, not yet the end."
+        },
+        {
+          "type": "knock_down_player",
+          "byCharacterId": "vale",
+          "text": "The blow puts you on the floor of the entrance hall. You are down — conscious, tasting copper, looking up at him."
+        },
+        {
+          "type": "steal_from_player",
+          "preferItemIds": [
+            "brass-key",
+            "black-thread",
+            "muddy-boot-print"
+          ],
+          "exceptItemIds": [
+            "vale-letter"
+          ],
+          "toLocationId": "entrance-hall",
+          "holder": "vale",
+          "text": "In the scramble his hand finds your pocket. Something you carried is gone — not the letter if you still have it, but lesser proof he can make vanish."
+        },
+        {
+          "type": "move_character",
+          "characterId": "vale",
+          "toLocationId": "entrance-hall"
+        },
+        {
+          "type": "move_player",
+          "toLocationId": "entrance-hall",
+          "text": "The struggle leaves you on the floor of the entrance hall under the broken clock, with Vale still close."
+        },
+        {
+          "type": "add_player_tag",
+          "tag": "vale_assault"
+        },
+        {
+          "type": "notebook_append",
+          "text": "Vale assaulted me and put me on the floor. He is no longer content to threaten. I must finish this before he finishes me."
+        }
+      ],
+      "narrationHints": "WARNING ASSAULT (not yet death): Vale injures the player, knocks them down (control: downed), and may steal a pocket item. Stage the blow, the fall, blood, and theft as events this turn. They cannot simply walk away. The retaliation clock is still running — urgency, not ending.",
+      "reactions": [
+        {
+          "characterId": "vale",
+          "lineHint": "Next time I will not stop at a warning. Leave the letter out of this.",
           "stance": "violent"
         }
       ]
@@ -1164,6 +1322,10 @@
       },
       "effects": [
         {
+          "type": "release_player",
+          "text": "Judgment breaks the grip. Whether Henshaw steps in or Vale's will collapses, you are free of his hands."
+        },
+        {
           "type": "set_willingness",
           "characterId": "vale",
           "value": "open"
@@ -1265,6 +1427,10 @@
       },
       "effects": [
         {
+          "type": "release_player",
+          "text": "The scene ends in embarrassment rather than a fight. Any grip on you is gone — you are free to leave in disgrace."
+        },
+        {
           "type": "set_willingness",
           "characterId": "henshaw",
           "value": "silent"
@@ -1288,7 +1454,7 @@
           "text": "I named the wrong person. The house has closed ranks. The real trail cools while I stand here."
         }
       ],
-      "narrationHints": "Wrong accusation aftermath: the household freezes you out. Vale (if present) may look almost relieved. Interactive but chilly — player can try to salvage dignity or leave.",
+      "narrationHints": "Wrong accusation aftermath: the household freezes you out. Vale (if present) may look almost relieved. You are no longer held. Interactive but chilly — player can try to salvage dignity or leave.",
       "reactions": [
         {
           "characterId": "mrs-blackwood",
@@ -1331,6 +1497,137 @@
         }
       ],
       "narrationHints": "If wrap-up runs after a murdered failure, keep it brief and dark — aftermath of the detective's fate, not a fresh investigation. Prefer short remaining turns."
+    },
+    {
+      "id": "henshaw_breaks_vale_grip",
+      "title": "Henshaw forces Vale to let go",
+      "once": true,
+      "trigger": "on_talk",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "case_active"
+          },
+          {
+            "type": "player_not_free"
+          },
+          {
+            "type": "player_control_at_least",
+            "control": "held"
+          },
+          {
+            "type": "not",
+            "of": {
+              "type": "player_control_is",
+              "is": "unconscious"
+            }
+          },
+          {
+            "type": "player_has_tag",
+            "tag": "vale_threat"
+          },
+          {
+            "type": "character_at",
+            "characterId": "henshaw",
+            "locationId": "entrance-hall"
+          },
+          {
+            "type": "player_at",
+            "locationId": "entrance-hall"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "release_player",
+          "text": "Henshaw steps in — firm, formal, and final. He hauls Vale off you or helps you up from the floor. 'That is enough, Mr. Vale.' You are free of his hands for now."
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "vale",
+          "by": 1
+        },
+        {
+          "type": "notebook_append",
+          "text": "Henshaw forced Vale off me. The household will not yet allow an open assault on an inspector — but the warning is clear."
+        }
+      ],
+      "narrationHints": "Henshaw intervenes and RELEASES the player (control → free). Stage the break of grip or help rising from the floor. Player may still be bruised/injured/threatened.",
+      "reactions": [
+        {
+          "characterId": "henshaw",
+          "lineHint": "That is enough, Mr. Vale. The Inspector is here under the Crown's authority.",
+          "stance": "protective"
+        },
+        {
+          "characterId": "vale",
+          "lineHint": "For now. He will not keep waving that letter forever.",
+          "stance": "cornered"
+        }
+      ]
+    },
+    {
+      "id": "vale_presses_in_hall",
+      "title": "Vale will not let you wander free",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "game_flag",
+            "id": "falsely_accused_vale",
+            "equals": false
+          },
+          {
+            "type": "has_evidence",
+            "evidenceId": "vale-letter"
+          },
+          {
+            "type": "or",
+            "of": [
+              {
+                "type": "phase_is",
+                "phaseId": "crisis"
+              },
+              {
+                "type": "character_willingness",
+                "characterId": "vale",
+                "is": "hostile"
+              }
+            ]
+          },
+          {
+            "type": "player_not_at",
+            "locationId": "entrance-hall"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "move_character",
+          "characterId": "vale",
+          "toLocationId": "entrance-hall"
+        },
+        {
+          "type": "move_player",
+          "toLocationId": "entrance-hall",
+          "text": "You do not make it far. Vale intercepts you — or the household steers you — back toward the entrance hall. The investigation is no longer a tour of rooms; it is a trap closing."
+        },
+        {
+          "type": "set_player_threat",
+          "threat": "threatened"
+        }
+      ],
+      "narrationHints": "The player is forced back to the entrance hall with Vale. Physical interception, not only dialogue. Make them feel the house choosing where they stand.",
+      "reactions": [
+        {
+          "characterId": "vale",
+          "lineHint": "We are not finished. You do not get to poke through this house like a free man.",
+          "stance": "cornered"
+        }
+      ]
     }
   ],
   "solution": {

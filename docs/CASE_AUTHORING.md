@@ -694,8 +694,29 @@ Compose with `and` / `or` / `not`.
 
 ### Location / player status
 - `set_location_accessible` / `set_exit_open` / `append_location_description`
-- `set_player_threat` / `set_safe_haven_compromised` / `add_player_tag` / `set_player_status_flag`
+- `move_player` — `{ toLocationId, text? }` force-relocate (escort, drag, intercept)
+- `set_player_threat` — `{ threat: none|watched|threatened|assaulted, force? }` escalates only unless force
+- `set_player_condition` / `harm_player` — `{ condition: unharmed|shaken|bruised|injured|incapacitated, text?, force? }` bodily harm; `harm_player` always emits justHappened
+- **Physical control** (orthogonal to injury; blocks voluntary leave while not free):
+  - `hold_player` — grabbed / gripped (`byCharacterId?`, `text?`)
+  - `knock_down_player` — on the floor, conscious
+  - `restrain_player` — bound / pinned
+  - `knock_out_player` — unconscious
+  - `release_player` — free again
+  - `set_player_control` — `{ control: free|held|downed|restrained|unconscious, byCharacterId?, force?, text? }`
+- `steal_from_player` — `{ itemId? | preferItemIds? | anyHeld?, exceptItemIds?, toLocationId?, holder?, text? }` remove held evidence and stage theft
+- `set_safe_haven_compromised` / `add_player_tag` / `set_player_status_flag`
 - `notebook_append` — `{ text }` (quiet bookkeeping)
+
+### Physical force (universal — no per-case requirement)
+Player shove/hit/grab is an **assault** intent in every mystery. The engine:
+1. Sets flags (`player_assaulted_staff`, `assault_attempts`, `last_assault_target`, …)
+2. Runs case beats if you authored them (preferred for special institutions, clocks, etc.)
+3. Otherwise applies **default consequences** from `player.authority`:
+   - `civilian` / `guest`: first force → bruised + **held** by target; repeat → downed + restrained
+   - `official` / `professional`: first force → target hostile/rattled, player still free; repeat → held
+
+Author case beats when you need special flavor (chemical restraint, servants, failure clocks). Defaults keep every other mystery from soft-prose-only fights. Director + Performer system prompts also treat physical force as universal.
 
 ### Relationships
 - `reveal_relationship` / `set_relationship` / `set_relationship_strength` / `set_relationship_active`

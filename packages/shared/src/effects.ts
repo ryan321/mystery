@@ -39,7 +39,7 @@ export const EffectSchema = z.object({
   threat: z.string().optional(),
   /** move_object target location when not inventory */
   toLocationIdForObject: z.string().optional(),
-  /** Allow set_player_threat to decrease threat when true */
+  /** Allow set_player_threat / set_player_condition to decrease when true */
   force: z.boolean().optional(),
   /** Relationship edge id */
   relationshipId: z.string().optional(),
@@ -51,8 +51,26 @@ export const EffectSchema = z.object({
   label: z.string().optional(),
   /** Inventory / object item id (usually evidence id). */
   itemId: z.string().optional(),
+  /** Player bodily condition or item condition */
   condition: z.string().optional(),
   holder: z.string().optional(),
+  /**
+   * Physical control of the player:
+   * free | held | downed | restrained | unconscious
+   */
+  control: z.string().optional(),
+  /** Who is holding/restraining the player (character id) */
+  controlledBy: z.string().optional(),
+  /** Alias for controlledBy on hold/restrain effects */
+  byCharacterId: z.string().optional(),
+  /** steal_from_player: try these item ids in order (first held wins) */
+  preferItemIds: z.array(z.string()).optional(),
+  /** steal_from_player: never take these ids */
+  exceptItemIds: z.array(z.string()).optional(),
+  /** steal_from_player: if no prefer match, take first held item */
+  anyHeld: z.boolean().optional(),
+  /** Object stage when stolen/dropped (default visible) */
+  stage: z.string().optional(),
 });
 
 export type Effect = {

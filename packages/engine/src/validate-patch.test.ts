@@ -320,15 +320,33 @@ describe("validateAndApplyPatch", () => {
 
   it("presenting letter to vale fires cornered beat", () => {
     let state = createInitialPlaythrough(def, "test-present");
+    // Seed inventory + co-location (letter needs key in real play; tests bypass discovery)
     state = {
       ...state,
+      locationId: "library",
       evidenceIds: ["vale-letter"],
       flags: { ...state.flags, found_vale_letter: true },
+      presented: [
+        {
+          evidenceId: "vale-letter",
+          characterId: "vale",
+          turn: 1,
+        },
+      ],
+      objectState: {
+        ...state.objectState,
+        "vale-letter": {
+          stage: "taken",
+          locked: false,
+          holder: "player",
+          condition: "intact",
+          tags: [],
+          flags: {},
+          timesExamined: 0,
+          timesUsed: 0,
+        },
+      },
     };
-    state = validateAndApplyPatch(def, state, {
-      presented: [{ evidenceId: "vale-letter", characterId: "vale" }],
-      talkToCharacterId: "vale",
-    }).nextState;
 
     const beats = evaluateBeats(def, state, 3, {
       source: "player",
@@ -338,7 +356,16 @@ describe("validateAndApplyPatch", () => {
     expect(beats.state.characterState.vale?.alibiStatus).toBe("broken");
     expect(beats.state.characterState.vale?.willingness).toBe("hostile");
     expect(beats.state.playerStatus.threat).toBe("threatened");
+    expect(beats.state.playerStatus.condition).toBe("bruised");
+    expect(beats.state.playerStatus.control).toBe("held");
+    expect(beats.state.playerStatus.controlledBy).toBe("vale");
     expect(beats.state.playerStatus.tags).toContain("vale_threat");
+    expect(beats.justHappened.some((j) => j.id.startsWith("player_harm_"))).toBe(
+      true
+    );
+    expect(
+      beats.justHappened.some((j) => j.id === "player_control_held")
+    ).toBe(true);
   });
 
   it("letter while away from guest room ransacks the detective's room", () => {
@@ -361,8 +388,14 @@ describe("validateAndApplyPatch", () => {
     expect(beats.fired).toContain("inspector_room_ransacked");
     expect(beats.state.playerStatus.safeHavenCompromised).toBe(true);
     expect(beats.state.playerStatus.threat).toBe("watched");
+    expect(beats.state.playerStatus.condition).toBe("shaken");
     expect(beats.state.playerStatus.tags).toContain("room_searched");
+    expect(beats.state.playerStatus.tags).toContain("robbed");
     expect(beats.state.flags.inspector_room_ransacked).toBe(true);
+    expect(beats.state.evidenceIds).not.toContain("brass-key");
+    expect(beats.justHappened.some((j) => j.id === "stolen_brass-key")).toBe(
+      true
+    );
     expect(
       beats.state.locationState["guest-room"]?.descriptionAppend
     ).toMatch(/drawers hang open/i);
@@ -399,6 +432,8 @@ describe("validateAndApplyPatch", () => {
       phaseId: "deepening",
       playerStatus: {
         threat: "threatened",
+        condition: "bruised",
+        control: "free",
         safeHavenCompromised: false,
         tags: ["vale_threat"],
         flags: {},
@@ -407,6 +442,7 @@ describe("validateAndApplyPatch", () => {
     const beats = evaluateBeats(def, state, 3);
     expect(beats.fired).toContain("inspector_room_ransacked");
     expect(beats.state.playerStatus.threat).toBe("threatened");
+    expect(beats.state.playerStatus.condition).toBe("bruised");
     expect(beats.state.playerStatus.safeHavenCompromised).toBe(true);
   });
 
@@ -442,6 +478,37 @@ describe("validateAndApplyPatch", () => {
     expect(beats.state.status).toBe("denouement");
     expect(beats.state.endingId).toBe("failure_murdered");
     expect(beats.state.playerStatus.threat).toBe("assaulted");
+    expect(beats.state.playerStatus.condition).toBe("incapacitated");
+    expect(beats.state.playerStatus.control).toBe("unconscious");
+  });
+
+  it("vale warning assault fires at low retaliation clock and injures", () => {
+    let state = createInitialPlaythrough(def, "test-warning-assault");
+    state = {
+      ...state,
+      status: "active",
+      locationId: "library",
+      clocks: { vale_retaliation: 3 },
+      evidenceIds: ["vale-letter", "brass-key"],
+      characterState: {
+        ...state.characterState,
+        vale: {
+          ...state.characterState.vale!,
+          willingness: "hostile",
+        },
+      },
+    };
+    const beats = evaluateBeats(def, state, 3);
+    expect(beats.fired).toContain("vale_warning_assault");
+    expect(beats.fired).not.toContain("failure_vale_retaliation");
+    expect(beats.state.status).toBe("active");
+    expect(beats.state.playerStatus.threat).toBe("assaulted");
+    expect(beats.state.playerStatus.condition).toBe("injured");
+    expect(beats.state.playerStatus.control).toBe("downed");
+    expect(beats.state.playerStatus.tags).toContain("vale_assault");
+    expect(beats.state.evidenceIds).not.toContain("brass-key");
+    expect(beats.state.evidenceIds).toContain("vale-letter");
+    expect(beats.state.locationId).toBe("entrance-hall");
   });
 
   it("after midnight without active retaliation ends as time_expired", () => {

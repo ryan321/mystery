@@ -43,6 +43,18 @@ export const DirectorIntentSchema = z.discriminatedUnion("type", [
     method: z.string().optional(),
     motive: z.string().optional(),
   }),
+  /**
+   * Physical aggression toward a person (shove, grab, strike).
+   * Engine sets assault flags; cases author retaliation beats.
+   * Not a free "win the fight" — definition decides outcome.
+   */
+  z.object({
+    type: z.literal("assault"),
+    characterId: z.string().optional(),
+    characterHint: z.string().optional(),
+    /** shove | push | hit | grab | knock_down | … */
+    manner: z.string().optional(),
+  }),
   z.object({
     type: z.literal("other"),
     note: z.string().optional(),

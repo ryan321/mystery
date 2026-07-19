@@ -71,6 +71,38 @@ export function heuristicDirector(args: {
     return { intents, reasoning: "heuristic accuse", focusCharacterId };
   }
 
+  // physical assault (shove / push / knock down)
+  if (
+    /\b(push|shove|hit|punch|kick|grab|tackle|strike|slap)\b/.test(input) ||
+    /\bknock\s+(him|her|them|down)\b/.test(input) ||
+    /\bout of (the |my )?way\b/.test(input) ||
+    /\bonto the (ground|floor)\b/.test(input)
+  ) {
+    for (const ch of pack.location?.presentCharacters ?? []) {
+      if (!ch) continue;
+      const name = ch.name.toLowerCase();
+      const last = name.split(/\s+/).pop() ?? "";
+      if (
+        input.includes(name) ||
+        input.includes(ch.id.replace(/-/g, " ")) ||
+        (last.length > 2 && input.includes(last)) ||
+        /\b(him|her|them|doctor)\b/.test(input)
+      ) {
+        intents.push({
+          type: "assault",
+          characterId: ch.id,
+          manner: /\bground\b|\bfloor\b|\bknock\b/.test(input)
+            ? "knock_down"
+            : /\bgrab\b/.test(input)
+              ? "grab"
+              : "shove",
+        });
+        focusCharacterId = ch.id;
+        return { intents, reasoning: "heuristic assault", focusCharacterId };
+      }
+    }
+  }
+
   // present evidence
   for (const e of pack.evidenceHeld ?? []) {
     if (input.includes(e.name.toLowerCase()) || input.includes(e.id)) {

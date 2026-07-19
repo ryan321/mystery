@@ -15,3 +15,4 @@ export * from "./resolve-case.js";
 export * from "./relationships.js";
 export * from "./inventory.js";
 export * from "./boundaries.js";
+export * from "./assault-default.js";

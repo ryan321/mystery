@@ -235,6 +235,14 @@ export function buildContextPack(
           p.startingKnowledge ?? def.player.startingKnowledge,
         status: {
           threat: state.playerStatus?.threat ?? "none",
+          /** Bodily harm: unharmed | shaken | bruised | injured | incapacitated */
+          condition: state.playerStatus?.condition ?? "unharmed",
+          /**
+           * Physical control: free | held | downed | restrained | unconscious
+           * If not free, the player cannot voluntarily walk away.
+           */
+          control: state.playerStatus?.control ?? "free",
+          controlledBy: state.playerStatus?.controlledBy,
           safeHavenCompromised:
             state.playerStatus?.safeHavenCompromised ?? false,
           tags: state.playerStatus?.tags ?? [],
@@ -347,7 +355,9 @@ export function buildContextPack(
       playerPersona:
         "player.* is who the human is in this story (name, role, appearance, authority). Second person still — address them as that person. NPCs must treat them according to role, authority, and publicPerception (a dinner guest is not a badge; an official may open doors; a patient may be dismissed). Use addressAs in dialogue. Do not invent a different identity, gender, age, or backstory. If personaId is set, this may be a recurring detective known across cases — stay consistent with background/appearance.",
       detectiveAsTarget:
-        "Player status (threat, safeHavenCompromised, tags) is engine-owned. Perform pressure already in status and justHappened. Do not invent new attacks, break-ins, or thefts unless listed in justHappened or status.",
+        "Player status (threat, condition/harm, control, controlledBy, safeHavenCompromised, tags) is engine-owned. control: free|held|downed|restrained|unconscious — if not free, the player is physically controlled and cannot simply walk away. Stage holds, knockdowns, restraint, knockouts, harm, theft, and force-moves from status + justHappened (player_moved_*, player_threat_*, player_harm_*, player_control_*, assault_*, stolen_*, item_damaged_*, safe_haven_*) as events that happen TO the player — not only dialogue. Keep reflecting active condition/control every turn until cleared. Do not invent new attacks, restraints, thefts, or injuries beyond status + justHappened.",
+      physicalForce:
+        "UNIVERSAL (all mysteries): When the player uses force on someone, the engine records assault and may set control/harm/threat. Stage real contact. Outcomes follow player.authority (official/professional can rattle someone; civilian/guest/patient usually get seized). Never invent a player knockout or free brawl win unless justHappened says so. Never rewrite a shove into a soft verbal scene. Things also happen TO the player (dragged rooms, stolen items, injury) via justHappened — always stage those in the body of the prose.",
       denouement:
         state.status === "denouement"
           ? "WRAP-UP MODE: The case has been judged (see resolution/ending). Stay interactive: characters react, the accused may confess or rage, household falls out. Player may still talk, look, move, and leave. Do NOT treat the mystery as unsolved. Do NOT invent a new killer. Consequences matter."

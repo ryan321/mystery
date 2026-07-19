@@ -161,6 +161,8 @@ export function createInitialPlaythrough(
     presented: [],
     playerStatus: {
       threat: "none",
+      condition: "unharmed",
+      control: "free",
       safeHavenCompromised: false,
       tags: [],
       flags: {},

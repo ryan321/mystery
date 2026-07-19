@@ -269,9 +269,11 @@ PlayerStatus {
 |--------------|----------------|
 | Suspect gets hostile | `set_willingness(hostile)` on NPC + optional `set_player_threat(threatened)` |
 | Room broken into while away | `player_not_at` + beat → `append_location_description` + `set_safe_haven_compromised` |
-| Something stolen from inventory | `remove_evidence` / `move_object` to a location |
+| Something stolen from inventory | `steal_from_player` (preferItemIds / anyHeld) or `remove_evidence` |
+| Item damaged in hand | `set_item_condition` while held → `item_damaged_*` justHappened |
 | Being watched / followed | `set_player_threat(watched)` + ambient / tags |
-| Physical confrontation | Beat with `set_player_threat(assaulted)` + optional fail ending — **authored**, not random |
+| Physical harm (non-lethal) | `harm_player` with `bruised` / `injured` + optional `set_player_threat` |
+| Physical confrontation / death | Beat with `set_player_threat(assaulted)` + `harm_player(incapacitated)` + optional fail ending — **authored**, not random |
 
 **Principle:** definition owns when the world hits back; ContextPack exposes `player.status`; Performer must not invent new attacks beyond status + `justHappened`.
 
@@ -610,6 +612,11 @@ Effect =
   | { type: "append_location_description", locationId: string, text: string }
   // Detective as target (player status)
   | { type: "set_player_threat", threat: PlayerThreat, force?: boolean }  // escalates only unless force
+  | { type: "set_player_condition" | "harm_player", condition: PlayerCondition, text?: string, force?: boolean }
+  | { type: "hold_player" | "knock_down_player" | "restrain_player" | "knock_out_player" | "release_player", byCharacterId?: string, text?: string }
+  | { type: "set_player_control", control: PlayerControl, byCharacterId?: string, force?: boolean, text?: string }
+  | { type: "steal_from_player", itemId?: string, preferItemIds?: string[], anyHeld?: boolean, exceptItemIds?: string[], toLocationId?: string, holder?: string, text?: string }
+  | { type: "move_player", toLocationId: string, text?: string }
   | { type: "set_safe_haven_compromised", value: boolean }
   | { type: "add_player_tag", tag: string }
   | { type: "set_player_status_flag", id: string, value: FlagValue }

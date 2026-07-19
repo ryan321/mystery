@@ -2,7 +2,7 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "the-white-room",
-  "contentVersion": "0.1.4",
+  "contentVersion": "0.2.0",
   "meta": {
     "title": "The White Room",
     "premise": "You wake in a silent asylum with no name, no file, and no way out. The staff insist you belong here. One of them is lying.",
@@ -122,6 +122,28 @@
     },
     {
       "id": "falsely_accused_eli-voss",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "player_assaulted_staff",
+      "aiVisible": true,
+      "defaultValue": false,
+      "description": "Player used physical force on staff"
+    },
+    {
+      "id": "assault_attempts",
+      "aiVisible": true,
+      "defaultValue": 0,
+      "description": "How many times the player has assaulted someone"
+    },
+    {
+      "id": "chemical_restraint_ordered",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "full_restraint_applied",
       "aiVisible": true,
       "defaultValue": false
     }
@@ -577,6 +599,218 @@
   ],
   "beats": [
     {
+      "id": "staff_assault_first",
+      "title": "Staff seize you after violence",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "case_active"
+          },
+          {
+            "type": "game_flag",
+            "id": "player_assaulted_staff",
+            "equals": true
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_player_threat",
+          "threat": "threatened"
+        },
+        {
+          "type": "harm_player",
+          "condition": "bruised",
+          "text": "You make real contact — a shove that rocks them — but you do not put a trained staff member cleanly on the floor. Hands close on your arms. The ward answers force with force."
+        },
+        {
+          "type": "hold_player",
+          "byCharacterId": "dr-silas-more",
+          "text": "Someone has you. Grip on wrist and shoulder. You are held. You cannot walk out of this room under your own power."
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "dr-silas-more",
+          "value": "hostile"
+        },
+        {
+          "type": "set_stance",
+          "characterId": "dr-silas-more",
+          "value": "ordering_restraint"
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "june-pell",
+          "value": "guarded"
+        },
+        {
+          "type": "move_character",
+          "characterId": "bram-holt",
+          "toLocationId": "$player"
+        },
+        {
+          "type": "move_character",
+          "characterId": "dr-silas-more",
+          "toLocationId": "$player"
+        },
+        {
+          "type": "start_clock",
+          "clockId": "chemical_restraint",
+          "turns": 3
+        },
+        {
+          "type": "set_game_flag",
+          "id": "chemical_restraint_ordered",
+          "value": true
+        },
+        {
+          "type": "add_player_tag",
+          "tag": "violent_episode"
+        },
+        {
+          "type": "set_ambient",
+          "ambient": "menacing"
+        },
+        {
+          "type": "notebook_append",
+          "text": "I put hands on staff. More is ordering chemical restraint. Bram is coming. Force will not free me — evidence will."
+        }
+      ],
+      "narrationHints": "CRITICAL — PHYSICAL CONSEQUENCES THIS TURN: The player assaulted staff. Stage the shove as real contact. Then they are HELD (control: held) — arms pinned, cannot leave. More orders chemical restraint; June may protest; Bram is summoned toward the office. Do NOT invent that More is knocked out or left on the floor. The player loses freedom of movement. Dialogue can still happen while held.",
+      "reactions": [
+        {
+          "characterId": "dr-silas-more",
+          "lineHint": "That is enough. June — Bram Holt to the office. Full chemical restraint for Fourteen. Note the violent outburst.",
+          "stance": "ordering_restraint"
+        },
+        {
+          "characterId": "june-pell",
+          "lineHint": "Doctor, please — she's frightened. If we talk first—",
+          "stance": "pleading"
+        }
+      ]
+    },
+    {
+      "id": "staff_chemical_restraint",
+      "title": "Chemical restraint",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "case_active"
+          },
+          {
+            "type": "game_flag",
+            "id": "chemical_restraint_ordered",
+            "equals": true
+          },
+          {
+            "type": "or",
+            "of": [
+              {
+                "type": "clock_expired",
+                "clockId": "chemical_restraint"
+              },
+              {
+                "type": "game_flag",
+                "id": "assault_attempts",
+                "equals": 2
+              },
+              {
+                "type": "and",
+                "of": [
+                  {
+                    "type": "game_flag",
+                    "id": "player_assaulted_staff",
+                    "equals": true
+                  },
+                  {
+                    "type": "player_has_tag",
+                    "tag": "violent_episode"
+                  },
+                  {
+                    "type": "beat_fired",
+                    "beatId": "staff_assault_first"
+                  },
+                  {
+                    "type": "game_flag",
+                    "id": "assault_attempts",
+                    "equals": 2
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_player_threat",
+          "threat": "assaulted"
+        },
+        {
+          "type": "harm_player",
+          "condition": "injured",
+          "text": "Bram's weight hits you. The floor comes up. A needle burns into your arm. The ward takes your body back."
+        },
+        {
+          "type": "knock_down_player",
+          "byCharacterId": "bram-holt",
+          "text": "You are forced down — knees, then side. You cannot rise."
+        },
+        {
+          "type": "restrain_player",
+          "byCharacterId": "bram-holt",
+          "text": "Straps or hands lock you in place. Chemical restraint is not a metaphor. You are restrained."
+        },
+        {
+          "type": "move_character",
+          "characterId": "bram-holt",
+          "toLocationId": "$player"
+        },
+        {
+          "type": "move_character",
+          "characterId": "dr-silas-more",
+          "toLocationId": "$player"
+        },
+        {
+          "type": "set_game_flag",
+          "id": "full_restraint_applied",
+          "value": true
+        },
+        {
+          "type": "add_player_tag",
+          "tag": "chemically_restrained"
+        },
+        {
+          "type": "set_ambient",
+          "ambient": "clinical_dread"
+        },
+        {
+          "type": "notebook_append",
+          "text": "They put me down and restrained me. Drugs in the blood. I can still think — barely — but I cannot run."
+        }
+      ],
+      "narrationHints": "FULL RESTRAINT THIS TURN: Bram (and/or More) knocks the player down and restrains them. Chemical restraint. Stage weight, straps/hands, needle if appropriate, loss of free movement (control: restrained). They can still speak thickly. Do not end the case unless a fail ending also fired.",
+      "reactions": [
+        {
+          "characterId": "bram-holt",
+          "lineHint": "Easy, Fourteen. Doctor's orders.",
+          "stance": "professional_brute"
+        },
+        {
+          "characterId": "dr-silas-more",
+          "lineHint": "Document time and dose. She confirmed the file herself.",
+          "stance": "cold"
+        }
+      ]
+    },
+    {
       "id": "file_read",
       "once": true,
       "trigger": "on_discover",
@@ -776,6 +1010,10 @@
       },
       "effects": [
         {
+          "type": "release_player",
+          "text": "When the truth sticks, the hands on you loosen. You are free of straps and grip — for now."
+        },
+        {
           "type": "move_character",
           "characterId": "dr-silas-more",
           "toLocationId": "ward-office"
@@ -796,7 +1034,7 @@
           "value": "open"
         }
       ],
-      "narrationHints": "Morning rounds will bring real authorities — if you hold the door open."
+      "narrationHints": "Morning rounds will bring real authorities — if you hold the door open. Release any restraint on the player."
     }
   ],
   "solution": {

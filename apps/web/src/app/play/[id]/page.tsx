@@ -170,14 +170,31 @@ export default function PlaythroughPage() {
             ) {
               continue;
             }
-            if (
+            // Player-facing plot events (world acts on you)
+            const playerFacing =
               j.id?.startsWith("pulse_") ||
+              j.id?.startsWith("player_threat_") ||
+              j.id?.startsWith("player_moved_") ||
+              j.id?.startsWith("player_harm_") ||
+              j.id?.startsWith("player_control_") ||
+              j.id?.startsWith("assault_attempt_") ||
+              j.id?.startsWith("stolen_") ||
+              j.id?.startsWith("item_damaged_") ||
+              j.id?.startsWith("lost_ev_") ||
+              j.id?.startsWith("boundary_") ||
+              j.id === "safe_haven_compromised" ||
               j.id === "ending" ||
-              j.id === "midnight_strikes"
-            ) {
+              j.id === "midnight_strikes" ||
+              j.id === "denouement_start" ||
+              j.id === "denouement_end";
+            if (playerFacing && j.summary) {
               setLog((prev) => [
                 ...prev,
-                { kind: "system", text: j.narrationHints ?? j.summary },
+                {
+                  kind: "system",
+                  // Prefer short summary for the log; full hints go to the AI
+                  text: j.summary,
+                },
               ]);
             }
           }
@@ -237,7 +254,6 @@ export default function PlaythroughPage() {
         </div>
         <StatusBar
           locationName={locationName}
-          phaseId={playthrough?.phaseId}
           time={playthrough?.time}
           environment={playthrough?.environment}
           playerStatus={playthrough?.playerStatus}

@@ -4,6 +4,8 @@ import type {
   TimeState,
 } from "../lib/types";
 import {
+  conditionColor,
+  controlColor,
   formatClock,
   threatColor,
   timeLabel,
@@ -20,8 +22,6 @@ export default function StatusBar({
   turnCount,
 }: {
   locationName: string;
-  /** Kept for API compatibility; phases are engine-only (not shown to players). */
-  phaseId?: string;
   time?: TimeState;
   environment?: EnvironmentState;
   playerStatus?: PlayerStatus;
@@ -29,8 +29,9 @@ export default function StatusBar({
   turnCount: number;
 }) {
   const threat = playerStatus?.threat ?? "none";
+  const condition = playerStatus?.condition ?? "unharmed";
+  const control = playerStatus?.control ?? "free";
   const clockEntries = Object.entries(clocks ?? {});
-  void phaseId;
 
   return (
     <div className={styles.bar}>
@@ -65,6 +66,30 @@ export default function StatusBar({
           <span className={styles.label}>Threat</span>
           <span className={styles.value} style={{ color: threatColor(threat) }}>
             {threat}
+          </span>
+        </div>
+      ) : null}
+
+      {condition !== "unharmed" ? (
+        <div className={styles.item}>
+          <span className={styles.label}>Condition</span>
+          <span
+            className={styles.value}
+            style={{ color: conditionColor(condition) }}
+          >
+            {condition}
+          </span>
+        </div>
+      ) : null}
+
+      {control !== "free" ? (
+        <div className={styles.item}>
+          <span className={styles.label}>Control</span>
+          <span
+            className={styles.value}
+            style={{ color: controlColor(control) }}
+          >
+            {control}
           </span>
         </div>
       ) : null}

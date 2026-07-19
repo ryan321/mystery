@@ -129,6 +129,34 @@ function resolveEvidenceId(
   return best && best.score >= 15 ? best.id : undefined;
 }
 
+/** Physical force language (not "knock on the door"). */
+export function inputLooksLikeAssault(playerInput: string): boolean {
+  const s = playerInput.toLowerCase();
+  if (/\bknock\s+on\b/.test(s)) return false;
+  return (
+    /\b(push|shove|hit|punch|kick|grab|tackle|strike|slap|wrestle|throttle|choke)\b/.test(
+      s
+    ) ||
+    /\bknock\s+(him|her|them|down|over)\b/.test(s) ||
+    /\bout of (the |my )?way\b/.test(s) ||
+    /\bforce\s+(my way|past|through)\b/.test(s) ||
+    /\bthrow\s+(him|her|them)\b/.test(s) ||
+    /\bonto the (ground|floor)\b/.test(s)
+  );
+}
+
+function assaultMannerFromInput(playerInput: string): string {
+  const s = playerInput.toLowerCase();
+  if (/\bknock\b/.test(s) || /\bground\b/.test(s) || /\bfloor\b/.test(s))
+    return "knock_down";
+  if (/\bgrab\b/.test(s)) return "grab";
+  if (/\b(hit|punch|strike|slap)\b/.test(s)) return "hit";
+  if (/\b(shove|push)\b/.test(s)) return "shove";
+  if (/\bout of (the |my )?way\b/.test(s) || /\bforce\s+past\b/.test(s))
+    return "force_past";
+  return "assault";
+}
+
 /**
  * Convert director intents into a single StatePatch for engine validation.
  */
@@ -143,6 +171,8 @@ export function directorIntentsToPatch(
   const addEvidence = new Set<string>();
   const setFlags: Record<string, boolean | string | number> = {};
   let focusCharacterId = director.focusCharacterId;
+  let assaultTarget: string | undefined;
+  let assaultManner: string | undefined;
 
   // Prefer explicit suggested patch pieces that look safe — still validated later
   if (director.suggestedPatch?.setLocationId) {
@@ -286,6 +316,23 @@ export function directorIntentsToPatch(
         notes.push("accuse");
         break;
       }
+      case "assault": {
+        const cid = resolveCharacterId(
+          def,
+          state,
+          intent.characterId,
+          intent.characterHint
+        );
+        if (cid) {
+          assaultTarget = cid;
+          focusCharacterId = cid;
+          assaultManner = intent.manner ?? assaultMannerFromInput(playerInput);
+          notes.push(`assault→${cid}`);
+        } else {
+          notes.push("assault unresolved");
+        }
+        break;
+      }
       case "other": {
         const note = intent.note ?? "other";
         notes.push(note);
@@ -298,6 +345,58 @@ export function directorIntentsToPatch(
         break;
       }
     }
+  }
+
+  // Local fallback: director often maps "push X" to talk — catch physical force
+  if (!assaultTarget && inputLooksLikeAssault(playerInput)) {
+    const inputL = playerInput.toLowerCase();
+    const presentIds = Object.entries(state.characterState)
+      .filter(
+        ([, cs]) =>
+          cs.locationId === state.locationId && cs.available !== false
+      )
+      .map(([id]) => id);
+
+    let best: { id: string; score: number } | undefined;
+    for (const id of presentIds) {
+      const ch = def.characters.find((c) => c.id === id);
+      if (!ch) continue;
+      const last = ch.name.split(/\s+/).pop()?.toLowerCase() ?? "";
+      let score = Math.max(
+        scoreMatch(ch.name, inputL),
+        scoreMatch(ch.id, inputL),
+        scoreMatch(last, inputL)
+      );
+      // "him/her/them" with single present adult staff
+      if (score < 15 && presentIds.length === 1) score = 20;
+      if (score < 15 && /\b(him|her|them|doctor|nurse|orderly)\b/.test(inputL)) {
+        // Prefer non-player-friendly authority roles when ambiguous
+        if (/more|holt|crane|doctor|orderly|nurse/i.test(ch.name + ch.id))
+          score = 25;
+        else score = Math.max(score, 18);
+      }
+      if (!best || score > best.score) best = { id, score };
+    }
+    if (best && best.score >= 15) {
+      assaultTarget = best.id;
+      focusCharacterId = best.id;
+      assaultManner = assaultMannerFromInput(playerInput);
+      notes.push(`assault→${best.id} (heuristic)`);
+    }
+  }
+
+  if (assaultTarget) {
+    const prev = Number(state.flags.assault_attempts ?? 0);
+    setFlags.player_assaulted_staff = true;
+    setFlags.assault_attempts = prev + 1;
+    setFlags.last_assault_target = assaultTarget;
+    setFlags.last_assault_manner = assaultManner ?? "assault";
+    setFlags[`assaulted_${assaultTarget}`] = true;
+    // Trying to leave past someone you just shoved is not a free move this turn
+    if (assaultManner === "force_past" || assaultManner === "shove") {
+      // keep any move intent only if separate; physical block is case-beat owned
+    }
+    notes.push(`assault_flags→${assaultTarget}`);
   }
 
   if (addEvidence.size) patch.addEvidenceIds = [...addEvidence];
