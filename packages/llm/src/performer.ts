@@ -11,6 +11,11 @@ import {
 } from "./client.js";
 import type { AttemptLog } from "./retry.js";
 import { formatSchemaIssues } from "./retry.js";
+import {
+  dynamicPromptPack,
+  promptJson,
+  staticCaseHeader,
+} from "./prompt-blocks.js";
 
 export const PERFORMER_SYSTEM = `You are the PERFORMER / NARRATOR of a fair-play mystery investigation game.
 
@@ -204,6 +209,13 @@ export async function runPerformer(
     playerInput: string;
     justHappened?: JustHappened[];
     resolvedNotes?: string[];
+    /**
+     * Memoized static case JSON (engine staticCasePackJson). When set, the
+     * prompt leads with this byte-identical block so provider prefix caching
+     * (DeepSeek/OpenAI automatic) hits every turn; the per-turn pack is sent
+     * compact with static duplicates stripped.
+     */
+    staticCaseJson?: string;
   }
 ): Promise<PerformerResult> {
   const started = Date.now();
@@ -253,22 +265,31 @@ export async function runPerformer(
     .filter(Boolean)
     .join("\n");
 
+  // Cache-friendly layout: stable case block first (byte-identical every
+  // turn), then all volatile content — turn state, scene presence, player
+  // input, engine notes — so the provider's prefix cache hits every turn.
+  const promptPack = args.staticCaseJson
+    ? dynamicPromptPack(args.contextPack)
+    : args.contextPack;
   const user = [
-    sceneBlock,
-    "",
-    "## Context pack (authoritative AFTER engine resolution)",
+    ...(args.staticCaseJson ? [staticCaseHeader(args.staticCaseJson), ""] : []),
+    args.staticCaseJson
+      ? "## Current turn state (authoritative AFTER engine resolution)"
+      : "## Context pack (authoritative AFTER engine resolution)",
     "```json",
-    JSON.stringify(args.contextPack, null, 2),
+    promptJson(promptPack),
     "```",
+    "",
+    sceneBlock,
     "",
     "## Player said/did",
     args.playerInput,
     "",
     "## Resolved notes (engine)",
-    JSON.stringify(args.resolvedNotes ?? [], null, 2),
+    promptJson(args.resolvedNotes ?? []),
     "",
     "## Just happened (must reflect)",
-    JSON.stringify(args.justHappened ?? [], null, 2),
+    promptJson(args.justHappened ?? []),
     "",
     "Return performer JSON only (narration + dialogue). No state patches.",
     "Remember: only people in SCENE PRESENCE / presentCharacterIds are physically here.",

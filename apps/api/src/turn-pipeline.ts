@@ -7,6 +7,7 @@ import {
   applyAccuseGate,
   buildContextPack,
   directorIntentsToPatch,
+  staticCasePackJson,
   validateAndApplyPatch,
   appendDialogueMemory,
   advancePassiveTime,
@@ -83,6 +84,8 @@ export async function runTurnPipeline(args: {
   // denouement interaction with this input — strip investigate-only intents later.
 
   const directorPack = buildContextPack(def, state);
+  // Byte-identical every turn — enables provider prompt-prefix caching.
+  const staticCaseJson = staticCasePackJson(def);
 
   // High-precision local boundary scan (jailbreak, solution fishing, abuse, powers…)
   const localBoundary = detectBoundaryLocal(playerInput);
@@ -91,6 +94,7 @@ export async function runTurnPipeline(args: {
     contextPack: directorPack,
     playerInput,
     boundaryHint: localBoundary?.kind ?? null,
+    staticCaseJson,
   });
 
   let { patch, focusCharacterId, notes } = directorIntentsToPatch(
@@ -318,6 +322,7 @@ export async function runTurnPipeline(args: {
     playerInput,
     justHappened,
     resolvedNotes: notes,
+    staticCaseJson,
   });
 
   let committed = appendDialogueMemory(simState, playerInput, {

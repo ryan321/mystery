@@ -66,6 +66,23 @@ Ids must exist in the closed-world pack.
    reactions — no per-case engine hardcodes. Config: definition `accusePolicy`
    (`requireConfirmation`, default true; `pendingTurns`, default 3).
 
+## Prompt caching (prefix-stable layout)
+
+Providers cache the longest byte-identical message prefix (DeepSeek/OpenAI
+automatically; Anthropic via explicit breakpoints). Both calls therefore send:
+
+1. Static system prompt (per role)
+2. `## Case reference` — memoized static case JSON
+   (`packages/engine/src/static-pack.ts`, `staticCasePackJson(def)`): case
+   meta, cast directory, base geography, static policy. Leak-safe by test —
+   no solution, knowledge, evidence catalog, endings, or beat hints.
+3. `## Current turn state` — per-turn pack, compact JSON, with static
+   duplicates stripped (`packages/llm/src/prompt-blocks.ts`)
+4. Player input / engine notes / justHappened — most volatile, last
+
+Retry paths preserve the prefix (soft-retry appends to the end; repair rounds
+append messages). Do not put per-turn content ahead of the case reference.
+
 ## Models (env)
 
 | Env | Role |

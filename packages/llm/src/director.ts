@@ -15,6 +15,11 @@ import {
   applyPhysicalToDirectorOutput,
   classifyPhysicalAction,
 } from "./classify-physical.js";
+import {
+  dynamicPromptPack,
+  promptJson,
+  staticCaseHeader,
+} from "./prompt-blocks.js";
 
 export const DIRECTOR_SYSTEM = `You are the DIRECTOR of a fair-play mystery game. You do NOT write story prose for the player.
 
@@ -182,6 +187,13 @@ export async function runDirector(
     playerInput: string;
     /** Optional pre-scan hint from engine (high-confidence local detector). */
     boundaryHint?: string | null;
+    /**
+     * Memoized static case JSON (engine staticCasePackJson). When set, the
+     * prompt leads with this byte-identical block so provider prefix caching
+     * (DeepSeek/OpenAI automatic) hits every turn; the per-turn pack is sent
+     * compact with static duplicates stripped.
+     */
+    staticCaseJson?: string;
   }
 ): Promise<DirectorResult> {
   const started = Date.now();
@@ -202,10 +214,18 @@ export async function runDirector(
   const client = createOpenRouterClient(config);
   const model = config.directorModel ?? config.narratorModel;
 
+  // Cache-friendly layout: stable case block first (byte-identical every
+  // turn), volatile turn state after, player input last.
+  const promptPack = args.staticCaseJson
+    ? dynamicPromptPack(args.contextPack)
+    : args.contextPack;
   const user = [
-    "## Context pack",
+    ...(args.staticCaseJson ? [staticCaseHeader(args.staticCaseJson), ""] : []),
+    args.staticCaseJson
+      ? "## Current turn state (authoritative for presence, exits, status)"
+      : "## Context pack",
     "```json",
-    JSON.stringify(args.contextPack, null, 2),
+    promptJson(promptPack),
     "```",
     "",
     "## Player input",
@@ -215,6 +235,11 @@ export async function runDirector(
       : "",
     "",
     "Return director JSON. When the world should act ON the player, set worldToPlayer.active=true and compose engine effects (do not invent new effect types or ids).",
+    ...(args.staticCaseJson
+      ? [
+          "The case reference lists the full cast (for accuse name→id) and geography; the current turn state decides who is present and what is open.",
+        ]
+      : []),
   ].join("\n");
 
   try {
