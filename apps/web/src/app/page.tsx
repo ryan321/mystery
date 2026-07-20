@@ -44,17 +44,17 @@ export default function LandingPage() {
   return (
     <>
       {/* The manor fills the scene again; rain and thunder over everything. */}
-      <Atmosphere />
+      <Atmosphere intensity={1.6} />
       <main className={styles.landing}>
-        {/* ── Hero: the logo in the stormy sky, house full-bleed ────── */}
+        {/* ── Hero: logo top-left, the message low, house full-bleed ── */}
         <section className={styles.hero}>
-          <div className={styles.heroCopy}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className={styles.logo}
-              src="/brand/logo.png"
-              alt="MysteryTrove"
-            />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            className={styles.logo}
+            src="/brand/logo.png"
+            alt="MysteryTrove"
+          />
+          <div className={styles.heroMessage}>
             <p className={styles.heroEyebrow}>Interactive whodunits</p>
             <h1 className={styles.heroTitle}>Can you solve a murder?</h1>
             <p className={styles.tagline}>
