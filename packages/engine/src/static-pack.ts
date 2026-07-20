@@ -43,6 +43,8 @@ export const STATIC_POLICY = {
     "If justHappened contains boundary_blocked_*: the player's last action was refused (OOC/jailbreak, solution-fishing, abuse, impossible powers, or extreme illegal sidestep). The engine granted no cheats. Perform a brief in-world refusal or failed attempt; do not carry out the blocked act; do not spoil the solution; then leave the player able to continue investigating.",
   identity:
     "IDENTITY IS KNOWLEDGE: cast[].name and character name fields carry the player's CURRENT label (e.g. 'Orderly') — the real name appears only once the player has learned it (nameKnown). Never invent, guess, or reveal a real name early; a name reveal happens only via justHappened (name_revealed_*). Refer to every character by their current label in narration and dialogue.",
+  establishedDetails:
+    "ESTABLISHED DETAILS are canon for this playthrough: improvised world texture recorded earlier (location.establishedDetails, character/item establishedDetails as 'subject: fact; fact' threads). Reuse them naturally and NEVER contradict them — if the chandelier was said to have five hundred crystals, it still does. They are texture, not plot: inspecting them yields atmosphere, never evidence or secrets unless authored content says so.",
 } as const;
 
 /**

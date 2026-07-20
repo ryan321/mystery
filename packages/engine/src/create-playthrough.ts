@@ -46,6 +46,7 @@ export function createInitialPlaythrough(
       stance: c.defaultStance ?? (isVictim ? "deceased" : ""),
       alibiStatus: "none",
       timesTalked: 0,
+      dressing: [],
     };
   }
 
@@ -72,6 +73,7 @@ export function createInitialPlaythrough(
       flags: {},
       timesExamined: 0,
       timesUsed: 0,
+      dressing: [],
     };
   }
   // locked containers from inspectables with objectId
@@ -87,6 +89,7 @@ export function createInitialPlaythrough(
           flags: {},
           timesExamined: 0,
           timesUsed: 0,
+          dressing: [],
         };
       }
     }
@@ -103,6 +106,7 @@ export function createInitialPlaythrough(
       accessible: loc.startsAccessible ?? true,
       descriptionAppend: "",
       exitOpen,
+      dressing: [],
       // Fog-of-war seed: persona familiarity + where you start.
       known:
         (loc.knownAtStart ?? false) ||

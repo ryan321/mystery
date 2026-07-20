@@ -73,6 +73,22 @@ function coerceFiniteNumber(v: unknown, fallback: number): number {
   return fallback;
 }
 
+/**
+ * Improvised scene dressing: durable texture the performer established
+ * ("a crystal chandelier hangs over the stairwell"). Facts under the same
+ * subject form a cumulative thread; append-only, engine-capped, replayed
+ * into every future pack for the same target so the AI stays consistent.
+ * Dressing is timeless description — never events, evidence, or state.
+ */
+export const DressingFactSchema = z.object({
+  /** Stable slug grouping facts about one thing, e.g. "chandelier". */
+  subject: z.string(),
+  detail: z.string(),
+  /** Turn the fact was established (ordering/debug). */
+  turn: z.number().int().nonnegative().default(0),
+});
+export type DressingFact = z.infer<typeof DressingFactSchema>;
+
 export const CharacterRuntimeStateSchema = z.preprocess((raw) => {
   if (!raw || typeof raw !== "object") return raw;
   const o = raw as Record<string, unknown>;
@@ -104,6 +120,8 @@ export const CharacterRuntimeStateSchema = z.preprocess((raw) => {
     .enum(["claimed", "broken", "abandoned", "none"])
     .default("none"),
   timesTalked: z.number().int().nonnegative().default(0),
+  /** Improvised durable texture (see DressingFactSchema). */
+  dressing: z.array(DressingFactSchema).default([]),
 }));
 export type CharacterRuntimeState = z.infer<typeof CharacterRuntimeStateSchema>;
 
@@ -153,6 +171,8 @@ export const ObjectRuntimeStateSchema = z.object({
   timesExamined: z.number().int().nonnegative().default(0),
   /** Uses (key turned, match struck, …). */
   timesUsed: z.number().int().nonnegative().default(0),
+  /** Improvised durable texture (see DressingFactSchema). */
+  dressing: z.array(DressingFactSchema).default([]),
 });
 export type ObjectRuntimeState = z.infer<typeof ObjectRuntimeStateSchema>;
 
@@ -167,6 +187,8 @@ export const LocationRuntimeStateSchema = z.object({
    * the reveal_location effect. Visited locations are always known.
    */
   known: z.boolean().default(false),
+  /** Improvised durable texture (see DressingFactSchema). */
+  dressing: z.array(DressingFactSchema).default([]),
 });
 export type LocationRuntimeState = z.infer<typeof LocationRuntimeStateSchema>;
 

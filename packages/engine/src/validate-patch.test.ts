@@ -344,6 +344,7 @@ describe("validateAndApplyPatch", () => {
           flags: {},
           timesExamined: 0,
           timesUsed: 0,
+          dressing: [],
         },
       },
     };

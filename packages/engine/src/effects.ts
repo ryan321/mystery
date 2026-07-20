@@ -660,6 +660,7 @@ export function applyEffect(
       descriptionAppend: "",
       exitOpen: {},
       known: false,
+      dressing: [],
     };
     next = {
       ...next,
@@ -677,6 +678,7 @@ export function applyEffect(
       descriptionAppend: "",
       exitOpen: {},
       known: false,
+      dressing: [],
     };
     next = {
       ...next,
@@ -702,6 +704,7 @@ export function applyEffect(
       descriptionAppend: "",
       exitOpen: {},
       known: false,
+      dressing: [],
     };
     next = {
       ...next,
@@ -722,6 +725,7 @@ export function applyEffect(
         descriptionAppend: "",
         exitOpen: {},
         known: false,
+        dressing: [],
       };
       if (!ls.known && !next.visitedLocationIds.includes(lid)) {
         const name = def.locations.find((l) => l.id === lid)?.name ?? lid;

@@ -7,6 +7,7 @@ import {
 } from "./relationships.js";
 import { listInventory } from "./inventory.js";
 import { STATIC_POLICY } from "./static-pack.js";
+import { dressingLines } from "./dressing.js";
 import { characterNameKnown, knownAsFor } from "./identity.js";
 
 export function buildContextPack(
@@ -346,6 +347,13 @@ export function buildContextPack(
         fallToLocationId: h.fallToLocationId,
         severity: h.severity,
       })),
+      /**
+       * Improvised details already established here (subject threads).
+       * Canon for this playthrough: reuse them; never contradict them.
+       */
+      establishedDetails: dressingLines(
+        state.locationState[location.id]?.dressing ?? []
+      ),
     },
     /**
      * People who exist in the case but are NOT in this room.
@@ -354,7 +362,11 @@ export function buildContextPack(
      */
     notPresentCharacters,
     /** Full inventory with per-item state (condition, tags, flags, uses). */
-    inventory,
+    inventory: inventory.map((i) => ({
+      ...i,
+      /** Improvised details established about this item — playthrough canon. */
+      establishedDetails: dressingLines(state.objectState[i.id]?.dressing ?? []),
+    })),
     evidenceHeld,
     flagsPublic,
     activeCharacter,
@@ -441,5 +453,7 @@ function characterSlice(
     })),
     memorySummary: memory?.summary ?? "",
     recentTurns: memory?.recentTurns ?? [],
+    /** Improvised details established about this person — playthrough canon. */
+    establishedDetails: dressingLines(cs?.dressing ?? []),
   };
 }
