@@ -1,9 +1,10 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Atmosphere from "../../components/Atmosphere";
+import GoogleButton from "../../components/GoogleButton";
 import { signIn } from "../../lib/auth";
 import styles from "./page.module.css";
 
@@ -12,6 +13,12 @@ export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("error") === "google") {
+      setError("Google sign-in didn't go through. Try again.");
+    }
+  }, []);
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -75,6 +82,7 @@ export default function SignInPage() {
                 Sign in
               </button>
             </form>
+            <GoogleButton />
             <p className={styles.switch}>
               No account? <Link href="/signup">Sign up</Link>
             </p>

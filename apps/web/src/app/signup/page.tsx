@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Atmosphere from "../../components/Atmosphere";
+import GoogleButton from "../../components/GoogleButton";
 import { signIn } from "../../lib/auth";
 import styles from "./page.module.css";
 
@@ -95,6 +96,7 @@ export default function SignUpPage() {
                 Sign up
               </button>
             </form>
+            <GoogleButton />
             <p className={styles.switch}>
               Already have an account? <Link href="/signin">Sign in</Link>
             </p>

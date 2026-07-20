@@ -1,0 +1,51 @@
+.wrap {
+  margin-top: 1.1rem;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.1rem;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: rgba(200, 165, 110, 0.22);
+}
+
+.dividerText {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--candle-dim);
+}
+
+.googleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--paper);
+  text-decoration: none;
+  background: rgba(8, 12, 18, 0.6);
+  border: 1px solid rgba(200, 165, 110, 0.3);
+  border-radius: var(--radius);
+  transition: all 0.15s ease;
+}
+
+.googleBtn:hover {
+  border-color: rgba(212, 181, 106, 0.6);
+  background: rgba(212, 181, 106, 0.06);
+}
+
+.gMark {
+  flex-shrink: 0;
+}

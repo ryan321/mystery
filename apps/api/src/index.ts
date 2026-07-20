@@ -46,15 +46,25 @@ import {
   ANON_COOKIE,
   SESSION_COOKIE,
   adoptAnonPlaythroughs,
+  createSession,
   destroySession,
   effectiveTier,
   newAnonId,
   publicUser,
   requestMagicLink,
+  upsertGoogleUser,
   userForSession,
   verifyMagicLink,
   type UserRow,
 } from "./auth.js";
+import {
+  OAUTH_NEXT_COOKIE,
+  OAUTH_STATE_COOKIE,
+  exchangeGoogleCode,
+  googleAuthUrl,
+  googleConfigured,
+  safeNextPath,
+} from "./google-auth.js";
 import {
   PAID_TIERS,
   TIER_CARDS,
@@ -672,6 +682,65 @@ app.post("/v1/auth/signout", async (c) => {
   if (sessionToken) await destroySession(pool, sessionToken);
   deleteCookie(c, SESSION_COOKIE, { path: "/" });
   return c.json({ ok: true });
+});
+
+// ── Google sign-in (OAuth code flow; see google-auth.ts) ────────────────
+
+app.get("/v1/auth/google", (c) => {
+  if (!googleConfigured()) {
+    return c.json({ error: "google_not_configured" }, 501);
+  }
+  const state = randomUUID();
+  const oauthCookie = {
+    httpOnly: true,
+    sameSite: "Lax" as const,
+    path: "/",
+    maxAge: 10 * 60,
+    secure: process.env.NODE_ENV === "production",
+  };
+  setCookie(c, OAUTH_STATE_COOKIE, state, oauthCookie);
+  setCookie(c, OAUTH_NEXT_COOKIE, safeNextPath(c.req.query("next")), oauthCookie);
+  return c.redirect(googleAuthUrl(state));
+});
+
+app.get("/v1/auth/google/callback", async (c) => {
+  const webOrigin = process.env.WEB_ORIGIN ?? "http://localhost:3000";
+  const fail = (reason: string) => {
+    console.warn(`[auth] google sign-in failed: ${reason}`);
+    return c.redirect(`${webOrigin}/signin?error=google`);
+  };
+  if (!googleConfigured()) return fail("not_configured");
+
+  const state = c.req.query("state");
+  const expected = getCookie(c, OAUTH_STATE_COOKIE);
+  deleteCookie(c, OAUTH_STATE_COOKIE, { path: "/" });
+  const next = safeNextPath(getCookie(c, OAUTH_NEXT_COOKIE));
+  deleteCookie(c, OAUTH_NEXT_COOKIE, { path: "/" });
+  if (!state || !expected || state !== expected) return fail("state_mismatch");
+
+  const code = c.req.query("code");
+  if (!code) return fail(c.req.query("error") ?? "no_code");
+
+  const profile = await exchangeGoogleCode(code);
+  if ("error" in profile) return fail(profile.error);
+
+  const user = await upsertGoogleUser(pool, profile);
+  const sessionToken = await createSession(pool, user.id);
+  setCookie(c, SESSION_COOKIE, sessionToken, {
+    httpOnly: true,
+    sameSite: "Lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 30,
+    secure: process.env.NODE_ENV === "production",
+  });
+
+  // Same progression merge as magic-link sign-in.
+  const anonId = getCookie(c, ANON_COOKIE);
+  if (anonId) await adoptAnonPlaythroughs(pool, user.id, anonId);
+
+  return c.redirect(
+    `${webOrigin}/signin/complete?next=${encodeURIComponent(next)}`
+  );
 });
 
 app.get("/v1/me", async (c) => {

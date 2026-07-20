@@ -150,13 +150,59 @@ export async function verifyMagicLink(
     [email]
   );
   const user = userRes.rows[0]!;
+  const sessionToken = await createSession(pool, user.id);
+  return { user, sessionToken };
+}
 
+export async function createSession(
+  pool: Db,
+  userId: string
+): Promise<string> {
   const sessionToken = token();
   await pool.query(
     `INSERT INTO sessions (token, user_id, expires_at) VALUES ($1, $2, $3)`,
-    [sessionToken, user.id, new Date(Date.now() + SESSION_TTL_MS)]
+    [sessionToken, userId, new Date(Date.now() + SESSION_TTL_MS)]
   );
-  return { user, sessionToken };
+  return sessionToken;
+}
+
+export type GoogleProfile = {
+  /** Google's stable subject id. */
+  sub: string;
+  email: string;
+  name?: string;
+};
+
+/**
+ * Google sign-in converges on the same users table: match by google_sub
+ * first (email at Google may change), else link/create by email — a
+ * magic-link account signing in with Google becomes one account.
+ */
+export async function upsertGoogleUser(
+  pool: Db,
+  profile: GoogleProfile
+): Promise<UserRow> {
+  const bySub = await pool.query<UserRow>(
+    `UPDATE users SET updated_at = now(),
+       display_name = COALESCE(display_name, $2)
+     WHERE google_sub = $1 RETURNING *`,
+    [profile.sub, profile.name ?? null]
+  );
+  if (bySub.rows[0]) return bySub.rows[0];
+
+  const email = normalizeEmail(profile.email);
+  if (!email) throw new Error("google_profile_invalid_email");
+  const res = await pool.query<UserRow>(
+    `INSERT INTO users (email, google_sub, display_name)
+     VALUES ($1, $2, $3)
+     ON CONFLICT (email) DO UPDATE SET
+       google_sub   = COALESCE(users.google_sub, EXCLUDED.google_sub),
+       display_name = COALESCE(users.display_name, EXCLUDED.display_name),
+       updated_at   = now()
+     RETURNING *`,
+    [email, profile.sub, profile.name ?? null]
+  );
+  return res.rows[0]!;
 }
 
 export async function userForSession(

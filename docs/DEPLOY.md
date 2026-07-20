@@ -28,6 +28,8 @@ Optional API secrets, when they become relevant:
 
 | Secret | Purpose |
 |---|---|
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Google sign-in. OAuth client (Web application) from [Google Cloud Console](https://console.cloud.google.com/apis/credentials); authorize `https://mysterytrove-api.fly.dev/v1/auth/google/callback` (and later `https://api.mysterytrove.com/...`) as redirect URIs. Routes 501 until set. |
+| `API_ORIGIN`, `WEB_ORIGIN` | Public origins for the OAuth dance and magic-link URLs — in production set `API_ORIGIN=https://mysterytrove-api.fly.dev` and `WEB_ORIGIN=https://mysterytrove-web.fly.dev` (swap for the custom domains once live). |
 | `MAIL_FROM` | Verified Resend sender, e.g. `MysteryTrove <signin@mysterytrove.com>`. Until the domain is verified in Resend, mail comes from `onboarding@resend.dev`, which only delivers to the Resend account owner. |
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_*` | Subscriptions (docs/SUBSCRIPTIONS.md). Billing endpoints return 501 until set. |
 
