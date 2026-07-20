@@ -4,6 +4,8 @@ export * from "./validate-patch.js";
 export * from "./create-playthrough.js";
 export * from "./context-pack.js";
 export * from "./static-pack.js";
+export * from "./identity.js";
+export * from "./player-view.js";
 export * from "./memory.js";
 export * from "./intents-to-patch.js";
 export * from "./conditions.js";

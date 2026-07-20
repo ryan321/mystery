@@ -2,13 +2,12 @@ import { config as loadEnv } from "dotenv";
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
-import { join, dirname, normalize, extname, resolve } from "node:path";
+import type { Context } from "hono";
+import { join, dirname, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
-import {
-  parseMysteryDefinition,
-  type MysteryDefinition,
-  type PlaythroughState,
+import type {
+  MysteryDefinition,
+  PlaythroughState,
 } from "@mystery/shared";
 import {
   createInitialPlaythrough,
@@ -25,6 +24,14 @@ import {
   databaseUrl,
 } from "./db.js";
 import { runTurnPipeline } from "./turn-pipeline.js";
+import { MysteryRegistry } from "./registry.js";
+import { BundleError } from "./bundle.js";
+import {
+  accessContextFor,
+  evaluateAccess,
+  parseAccessPolicy,
+  type Tier,
+} from "./access.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(__dirname, "../../..");
@@ -33,69 +40,123 @@ loadEnv({ path: join(repoRoot, ".env") });
 
 const contentRoot = join(repoRoot, "content/cases");
 
-function loadCases(): Map<string, MysteryDefinition> {
-  const map = new Map<string, MysteryDefinition>();
-  for (const dir of readdirSync(contentRoot, { withFileTypes: true })) {
-    if (!dir.isDirectory()) continue;
-    const path = join(contentRoot, dir.name, "definition.json");
-    try {
-      const def = parseMysteryDefinition(
-        JSON.parse(readFileSync(path, "utf8"))
-      );
-      map.set(def.id, def);
-    } catch (err) {
-      console.warn(`Skip case ${dir.name}:`, err);
-    }
-  }
-  return map;
-}
-
-const cases = loadCases();
 const pool = createPool();
+// Mystery bundles live in the DB (docs/MYSTERY_BUNDLES.md); content/cases is
+// auto-imported at boot as the dev authoring workspace.
+const registry = new MysteryRegistry(pool);
 const llmConfig = tryCreateOpenRouterConfig();
 
+/** Anonymous session identity until accounts land. */
+function userIdFrom(c: Context): string {
+  return c.req.header("x-user-id")?.trim() || "anon";
+}
+
+/** Billing stub: header override for dev, else env default, else free. */
+function tierFrom(c: Context): Tier {
+  const raw = c.req.header("x-user-tier") ?? process.env.DEFAULT_USER_TIER;
+  return raw === "standard" || raw === "premium" ? raw : "free";
+}
+
+/** Admin gate for upload/publish/grant routes. Open in local dev unless ADMIN_TOKEN is set. */
+function adminOk(c: Context): boolean {
+  const token = process.env.ADMIN_TOKEN;
+  if (!token) return true;
+  return c.req.header("x-admin-token") === token;
+}
+
+async function accessFor(c: Context, caseId: string) {
+  const meta = await registry.getRowMeta(caseId);
+  if (!meta) return undefined;
+  const ctx = await accessContextFor(pool, {
+    userId: userIdFrom(c),
+    tier: tierFrom(c),
+    caseId,
+  });
+  return { meta, result: evaluateAccess(meta.access, ctx) };
+}
+
 const app = new Hono();
+
+// Origins allowed to call the API. The defaults cover local dev; CORS_ORIGINS
+// (comma-separated) adds more — e.g. the Tailscale MagicDNS name the site is
+// reached by when playing from a phone.
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  ...(process.env.CORS_ORIGINS ?? "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+];
 
 app.use(
   "*",
   cors({
-    origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
+    origin: allowedOrigins,
     credentials: true,
   })
 );
 
 app.get("/health", async (c) => {
   let dbOk = false;
+  let caseIds: string[] = [];
   try {
     await pool.query("SELECT 1");
     dbOk = true;
+    caseIds = (await registry.listPublished()).map((r) => r.caseId);
   } catch {
     dbOk = false;
   }
   return c.json({
     ok: dbOk,
     db: dbOk ? "up" : "down",
-    cases: [...cases.keys()],
+    cases: caseIds,
     narrator: llmConfig ? llmConfig.narratorModel : "heuristic",
   });
 });
 
-app.get("/v1/cases", (c) => {
-  const list = [...cases.values()].map((def) => ({
-    id: def.id,
-    contentVersion: def.contentVersion,
-    meta: def.meta,
-  }));
+app.get("/v1/cases", async (c) => {
+  const userId = userIdFrom(c);
+  const tier = tierFrom(c);
+  const rows = await registry.listPublished();
+  const list: unknown[] = [];
+  for (const row of rows) {
+    const ctx = await accessContextFor(pool, {
+      userId,
+      tier,
+      caseId: row.caseId,
+    });
+    const access = evaluateAccess(row.access, ctx);
+    if (!access.listed) continue;
+    list.push({
+      id: row.definition.id,
+      contentVersion: row.contentVersion,
+      meta: row.definition.meta,
+      // Visible-but-locked is merchandising: the shelf shows why.
+      locked: !access.playable,
+      lockReason: access.lockReason,
+      requirement: access.requirement,
+    });
+  }
   return c.json({ cases: list });
 });
 
-app.get("/v1/cases/:caseId", (c) => {
-  const def = cases.get(c.req.param("caseId"));
+app.get("/v1/cases/:caseId", async (c) => {
+  const caseId = c.req.param("caseId");
+  const found = await accessFor(c, caseId);
+  // Private without grant → 404: existence stays hidden (anti-enumeration).
+  if (!found || !found.result.reachable) {
+    return c.json({ error: "not_found" }, 404);
+  }
+  const def = await registry.getDefinition(caseId, found.meta.contentVersion);
   if (!def) return c.json({ error: "not_found" }, 404);
   return c.json({
     id: def.id,
     contentVersion: def.contentVersion,
     meta: def.meta,
+    locked: !found.result.playable,
+    lockReason: found.result.lockReason,
+    requirement: found.result.requirement,
     player: {
       personaId: def.player.personaId,
       displayName: def.player.displayName,
@@ -126,59 +187,183 @@ app.get("/v1/cases/:caseId", (c) => {
   });
 });
 
+function sanitizeAssetPath(raw: string): string | null {
+  const rel = normalize(decodeURIComponent(raw))
+    .replace(/\\/g, "/")
+    .replace(/^(\.\.(\/|$))+/, "");
+  if (!rel || rel.startsWith("/") || rel.split("/").includes("..")) {
+    return null;
+  }
+  return rel;
+}
+
+function assetResponse(asset: { mime: string; bytes: Buffer }, immutable: boolean) {
+  return new Response(new Uint8Array(asset.bytes), {
+    headers: {
+      "Content-Type": asset.mime,
+      "Cache-Control": immutable
+        ? "public, max-age=31536000, immutable"
+        : "public, max-age=3600",
+    },
+  });
+}
+
 /**
- * Serve case content assets (portraits, etc.) under content/cases/<id>/.
- * Path is relative to the case folder; traversal is rejected.
+ * Case assets from the DB registry. Unversioned route serves the latest
+ * published version; visibility-gated (private without grant → 404).
  */
 app.get("/v1/cases/:caseId/assets/*", async (c) => {
   const caseId = c.req.param("caseId");
-  if (!cases.has(caseId)) return c.json({ error: "not_found" }, 404);
-
-  const prefix = `/v1/cases/${caseId}/assets/`;
-  const raw = c.req.path.startsWith(prefix)
-    ? c.req.path.slice(prefix.length)
-    : "";
-  const rel = normalize(decodeURIComponent(raw)).replace(/^(\.\.(\/|\\|$))+/, "");
-  if (!rel || rel.startsWith("..") || rel.includes("/../") || rel.includes("\\")) {
-    return c.json({ error: "invalid_path" }, 400);
-  }
-
-  const caseRoot = resolve(contentRoot, caseId);
-  const full = resolve(caseRoot, rel);
-  if (!full.startsWith(caseRoot + "/") && full !== caseRoot) {
-    return c.json({ error: "invalid_path" }, 400);
-  }
-  if (!existsSync(full) || !statSync(full).isFile()) {
+  const found = await accessFor(c, caseId);
+  if (!found || !found.result.reachable) {
     return c.json({ error: "not_found" }, 404);
   }
+  const prefix = `/v1/cases/${caseId}/assets/`;
+  const raw = c.req.path.startsWith(prefix) ? c.req.path.slice(prefix.length) : "";
+  const rel = sanitizeAssetPath(raw);
+  if (!rel) return c.json({ error: "invalid_path" }, 400);
 
-  const ext = extname(full).toLowerCase();
-  const types: Record<string, string> = {
-    ".png": "image/png",
-    ".jpg": "image/jpeg",
-    ".jpeg": "image/jpeg",
-    ".webp": "image/webp",
-    ".gif": "image/gif",
-    ".svg": "image/svg+xml",
+  const asset = await registry.getAsset(caseId, found.meta.contentVersion, rel);
+  if (!asset) return c.json({ error: "not_found" }, 404);
+  return assetResponse(asset, false);
+});
+
+/** Versioned asset route — content is immutable per version. */
+app.get("/v1/mysteries/:caseId/:version/assets/*", async (c) => {
+  const caseId = c.req.param("caseId");
+  const version = c.req.param("version");
+  const found = await accessFor(c, caseId);
+  if (!found || !found.result.reachable) {
+    return c.json({ error: "not_found" }, 404);
+  }
+  const prefix = `/v1/mysteries/${caseId}/${version}/assets/`;
+  const raw = c.req.path.startsWith(prefix) ? c.req.path.slice(prefix.length) : "";
+  const rel = sanitizeAssetPath(raw);
+  if (!rel) return c.json({ error: "invalid_path" }, 400);
+
+  const asset = await registry.getAsset(caseId, version, rel);
+  if (!asset) return c.json({ error: "not_found" }, 404);
+  return assetResponse(asset, true);
+});
+
+/**
+ * Upload a mystery bundle (zip). Lands as draft unless ?publish=true.
+ * Local dev is open; set ADMIN_TOKEN to require x-admin-token.
+ */
+app.post("/v1/mysteries", async (c) => {
+  if (!adminOk(c)) return c.json({ error: "forbidden" }, 403);
+
+  let zip: Buffer | undefined;
+  const contentType = c.req.header("content-type") ?? "";
+  if (contentType.includes("multipart/form-data")) {
+    const body = await c.req.parseBody();
+    const file = body["bundle"];
+    if (file instanceof File) {
+      zip = Buffer.from(await file.arrayBuffer());
+    }
+  } else {
+    zip = Buffer.from(await c.req.arrayBuffer());
+  }
+  if (!zip?.length) {
+    return c.json(
+      { error: "missing_bundle", message: "send a zip body or multipart field 'bundle'" },
+      400
+    );
+  }
+
+  try {
+    const publish = c.req.query("publish") === "true";
+    const result = await registry.importBundle(zip, {
+      status: publish ? "published" : "draft",
+    });
+    return c.json({ ...result, status: publish ? "published" : "draft" }, 201);
+  } catch (err) {
+    if (err instanceof BundleError) {
+      return c.json({ error: "invalid_bundle", message: err.message, issues: err.issues }, 400);
+    }
+    throw err;
+  }
+});
+
+/** Publish a draft version; optional access policy in the body. */
+app.post("/v1/mysteries/:caseId/:version/publish", async (c) => {
+  if (!adminOk(c)) return c.json({ error: "forbidden" }, 403);
+  const body = await c.req.json().catch(() => ({}));
+  const access =
+    body && typeof body === "object" && "access" in body
+      ? parseAccessPolicy((body as { access?: unknown }).access)
+      : undefined;
+  const ok = await registry.publish(
+    c.req.param("caseId"),
+    c.req.param("version"),
+    access
+  );
+  if (!ok) return c.json({ error: "not_found" }, 404);
+  return c.json({ published: true });
+});
+
+/** Set access policy for a case (all versions). */
+app.put("/v1/mysteries/:caseId/access", async (c) => {
+  if (!adminOk(c)) return c.json({ error: "forbidden" }, 403);
+  const body = await c.req.json().catch(() => ({}));
+  const access = parseAccessPolicy(body);
+  await registry.setAccess(c.req.param("caseId"), access);
+  return c.json({ access });
+});
+
+/** Grant / revoke per-user access (private commissions, playtests, purchases). */
+app.post("/v1/mysteries/:caseId/grants", async (c) => {
+  if (!adminOk(c)) return c.json({ error: "forbidden" }, 403);
+  const body = (await c.req.json().catch(() => ({}))) as {
+    userId?: string;
+    kind?: string;
   };
-  const body = readFileSync(full);
-  return new Response(body, {
-    headers: {
-      "Content-Type": types[ext] ?? "application/octet-stream",
-      "Cache-Control": "public, max-age=3600",
-    },
-  });
+  if (!body.userId) return c.json({ error: "missing_user_id" }, 400);
+  await registry.grant(
+    c.req.param("caseId"),
+    body.userId,
+    body.kind ?? "playtest"
+  );
+  return c.json({ granted: true });
+});
+
+app.delete("/v1/mysteries/:caseId/grants/:userId", async (c) => {
+  if (!adminOk(c)) return c.json({ error: "forbidden" }, 403);
+  await registry.revokeGrant(c.req.param("caseId"), c.req.param("userId"));
+  return c.json({ revoked: true });
 });
 
 app.post("/v1/playthroughs", async (c) => {
   const body = await c.req.json().catch(() => ({}));
   const caseId =
     (body as { caseId?: string }).caseId ?? "blackwood-inheritance";
-  const def = cases.get(caseId);
-  if (!def) return c.json({ error: "unknown_case" }, 400);
+
+  // The hard access gate: entitlement is checked at start, then the
+  // playthrough is grandfathered (a lapsed tier never bricks a run).
+  const found = await accessFor(c, caseId);
+  if (!found || !found.result.reachable) {
+    return c.json({ error: "unknown_case" }, 404);
+  }
+  if (!found.result.playable) {
+    return c.json(
+      {
+        error: "locked",
+        lockReason: found.result.lockReason,
+        requirement: found.result.requirement,
+      },
+      403
+    );
+  }
+
+  const def = await registry.getDefinition(caseId, found.meta.contentVersion);
+  if (!def) return c.json({ error: "unknown_case" }, 404);
 
   const state = createInitialPlaythrough(def);
   await insertPlaythrough(pool, state, def.openingNarration);
+  await pool.query(`UPDATE playthroughs SET user_id = $2 WHERE id = $1`, [
+    state.id,
+    userIdFrom(c),
+  ]);
 
   return c.json({
     playthrough: publicState(state, def),
@@ -192,7 +377,11 @@ app.post("/v1/playthroughs", async (c) => {
 app.get("/v1/playthroughs/:id", async (c) => {
   const row = await getPlaythrough(pool, c.req.param("id"));
   if (!row) return c.json({ error: "not_found" }, 404);
-  const def = cases.get(row.state.caseId);
+  // Serve the content version this playthrough pinned at start.
+  const def = await registry.getDefinition(
+    row.state.caseId,
+    row.state.contentVersion
+  );
   const turns = await listTurns(pool, row.state.id);
   return c.json({
     playthrough: publicState(row.state, def),
@@ -228,7 +417,7 @@ app.post("/v1/playthroughs/:id/turns", async (c) => {
     );
   }
 
-  const def = cases.get(state.caseId);
+  const def = await registry.getDefinition(state.caseId, state.contentVersion);
   if (!def) return c.json({ error: "case_missing" }, 500);
 
   const body = await c.req.json();
@@ -403,9 +592,12 @@ function publicState(state: PlaythroughState, def?: MysteryDefinition) {
 async function main() {
   console.log(`Database: ${databaseUrl().replace(/:[^:@/]+@/, ":***@")}`);
   await migrate(pool);
+  // Dev authoring workspace → DB registry (published). Uploads via
+  // POST /v1/mysteries need no restart at all.
+  const imported = await registry.importDirectory(contentRoot);
   const port = Number(process.env.PORT ?? 8787);
   console.log(`Mystery API listening on http://localhost:${port}`);
-  console.log(`Loaded cases: ${[...cases.keys()].join(", ") || "(none)"}`);
+  console.log(`Imported bundles: ${imported.join(", ") || "(none)"}`);
   console.log(
     `Narrator: ${llmConfig ? llmConfig.narratorModel : "heuristic (no OPENROUTER_API_KEY)"}`
   );

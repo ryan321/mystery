@@ -22,6 +22,99 @@ A **case definition** is the complete authored kit for one mystery. The engine l
 
 **Product stance:** novel-like experience. Bonds and clues appear in prose, not as a detective dashboard. Still **author everything** the engine must own.
 
+### Character motivation (core craft)
+
+People in a mystery are not clue dispensers. They have **goals** and **reasons**. That is part of the craft, not decoration.
+
+| Cast weight | Motivation depth |
+|-------------|------------------|
+| **Main cast** (guilty, primary suspects, key allies, player-facing power holders) | **A lot.** What they want tonight, what they fear, what they will protect, what they will sell out. Enough that their lies, silence, and late turns feel earned. |
+| **Secondary** | A clear spine: job, loyalty, fear, greed — enough to steer dialogue and one meaningful choice. |
+| **Background / functional** | A little: why they are here and what they will not risk. |
+
+Author motivations into:
+
+- `shortBio` / voice / defenses  
+- knowledge gates (what they protect, and under what pressure they talk)  
+- relationships and willingness  
+- beats (when goals clash with the player’s pressure)
+
+The AI can color performance; **you** own *why* Vale panics, why Ada has keys and when she uses them, why June helps only through paperwork.
+
+### Ending & resolution are design, not afterthought
+
+Design **how the night ends** while you design the crime — not as a last-minute epilogue sticker.
+
+The resolution path is part of the mystery the same way the body and the alibis are. Ask early:
+
+1. **What does “winning” look like in this world?** (custody, board restored, undock, dinner, morning rounds…)  
+2. **What forces make that possible?** (schedule, weather, hierarchy, evidence, player skill)  
+3. **Which motivations fire?** (self-preservation, conscience, duty, revenge, love of a friend)  
+4. **What can the player do that is not “wait for an NPC to flip”?**
+
+NPC help is **one** valid pattern — not the only one. Examples of designed resolution:
+
+| Pattern | Example |
+|---------|---------|
+| **Ally flips** | Ada uses keys after the forge is on her neck |
+| **Institutional clock** | County boat / morning rounds / roads open at dawn |
+| **Player agency** | Player realizes the “medicine” is keeping her weak, switches or refuses the dose, regains strength to act — *if* that is authored (inspectable, flag, beat) |
+| **Public pressure** | Formal accusation in earshot of someone who must log or report |
+| **Culprit’s goal backfires** | Their need to control the narrative forces a visible move |
+
+Any of these can underwrite return-to-normal. Mix them. What matters is that **the ending was considered in the mystery design** so the rebalance is credible when it happens.
+
+### Return to normal (default win craft)
+
+**Solved ≠ quiz correct. Solved = the truth sticks and the world turns.**
+
+Most mysteries need **two** layers of victory:
+
+1. **Epistemic win** — the accusation scores (who / how / why per the rubric).  
+2. **Dramatic win** — a **return to normal** that fits *this* story: authority arrives, the board is restored, the road opens, morning rounds, the kid gets home for dinner, the station undocks under company control. Think the FBI at the end of *Clue* — not only the correct name, but the world rebalancing around it.
+
+| Outcome | What the player should feel |
+|---------|-----------------------------|
+| **Success** | Truth is public (or about to be); danger to the investigation ends; order begins to restore |
+| **Partial** | Enough pressure to stop the night’s worst harm; full justice still needs daylight / lawyers / a thin file |
+| **Failure** | The lie reasserts — sedation, transfer, roads empty, killer walks, storm ends for everyone else |
+
+#### Diegetic, not magical
+
+Return-to-normal must be **caused by the story** — people and their motivations, institutions, clocks, player actions, and evidence already in the world — not by the scoring system.
+
+**Bad:** “You named the killer correctly, so the straps fall off / the door unlocks / the police appear for no reason.”  
+**Good (NPC path):** “Ada flips to save herself, uses the keys on her ribbon, and frees you; June logs the true intake and rings for morning rounds.”  
+**Good (player path):** “You learned what they put in the cup; you switched or refused it; strength returns; *you* force the door or hold until rounds — because the case authored that weakness and that choice.”
+
+Bake the resolution path into the mystery (choose what fits; more than one path is fine):
+
+| Question | Author it |
+|----------|-----------|
+| **What ends the crisis?** | Custody, open file, restored board, dinner table, undock… |
+| **Who or what has power to change status?** | Keys, rank, phone, boat, meds, codes, parents, *the player’s body* |
+| **Why does that power fire now?** | Character goals, fear, conscience, schedule, player discovery |
+| **What did the player do to enable it?** | Present, flip, wait, switch the dose, hold a formal charge, steal a key… |
+| **What still cannot change yet?** | Snow, storm, sealed lock — name the limit |
+
+The wrap beat may *apply* engine effects (`release_player`, moves, flags), but **`narrationHints` and ending notes must name the cause** (whose goal, what clock, what player act). No silent “because success.”
+
+**Author every success/lucky ending** with a concrete, **motivated** rebalance in `templateNotes` (and usually a denouement wrap beat).
+
+**Exceptions (explicit override):** A case may withhold full freedom (still locked in until dawn, still snowed in). That is fine **if** the epistemic win is real, **something in-world** changes the balance for a written reason, and notes say why full exit waits.
+
+Do **not** ship a success that only says “you were right” with no world change — or a world change with no cause. That is not a win for this product.
+
+Wire it through:
+
+| Piece | Role |
+|-------|------|
+| Character goals | Why people help, hinder, flip, or stand down |
+| Investigation beats | Player discoveries and pressures that *enable* rebalance |
+| `endings[].templateNotes` | Spine: confession **and** how resolution actually happens |
+| `wrapUp.performanceNotes` | Aftermath tone + diegetic rebalance |
+| Denouement beats | Engine state matching those causes |
+
 ### File layout
 
 ```
@@ -31,7 +124,7 @@ content/cases/
     definition.json               # your case — point $schema at ../definition.schema.json
 ```
 
-At the top of each case file:
+At the top of each definition:
 
 ```json
 {
@@ -277,6 +370,19 @@ Validate by parsing with `parseMysteryDefinition` (shared package) or loading th
 }
 ```
 
+### Motivations (write them, even if informal)
+
+For each **main** character, know before you ship:
+
+| Prompt | Example |
+|--------|---------|
+| **Want** | Keep the fraud buried; get Nightwing back; hold the pier job |
+| **Fear** | Exposure; losing the job; the pass never opening |
+| **Line they will not cross (or will)** | Kill again; hurt a child; countersign a forge |
+| **What the player can press** | Letter, syringe, friendship, money |
+
+Encode as much as the format allows (`shortBio`, `defenses`, knowledge `content`, relationship labels, beat `narrationHints`). Put deeper notes in `canon.notes` if needed. Secondary cast gets a lighter version of the same.
+
 ### Portraits
 
 | Field | Where | Meaning |
@@ -506,7 +612,7 @@ Example: Blackwood's `henshaw_shuts_down` beat fires on `game_flag falsely_accus
   "when": "success",
   "kind": "lucky_solve",
   "title": "A shot in the dark that hit",
-  "templateNotes": "Performer epilogue spine…",
+  "templateNotes": "Culprit breaks. RETURN TO NORMAL: custody when the roads open / authority arrives / the sealed threat ends. Do not invent unfound proof.",
   "requiresFlags": {}
 }
 ```
@@ -529,6 +635,14 @@ Example: Blackwood's `henshaw_shuts_down` beat fires on `game_flag falsely_accus
 
 Always author **at least** success + one failure. Prefer multiple failures with distinct `id`/`kind`.
 
+**`templateNotes` for success / lucky / partial** must include:
+
+1. How the culprit reacts (confess, rage, fold)  
+2. **Return to normal** — what rebalances (see product stance above)  
+3. Lucky path: do **not** invent evidence the player never found  
+
+Failure `templateNotes` should invert rebalance: the system closes, the lie holds, or the killer walks.
+
 ---
 
 ## 13. Wrap-up (denouement)
@@ -538,7 +652,7 @@ Always author **at least** success + one failure. Prefer multiple failures with 
   "enabled": true,
   "maxTurns": 10,
   "allowEarlyExit": true,
-  "performanceNotes": "Stay interactive after judgment…"
+  "performanceNotes": "After judgment: interactive aftermath. Stage RETURN TO NORMAL (authority, release, restored order). Stay second person; mystery is decided."
 }
 ```
 
@@ -551,6 +665,15 @@ Aftermath beats use:
 ```
 
 combined with `resolution_outcome` / `resolution_kind`.
+
+Prefer a **success wrap beat** that:
+
+- Applies state only when a **story agent** justifies it (e.g. `release_player` because Ada uses her keys after flipping — not because the score is green)  
+- Moves or unmasks the guilty for motivated reasons  
+- Opens key witnesses who already had a path in investigation  
+- `narrationHints` that name **who did what and why** (morning rounds, county boat, roads opening, board restored)
+
+Set `wrapUp.enabled: false` only when a hard cut is intentional (rare).
 
 ---
 
@@ -771,45 +894,138 @@ Write the crime **first**, then build discovery paths that fair-play support the
 
 ---
 
-## 18. Authoring workflow (recommended order)
+## 18. Player surfaces & opening package (author these too)
+
+The player does not share the protagonist's ambient knowledge. A novel's
+author narrates it as needed; a case must **ship** it. Rationale and UI
+stance: [PLAYER_SURFACES.md](./PLAYER_SURFACES.md). The rule: **ambient
+knowledge is free; discoveries are earned.**
+
+### Opening package (required)
+
+Match the diegetic form to the premise:
+
+| Premise | Package |
+|---------|---------|
+| Professional (inspector, PI, journalist) | Case file / dossier / telegram / letter of engagement |
+| Invited outsider (guest, summoned relative) | The invitation + what you know of the household |
+| **Accidental** (ordinary person stumbling into a mystery) | No file — *lived familiarity*: your own house, street, coworkers, written as "what you already know" |
+
+It must orient without spoiling: who you are, why you are here, the incident
+(if known at start), who you already know and how, the setting basics.
+Encode today in `meta.premise` + `player.startingKnowledge` +
+`openingNarration` (structured `briefing` field planned).
+
+### Spatial knowledge (map seed + fog of war)
+
+- Decide what the character already knows spatially. A local knows the whole
+  house before turn one; a stranger knows the entrance hall. Set
+  `knownAtStart: true` per location to seed the fog-of-war map (Blackwood:
+  the inspector is told where everyone is, so the main rooms start known);
+  optional `map: {x, y, floor}` coordinates drive the sketch layout, and
+  the `reveal_location` effect adds unvisited places when the story names
+  them.
+- The map reveals over time: visits, plus story reveals ("the ice house is
+  past the kitchen garden"). Secret areas stay off the map until discovered.
+- Write location `description`s so exits are *perceivable* — name the doors
+  and directions. The scene panel and the performer both draw on them.
+
+### Cast front matter
+
+Review every relationship's `knownToPlayerByDefault` against the persona:
+what would *this* protagonist already know socially? A village doctor knows
+everyone; a hired PI knows nobody. These edges are the dramatis personae.
+
+### Character identity & profiles
+
+Decide **per character** how the player first knows them:
+
+- **Name known** (dinner-party introductions): profile starts with name +
+  role line.
+- **Label only** (White Room-style): the player knows them as "Orderly" or
+  "the woman in 3B" until a story moment reveals the name. The performer
+  and all UI use the known label — the real name never appears early.
+
+The expandable profile is a **dramatis personae entry, not a growing dossier**:
+portrait, known name/label, title, and a brief authored outline
+(`shortBio`, including any starting-known relationships: "the victim's
+business partner"). It exists to keep the characters straight and **never
+accumulates learned facts** — discoveries live in prose and the notebook.
+Author for this: write each `shortBio` as front matter (orienting, not
+spoiling); plan the name-reveal moment for label-only characters; and give
+accusation `matchHints` the role label too — the engine also matches
+`introducedAs` labels automatically, so "the orderly did it" scores when
+the name is still unknown. Fields: `introducedAs`, `nameKnownAtStart`;
+effects: `reveal_character_name`, `set_known_as`; condition:
+`character_name_known`. **Write all case prose (descriptions, hints,
+knowledge, beats) without the real name of any label-only character** —
+the engine hides the name in packs and UI, but authored text is shipped
+verbatim.
+
+### Imagery (optional)
+
+Portraits, cover, location establishing shots are authored **offline** in
+the case pipeline and reviewed for spoilers (an image must not show an
+undiscovered clue). Never generated at runtime.
+
+---
+
+## 19. Authoring workflow (recommended order)
 
 1. **Crime** — `canon.timeline` + `solution` (sealed envelope).  
-2. **Stage** — locations, exits, starting cast positions.  
-3. **Discoveries** — evidence + inspectables that grant them.  
-4. **Cast knowledge** — public / private / secrets with gates.  
-5. **Relationships** — who is bound to whom; what stays private.  
-6. **Spine beats** — discovery → deepening → pressure → accuse.  
-7. **Failure beats** — wrong accuse, time, threat clocks, arrest.  
-8. **Wrap-up beats** — denouement reactions for success and failure.  
-9. **Endings** — distinct `templateNotes` per outcome/kind.  
-10. **Playtest** — unit-test condition chains; human play for feel.  
-11. **Three-clue rule** — each required claim reachable ≥2 ways when possible.
+2. **Motivations** — main cast wants/fears/lines; secondary spines.  
+3. **Resolution design** — how the night ends if the player wins (and fails): who/what/why, including player-agency paths if any.  
+4. **Stage** — locations, exits, starting cast positions.  
+5. **Player surfaces** — opening package, starting spatial knowledge (map fog seed), cast front matter (§18).  
+6. **Discoveries** — evidence + inspectables that grant them (include anything the resolution needs, e.g. the real medicine).  
+7. **Cast knowledge** — public / private / secrets with gates.  
+8. **Relationships** — who is bound to whom; what stays private.  
+9. **Spine beats** — discovery → deepening → pressure → accuse.  
+10. **Failure beats** — wrong accuse, time, threat clocks, arrest.  
+11. **Wrap-up beats** — denouement that executes the resolution you designed (diegetic causes).  
+12. **Endings** — distinct `templateNotes` per outcome/kind; success names how rebalance happens.  
+13. **Playtest** — condition chains; feel (does winning *feel* like winning for *this* story?).  
+14. **Three-clue rule** — each required claim reachable ≥2 ways when possible.
 
 Think: **when X becomes true → state changes → new possibilities.**
 
 ---
 
-## 19. Checklist before shipping a case
+## 20. Checklist before shipping a case
 
 - [ ] `schemaVersion` `1.5`, unique `id`, bumped `contentVersion`  
 - [ ] All location/exit/character/evidence ids consistent  
 - [ ] Player start location exists  
 - [ ] Every required rubric fact has solid `matchHints`  
 - [ ] Success ending + ≥1 failure ending  
+- [ ] Main cast have clear **motivations** (want / fear / line); secondaries have at least a spine  
+- [ ] **Resolution designed early** — not only “accuse scores”; how the world rebalances fits *this* mystery  
+- [ ] **Return to normal** on every success/lucky ending (and a scaled version on partial); exceptions documented in wrap notes  
+- [ ] Rebalance is **diegetic**: people, goals, clocks, or authored player agency — never “magic unlock because correct accuse”  
+- [ ] Denouement / wrap beat implements that designed resolution  
 - [ ] Critical discovery chain has beats (`on_discover` / `on_present` as appropriate)  
 - [ ] Failure clocks/time use `on_turn` + `case_active`  
 - [ ] Denouement beats gated with `in_denouement`  
 - [ ] Secrets never only reachable by AI invention (gates or reveal effects)  
 - [ ] Opening narration + starting knowledge don’t spoil the solution  
+- [ ] **Opening package** authored and matched to the premise (dossier / invitation / lived familiarity for accidental protagonists) — §18  
+- [ ] **Starting spatial knowledge** matches persona familiarity (map fog seed); secret areas stay unknown until discovered  
+- [ ] Location descriptions name their exits/doors (scene panel + performer draw on them)  
+- [ ] `knownToPlayerByDefault` relationship edges reviewed against the persona (village doctor vs hired stranger)  
+- [ ] Per-character identity decided: name known at start vs label-only ("Orderly"), with a reveal moment authored for label-only characters  
+- [ ] Accusation `matchHints` cover role labels for name-unknown characters ("orderly")  
+- [ ] Imagery (if any) authored offline and spoiler-reviewed  
 - [ ] Loads via `parseMysteryDefinition` / API boot without errors  
 
 ---
 
-## 20. Related docs
+## 21. Related docs
 
 | Doc | Use when |
 |-----|----------|
 | [CASE_DEFINITION.md](./CASE_DEFINITION.md) | Design rationale, state philosophy |
+| [PLAYER_SURFACES.md](./PLAYER_SURFACES.md) | Ambient knowledge, opening package, map / fog of war, UI stance |
+| [MYSTERY_BUNDLES.md](./MYSTERY_BUNDLES.md) | Packaging a mystery as a bundle (zip), publishing, access/unlock policy |
 | [CASE_STUDIES_CLASSICS.md](./CASE_STUDIES_CLASSICS.md) | Christie/Holmes structure maps |
 | [TURN_PIPELINE.md](./TURN_PIPELINE.md) | Runtime director → engine → performer |
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | System-wide design |
@@ -817,7 +1033,7 @@ Think: **when X becomes true → state changes → new possibilities.**
 
 ---
 
-## 21. Validation
+## 22. Validation
 
 From the monorepo:
 

@@ -4,6 +4,7 @@ import type {
   PlaythroughState,
 } from "@mystery/shared";
 import { hasRelationship } from "./relationships.js";
+import { characterNameKnown, isLocationKnown } from "./identity.js";
 
 function slotIndex(def: MysteryDefinition, slotId: string): number {
   if (!def.time) return -1;
@@ -145,6 +146,10 @@ export function evaluateCondition(
       const ls = state.locationState[String(condition.locationId)];
       return ls?.accessible ?? true;
     }
+    case "location_known":
+      return isLocationKnown(state, String(condition.locationId));
+    case "character_name_known":
+      return characterNameKnown(def, state, String(condition.characterId));
     case "exit_open": {
       const from = String(condition.from);
       const to = String(condition.to);

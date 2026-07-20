@@ -104,7 +104,8 @@ export function accusedCharacterIds(
     if (
       affirmativeMention(text, c.id) ||
       affirmativeMention(text, c.name) ||
-      (last.length > 2 && affirmativeMention(text, last))
+      (last.length > 2 && affirmativeMention(text, last)) ||
+      (c.introducedAs ? affirmativeMention(text, c.introducedAs) : false)
     ) {
       ids.add(c.id);
     }
@@ -148,7 +149,10 @@ export function scoreAccusationDetailed(
       const last = parts[parts.length - 1] ?? "";
       if (
         affirmativeMention(text, ch.name) ||
-        (last.length > 2 && affirmativeMention(text, last))
+        (last.length > 2 && affirmativeMention(text, last)) ||
+        // Known-label accusations count: "the orderly did it" when the
+        // player has never learned the name.
+        (ch.introducedAs ? affirmativeMention(text, ch.introducedAs) : false)
       ) {
         identityCorrect = true;
         break;

@@ -4,6 +4,7 @@ import type {
   CharacterRuntimeState,
   ObjectRuntimeState,
   LocationRuntimeState,
+  PlayerCharacterKnowledge,
   RelationshipRuntimeState,
 } from "@mystery/shared";
 import { snapshotPlayerPersona } from "@mystery/shared";
@@ -102,6 +103,20 @@ export function createInitialPlaythrough(
       accessible: loc.startsAccessible ?? true,
       descriptionAppend: "",
       exitOpen,
+      // Fog-of-war seed: persona familiarity + where you start.
+      known:
+        (loc.knownAtStart ?? false) ||
+        loc.id === def.player.startingLocationId,
+    };
+  }
+
+  // Identity knowledge: what the player knows each character AS at turn 0.
+  const playerKnowledge: Record<string, PlayerCharacterKnowledge> = {};
+  for (const c of def.characters) {
+    const nameKnown = c.nameKnownAtStart ?? true;
+    playerKnowledge[c.id] = {
+      knownAs: nameKnown ? c.name : c.introducedAs ?? c.name,
+      nameKnown,
     };
   }
 
@@ -159,6 +174,7 @@ export function createInitialPlaythrough(
     },
     time,
     presented: [],
+    playerKnowledge,
     playerStatus: {
       threat: "none",
       condition: "unharmed",

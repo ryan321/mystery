@@ -71,7 +71,7 @@
     "enabled": true,
     "maxTurns": 6,
     "allowEarlyExit": true,
-    "performanceNotes": "Keep it kind. Consequences are grounded: apology, returned board, lessons. No cruelty."
+    "performanceNotes": "Keep it kind. RETURN TO NORMAL: board home, friend cleared, dinner, neighborhood back to ordinary. No cruelty."
   },
   "time": {
     "startSlotId": "after_lunch",
@@ -736,21 +736,21 @@
       "when": "success",
       "kind": "solved",
       "title": "Board returned before dinner",
-      "templateNotes": "Jules apologizes. Maya has Nightwing back. Troy is loud but cleared. You make it home for dinner. Can't trick Rick."
+      "templateNotes": "Jules apologizes. Maya has Nightwing back. Troy is loud but cleared. RETURN TO NORMAL: the board is home, the accusation is over, and you make it home for dinner. Can't trick Rick."
     },
     {
       "id": "success_lucky",
       "when": "success",
       "kind": "lucky_solve",
       "title": "Lucky call",
-      "templateNotes": "You name Jules early; the evidence still fits. Keep it kind. Board comes home."
+      "templateNotes": "You name Jules early; the evidence still fits. Keep it kind. RETURN TO NORMAL: board comes home; the afternoon's crisis ends before dinner. Do not invent cruelty or unfound proof."
     },
     {
       "id": "partial",
       "when": "partial",
       "kind": "partial",
       "title": "Almost dinner",
-      "templateNotes": "You mostly have it. Jules folds enough to return the board. Details stay fuzzy."
+      "templateNotes": "You mostly have it. Jules folds enough to return the board. Thin RETURN TO NORMAL: the skateboard is back; some details stay fuzzy and trust mends slowly."
     },
     {
       "id": "failure_wrong_accusation",

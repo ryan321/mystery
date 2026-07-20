@@ -67,7 +67,7 @@
     "enabled": true,
     "maxTurns": 8,
     "allowEarlyExit": true,
-    "performanceNotes": "Firelight, snow silence, confession or denial. Keep it intimate."
+    "performanceNotes": "Firelight, snow silence, confession or denial. RETURN TO NORMAL: Petra held inside the lodge; household no longer under her theater; justice waits for the pass but truth does not. Intimate, not supernatural."
   },
   "time": {
     "startSlotId": "morning",
@@ -795,21 +795,21 @@
       "when": "success",
       "kind": "solved",
       "title": "The key in the linen",
-      "templateNotes": "Petra's locked-room theater collapses. The spare key, the ledger, and the window tell the same story. Snow still holds the lodge; justice will wait for the pass — but the truth does not."
+      "templateNotes": "Petra's locked-room theater collapses. The spare key, the ledger, and the window tell the same story. RETURN TO NORMAL: she is held by the household until the pass opens; no one pretends this was a closed accident. Snow still seals the mountain — exception: you cannot leave yet — but the lodge is no longer her stage."
     },
     {
       "id": "success_lucky",
       "when": "success",
       "kind": "lucky_solve",
       "title": "A name by the fire",
-      "templateNotes": "You name Petra before every thread is tied. She still breaks. Do not invent evidence unfound. The fire pops; the snow does not care."
+      "templateNotes": "You name Petra before every thread is tied. She still breaks. RETURN TO NORMAL: she is watched and held indoors; the fire pops; the pass will bring formal justice. Do not invent evidence unfound."
     },
     {
       "id": "partial",
       "when": "partial",
       "kind": "partial",
       "title": "Thin ice",
-      "templateNotes": "You have enough to hold her, not enough for a clean file. The mountain keeps its secrets a little longer."
+      "templateNotes": "You have enough to hold her, not enough for a clean file. Thin RETURN TO NORMAL: she is not free to rearrange the story; the mountain keeps remaining secrets a little longer."
     },
     {
       "id": "failure_wrong_accusation",

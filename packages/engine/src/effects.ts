@@ -13,6 +13,7 @@ import {
   enterResolution,
   finalizeDenouement,
 } from "./resolve-case.js";
+import { knownAsFor } from "./identity.js";
 import {
   ensureObjectState,
   isInInventory,
@@ -409,11 +410,17 @@ export function applyEffect(
     const cid = String(effect.characterId);
     const cs = next.characterState[cid];
     if (cs) {
+      const prev =
+        typeof cs.pressure === "number" && Number.isFinite(cs.pressure)
+          ? cs.pressure
+          : 0;
+      const by = Number(effect.by);
+      const delta = Number.isFinite(by) ? by : 0;
       next = {
         ...next,
         characterState: {
           ...next.characterState,
-          [cid]: { ...cs, pressure: cs.pressure + Number(effect.by) },
+          [cid]: { ...cs, pressure: prev + delta },
         },
       };
     }
@@ -421,10 +428,13 @@ export function applyEffect(
     const cid = String(effect.characterId);
     const cs = next.characterState[cid];
     if (cs) {
-      const trust =
-        t === "set_trust"
-          ? Number(effect.value ?? effect.by ?? 0)
-          : cs.trust + Number(effect.by ?? effect.value ?? 1);
+      const prevTrust =
+        typeof cs.trust === "number" && Number.isFinite(cs.trust)
+          ? cs.trust
+          : 0;
+      const raw = Number(effect.value ?? effect.by ?? (t === "set_trust" ? 0 : 1));
+      const n = Number.isFinite(raw) ? raw : 0;
+      const trust = t === "set_trust" ? n : prevTrust + n;
       next = {
         ...next,
         characterState: {
@@ -450,12 +460,12 @@ export function applyEffect(
             [cid]: { ...cs, locationId: toLocationId },
           },
         };
-        const who = def.characters.find((c) => c.id === cid);
+        const whoLabel = knownAsFor(def, next, cid);
         const where = def.locations.find((l) => l.id === toLocationId);
         justHappened.push({
           id: `move_char_${cid}`,
-          summary: `${who?.name ?? cid} → ${where?.name ?? toLocationId}`,
-          narrationHints: `${who?.name ?? "Someone"} is now at ${where?.name ?? "elsewhere"}.`,
+          summary: `${whoLabel} → ${where?.name ?? toLocationId}`,
+          narrationHints: `${whoLabel} is now at ${where?.name ?? "elsewhere"}.`,
         });
       }
     }
@@ -649,6 +659,7 @@ export function applyEffect(
       accessible: true,
       descriptionAppend: "",
       exitOpen: {},
+      known: false,
     };
     next = {
       ...next,
@@ -665,6 +676,7 @@ export function applyEffect(
       accessible: true,
       descriptionAppend: "",
       exitOpen: {},
+      known: false,
     };
     next = {
       ...next,
@@ -689,6 +701,7 @@ export function applyEffect(
       accessible: true,
       descriptionAppend: "",
       exitOpen: {},
+      known: false,
     };
     next = {
       ...next,
@@ -700,6 +713,75 @@ export function applyEffect(
         },
       },
     };
+  } else if (t === "reveal_location") {
+    // Fog of war: the player learns a place exists without visiting it.
+    const lid = String(effect.locationId);
+    if (def.locations.some((l) => l.id === lid)) {
+      const ls = next.locationState[lid] ?? {
+        accessible: true,
+        descriptionAppend: "",
+        exitOpen: {},
+        known: false,
+      };
+      if (!ls.known && !next.visitedLocationIds.includes(lid)) {
+        const name = def.locations.find((l) => l.id === lid)?.name ?? lid;
+        next = {
+          ...next,
+          locationState: {
+            ...next.locationState,
+            [lid]: { ...ls, known: true },
+          },
+        };
+        justHappened.push({
+          id: `location_known_${lid}`,
+          summary: `You learn of a place: ${name}`,
+          narrationHints: `The player now knows ${name} exists (it appears on their map). Convey how they learned of it naturally; do not describe its interior — they have not been there.`,
+        });
+      }
+    }
+  } else if (t === "reveal_character_name" || t === "set_known_as") {
+    // Identity is knowledge: "Orderly" → "Marcus Reed" (PLAYER_SURFACES §5.4).
+    const cid = String(effect.characterId);
+    const ch = def.characters.find((c) => c.id === cid);
+    if (ch) {
+      const prev = next.playerKnowledge?.[cid] ?? {
+        knownAs:
+          (ch.nameKnownAtStart ?? true) ? ch.name : ch.introducedAs ?? ch.name,
+        nameKnown: ch.nameKnownAtStart ?? true,
+      };
+      if (t === "reveal_character_name") {
+        if (!prev.nameKnown || prev.knownAs !== ch.name) {
+          next = {
+            ...next,
+            playerKnowledge: {
+              ...next.playerKnowledge,
+              [cid]: { knownAs: ch.name, nameKnown: true },
+            },
+          };
+          justHappened.push({
+            id: `name_revealed_${cid}`,
+            summary: `You learn their name: ${ch.name}`,
+            narrationHints: `The player now learns that ${prev.knownAs} is named ${ch.name}. Stage the reveal naturally in this scene; from now on the name may be used.`,
+          });
+        }
+      } else {
+        const label = String(effect.label ?? effect.value ?? "").trim();
+        if (label && label !== prev.knownAs) {
+          next = {
+            ...next,
+            playerKnowledge: {
+              ...next.playerKnowledge,
+              [cid]: { ...prev, knownAs: label },
+            },
+          };
+          justHappened.push({
+            id: `known_as_${cid}`,
+            summary: `You now know them as: ${label}`,
+            narrationHints: `The player's label for this person changes to "${label}". Use it from now on.`,
+          });
+        }
+      }
+    }
   } else if (t === "move_player" || t === "set_player_location") {
     const toLocationId = String(
       effect.toLocationId ?? effect.locationId ?? ""

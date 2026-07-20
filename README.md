@@ -13,6 +13,8 @@ Single-player, fair-play **text investigation** games. Structured mystery defini
 | [content/cases/definition.schema.json](./content/cases/definition.schema.json) | JSON Schema for editor autocomplete (`pnpm schema`) |
 | [docs/CASE_DEFINITION.md](./docs/CASE_DEFINITION.md) | Design model: entity state, beats, philosophy |
 | [docs/TURN_PIPELINE.md](./docs/TURN_PIPELINE.md) | Two-call turn: director → engine → performer |
+| [docs/PLAYER_SURFACES.md](./docs/PLAYER_SURFACES.md) | Ambient knowledge: opening package, fog-of-war map, cast dossier, UI stance |
+| [docs/MYSTERY_BUNDLES.md](./docs/MYSTERY_BUNDLES.md) | Bundle format (zip), DB registry, upload pipeline, access/unlock model |
 
 ## Landing page
 

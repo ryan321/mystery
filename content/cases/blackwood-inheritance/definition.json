@@ -43,7 +43,29 @@
     "startingLocationId": "entrance-hall",
     "startingEvidenceIds": [],
     "startingKnowledge": "You were summoned after a crash and a body. Mr. Blackwood lies dead at the foot of the main stairs. The storm has cut the road; no one left the grounds after ten. Henshaw waits in the entrance hall with the body. Mr. Vale is in the library. Mrs. Blackwood and Miss Clara are in the conservatory. Henshaw has put you in a small guest room upstairs — a place to leave your coat and notebook.",
-    "objective": "Investigate the manor, question everyone still on the grounds, gather evidence, and formally accuse the killer with enough of the how and why to hold."
+    "objective": "Investigate the manor, question everyone still on the grounds, gather evidence, and formally accuse the killer with enough of the how and why to hold.",
+    "briefing": {
+      "form": "dossier",
+      "title": "Blackwood Manor — night call",
+      "sections": [
+        {
+          "heading": "The summons",
+          "text": "A telephone call before the storm took the line: Mr. Blackwood is dead at the foot of his own staircase. A crash was heard; the body was already cold when found. The road behind you is washed out. You are the only official presence until morning."
+        },
+        {
+          "heading": "The household",
+          "text": "Butler Henshaw, who waits with the body. Mrs. Blackwood, the widow. Miss Clara Blackwood, the daughter. Mr. Vale, the family solicitor, staying as a guest. No one has left the grounds since ten o'clock."
+        },
+        {
+          "heading": "The house",
+          "text": "The entrance hall holds the body and a shattered crystal vase. Mr. Vale is in the library, through the east door. Mrs. Blackwood and Miss Clara keep to the conservatory. Henshaw has put your coat and notebook in a small guest room upstairs."
+        },
+        {
+          "heading": "Your task",
+          "text": "Question everyone, gather what the house will give you, and be ready to accuse — with the how and the why. A wrong accusation has consequences of its own; the household is watching you as closely as you watch them."
+        }
+      ]
+    }
   },
   "openingNarration": "The manor looms against the storm. Inside, the entrance hall smells of wax and old money. A crystal vase lies shattered on the marble. Rainwater pools near the east door. Mr. Blackwood lies at the foot of the main stairs, already cold. Butler Henshaw stands alone with you at the body — pale, formal, waiting for your questions. Mrs. Blackwood and Miss Clara are elsewhere in the house; Mr. Vale the guest as well. The road out is impassable. No one is coming. You were summoned to find who among them did this — and prove it.",
   "phases": [
@@ -72,7 +94,7 @@
     "enabled": true,
     "maxTurns": 10,
     "allowEarlyExit": true,
-    "performanceNotes": "After judgment, stay with the household. The accused and others react: confession, rage, silence, logistics of custody. The inspector may still speak with anyone present and then leave. Do not reset the mystery."
+    "performanceNotes": "After judgment: interactive household aftermath. RETURN TO NORMAL — roads will open, custody for the guilty, the estate leaves crisis mode. Confession, rage, logistics of holding the culprit until magistrates. Do not invent unfound proof on lucky path."
   },
   "time": {
     "startSlotId": "just_after_eleven",
@@ -157,6 +179,7 @@
       "name": "Blackwood Manor — the entrance hall",
       "description": "Marble floor, storm-lashed windows, a stopped grandfather clock, and a shattered crystal vase. The east door leads toward the library wing. Stairs rise to the private rooms.",
       "startsAccessible": true,
+      "map": { "x": 1, "y": 1, "floor": 0 },
       "exits": [
         {
           "toLocationId": "library",
@@ -206,6 +229,8 @@
       "name": "Blackwood Manor — the library",
       "description": "Cold and dark. A fire smolders. A ledger lies open on the desk to tonight's date. Ash in the hearth glints with metal.",
       "startsAccessible": true,
+      "knownAtStart": true,
+      "map": { "x": 2, "y": 1, "floor": 0 },
       "exits": [
         {
           "toLocationId": "entrance-hall",
@@ -259,6 +284,8 @@
       "name": "Blackwood Manor — the conservatory",
       "description": "Glass walls drum with rain. Ferns drip. Far from the east door and the crash.",
       "startsAccessible": true,
+      "knownAtStart": true,
+      "map": { "x": 0, "y": 1, "floor": 0 },
       "exits": [
         {
           "toLocationId": "entrance-hall",
@@ -288,6 +315,8 @@
       "name": "Blackwood Manor — your guest room",
       "description": "A spare room at the top of the stairs: narrow bed, washstand, a small desk with your coat over the chair. The window faces the storm. It is the only private place Henshaw offered you in this house.",
       "startsAccessible": true,
+      "knownAtStart": true,
+      "map": { "x": 1, "y": 0, "floor": 1 },
       "exits": [
         {
           "toLocationId": "entrance-hall",
@@ -1693,21 +1722,21 @@
       "when": "success",
       "kind": "solved",
       "title": "Case closed",
-      "templateNotes": "Vale is taken into custody once the roads open. The letter, the boot print, and the broken alibi seal it — work you actually did. Mrs. Blackwood does not thank you. Outside, the storm finally begins to ease — or perhaps you only imagine it."
+      "templateNotes": "Vale is held for the magistrates once the roads open. The letter, the boot print, and the broken alibi seal it — work you actually did. RETURN TO NORMAL: custody is arranged; the household is no longer under his shadow; the storm finally begins to ease. Mrs. Blackwood does not thank you. Outside, authority is coming with the weather."
     },
     {
       "id": "success_lucky",
       "when": "success",
       "kind": "lucky_solve",
       "title": "A shot in the dark that hit",
-      "templateNotes": "You named Vale before the file was complete — little or no hard evidence in hand. Still, the truth is the truth: he breaks. Color drains from his face; the conservatory story collapses into a raw admission of the quarrel and the blow in the hall. Proof can come later for the magistrates; tonight the killer is unmasked by insight alone. Do not invent that the player waved evidence they never found."
+      "templateNotes": "You named Vale before the file was complete — little or no hard evidence in hand. Still, the truth is the truth: he breaks. Color drains from his face; the conservatory story collapses into a raw admission. RETURN TO NORMAL: he is held until the roads open; the household can breathe. Do not invent that the player waved evidence they never found. Proof can follow for the magistrates; tonight the killer is unmasked."
     },
     {
       "id": "partial",
       "when": "partial",
       "kind": "partial",
       "title": "Thin file",
-      "templateNotes": "You have part of it — enough pressure to rattle the house, not enough for a clean conviction. Vale twists what he can. The storm is not finished with this story."
+      "templateNotes": "You have part of it — enough pressure to rattle the house, not enough for a clean conviction. Vale twists what he can. Thin RETURN TO NORMAL: he is watched, not free to vanish, but the file is incomplete and the storm is not finished with this story."
     },
     {
       "id": "failure_wrong_accusation",

@@ -30,6 +30,7 @@ export async function migrate(pool: Db): Promise<void> {
     "001_init.sql",
     "002_state_json.sql",
     "003_denouement_status.sql",
+    "004_mysteries.sql",
   ]) {
     const sql = readFileSync(join(dir, file), "utf8");
     await pool.query(sql);
@@ -55,12 +56,75 @@ type PlaythroughRow = {
   phase_id: string | null;
 };
 
+/**
+ * Repair common nulls / partials in persisted state before Zod parse.
+ * Prevents one bad field (e.g. pressure: null) from permanently blocking load.
+ */
+function characterStateNeedsRepair(raw: unknown): boolean {
+  if (!raw || typeof raw !== "object") return false;
+  const csRaw = (raw as Record<string, unknown>).characterState;
+  if (!csRaw || typeof csRaw !== "object" || Array.isArray(csRaw)) return false;
+  for (const entry of Object.values(csRaw as Record<string, unknown>)) {
+    if (!entry || typeof entry !== "object") continue;
+    const c = entry as Record<string, unknown>;
+    if (
+      c.pressure == null ||
+      c.trust == null ||
+      (typeof c.pressure === "number" && Number.isNaN(c.pressure)) ||
+      (typeof c.trust === "number" && Number.isNaN(c.trust)) ||
+      c.timesTalked == null ||
+      c.available == null ||
+      c.willingness == null ||
+      c.stance == null ||
+      c.alibiStatus == null
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function sanitizeStateJson(raw: unknown): unknown {
+  if (!raw || typeof raw !== "object") return raw;
+  const state = { ...(raw as Record<string, unknown>) };
+
+  const csRaw = state.characterState;
+  if (csRaw && typeof csRaw === "object" && !Array.isArray(csRaw)) {
+    const nextCs: Record<string, unknown> = {
+      ...(csRaw as Record<string, unknown>),
+    };
+    for (const [id, entry] of Object.entries(nextCs)) {
+      if (!entry || typeof entry !== "object") continue;
+      const c = { ...(entry as Record<string, unknown>) };
+      if (c.pressure == null || (typeof c.pressure === "number" && Number.isNaN(c.pressure))) {
+        c.pressure = 0;
+      }
+      if (c.trust == null || (typeof c.trust === "number" && Number.isNaN(c.trust))) {
+        c.trust = 0;
+      }
+      if (c.timesTalked == null) c.timesTalked = 0;
+      if (c.available == null) c.available = true;
+      if (c.willingness == null) c.willingness = "open";
+      if (c.stance == null) c.stance = "";
+      if (c.alibiStatus == null) c.alibiStatus = "none";
+      nextCs[id] = c;
+    }
+    state.characterState = nextCs;
+  }
+
+  return state;
+}
+
+function parsePlaythroughState(raw: unknown): PlaythroughState {
+  return PlaythroughStateSchema.parse(sanitizeStateJson(raw));
+}
+
 function rowToState(row: PlaythroughRow): PlaythroughState {
   if (row.state_json && typeof row.state_json === "object") {
-    return PlaythroughStateSchema.parse(row.state_json);
+    return parsePlaythroughState(row.state_json);
   }
   // Legacy rows without state_json
-  return PlaythroughStateSchema.parse({
+  return parsePlaythroughState({
     id: row.id,
     caseId: row.case_id,
     contentVersion: row.content_version,
@@ -129,8 +193,24 @@ export async function getPlaythrough(
   );
   const row = res.rows[0];
   if (!row) return null;
+  const state = rowToState(row);
+  // One-time rewrite when characterState had nulls that used to hard-fail parse.
+  if (
+    row.state_json &&
+    typeof row.state_json === "object" &&
+    characterStateNeedsRepair(row.state_json)
+  ) {
+    try {
+      await updatePlaythrough(pool, {
+        ...state,
+        updatedAt: new Date().toISOString(),
+      });
+    } catch {
+      /* load still succeeds even if rewrite fails */
+    }
+  }
   return {
-    state: rowToState(row),
+    state,
     openingNarration: row.opening_narration,
   };
 }

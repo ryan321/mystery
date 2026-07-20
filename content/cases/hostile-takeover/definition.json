@@ -67,7 +67,8 @@
   "wrapUp": {
     "enabled": true,
     "maxTurns": 8,
-    "allowEarlyExit": true
+    "allowEarlyExit": true,
+    "performanceNotes": "Glass, money, after-hours boardroom fallout. RETURN TO NORMAL: Cole held or detained, short exposed, board and regulators take the case. No invented documents."
   },
   "time": {
     "startSlotId": "night",
@@ -721,21 +722,21 @@
       "when": "success",
       "kind": "solved",
       "title": "Markets closed",
-      "templateNotes": "Cole is held. The short is public. The skyline does not care — but the board will."
+      "templateNotes": "Cole is held. The short is public. RETURN TO NORMAL: the board and outside authority own the crisis; the skyline does not care, but the private war is over for you tonight."
     },
     {
       "id": "success_lucky",
       "when": "success",
       "kind": "lucky_solve",
       "title": "Call on the floor",
-      "templateNotes": "You name Cole early; evidence still fits. Do not invent documents unfound."
+      "templateNotes": "You name Cole early; evidence still fits. RETURN TO NORMAL: he is detained; the short can no longer hide behind your silence. Do not invent documents unfound."
     },
     {
       "id": "partial",
       "when": "partial",
       "kind": "partial",
       "title": "Material nonpublic",
-      "templateNotes": "Enough smoke for arrest; trial will be a war."
+      "templateNotes": "Enough smoke for arrest; trial will be a war. Thin RETURN TO NORMAL: the immediate scheme is interrupted; lawyers replace the locked-floor night."
     },
     {
       "id": "failure_wrong_accusation",

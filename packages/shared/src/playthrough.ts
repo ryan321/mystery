@@ -63,7 +63,33 @@ export const CharacterMemorySchema = z.object({
 });
 export type CharacterMemory = z.infer<typeof CharacterMemorySchema>;
 
-export const CharacterRuntimeStateSchema = z.object({
+/** Coerce null/NaN/missing so old or partial state_json never hard-fails load. */
+function coerceFiniteNumber(v: unknown, fallback: number): number {
+  if (typeof v === "number" && Number.isFinite(v)) return v;
+  if (typeof v === "string" && v.trim() !== "") {
+    const n = Number(v);
+    if (Number.isFinite(n)) return n;
+  }
+  return fallback;
+}
+
+export const CharacterRuntimeStateSchema = z.preprocess((raw) => {
+  if (!raw || typeof raw !== "object") return raw;
+  const o = raw as Record<string, unknown>;
+  return {
+    ...o,
+    available: o.available == null ? true : o.available,
+    willingness: o.willingness ?? "open",
+    pressure: coerceFiniteNumber(o.pressure, 0),
+    trust: coerceFiniteNumber(o.trust, 0),
+    stance: o.stance == null ? "" : o.stance,
+    alibiStatus: o.alibiStatus ?? "none",
+    timesTalked: Math.max(
+      0,
+      Math.floor(coerceFiniteNumber(o.timesTalked, 0))
+    ),
+  };
+}, z.object({
   locationId: z.string(),
   available: z.boolean().default(true),
   willingness: WillingnessSchema.default("open"),
@@ -78,7 +104,7 @@ export const CharacterRuntimeStateSchema = z.object({
     .enum(["claimed", "broken", "abandoned", "none"])
     .default("none"),
   timesTalked: z.number().int().nonnegative().default(0),
-});
+}));
 export type CharacterRuntimeState = z.infer<typeof CharacterRuntimeStateSchema>;
 
 /** Mutable instance of a definition relationship edge. */
@@ -135,6 +161,12 @@ export const LocationRuntimeStateSchema = z.object({
   descriptionAppend: z.string().default(""),
   /** key `${from}->${to}` → open */
   exitOpen: z.record(z.boolean()).default({}),
+  /**
+   * Fog of war: the player knows this place exists (map surface).
+   * Seeded from definition knownAtStart ∪ starting location; also set by
+   * the reveal_location effect. Visited locations are always known.
+   */
+  known: z.boolean().default(false),
 });
 export type LocationRuntimeState = z.infer<typeof LocationRuntimeStateSchema>;
 
@@ -156,6 +188,19 @@ export const TimeStateSchema = z.object({
   reachedSlotIdsThisTurn: z.array(z.string()).default([]),
 });
 export type TimeState = z.infer<typeof TimeStateSchema>;
+
+/**
+ * What the player knows a character AS — identity only, never a factbook
+ * (PLAYER_SURFACES.md §5.4). knownAs starts as introducedAs when the name
+ * is unknown; reveal_character_name / set_known_as effects update it.
+ */
+export const PlayerCharacterKnowledgeSchema = z.object({
+  knownAs: z.string(),
+  nameKnown: z.boolean().default(true),
+});
+export type PlayerCharacterKnowledge = z.infer<
+  typeof PlayerCharacterKnowledgeSchema
+>;
 
 /**
  * An accusation voiced informally ("Vale did it") that awaits formal
@@ -302,6 +347,8 @@ export const PlaythroughStateSchema = z.object({
    */
   playerPersona: PlayerPersonaSnapshotSchema.optional(),
   endingId: z.string().optional(),
+  /** Per-character identity knowledge (knownAs labels). Keyed by character id. */
+  playerKnowledge: z.record(PlayerCharacterKnowledgeSchema).default({}),
   /** Informal accusation awaiting formal confirmation (accuse gate). */
   pendingAccusation: PendingAccusationSchema.optional(),
   /** Set when judgment is rendered (accuse / fail beat), even during denouement. */

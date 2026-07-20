@@ -72,7 +72,7 @@
     "enabled": true,
     "maxTurns": 8,
     "allowEarlyExit": true,
-    "performanceNotes": "Victorian formality, fog, newspaper ink. Confessions are stiff. Do not invent Ripper theatrics."
+    "performanceNotes": "Victorian formality, fog, newspaper ink. RETURN TO NORMAL: Crowe held, case for Whitehall/police, streets leave private crisis. Confessions stiff. No Ripper theatrics."
   },
   "time": {
     "startSlotId": "dawn",
@@ -820,21 +820,21 @@
       "when": "success",
       "kind": "solved",
       "title": "Not the Ripper",
-      "templateNotes": "Crowe is held. The ledger and proof close the case. Fog still lies; the truth does not. Tell the papers carefully."
+      "templateNotes": "Crowe is held. The ledger and proof close the case. RETURN TO NORMAL: proper authority takes the prisoner; the fog still lies over London, but this murder is no longer only yours to carry. Tell the papers carefully."
     },
     {
       "id": "success_lucky",
       "when": "success",
       "kind": "lucky_solve",
       "title": "A name in the fog",
-      "templateNotes": "You name Crowe before every sheet is read. He still breaks. Do not invent unfound print."
+      "templateNotes": "You name Crowe before every sheet is read. He still breaks. RETURN TO NORMAL: he is detained; the night's private hunt ends in official hands. Do not invent unfound print."
     },
     {
       "id": "partial",
       "when": "partial",
       "kind": "partial",
       "title": "Pending brief",
-      "templateNotes": "Enough for detention; Whitehall will fight the rest."
+      "templateNotes": "Enough for detention; Whitehall will fight the rest. Thin RETURN TO NORMAL: Crowe is not free to vanish into the fog; the full public story waits on politics."
     },
     {
       "id": "failure_wrong_accusation",

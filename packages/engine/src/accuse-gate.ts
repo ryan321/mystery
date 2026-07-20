@@ -7,6 +7,7 @@ import type {
 } from "@mystery/shared";
 import { accusedCharacterIds } from "./accusation.js";
 import { mergeFlags } from "./flags.js";
+import { knownAsFor } from "./identity.js";
 
 /**
  * Explicitly formal wording — judged immediately, no confirmation turn.
@@ -30,8 +31,13 @@ export type AccuseGateResult = {
   notes: string[];
 };
 
-function suspectNames(def: MysteryDefinition, ids: string[]): string[] {
-  return ids.map((id) => def.characters.find((c) => c.id === id)?.name ?? id);
+function suspectNames(
+  def: MysteryDefinition,
+  state: PlaythroughState,
+  ids: string[]
+): string[] {
+  // Use the player's current labels — never leak an unrevealed real name.
+  return ids.map((id) => knownAsFor(def, state, id));
 }
 
 function withAccusedFlags(
@@ -131,7 +137,7 @@ export function applyAccuseGate(
       },
       suspectIds
     );
-    const names = suspectNames(def, suspectIds);
+    const names = suspectNames(def, next, suspectIds);
     justHappened.push({
       id: "accusation_pending",
       summary: `Accusation pending confirmation${names.length ? `: ${names.join(", ")}` : ""}`,

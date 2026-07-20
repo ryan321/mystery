@@ -67,12 +67,14 @@ Belongs to the run as a whole — *meta* of the investigation, not the weather o
 
 Solving (or failing) should **not** hard-cut to a title card by default. After judgment the case enters **denouement**: still freeform, still characterful, but the mystery is **decided**.
 
+**Return to normal (default).** A correct accusation is only half the win. Success endings and denouement should stage a **rebalance of the world** — the “FBI arrives” beat. Design that resolution **into** the mystery: main characters need real **motivations** (especially leads); rebalance is **diegetic** (NPC goals, institutional clocks, *or* authored player agency such as refusing the wrong dose) — never the score alone. NPC flipping is one pattern, not the only one. Exceptions (still snowed in until dawn) must still show *why* the balance changed and what still cannot. See [CASE_AUTHORING.md](./CASE_AUTHORING.md) product stance.
+
 | | Investigation (`active`) | Wrap-up (`denouement`) | Closed (`solved` / `failed`) |
 |--|--------------------------|-------------------------|------------------------------|
 | Talk / look / move | Yes | Yes | No |
 | Accuse | Yes | No (already judged) | No |
 | Solution sealed | Yes | Partially lifted for aftermath | N/A |
-| Character behavior | Clue-gated | Consequence-driven (confess, freeze out, flee) | Frozen |
+| Character behavior | Clue-gated | Consequence-driven (confess, freeze out, flee) + return-to-normal | Frozen |
 
 ```ts
 wrapUp?: {
@@ -224,7 +226,7 @@ Ending {
 
 Mystery fiction is people tangled together. We model **directed edges** — not a player relationship map or detective board.
 
-**Product stance:** no notebook/map/relationship HUD. Bonds surface the way a novel would: dialogue, glances, defenses, gossip. The engine still *owns* the graph so the AI cannot invent “I’ve always loved you” mid-case.
+**Product stance (revised — see [PLAYER_SURFACES.md](./PLAYER_SURFACES.md)):** no **omniscient** surfaces — no relationship graph, no willingness/pressure meters, no clue checklists. Diegetic *ambient-knowledge* surfaces (opening dossier, sketch map with fog of war, cast panel, notebook, scene panel) are **in**: they show what the character perceives or already knows, the way a novel's front matter did. Bonds still surface the way a novel would — dialogue, glances, defenses, gossip; the cast dossier shows only `knownToPlayer` edges. The engine still *owns* the graph so the AI cannot invent “I’ve always loved you” mid-case.
 
 ```ts
 RelationshipEdge {
@@ -1109,6 +1111,7 @@ Leak tests (with LLM, nightly):
 8. **Canon stays sealed**; investigation plot + world weather/time + detective-as-target are the living layer.  
 9. **Plot can happen to the detective** (hostility, ransacked room, threats) via authored beats — optional per case, never freeform sandbox violence.  
 10. **Failure is first-class** — time runs out, you are killed, you are arrested, or you name the wrong person. Multiple `when: "failure"` endings distinguished by `kind` / `id`.
+11. **Ambient knowledge is free; discoveries are earned.** The player lacks the protagonist's built-in familiarity (a novel narrates it), so every case ships an opening package, starting spatial knowledge (map fog seed), and cast front matter as authored content — diegetic surfaces, never omniscient ones ([PLAYER_SURFACES.md](./PLAYER_SURFACES.md)).
 
 ---
 

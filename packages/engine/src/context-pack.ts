@@ -7,6 +7,7 @@ import {
 } from "./relationships.js";
 import { listInventory } from "./inventory.js";
 import { STATIC_POLICY } from "./static-pack.js";
+import { characterNameKnown, knownAsFor } from "./identity.js";
 
 export function buildContextPack(
   def: MysteryDefinition,
@@ -100,10 +101,14 @@ export function buildContextPack(
       const c = def.characters.find((ch) => ch.id === id);
       const cs = state.characterState[id];
       if (!c || !cs?.available) return null;
+      const nameKnown = characterNameKnown(def, state, c.id);
       return {
         id: c.id,
-        name: c.name,
-        shortBio: c.shortBio ?? "",
+        // The player's current label — the real name only once learned.
+        name: knownAsFor(def, state, c.id),
+        nameKnown,
+        // shortBio may contain the real name; withhold until identity known.
+        shortBio: nameKnown ? c.shortBio ?? "" : "",
         willingness: cs.willingness,
         stance: cs.stance,
         pressure: cs.pressure,
@@ -152,7 +157,7 @@ export function buildContextPack(
     .filter((c) => !presentIdList.includes(c.id))
     .map((c) => ({
       id: c.id,
-      name: c.name,
+      name: knownAsFor(def, state, c.id),
       storyRole: c.storyRole ?? "suspect",
       /** Where they currently are, if known — for "elsewhere" references only. */
       locationId: state.characterState[c.id]?.locationId,
@@ -183,7 +188,12 @@ export function buildContextPack(
      */
     cast: def.characters.map((c) => ({
       id: c.id,
-      name: c.name,
+      /**
+       * The player's current label for them ("Orderly" until a name reveal).
+       * The real name enters the pack only once the player has learned it.
+       */
+      name: knownAsFor(def, state, c.id),
+      nameKnown: characterNameKnown(def, state, c.id),
       storyRole: c.storyRole ?? "suspect",
       /** Relative portrait path from definition (UI resolves URL). */
       portrait: c.portrait,
@@ -260,8 +270,8 @@ export function buildContextPack(
       ? {
           summary: state.pendingAccusation.summary,
           suspectIds: state.pendingAccusation.suspectIds,
-          suspectNames: state.pendingAccusation.suspectIds.map(
-            (id) => def.characters.find((c) => c.id === id)?.name ?? id
+          suspectNames: state.pendingAccusation.suspectIds.map((id) =>
+            knownAsFor(def, state, id)
           ),
           method: state.pendingAccusation.method,
           motive: state.pendingAccusation.motive,
@@ -359,7 +369,7 @@ export function buildContextPack(
       ...STATIC_POLICY,
       denouement:
         state.status === "denouement"
-          ? "WRAP-UP MODE: The case has been judged (see resolution/ending). Stay interactive: characters react, the accused may confess or rage, household falls out. Player may still talk, look, move, and leave. Do NOT treat the mystery as unsolved. Do NOT invent a new killer. Consequences matter."
+          ? "WRAP-UP MODE: The case has been judged (see resolution/ending). Stay interactive: characters react, the accused may confess or rage, household falls out. Stage RETURN TO NORMAL from ending notes — DIEGETICALLY: who acts and why (keys, clerk, boat, morning rounds), never magic unlock because the score succeeded. Winning is truth that rebalances the world through people already in the story. Player may still talk, look, move, and leave. Do NOT treat the mystery as unsolved. Do NOT invent a new killer. Consequences matter."
           : "Investigation mode: solution sealed until judged.",
       accusations: state.pendingAccusation
         ? "pendingAccusation is present: the player has voiced a theory but NOT formally committed. Nothing has been judged. Ask in-fiction whether they commit; do not confirm, deny, or resolve the theory."
@@ -402,7 +412,9 @@ function characterSlice(
 
   return {
     id: c.id,
-    name: c.name,
+    // Player's current label — real name only once learned (identity rule).
+    name: knownAsFor(def, state, characterId),
+    nameKnown: characterNameKnown(def, state, characterId),
     voice: c.voice ?? "",
     defenses: c.defenses,
     willingness: cs?.willingness ?? "open",

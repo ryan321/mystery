@@ -63,6 +63,17 @@ export type CharacterStoryRole = z.infer<typeof CharacterStoryRoleSchema>;
 export const CharacterSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
+  /**
+   * The player's initial label when the name is not yet known
+   * (e.g. "Orderly", "the woman in 3B"). UI and narration use this until
+   * a reveal_character_name / set_known_as effect fires.
+   */
+  introducedAs: z.string().optional(),
+  /**
+   * Whether the player starts knowing the real name. Manor introductions:
+   * true (default). Amnesia ward / strangers: false → introducedAs is used.
+   */
+  nameKnownAtStart: z.boolean().default(true),
   shortBio: z.string().optional(),
   voice: z.string().optional(),
   /**
@@ -202,6 +213,22 @@ export const LocationSchema = z.object({
   name: z.string().min(1),
   description: z.string().min(1),
   startsAccessible: z.boolean().default(true),
+  /**
+   * Fog-of-war seed: the player knows this place exists before visiting
+   * (persona familiarity — a local knows their own house; a stranger does
+   * not). The starting location is always known.
+   */
+  knownAtStart: z.boolean().default(false),
+  /** Authored sketch-map coordinates for the fog-of-war map UI. */
+  map: z
+    .object({
+      x: z.number(),
+      y: z.number(),
+      floor: z.number().int().optional(),
+    })
+    .optional(),
+  /** Authored establishing-shot image path relative to the case folder. */
+  image: z.string().min(1).optional(),
   exits: z.array(ExitSchema).default([]),
   inspectables: z.array(InspectableSchema).default([]),
   charactersPresent: z.array(CharacterPresenceSchema).default([]),
@@ -363,6 +390,27 @@ export type Ending = z.infer<typeof EndingSchema>;
  * shared catalog and appear across many mysteries with case-specific
  * overrides (role, starting knowledge, clothing).
  */
+/**
+ * Structured opening package — the ambient knowledge the protagonist starts
+ * with, rendered as a diegetic artifact (case file, invitation, or "what you
+ * already know" for accidental protagonists). Never contains spoilers.
+ */
+export const BriefingSectionSchema = z.object({
+  heading: z.string().min(1),
+  text: z.string().min(1),
+});
+export type BriefingSection = z.infer<typeof BriefingSectionSchema>;
+
+export const BriefingSchema = z.object({
+  /** Diegetic form; drives UI presentation. */
+  form: z
+    .enum(["dossier", "letter", "telegram", "invitation", "memory", "custom"])
+    .default("dossier"),
+  title: z.string().optional(),
+  sections: z.array(BriefingSectionSchema).default([]),
+});
+export type Briefing = z.infer<typeof BriefingSchema>;
+
 export const PlayerPersonaSchema = z.object({
   /**
    * Stable id for a recurring persona across mysteries
@@ -428,6 +476,11 @@ export const PlayerPersonaSchema = z.object({
    * Shown on the mystery page and at the start of play.
    */
   objective: z.string().optional(),
+  /**
+   * Structured opening package (PLAYER_SURFACES.md §5.1). When absent, the
+   * UI derives one from meta.premise + startingKnowledge + objective.
+   */
+  briefing: BriefingSchema.optional(),
 });
 export type PlayerPersona = z.infer<typeof PlayerPersonaSchema>;
 

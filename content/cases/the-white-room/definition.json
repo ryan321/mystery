@@ -72,7 +72,7 @@
     "enabled": true,
     "maxTurns": 10,
     "allowEarlyExit": true,
-    "performanceNotes": "Quiet, intimate, institutional. Reveal identity carefully. No supernatural explanations — human lies only."
+    "performanceNotes": "Quiet, institutional aftermath. RETURN TO NORMAL must be DIEGETIC: Ada's keys, June's day book and early call for rounds, Bram standing down without nurse cosign. Never free the player because the accusation 'scored.' Formal charge + flipped staff + the morning schedule the asylum already runs. Player may remain inside until rounds. No supernatural explanations."
   },
   "time": {
     "startSlotId": "night",
@@ -146,6 +146,18 @@
       "id": "full_restraint_applied",
       "aiVisible": true,
       "defaultValue": false
+    },
+    {
+      "id": "ada_flipped",
+      "aiVisible": true,
+      "defaultValue": false,
+      "description": "Ada admitted the forge and will not re-sedate for More"
+    },
+    {
+      "id": "june_logged_truth",
+      "aiVisible": true,
+      "defaultValue": false,
+      "description": "June logged true intake / will show morning authority"
     }
   ],
   "locations": [
@@ -381,7 +393,7 @@
     {
       "id": "ada-crane",
       "name": "Ada Crane",
-      "shortBio": "Night nurse; soft voice; keys on a ribbon.",
+      "shortBio": "Night nurse; soft voice; keys on a ribbon — she opens doors More never touches.",
       "voice": "Soothing, practiced, dangerous when rushed",
       "portrait": "portraits/ada-crane.jpg",
       "defaultLocationId": "corridor",
@@ -482,7 +494,7 @@
     {
       "id": "june-pell",
       "name": "June Pell",
-      "shortBio": "Ward clerk; ink stains; knows which files were rewritten.",
+      "shortBio": "Ward clerk; ink stains; controls the day book and who morning rounds see first.",
       "voice": "Quiet, precise, scared of More",
       "portrait": "portraits/june-pell.jpg",
       "defaultLocationId": "ward-office",
@@ -948,6 +960,11 @@
           "value": "open"
         },
         {
+          "type": "set_stance",
+          "characterId": "ada-crane",
+          "value": "ally_keys"
+        },
+        {
           "type": "add_pressure",
           "characterId": "dr-silas-more",
           "by": 1
@@ -956,9 +973,70 @@
           "type": "reveal_knowledge",
           "characterId": "ada-crane",
           "knowledgeId": "ada-admits-forge"
+        },
+        {
+          "type": "set_game_flag",
+          "id": "ada_flipped",
+          "value": true
+        },
+        {
+          "type": "release_player",
+          "text": "Ada uses the keys on her ribbon. She will not hang for More's forge — straps, locks, and chemical orders from him stop under her hands."
         }
       ],
-      "narrationHints": "Ada's care mask slips. She would rather talk than hang alone."
+      "narrationHints": "Ada's care mask slips. She would rather talk than hang alone. DIEGETIC: she has the night keys — if the player is held or restrained, she unstraps/unlocks them herself. She will not re-sedate on More's order. She wants the true intake seen by morning rounds, not burned.",
+      "reactions": [
+        {
+          "characterId": "ada-crane",
+          "lineHint": "I countersigned what he told me to. If morning sees your true intake, I am finished unless I am the one who opens the door.",
+          "stance": "ally_keys"
+        }
+      ]
+    },
+    {
+      "id": "june_logs_truth",
+      "title": "June logs the true intake",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "presented",
+            "evidenceId": "true-intake",
+            "toCharacterId": "june-pell"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_willingness",
+          "characterId": "june-pell",
+          "value": "open"
+        },
+        {
+          "type": "set_game_flag",
+          "id": "june_logged_truth",
+          "value": true
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "dr-silas-more",
+          "by": 1
+        },
+        {
+          "type": "notebook_append",
+          "text": "June has copied the true intake into the day book. Morning authority will see Cassandra Vale — not Reed."
+        }
+      ],
+      "reactions": [
+        {
+          "characterId": "june-pell",
+          "lineHint": "I can log this under irregular admission. When rounds come, it will already be on the desk — not in the incinerator.",
+          "stance": "brave_clerk"
+        }
+      ],
+      "narrationHints": "June is scared of More but more scared of being the last name on a forged file. DIEGETIC rebalance setup: she logs the true intake for morning rounds / outside authority. She does not fight Bram; she uses paperwork and the schedule the institution already runs."
     },
     {
       "id": "wrong_eli",
@@ -1011,7 +1089,7 @@
       "effects": [
         {
           "type": "release_player",
-          "text": "When the truth sticks, the hands on you loosen. You are free of straps and grip — for now."
+          "text": "If you were still held: Ada's keys (or June fetching her) end the restraint — not the accusation alone. Staff who flipped will not re-strap you for More tonight."
         },
         {
           "type": "move_character",
@@ -1032,9 +1110,49 @@
           "type": "set_willingness",
           "characterId": "june-pell",
           "value": "open"
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "bram-holt",
+          "value": "guarded"
+        },
+        {
+          "type": "set_stance",
+          "characterId": "bram-holt",
+          "value": "will_not_restrain_without_nurse"
+        },
+        {
+          "type": "advance_time",
+          "toSlotId": "predawn"
+        },
+        {
+          "type": "set_ambient",
+          "ambient": "ward_waiting_for_rounds"
+        },
+        {
+          "type": "notebook_append",
+          "text": "The night is broken. Morning rounds will walk into a crime scene and a true name — if the file is held open."
         }
       ],
-      "narrationHints": "Morning rounds will bring real authorities — if you hold the door open. Release any restraint on the player."
+      "narrationHints": "DIEGETIC RETURN TO NORMAL — do NOT free the player because the score succeeded. Cause chain: (1) Ada has the night keys; once flipped or after a formal charge that dooms her if she stays silent, she unstraps/unlocks and refuses More's chemical orders. (2) June logs/holds the true intake and rings early for morning rounds / duty authority — the institution's own schedule, accelerated. (3) Bram will not re-restrain without nurse cosign once murder is on the table. (4) More retreats to the office, unmasked among staff who will not die for him. Player may still be INSIDE Ravenscroft until morning authority arrives — that is the honest limit. Stage keys, the day book, the early bell, predawn light — not magic straps. If Ada never flipped in play, she flips now under the weight of a formal accusation of More (self-preservation), still using keys for a reason.",
+      "title": "Keys, clerk, morning",
+      "reactions": [
+        {
+          "characterId": "ada-crane",
+          "lineHint": "I have the keys. I will not put you under again for him. When rounds come, I tell them I countersigned under order — and that Marrow did not resign.",
+          "stance": "ally_keys"
+        },
+        {
+          "characterId": "june-pell",
+          "lineHint": "The true intake is on the day desk. I rang the duty board early. Someone above More is coming with the morning.",
+          "stance": "brave_clerk"
+        },
+        {
+          "characterId": "bram-holt",
+          "lineHint": "I hold people when the nurse says. Not when the director is the one being accused of murder.",
+          "stance": "will_not_restrain_without_nurse"
+        }
+      ]
     }
   ],
   "solution": {
@@ -1133,21 +1251,21 @@
       "when": "success",
       "kind": "solved",
       "title": "Name restored",
-      "templateNotes": "You are Cassandra Vale. More falls. Ada may flip. The white room was never medicine — it was a muzzle. Hold the file until morning."
+      "templateNotes": "You are Cassandra Vale, and the evidence made it undeniable. DIEGETIC RETURN TO NORMAL: Ada Crane — cornered by the forge — uses her night keys to end any restraint and refuses More's sedation orders. June Pell logs the true intake and rings early for morning rounds / duty authority. Bram will not put hands on you again without a nurse cosign while the director is accused of murder. More is isolated in the office, not magically vanished. You may still be inside the building until rounds arrive; hold the file open. The white room was a muzzle — morning is the unlock, carried by people with keys and a day book."
     },
     {
       "id": "success_lucky",
       "when": "success",
       "kind": "lucky_solve",
       "title": "A name in the dark",
-      "templateNotes": "You name More before every page is read. The ward still cracks. Do not invent files unfound."
+      "templateNotes": "You name More before every page is read. He still breaks under a formal charge. DIEGETIC RETURN TO NORMAL: a public accusation of the director is something the night staff cannot bury without hanging themselves. Ada protects herself with the keys (unstrap / no re-sedate); June puts a name on the early board for rounds; Bram stands down without nurse order. Do not invent files unfound. You may not walk free this minute — but the ward's own hierarchy and morning schedule are what free you from More's private night, not the words alone."
     },
     {
       "id": "partial",
       "when": "partial",
       "kind": "partial",
       "title": "Held for review",
-      "templateNotes": "Enough to stop More's night; the full conspiracy needs daylight and lawyers."
+      "templateNotes": "Enough to stop More's night; the full conspiracy needs daylight and lawyers. Thin DIEGETIC RETURN TO NORMAL: June can still log irregular admission; Ada may not fully flip but will not re-dose you while the charge is live; you are not sedated into silence. Freedom is not paperwork-complete until morning authority reads the book."
     },
     {
       "id": "failure_wrong_accusation",

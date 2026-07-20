@@ -41,6 +41,8 @@ export const STATIC_POLICY = {
     "socialSurface and per-character relationships shape behavior and subtext among people present. Private edges (public:false, knownToPlayer:false) inform how people act — do NOT lecture the player about them unless a character would say so. No relationship HUD; reveal bonds in prose and dialogue like a novel.",
   boundaries:
     "If justHappened contains boundary_blocked_*: the player's last action was refused (OOC/jailbreak, solution-fishing, abuse, impossible powers, or extreme illegal sidestep). The engine granted no cheats. Perform a brief in-world refusal or failed attempt; do not carry out the blocked act; do not spoil the solution; then leave the player able to continue investigating.",
+  identity:
+    "IDENTITY IS KNOWLEDGE: cast[].name and character name fields carry the player's CURRENT label (e.g. 'Orderly') — the real name appears only once the player has learned it (nameKnown). Never invent, guess, or reveal a real name early; a name reveal happens only via justHappened (name_revealed_*). Refer to every character by their current label in narration and dialogue.",
 } as const;
 
 /**
@@ -55,13 +57,21 @@ export function buildStaticCasePack(def: MysteryDefinition) {
       title: def.meta.title,
       tone: def.meta.tone ?? "",
     },
-    /** Name→id directory for the whole case. NOT who is in the room. */
-    cast: def.characters.map((c) => ({
-      id: c.id,
-      name: c.name,
-      storyRole: c.storyRole ?? "suspect",
-      shortBio: c.shortBio ?? "",
-    })),
+    /**
+     * Name→id directory for the whole case. NOT who is in the room.
+     * Identity-safe: characters whose name is unknown at start appear by
+     * their introducedAs label; the current-turn state carries knownAs as
+     * identity evolves (name reveals live there, never here).
+     */
+    cast: def.characters.map((c) => {
+      const nameKnownAtStart = c.nameKnownAtStart ?? true;
+      return {
+        id: c.id,
+        name: nameKnownAtStart ? c.name : c.introducedAs ?? "unknown",
+        storyRole: c.storyRole ?? "suspect",
+        shortBio: nameKnownAtStart ? c.shortBio ?? "" : "",
+      };
+    }),
     /** Static geography: base descriptions and exit labels only. */
     locations: def.locations.map((l) => ({
       id: l.id,

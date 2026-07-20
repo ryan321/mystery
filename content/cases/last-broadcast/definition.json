@@ -68,7 +68,7 @@
     "enabled": true,
     "maxTurns": 8,
     "allowEarlyExit": true,
-    "performanceNotes": "Podcast world aftermath — statements, deleted episodes, quiet studio."
+    "performanceNotes": "Podcast-world aftermath — statements, deleted episodes, quiet studio. RETURN TO NORMAL: Blake held, story no longer brand-controlled, truth can air."
   },
   "time": {
     "startSlotId": "evening",
@@ -738,21 +738,21 @@
       "when": "success",
       "kind": "solved",
       "title": "End of show",
-      "templateNotes": "Blake is held. The USB and outline close the loop. Kai grieves. The feed will carry a different final episode — truth, not brand."
+      "templateNotes": "Blake is held. The USB and outline close the loop. Kai grieves. RETURN TO NORMAL: counsel and platform process take the case; the feed will carry a different final episode — truth, not brand."
     },
     {
       "id": "success_lucky",
       "when": "success",
       "kind": "lucky_solve",
       "title": "Cold open",
-      "templateNotes": "You name Blake before every file is checked. He still folds. Do not invent unfound audio."
+      "templateNotes": "You name Blake before every file is checked. He still folds. RETURN TO NORMAL: he is detained; the narrative is no longer his alone. Do not invent unfound audio."
     },
     {
       "id": "partial",
       "when": "partial",
       "kind": "partial",
       "title": "Pending review",
-      "templateNotes": "Enough to detain; lawyers already circling. The story is incomplete."
+      "templateNotes": "Enough to detain; lawyers already circling. Thin RETURN TO NORMAL: the immediate cover story is broken; the full public cut is incomplete."
     },
     {
       "id": "failure_wrong_accusation",

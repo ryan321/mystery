@@ -73,7 +73,7 @@
     "enabled": true,
     "maxTurns": 8,
     "allowEarlyExit": true,
-    "performanceNotes": "Fog, tide, and working-waterfront aftermath. The guilty may confess or curse the tide. Keep it salty and grounded."
+    "performanceNotes": "Fog, tide, working-waterfront aftermath. RETURN TO NORMAL: county boat, custody for the guilty, the pier leaves private crisis. Keep it salty and grounded."
   },
   "time": {
     "startSlotId": "first_light",
@@ -1176,21 +1176,21 @@
       "when": "success",
       "kind": "solved",
       "title": "The Merrow stays tied",
-      "templateNotes": "Briggs is held for the county boat. The gaff, the log scrap, and the watch make a chain even fog cannot cut. Nell does not celebrate. Sam stands watch over a friend who will not stand again. Outside, the tide begins to rise — on schedule, indifferent."
+      "templateNotes": "Briggs is held for the county boat. The gaff, the log scrap, and the watch make a chain even fog cannot cut. RETURN TO NORMAL: real authority takes him; the flats will flood on schedule, but the case is no longer yours alone; Nell does not celebrate. Sam stands watch over a friend who will not stand again. Outside, the tide begins to rise — indifferent, but the murder is no longer a secret of the fog."
     },
     {
       "id": "success_lucky",
       "when": "success",
       "kind": "lucky_solve",
       "title": "A name in the fog",
-      "templateNotes": "You named Briggs before every board was checked. Still, the truth lands: he cracks under the accusation, salt and guilt in equal measure. Do not invent proof the player never found. The pier listens. The Merrow does not leave."
+      "templateNotes": "You named Briggs before every board was checked. Still, the truth lands: he cracks under the accusation. RETURN TO NORMAL: he is held for the county; the pier is no longer his to stage. Do not invent proof the player never found. The Merrow does not leave as a free man."
     },
     {
       "id": "partial",
       "when": "partial",
       "kind": "partial",
       "title": "Enough to hold",
-      "templateNotes": "You have Briggs by the collar but the file is thin. He will fight the county every step. The fog does not clear — it only thins."
+      "templateNotes": "You have Briggs by the collar but the file is thin. He will fight the county every step. Thin RETURN TO NORMAL: he is not free to run the pier; the fog only thins; the full chain still needs daylight."
     },
     {
       "id": "failure_wrong_accusation",

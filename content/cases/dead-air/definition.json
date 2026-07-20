@@ -69,7 +69,7 @@
     "enabled": true,
     "maxTurns": 8,
     "allowEarlyExit": true,
-    "performanceNotes": "Cold, metallic, quiet. Confessions are short. No magic tech; stick to station systems."
+    "performanceNotes": "Cold, metallic, quiet. RETURN TO NORMAL: culprit brigged, systems under survivor/company control, undock path restored. Confessions short. No magic tech."
   },
   "time": {
     "startSlotId": "relief_dock",
@@ -828,21 +828,21 @@
       "when": "success",
       "kind": "solved",
       "title": "Signal restored",
-      "templateNotes": "Quinn is restrained for undock. Logs and the key close the loop. Jupiter does not care — but the company will."
+      "templateNotes": "Quinn is restrained for undock. Logs and the key close the loop. RETURN TO NORMAL: engineering is no longer hers alone; the station can call company authority and prepare the ride home. Jupiter does not care — but the living can leave with a true report."
     },
     {
       "id": "success_lucky",
       "when": "success",
       "kind": "lucky_solve",
       "title": "Cold call",
-      "templateNotes": "You name Quinn early; systems still fit. Do not invent telemetry unfound."
+      "templateNotes": "You name Quinn early; systems still fit. RETURN TO NORMAL: she is brigged or held; command of the critical systems returns to the investigation. Do not invent telemetry unfound."
     },
     {
       "id": "partial",
       "when": "partial",
       "kind": "partial",
       "title": "Hold for counsel",
-      "templateNotes": "Enough to brig her; lawyers will argue vacuum and code."
+      "templateNotes": "Enough to brig her; lawyers will argue vacuum and code. Thin RETURN TO NORMAL: immediate threat is contained; undock and company review will finish what the night started."
     },
     {
       "id": "failure_wrong_accusation",
