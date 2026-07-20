@@ -18,6 +18,18 @@ export function assetUrl(path?: string | null): string | undefined {
   return `${base}${p}`;
 }
 
+/** Plain dark panel for the rare bundle that ships no cover. */
+const COVER_FALLBACK =
+  "data:image/svg+xml," +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360"><rect width="640" height="360" fill="#12151c"/></svg>'
+  );
+
+/** Cover art for a shelf/detail card — bundle coverUrl or a neutral panel. */
+export function coverSrc(c: { coverUrl?: string | null }): string {
+  return assetUrl(c.coverUrl) ?? COVER_FALLBACK;
+}
+
 /**
  * PlayerView carries raw definition-relative asset paths (e.g.
  * "portraits/henshaw.jpg") — resolve them against the case asset route.

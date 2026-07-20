@@ -3,22 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Atmosphere from "../components/Atmosphere";
-import { listCases } from "../lib/api";
+import { coverSrc, listCases } from "../lib/api";
 import { difficultyClass, difficultyLabel, themeTags } from "../lib/format";
 import type { CaseSummary } from "../lib/types";
 import styles from "./page.module.css";
-
-const CASE_IMAGES: Record<string, string> = {
-  "blackwood-inheritance": "/images/cases/blackwood-inheritance.jpg",
-  "pier-at-low-tide": "/images/cases/pier-at-low-tide.jpg",
-  "last-broadcast": "/images/cases/last-broadcast.jpg",
-  "dead-air": "/images/cases/dead-air.jpg",
-  "london-1888": "/images/cases/london-1888.jpg",
-  "snowbound-lodge": "/images/cases/snowbound-lodge.jpg",
-  "the-white-room": "/images/cases/the-white-room.jpg",
-  "hostile-takeover": "/images/cases/hostile-takeover.jpg",
-  "cant-trick-rick": "/images/cases/cant-trick-rick.jpg",
-};
 
 export default function HomePage() {
   const [cases, setCases] = useState<CaseSummary[]>([]);
@@ -108,13 +96,7 @@ export default function HomePage() {
                   <Link key={c.id} href={`/mystery/${c.id}`} className={styles.caseCardLink}>
                     <article className={styles.caseCard}>
                       <div className={styles.caseImage}>
-                        <img
-                          src={
-                            CASE_IMAGES[c.id] ??
-                            "/images/cases/blackwood-inheritance.jpg"
-                          }
-                          alt=""
-                        />
+                        <img src={coverSrc(c)} alt="" />
                       </div>
                       <div className={styles.caseBody}>
                         <div className={styles.caseTitleRow}>

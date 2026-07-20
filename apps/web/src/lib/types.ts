@@ -19,6 +19,8 @@ export type CaseSummary = {
   id: string;
   contentVersion: string;
   meta: CaseMeta;
+  /** Bundle cover art (API-relative, e.g. "/v1/cases/<id>/assets/cover.jpg"). */
+  coverUrl?: string;
 };
 
 export type CastMember = {
@@ -52,6 +54,8 @@ export type CaseDetail = {
   id: string;
   contentVersion: string;
   meta: CaseMeta;
+  /** Bundle cover art (API-relative, e.g. "/v1/cases/<id>/assets/cover.jpg"). */
+  coverUrl?: string;
   player?: MysteryPlayerInfo;
   cast?: CastMember[];
 };

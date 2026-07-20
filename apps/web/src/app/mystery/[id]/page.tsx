@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import Atmosphere from "../../../components/Atmosphere";
-import { assetUrl, getCase, startCase } from "../../../lib/api";
+import { assetUrl, coverSrc, getCase, startCase } from "../../../lib/api";
 import { difficultyLabel, themeTags } from "../../../lib/format";
 import { getPlayState, markBeingPlayed } from "../../../lib/playState";
 import type { CaseDetail } from "../../../lib/types";
@@ -26,18 +26,6 @@ function beginPlaythrough(
     );
   }
 }
-
-const CASE_IMAGES: Record<string, string> = {
-  "blackwood-inheritance": "/images/cases/blackwood-inheritance.jpg",
-  "pier-at-low-tide": "/images/cases/pier-at-low-tide.jpg",
-  "last-broadcast": "/images/cases/last-broadcast.jpg",
-  "dead-air": "/images/cases/dead-air.jpg",
-  "london-1888": "/images/cases/london-1888.jpg",
-  "snowbound-lodge": "/images/cases/snowbound-lodge.jpg",
-  "the-white-room": "/images/cases/the-white-room.jpg",
-  "hostile-takeover": "/images/cases/hostile-takeover.jpg",
-  "cant-trick-rick": "/images/cases/cant-trick-rick.jpg",
-};
 
 /** Only The Blackwood Inheritance is free for now. */
 const FREE_CASE_IDS = new Set(["blackwood-inheritance"]);
@@ -153,11 +141,7 @@ export default function CaseDetailPage() {
           </Link>
 
           <div className={styles.hero}>
-            <img
-              className={styles.heroImage}
-              src={CASE_IMAGES[id] ?? "/images/cases/blackwood-inheritance.jpg"}
-              alt=""
-            />
+            <img className={styles.heroImage} src={coverSrc(detail)} alt="" />
             <div className={styles.heroOverlay} />
             <div className={styles.heroContent}>
               <p className={styles.eyebrow}>Mystery</p>
