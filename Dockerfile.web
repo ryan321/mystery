@@ -14,7 +14,8 @@ FROM base AS build
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
+# tsconfig.base.json: packages/shared's tsconfig extends it.
+COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
 COPY packages/shared/package.json packages/shared/
 COPY apps/web/package.json apps/web/
 RUN pnpm install --frozen-lockfile --filter "@mystery/web..."
