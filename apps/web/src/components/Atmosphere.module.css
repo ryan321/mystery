@@ -1,7 +1,10 @@
 .atmosphere {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  /* Below all page content, including unpositioned elements — the
+     landing page relies on this so its logo can mix-blend into the
+     scene without a stacking-context sandwich. */
+  z-index: -1;
   overflow: hidden;
   pointer-events: none;
   background:

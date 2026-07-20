@@ -1,8 +1,9 @@
-.home {
-  position: relative;
-  z-index: 1;
-  min-height: 100vh;
-  padding: 2rem 1.5rem;
+/* ── Landing page: the logo over the manor in the rain ─────────────── */
+
+.landing {
+  /* No z-index here: a stacking context would isolate the logo's
+     mix-blend-mode from the fixed Atmosphere behind it. The main
+     element still paints above the atmosphere via DOM order. */
   overflow-y: auto;
   max-height: calc(100vh - 3.5rem);
 }
@@ -10,243 +11,348 @@
 .inner {
   width: min(1120px, 100%);
   margin: 0 auto;
+  padding: 0 1.5rem 3rem;
 }
 
-.header {
-  margin-bottom: 1.5rem;
+/* ── Hero ──────────────────────────────────────────────────────────── */
+
+.hero {
+  min-height: calc(92vh - 3.5rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 1.5rem 3rem;
+}
+
+.logo {
+  width: min(620px, 92vw);
+  height: auto;
+  /* The logo ships on a near-black ground; screen blending melts it
+     into the night so the manor and rain read through behind it. */
+  mix-blend-mode: screen;
+  filter: drop-shadow(0 0 48px rgba(212, 181, 106, 0.18));
+  animation: logo-rise 1.4s ease-out both;
+}
+
+@keyframes logo-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tagline {
+  margin: 0.5rem 0 1.75rem;
+  max-width: 34rem;
+  color: var(--fog);
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  line-height: 1.65;
+  text-wrap: balance;
+}
+
+.heroNote {
+  margin-top: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--candle-dim);
+}
+
+/* ── Calls to action ───────────────────────────────────────────────── */
+
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  justify-content: center;
+}
+
+.ctaPrimary,
+.ctaGhost {
+  display: inline-block;
+  padding: 0.8rem 1.6rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  border-radius: var(--radius);
+  transition: all 0.18s ease;
+}
+
+.ctaPrimary {
+  color: var(--ink);
+  background: linear-gradient(180deg, #e3c47e 0%, var(--candle) 55%, #b8985a 100%);
+  border: 1px solid #e8cd8a;
+  box-shadow: 0 2px 18px rgba(212, 181, 106, 0.25);
+}
+
+.ctaPrimary:hover {
+  box-shadow: 0 4px 26px rgba(212, 181, 106, 0.45);
+  transform: translateY(-1px);
+}
+
+.ctaGhost {
+  color: var(--candle);
+  background: rgba(8, 12, 18, 0.5);
+  border: 1px solid rgba(212, 181, 106, 0.45);
+}
+
+.ctaGhost:hover {
+  border-color: var(--candle);
+  background: rgba(212, 181, 106, 0.08);
+}
+
+/* ── Ornamental divider (echoes the logo flourishes) ───────────────── */
+
+.ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin: 1.1rem auto 2.2rem;
+  width: min(420px, 70%);
+}
+
+.ornamentLine {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 181, 106, 0.55),
+    transparent
+  );
+}
+
+.ornamentMark {
+  color: var(--candle);
+  font-size: 0.55rem;
+}
+
+/* ── Sections ──────────────────────────────────────────────────────── */
+
+.section {
+  padding: 3.5rem 0 1rem;
+  text-align: center;
 }
 
 .eyebrow {
+  margin: 0;
   font-family: var(--font-mono);
   font-size: 0.7rem;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--candle);
-}
-
-.title {
-  margin: 0.25rem 0 0.5rem;
-  font-family: var(--font-display);
-  font-size: clamp(1.75rem, 4vw, 2.25rem);
-  font-weight: 600;
-  color: var(--paper);
-}
-
-.subtitle {
-  margin: 0;
-  color: var(--fog);
-  font-size: 1rem;
-}
-
-.search {
-  margin-bottom: 1.75rem;
-}
-
-.searchInput {
-  width: 100%;
-  max-width: 28rem;
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
-  color: var(--paper);
-  background: rgba(8, 12, 18, 0.85);
-  border: 1px solid rgba(200, 165, 110, 0.25);
-  border-radius: 4px;
-  outline: none;
-}
-
-.searchInput:focus {
-  border-color: rgba(212, 181, 106, 0.55);
-}
-
-.searchInput::placeholder {
-  color: var(--ink-soft);
-}
-
-.section {
-  margin-bottom: 2rem;
 }
 
 .sectionTitle {
-  margin: 0 0 0.85rem;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
+  margin: 0.5rem 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.4vw, 2.1rem);
   font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  color: var(--paper-warm);
+  text-wrap: balance;
+}
+
+/* ── How a case works ──────────────────────────────────────────────── */
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  text-align: left;
+}
+
+.step {
+  padding: 1.5rem 1.4rem;
+  background: var(--glass);
+  border: 1px solid rgba(212, 181, 106, 0.18);
+  border-top: 2px solid rgba(212, 181, 106, 0.5);
+  border-radius: var(--radius);
+  backdrop-filter: blur(6px);
+}
+
+.stepNumber {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
   color: var(--candle);
 }
 
-.caseGrid {
+.stepTitle {
+  margin: 0.5rem 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--paper);
+}
+
+.stepText {
+  margin: 0;
+  color: var(--fog);
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+/* ── Feature grid ──────────────────────────────────────────────────── */
+
+.features {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  text-align: left;
+}
+
+.feature {
+  padding: 1.5rem 1.4rem;
+  background: rgba(10, 15, 23, 0.55);
+  border: 1px solid rgba(212, 181, 106, 0.14);
+  border-radius: var(--radius);
+}
+
+.featureTitle {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--candle);
+}
+
+.featureText {
+  margin: 0;
+  color: var(--fog);
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+/* ── Featured mysteries ────────────────────────────────────────────── */
+
+.featuredGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.25rem;
 }
 
-.caseCardLink {
-  text-decoration: none;
-  color: inherit;
+.featuredCard {
   display: block;
-}
-
-.caseCard {
-  position: relative;
+  text-decoration: none;
   background: var(--glass);
-  border: 1px solid rgba(154, 175, 196, 0.15);
-  border-radius: 6px;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(212, 181, 106, 0.18);
+  border-radius: var(--radius);
   overflow: hidden;
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease,
-    border-color 0.25s ease;
+  transition: all 0.18s ease;
 }
 
-.caseCard:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 24px 54px rgba(0, 0, 0, 0.45);
-  border-color: rgba(154, 175, 196, 0.28);
+.featuredCard:hover {
+  border-color: rgba(212, 181, 106, 0.55);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
 }
 
-.caseImage {
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  background: var(--night-2);
-}
-
-.caseImage img {
+.featuredCover {
   width: 100%;
-  height: 100%;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
   display: block;
 }
 
-.caseBody {
-  padding: 1rem 1.1rem 1.1rem;
+.featuredBody {
+  padding: 0.9rem 1rem 1rem;
+  text-align: left;
 }
 
-.caseTitleRow {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.caseTitle {
+.featuredTitle {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1rem;
   color: var(--paper);
-  line-height: 1.3;
 }
 
-.difficulty {
-  flex-shrink: 0;
-  padding: 0.2rem 0.55rem;
+.featuredMeta {
+  margin: 0.3rem 0 0;
   font-family: var(--font-mono);
-  font-size: 0.65rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  border-radius: 3px;
-  border: 1px solid;
+  color: var(--candle-dim);
 }
 
-.difficulty-easy {
-  color: #8fb98f;
-  border-color: rgba(143, 185, 143, 0.45);
-  background: rgba(143, 185, 143, 0.1);
-}
-
-.difficulty-medium {
-  color: #d4b56a;
-  border-color: rgba(212, 181, 106, 0.45);
-  background: rgba(212, 181, 106, 0.1);
-}
-
-.difficulty-hard {
-  color: #e08a8a;
-  border-color: rgba(224, 138, 138, 0.45);
-  background: rgba(224, 138, 138, 0.1);
-}
-
-.premise {
-  margin: 0.6rem 0 0;
-  font-size: 0.9rem;
+.featuredNote {
+  margin: 1.5rem 0 0;
   color: var(--fog);
-  line-height: 1.5;
+  font-size: 0.95rem;
 }
 
-.meta {
-  margin-top: 0.7rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.tag {
-  padding: 0.15rem 0.5rem;
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--fog);
-  background: rgba(154, 175, 196, 0.1);
-  border: 1px solid rgba(154, 175, 196, 0.2);
-  border-radius: 3px;
-}
-
-.actions {
-  margin-top: 1rem;
-}
-
-.btnPrimary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.65rem 1.1rem;
-  background: linear-gradient(180deg, #c94a4a, #a83030);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 4px;
-  color: #fff;
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  text-decoration: none;
-  transition: filter 0.15s ease;
-}
-
-.btnPrimary:hover {
-  filter: brightness(1.1);
-}
-
-.btnGhost {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.65rem 1.1rem;
-  background: transparent;
-  border: 1px solid rgba(200, 165, 110, 0.35);
-  border-radius: 4px;
+.inlineLink {
   color: var(--candle);
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
   text-decoration: none;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  border-bottom: 1px solid rgba(212, 181, 106, 0.4);
 }
 
-.btnGhost:hover {
-  background: rgba(212, 181, 106, 0.08);
-  border-color: var(--candle);
+.inlineLink:hover {
+  border-bottom-color: var(--candle);
 }
 
-.empty {
+/* ── Closing CTA + footer ──────────────────────────────────────────── */
+
+.closing {
+  padding-bottom: 2rem;
+}
+
+.closingTitle {
+  margin: 0 0 0.6rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3.6vw, 2.3rem);
+  color: var(--paper-warm);
+}
+
+.closingText {
+  margin: 0 auto 1.6rem;
+  max-width: 32rem;
+  color: var(--fog);
+  line-height: 1.65;
+}
+
+.footer {
+  padding: 1rem 0 0.5rem;
+  text-align: center;
+}
+
+.footerLine {
   margin: 0;
-  color: var(--ink-soft);
-  font-style: italic;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--candle-dim);
+}
+
+/* ── Responsive ────────────────────────────────────────────────────── */
+
+@media (max-width: 860px) {
+  .steps,
+  .featuredGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .features {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    min-height: calc(80vh - 3.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo {
+    animation: none;
+  }
 }
