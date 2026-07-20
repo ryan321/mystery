@@ -25,7 +25,7 @@ const COVER_FALLBACK =
     '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360"><rect width="640" height="360" fill="#12151c"/></svg>'
   );
 
-/** Cover art for a shelf/detail card — bundle coverUrl or a neutral panel. */
+/** Cover art for a gallery/detail card — bundle coverUrl or a neutral panel. */
 export function coverSrc(c: { coverUrl?: string | null }): string {
   return assetUrl(c.coverUrl) ?? COVER_FALLBACK;
 }

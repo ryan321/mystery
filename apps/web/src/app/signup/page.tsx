@@ -32,7 +32,7 @@ export default function SignUpPage() {
     }
     // Stub: create a local session (no backend yet).
     signIn(trimmed, name.trim());
-    router.push("/shelf");
+    router.push("/gallery");
   }
 
   return (

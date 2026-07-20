@@ -61,7 +61,7 @@ export default function CaseDetailPage() {
 
   useEffect(() => {
     if (!loading && !detail) {
-      router.replace("/shelf");
+      router.replace("/gallery");
     }
   }, [loading, detail, router]);
 
@@ -136,8 +136,8 @@ export default function CaseDetailPage() {
       <Atmosphere />
       <main className={styles.detail}>
         <div className={styles.inner}>
-          <Link href="/shelf" className={styles.back}>
-            ← Back to shelf
+          <Link href="/gallery" className={styles.back}>
+            ← Back to the gallery
           </Link>
 
           <div className={styles.hero}>

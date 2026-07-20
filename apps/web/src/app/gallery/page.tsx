@@ -12,7 +12,7 @@ import styles from "./page.module.css";
 type StatusFilter = "all" | "being_played" | "completed" | "not_started";
 type DifficultyFilter = "all" | "easy" | "medium" | "hard";
 
-export default function ShelfPage() {
+export default function GalleryPage() {
   const [cases, setCases] = useState<CaseSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -110,7 +110,7 @@ export default function ShelfPage() {
       <main className={styles.lobby}>
         <div className={styles.lobbyInner}>
           <header className={styles.header}>
-            <p className={styles.eyebrow}>The shelf</p>
+            <p className={styles.eyebrow}>The gallery</p>
             <h1 className={styles.title}>Choose your mystery</h1>
             <p className={styles.subtitle}>
               Each mystery is authored with a fixed solution. Question

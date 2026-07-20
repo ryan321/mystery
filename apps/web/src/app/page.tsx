@@ -64,7 +64,7 @@ export default function HomePage() {
             <p className={styles.eyebrow}>Mystery</p>
             <h1 className={styles.title}>What will you investigate?</h1>
             <p className={styles.subtitle}>
-              Handcrafted mysteries with real solutions. Search the shelf or
+              Handcrafted mysteries with real solutions. Search the gallery or
               continue where you left off.
             </p>
           </header>
@@ -85,7 +85,7 @@ export default function HomePage() {
           </section>
 
           <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>The shelf</h2>
+            <h2 className={styles.sectionTitle}>The gallery</h2>
             {loading ? (
               <p className={styles.subtitle}>Loading cases…</p>
             ) : filtered.length === 0 ? (

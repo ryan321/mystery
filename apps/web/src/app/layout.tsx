@@ -4,7 +4,7 @@ import AmbienceProvider from "../components/AmbienceProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Mystery",
+  title: "MysteryTrove",
   description: "Handcrafted interactive mysteries you investigate.",
 };
 

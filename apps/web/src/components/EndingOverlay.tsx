@@ -33,7 +33,7 @@ export default function EndingOverlay({
         {ending?.templateNotes ? (
           <p className={styles.notes}>{ending.templateNotes}</p>
         ) : null}
-        <Link href="/shelf" className={styles.newCase}>
+        <Link href="/gallery" className={styles.newCase}>
           Start a new case
         </Link>
       </div>

@@ -27,7 +27,7 @@ export default function SignInPage() {
     }
     // Stub: accept any credentials and open a local session.
     signIn(trimmed);
-    router.push("/shelf");
+    router.push("/gallery");
   }
 
   return (

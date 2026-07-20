@@ -111,15 +111,18 @@ export default function TopNav() {
     <nav className={styles.nav}>
       <Link href="/" className={styles.brand}>
         <span className={styles.brandMark}>◆</span>
-        Mystery
+        <span>
+          Mystery
+          <span className={styles.brandTrove}>Trove</span>
+        </span>
       </Link>
 
       <div className={styles.right}>
         <Link
-          href="/shelf"
-          className={`${styles.link} ${isActive("/shelf") ? styles.active : ""}`}
+          href="/gallery"
+          className={`${styles.link} ${isActive("/gallery") ? styles.active : ""}`}
         >
-          Shelf
+          Gallery
         </Link>
         <Link
           href="/my-mysteries"

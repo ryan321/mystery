@@ -35,6 +35,10 @@
   font-size: 0.9rem;
 }
 
+.brandTrove {
+  color: var(--candle);
+}
+
 .right {
   display: flex;
   align-items: center;
