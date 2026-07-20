@@ -11,7 +11,15 @@ type RainDrop = {
   opacity: number;
 };
 
-export default function Atmosphere({ intensity = 1 }: { intensity?: number }) {
+export default function Atmosphere({
+  intensity = 1,
+  showManor = true,
+}: {
+  intensity?: number;
+  /** The manor silhouette. The landing frames the house in its hero
+      instead, so it turns this off. */
+  showManor?: boolean;
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -75,7 +83,9 @@ export default function Atmosphere({ intensity = 1 }: { intensity?: number }) {
       <div className={styles.glow} />
       <div className={`${styles.fog} ${styles.fogA}`} />
       <div className={`${styles.fog} ${styles.fogB}`} />
-      <img className={styles.manor} src="/images/manor-hero.png" alt="" />
+      {showManor ? (
+        <img className={styles.manor} src="/images/manor-hero.png" alt="" />
+      ) : null}
       <canvas ref={canvasRef} className={styles.rain} />
       <div className={styles.lightning} />
       <div className={styles.vignette} />
