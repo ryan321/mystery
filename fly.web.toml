@@ -1,0 +1,25 @@
+# MysteryTrove web — deploy with: fly deploy -c fly.web.toml
+app = "mysterytrove-web"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile.web"
+
+  # Baked into the client bundle at build time. Point this at the API's
+  # public URL (switch to https://api.mysterytrove.com once the custom
+  # domain + cert exist).
+  [build.args]
+    NEXT_PUBLIC_API_URL = "https://mysterytrove-api.fly.dev"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  # The landing page is the front door: keep it warm.
+  min_machines_running = 1
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory = "512mb"

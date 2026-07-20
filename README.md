@@ -17,6 +17,7 @@ Single-player, fair-play **text investigation** games. Structured mystery defini
 | [docs/MYSTERY_BUNDLES.md](./docs/MYSTERY_BUNDLES.md) | Bundle format (zip), DB registry, upload pipeline, access/unlock model |
 | [docs/SUBSCRIPTIONS.md](./docs/SUBSCRIPTIONS.md) | Accounts (magic link), Stripe tiers, seasonal free windows, elite invitations |
 | [docs/MYSTERY_STUDIO.md](./docs/MYSTERY_STUDIO.md) | Mystery Studio: local-only authoring & review webapp |
+| [docs/DEPLOY.md](./docs/DEPLOY.md) | Fly.io deployment: two apps, secrets, custom domains |
 
 ## Landing page
 

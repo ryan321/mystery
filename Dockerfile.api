@@ -1,0 +1,28 @@
+# MysteryTrove API — build from the repo root:
+#   fly deploy -c fly.api.toml        (or: docker build -f Dockerfile.api .)
+FROM node:22-slim AS base
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+RUN corepack enable
+WORKDIR /app
+
+# ── Install workspace deps (layer-cached on lockfile) ────────────────
+COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
+COPY packages/shared/package.json packages/shared/
+COPY packages/engine/package.json packages/engine/
+COPY packages/llm/package.json packages/llm/
+COPY apps/api/package.json apps/api/
+RUN pnpm install --frozen-lockfile --filter "@mystery/api..."
+
+# ── Build packages + api ─────────────────────────────────────────────
+COPY packages packages
+COPY apps/api apps/api
+RUN pnpm run build:packages && pnpm --filter "@mystery/api" build
+
+# ── Authored mysteries: auto-imported into Postgres at boot ──────────
+COPY content content
+
+ENV NODE_ENV=production
+ENV PORT=8787
+EXPOSE 8787
+CMD ["node", "apps/api/dist/index.js"]
