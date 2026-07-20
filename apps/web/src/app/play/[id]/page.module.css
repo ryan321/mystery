@@ -163,3 +163,29 @@
   color: var(--paper);
   border-color: var(--candle-dim);
 }
+
+/* The Room drawer button appears exactly when the left rail hides (≤860px);
+   on desktop the rail already presents the scene + presence panels. */
+@media (min-width: 861px) {
+  .mobileOnly {
+    display: none;
+  }
+}
+
+.roomDrawer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.roomDrawerHeading {
+  margin: 0;
+  padding-top: 0.65rem;
+  border-top: 1px solid rgba(154, 175, 196, 0.12);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--candle-dim);
+}

@@ -234,6 +234,7 @@ export type MysteryProgress = {
 
 export type StartCaseResponse = {
   playthrough: PlaythroughState;
+  playerView?: PlayerView;
   openingNarration: string;
   briefing?: MysteryBriefing;
   locationName?: string;
@@ -242,6 +243,7 @@ export type StartCaseResponse = {
 
 export type GetPlaythroughResponse = {
   playthrough: PlaythroughState;
+  playerView?: PlayerView;
   openingNarration?: string;
   briefing?: MysteryBriefing;
   locationName?: string;
@@ -253,6 +255,7 @@ export type SendTurnResponse = {
   narration: string;
   dialogue: DialogueLine[];
   playthrough: PlaythroughState;
+  playerView?: PlayerView;
   appliedPatch: unknown;
   rejected: string[];
   evidenceAdded: string[];
@@ -266,4 +269,130 @@ export type SendTurnResponse = {
     performerMock?: boolean;
     intentNotes?: string[];
   };
+};
+
+// ── PlayerView (docs/PLAYER_SURFACES.md) ─────────────────────────────────
+// Mirror of the engine's leak-safe buildPlayerView projection — the single
+// data source for every player surface (scene, map, cast, inventory,
+// notebook, dossier). Never carries solution/secret material.
+
+export type StoryRole = "suspect" | "victim" | "witness" | "support";
+
+export type ExitView = {
+  toLocationId: string;
+  label: string;
+  open: boolean;
+  destinationKnown: boolean;
+};
+
+export type PresentCharacter = {
+  id: string;
+  knownAs: string;
+  storyRole: StoryRole;
+  portrait?: string;
+};
+
+export type SceneObject = {
+  id: string;
+  name: string;
+  locked: boolean;
+};
+
+export type SceneView = {
+  locationId: string;
+  name: string;
+  description: string;
+  image?: string;
+  exits: ExitView[];
+  present: PresentCharacter[];
+  objects: SceneObject[];
+};
+
+export type CastEntry = {
+  id: string;
+  knownAs: string;
+  nameKnown: boolean;
+  storyRole: StoryRole;
+  portrait?: string;
+  /** Front-matter bio; "" until the name is known. */
+  bio: string;
+};
+
+export type InventoryEntry = {
+  id: string;
+  name: string;
+  description: string;
+  condition: string;
+  tags: string[];
+};
+
+export type MapLocation = {
+  id: string;
+  name: string;
+  visited: boolean;
+  x?: number;
+  y?: number;
+  floor?: number;
+  image?: string;
+};
+
+export type MapConnection = {
+  from: string;
+  to: string;
+  open: boolean;
+  destinationKnown: boolean;
+};
+
+export type MapView = {
+  currentLocationId: string;
+  locations: MapLocation[];
+  connections: MapConnection[];
+};
+
+export type OpeningPackage = {
+  form: "dossier" | "letter" | "telegram" | "invitation" | "memory" | "custom";
+  title?: string;
+  sections: { heading: string; text: string }[];
+};
+
+export type PlayerView = {
+  caseId: string;
+  title: string;
+  caseStatus: PlaythroughState["status"];
+  turnCount: number;
+  player: {
+    displayName: string;
+    addressAs: string;
+    role: string;
+    objective?: string;
+    status: {
+      condition: string;
+      control: string;
+      threat: string;
+    };
+  };
+  openingPackage: OpeningPackage;
+  scene: SceneView;
+  cast: CastEntry[];
+  inventory: InventoryEntry[];
+  map: MapView;
+  notebook: NotebookEntry[];
+  time?: { slotId: string; label: string };
+  environment: {
+    weather: string;
+    light: string;
+    ambient?: string;
+    crowd: string;
+  };
+  pendingAccusation?: {
+    summary: string;
+    suspectNames: string[];
+    turnsRemaining: number;
+  };
+  ending?: { id: string; when?: string; kind?: string; title?: string };
+};
+
+export type NoteResponse = {
+  note?: NotebookEntry;
+  notebook: NotebookEntry[];
 };

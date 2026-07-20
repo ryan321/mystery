@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import Atmosphere from "../../../components/Atmosphere";
-import GameShell from "../../../components/GameShell";
+import GameShell, { Panel } from "../../../components/GameShell";
 import StatusBar from "../../../components/StatusBar";
 import Log, { type LogItem } from "../../../components/Log";
 import Composer from "../../../components/Composer";
@@ -11,7 +11,22 @@ import DenouementBanner from "../../../components/DenouementBanner";
 import EndingOverlay from "../../../components/EndingOverlay";
 import ProgressToast from "../../../components/ProgressToast";
 import PlayProgressSettings from "../../../components/PlayProgressSettings";
-import { assetUrl, getPlaythrough, sendTurn } from "../../../lib/api";
+import SideDrawer from "../../../components/SideDrawer";
+import ScenePanel from "../../../components/ScenePanel";
+import PresenceStrip from "../../../components/PresenceStrip";
+import MapSketch from "../../../components/MapSketch";
+import CastList from "../../../components/CastList";
+import InventoryPanel from "../../../components/InventoryPanel";
+import NotebookPanel from "../../../components/NotebookPanel";
+import DossierContent from "../../../components/DossierContent";
+import {
+  addNote,
+  assetUrl,
+  deleteNote,
+  getPlaythrough,
+  sendTurn,
+  updateNote,
+} from "../../../lib/api";
 import { markCompleted } from "../../../lib/playState";
 import {
   defaultPlayProgressMode,
@@ -21,14 +36,18 @@ import {
   type ProgressUiMode,
 } from "../../../lib/progressPrefs";
 import type {
+  MapLocation,
   MysteryBriefing,
   MysteryProgress,
+  NotebookEntry,
+  PlayerView,
   PlaythroughState,
   ProgressPulse,
   TurnLogEntry,
 } from "../../../lib/types";
-import { CASE_TITLES } from "../../../lib/content";
 import styles from "./page.module.css";
+
+type DrawerKind = "room" | "dossier" | "map" | "cast" | "inventory" | "notebook";
 
 function portraitFor(
   playthrough: PlaythroughState | null | undefined,
@@ -82,10 +101,85 @@ function buildLog(
   return items;
 }
 
+const SURFACE_BUTTONS: {
+  kind: DrawerKind;
+  label: string;
+  icon: React.ReactNode;
+  /** Shown only when the left rail is hidden (≤860px) — the rail already
+   *  presents this surface on desktop. */
+  mobileOnly?: boolean;
+}[] = [
+  {
+    kind: "room",
+    label: "Current room",
+    mobileOnly: true,
+    icon: (
+      <>
+        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" />
+        <circle cx="12" cy="10" r="3" />
+      </>
+    ),
+  },
+  {
+    kind: "dossier",
+    label: "Dossier",
+    icon: (
+      <>
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <path d="M14 2v6h6" />
+        <path d="M9 13h6M9 17h6" />
+      </>
+    ),
+  },
+  {
+    kind: "map",
+    label: "Map",
+    icon: (
+      <>
+        <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z" />
+        <path d="M9 4v14M15 6v14" />
+      </>
+    ),
+  },
+  {
+    kind: "cast",
+    label: "Cast",
+    icon: (
+      <>
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      </>
+    ),
+  },
+  {
+    kind: "inventory",
+    label: "Your belongings",
+    icon: (
+      <>
+        <rect x="2" y="7" width="20" height="14" rx="2" />
+        <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+      </>
+    ),
+  },
+  {
+    kind: "notebook",
+    label: "Notebook",
+    icon: (
+      <>
+        <path d="M12 20h9" />
+        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+      </>
+    ),
+  },
+];
+
 export default function PlaythroughPage() {
   const params = useParams();
   const id = String(params.id);
   const [playthrough, setPlaythrough] = useState<PlaythroughState | null>(null);
+  const [playerView, setPlayerView] = useState<PlayerView | null>(null);
   const [log, setLog] = useState<LogItem[]>([]);
   const [locationName, setLocationName] = useState("");
   const [busy, setBusy] = useState(false);
@@ -103,6 +197,8 @@ export default function PlaythroughPage() {
   /** Progress UI for this playthrough only */
   const [playProgressMode, setPlayProgressMode] =
     useState<ProgressUiMode>("off");
+  const [openDrawer, setOpenDrawer] = useState<DrawerKind | null>(null);
+  const [castFocusId, setCastFocusId] = useState<string | undefined>(undefined);
 
   const placeSettingsPanel = useCallback(() => {
     const btn = settingsBtnRef.current;
@@ -122,6 +218,13 @@ export default function PlaythroughPage() {
     placeSettingsPanel();
     setSettingsOpen(true);
   }, [settingsOpen, placeSettingsPanel]);
+
+  const toggleDrawer = useCallback((kind: DrawerKind) => {
+    // Opening cast via the header always lands on the list; only a
+    // presence-strip tap deep-links into a profile (it sets castFocusId).
+    if (kind === "cast") setCastFocusId(undefined);
+    setOpenDrawer((cur) => (cur === kind ? null : kind));
+  }, []);
 
   useEffect(() => {
     if (!settingsOpen) return;
@@ -155,6 +258,16 @@ export default function PlaythroughPage() {
     };
   }, [settingsOpen, placeSettingsPanel]);
 
+  // Escape closes the open surface drawer (scrim click also closes).
+  useEffect(() => {
+    if (!openDrawer) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpenDrawer(null);
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [openDrawer]);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -162,6 +275,11 @@ export default function PlaythroughPage() {
         const data = await getPlaythrough(id);
         if (cancelled) return;
         setPlaythrough(data.playthrough);
+        if (data.playerView) {
+          setPlayerView(data.playerView);
+          // The opening package greets a fresh investigation (reopenable).
+          if (data.playerView.turnCount === 0) setOpenDrawer("dossier");
+        }
         setLocationName(data.locationName ?? data.playthrough.locationId);
         if (data.progress) setProgress(data.progress);
         const caseMode =
@@ -216,6 +334,7 @@ export default function PlaythroughPage() {
       try {
         const data = await sendTurn(id, text);
         setPlaythrough(data.playthrough);
+        if (data.playerView) setPlayerView(data.playerView);
         setLocationName(data.locationName ?? data.playthrough.locationId);
         if (data.progress) {
           setProgress(data.progress);
@@ -304,6 +423,42 @@ export default function PlaythroughPage() {
     [busy, id, playthrough]
   );
 
+  /** Click a sketched room to walk there — the engine validates the move. */
+  const travel = useCallback(
+    (loc: MapLocation) => {
+      setOpenDrawer(null);
+      void send(
+        loc.visited
+          ? `Return to the ${loc.name}.`
+          : `Head to the ${loc.name}.`
+      );
+    },
+    [send]
+  );
+
+  const applyNotebook = useCallback((notebook: NotebookEntry[]) => {
+    setPlayerView((pv) => (pv ? { ...pv, notebook } : pv));
+  }, []);
+
+  const handleAddNote = useCallback(
+    async (text: string) => {
+      applyNotebook((await addNote(id, text)).notebook);
+    },
+    [id, applyNotebook]
+  );
+  const handleUpdateNote = useCallback(
+    async (noteId: string, text: string) => {
+      applyNotebook((await updateNote(id, noteId, text)).notebook);
+    },
+    [id, applyNotebook]
+  );
+  const handleDeleteNote = useCallback(
+    async (noteId: string) => {
+      applyNotebook((await deleteNote(id, noteId)).notebook);
+    },
+    [id, applyNotebook]
+  );
+
   const closed = playthrough
     ? playthrough.status !== "active" && playthrough.status !== "denouement"
     : true;
@@ -332,14 +487,67 @@ export default function PlaythroughPage() {
     );
   }
 
+  const presentIds = new Set(
+    playerView?.scene.present.map((p) => p.id) ?? []
+  );
+
+  const left = playerView ? (
+    <>
+      <Panel title={playerView.scene.name}>
+        <ScenePanel scene={playerView.scene} />
+      </Panel>
+      <Panel title="In the room">
+        <PresenceStrip
+          present={playerView.scene.present}
+          caseId={playerView.caseId}
+          onSelect={(cid) => {
+            setCastFocusId(cid);
+            setOpenDrawer("cast");
+          }}
+        />
+      </Panel>
+    </>
+  ) : null;
+
   const center = (
     <>
       <header className={styles.chrome}>
         <div className={styles.chromeTop}>
           <div className={styles.caseEyebrow}>
-            {CASE_TITLES[playthrough?.caseId ?? ""] ?? "Case"}
+            {playerView?.title ?? "Case"}
           </div>
           <div className={styles.chromeActions} ref={settingsRef}>
+            {SURFACE_BUTTONS.map(({ kind, label, icon, mobileOnly }) => (
+              <button
+                key={kind}
+                type="button"
+                className={`${
+                  openDrawer === kind
+                    ? `${styles.iconBtn} ${styles.iconBtnActive}`
+                    : styles.iconBtn
+                }${mobileOnly ? ` ${styles.mobileOnly}` : ""}`}
+                onClick={() => toggleDrawer(kind)}
+                aria-label={label}
+                aria-expanded={openDrawer === kind}
+                aria-haspopup="dialog"
+                title={label}
+              >
+                <svg
+                  className={styles.iconSvg}
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden
+                >
+                  {icon}
+                </svg>
+              </button>
+            ))}
             <button
               ref={settingsBtnRef}
               type="button"
@@ -434,7 +642,102 @@ export default function PlaythroughPage() {
   return (
     <>
       <Atmosphere />
-      <GameShell center={center} />
+      <GameShell left={left} center={center} />
+
+      <SideDrawer
+        side="right"
+        title={playerView?.scene.name ?? "Current room"}
+        open={openDrawer === "room"}
+        onClose={() => setOpenDrawer(null)}
+      >
+        {playerView ? (
+          <div className={styles.roomDrawer}>
+            <ScenePanel scene={playerView.scene} />
+            <h4 className={styles.roomDrawerHeading}>In the room</h4>
+            <PresenceStrip
+              present={playerView.scene.present}
+              caseId={playerView.caseId}
+              onSelect={(cid) => {
+                setCastFocusId(cid);
+                setOpenDrawer("cast");
+              }}
+            />
+          </div>
+        ) : null}
+      </SideDrawer>
+
+      <SideDrawer
+        side="right"
+        title="Dossier"
+        open={openDrawer === "dossier"}
+        onClose={() => setOpenDrawer(null)}
+      >
+        {playerView ? (
+          <DossierContent
+            openingPackage={playerView.openingPackage}
+            player={playerView.player}
+          />
+        ) : null}
+      </SideDrawer>
+
+      <SideDrawer
+        side="right"
+        title="Map"
+        open={openDrawer === "map"}
+        onClose={() => setOpenDrawer(null)}
+      >
+        {playerView ? (
+          <MapSketch
+            map={playerView.map}
+            disabled={busy || closed}
+            onTravel={travel}
+          />
+        ) : null}
+      </SideDrawer>
+
+      <SideDrawer
+        side="right"
+        title="List of Characters"
+        open={openDrawer === "cast"}
+        onClose={() => setOpenDrawer(null)}
+      >
+        {playerView ? (
+          <CastList
+            cast={playerView.cast}
+            caseId={playerView.caseId}
+            presentIds={presentIds}
+            focusId={castFocusId}
+          />
+        ) : null}
+      </SideDrawer>
+
+      <SideDrawer
+        side="right"
+        title="Your belongings"
+        open={openDrawer === "inventory"}
+        onClose={() => setOpenDrawer(null)}
+      >
+        {playerView ? (
+          <InventoryPanel inventory={playerView.inventory} />
+        ) : null}
+      </SideDrawer>
+
+      <SideDrawer
+        side="right"
+        title="Notebook"
+        open={openDrawer === "notebook"}
+        onClose={() => setOpenDrawer(null)}
+      >
+        {playerView ? (
+          <NotebookPanel
+            notebook={playerView.notebook}
+            disabled={busy}
+            onAdd={handleAddNote}
+            onUpdate={handleUpdateNote}
+            onDelete={handleDeleteNote}
+          />
+        ) : null}
+      </SideDrawer>
 
       {playthrough?.status === "solved" || playthrough?.status === "failed" ? (
         <EndingOverlay

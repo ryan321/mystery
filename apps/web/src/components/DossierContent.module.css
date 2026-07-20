@@ -1,0 +1,54 @@
+.dossier {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--candle-dim);
+}
+
+.title {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--paper);
+}
+
+.who {
+  margin: 0 0 0.5rem;
+  font-size: 0.88rem;
+  color: var(--fog);
+}
+
+.who strong {
+  color: var(--paper);
+}
+
+.section {
+  padding: 0.55rem 0;
+  border-top: 1px solid rgba(154, 175, 196, 0.12);
+}
+
+.heading {
+  margin: 0 0 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--candle);
+}
+
+.text {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--fog);
+  white-space: pre-wrap;
+}

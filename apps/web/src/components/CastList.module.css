@@ -1,0 +1,174 @@
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.card {
+  display: flex;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 0.6rem;
+  text-align: left;
+  color: inherit;
+  background: rgba(154, 175, 196, 0.05);
+  border: 1px solid rgba(154, 175, 196, 0.14);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.card:hover {
+  border-color: var(--candle-dim);
+}
+
+.portrait {
+  flex-shrink: 0;
+  width: 3.25rem;
+  height: 3.25rem;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 181, 106, 0.35);
+}
+
+.monogram {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--candle);
+  background: rgba(212, 181, 106, 0.1);
+  border: 1px solid rgba(212, 181, 106, 0.35);
+  border-radius: 50%;
+}
+
+.body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.nameRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--paper);
+}
+
+.here {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--candle);
+}
+
+.role {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--candle-dim);
+}
+
+.bio {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--fog);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Detail view ─────────────────────────────────────────────────────── */
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.backBtn {
+  align-self: flex-start;
+  padding: 0.15rem 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fog);
+  background: transparent;
+  border: 1px solid rgba(154, 175, 196, 0.25);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.backBtn:hover {
+  color: var(--paper);
+  border-color: var(--candle-dim);
+}
+
+.detailPortrait {
+  width: 100%;
+  max-height: 55vh;
+  object-fit: cover;
+  object-position: top;
+  border: 1px solid rgba(212, 181, 106, 0.4);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+}
+
+.detailMonogram {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 6rem;
+  height: 6rem;
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  color: var(--candle);
+  background: rgba(212, 181, 106, 0.1);
+  border: 1px solid rgba(212, 181, 106, 0.4);
+  border-radius: 50%;
+}
+
+.detailBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.detailName {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--paper);
+}
+
+.detailMeta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.detailBio {
+  margin: 0.35rem 0 0;
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: var(--fog);
+}

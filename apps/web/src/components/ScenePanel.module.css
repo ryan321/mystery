@@ -1,0 +1,75 @@
+.scene {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.description {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--fog);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.groupTitle {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--candle-dim);
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  color: var(--paper);
+}
+
+.exitMark {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.exitOpen {
+  color: var(--candle);
+}
+
+.exitClosed {
+  color: var(--blood);
+}
+
+.dimmed {
+  color: var(--fog);
+  font-style: italic;
+}
+
+.tag {
+  margin-left: auto;
+  padding: 0 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--blood-bright);
+  border: 1px solid rgba(184, 58, 58, 0.4);
+  border-radius: var(--radius);
+}
