@@ -123,6 +123,36 @@ export function lintBundle(def: MysteryDefinition): string[] {
     }
   }
 
+  // Hidden characters (knownAtStart: false): their existence must not leak
+  // through opening-package prose, which ships to every player at start.
+  const startProse = [
+    def.meta.premise,
+    def.openingNarration,
+    def.player.startingKnowledge,
+    ...(def.player.briefing?.sections.map((s) => `${s.heading} ${s.text}`) ??
+      []),
+    ...def.locations.map((l) => l.description),
+  ]
+    .join("\n")
+    .toLowerCase();
+  for (const c of def.characters) {
+    if (c.knownAtStart !== false) continue;
+    for (const label of [c.name, c.introducedAs].filter(
+      (x): x is string => Boolean(x)
+    )) {
+      if (startProse.includes(label.toLowerCase())) {
+        warnings.push(
+          `hidden character "${c.id}": "${label}" appears in opening prose (premise/narration/briefing/descriptions) — their existence will leak at start`
+        );
+      }
+    }
+    if (!c.entrance) {
+      warnings.push(
+        `hidden character "${c.id}" has no entrance and can only be revealed via reveal_character effects or co-presence — confirm a beat introduces them`
+      );
+    }
+  }
+
   // Solution summary echoed into player-facing prose.
   const probe = def.solution.summary.slice(0, 40).toLowerCase();
   if (probe.length >= 20) {

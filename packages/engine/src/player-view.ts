@@ -2,6 +2,7 @@ import type { MysteryDefinition, PlaythroughState } from "@mystery/shared";
 import { flagsMatch } from "./flags.js";
 import { listInventory } from "./inventory.js";
 import {
+  characterKnown,
   characterNameKnown,
   isLocationKnown,
   knownAsFor,
@@ -82,18 +83,25 @@ export function buildPlayerView(
         : false,
     }));
 
-  const cast = def.characters.map((c) => {
-    const nameKnown = characterNameKnown(def, state, c.id);
-    return {
-      id: c.id,
-      knownAs: knownAsFor(def, state, c.id),
-      nameKnown,
-      storyRole: c.storyRole ?? "suspect",
-      portrait: c.portrait,
-      // shortBio may contain the real name — front matter only once known.
-      bio: nameKnown ? c.shortBio ?? "" : "",
-    };
-  });
+  // Dramatis personae grows as the story introduces people: hidden
+  // characters (knownAtStart: false) are absent until revealed or met.
+  const presentIds = new Set(present.map((p) => p.id));
+  const cast = def.characters
+    .filter(
+      (c) => characterKnown(def, state, c.id) || presentIds.has(c.id)
+    )
+    .map((c) => {
+      const nameKnown = characterNameKnown(def, state, c.id);
+      return {
+        id: c.id,
+        knownAs: knownAsFor(def, state, c.id),
+        nameKnown,
+        storyRole: c.storyRole ?? "suspect",
+        portrait: c.portrait,
+        // shortBio may contain the real name — front matter only once known.
+        bio: nameKnown ? c.shortBio ?? "" : "",
+      };
+    });
 
   const inventory = listInventory(def, state).map((i) => ({
     id: i.id,

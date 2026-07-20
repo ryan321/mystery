@@ -217,6 +217,8 @@ export type TimeState = z.infer<typeof TimeStateSchema>;
  * is unknown; reveal_character_name / set_known_as effects update it.
  */
 export const PlayerCharacterKnowledgeSchema = z.object({
+  /** Existence: the player knows this character is part of the story. */
+  known: z.boolean().default(true),
   knownAs: z.string(),
   nameKnown: z.boolean().default(true),
 });

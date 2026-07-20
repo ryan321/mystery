@@ -743,12 +743,42 @@ export function applyEffect(
         });
       }
     }
+  } else if (t === "reveal_character") {
+    // Existence fog: the player learns this character is part of the story
+    // (hearsay or entrance) — cast lists and packs include them from now on.
+    const cid = String(effect.characterId);
+    const ch = def.characters.find((c) => c.id === cid);
+    if (ch) {
+      const prev = next.playerKnowledge?.[cid] ?? {
+        known: false,
+        knownAs:
+          (ch.nameKnownAtStart ?? true) ? ch.name : ch.introducedAs ?? ch.name,
+        nameKnown: ch.nameKnownAtStart ?? true,
+      };
+      if (!prev.known) {
+        next = {
+          ...next,
+          playerKnowledge: {
+            ...next.playerKnowledge,
+            [cid]: { ...prev, known: true },
+          },
+        };
+        justHappened.push({
+          id: `character_revealed_${cid}`,
+          summary: `Someone new figures in this: ${prev.knownAs}`,
+          narrationHints:
+            String(effect.text ?? "").trim() ||
+            `The player learns that ${prev.knownAs} is part of this story. Convey how they learn of them naturally; do not stage them in the room unless they are actually present.`,
+        });
+      }
+    }
   } else if (t === "reveal_character_name" || t === "set_known_as") {
     // Identity is knowledge: "Orderly" → "Marcus Reed" (PLAYER_SURFACES §5.4).
     const cid = String(effect.characterId);
     const ch = def.characters.find((c) => c.id === cid);
     if (ch) {
       const prev = next.playerKnowledge?.[cid] ?? {
+        known: ch.knownAtStart ?? true,
         knownAs:
           (ch.nameKnownAtStart ?? true) ? ch.name : ch.introducedAs ?? ch.name,
         nameKnown: ch.nameKnownAtStart ?? true,
@@ -759,7 +789,8 @@ export function applyEffect(
             ...next,
             playerKnowledge: {
               ...next.playerKnowledge,
-              [cid]: { knownAs: ch.name, nameKnown: true },
+              // Naming someone implies knowing they exist.
+              [cid]: { known: true, knownAs: ch.name, nameKnown: true },
             },
           };
           justHappened.push({
@@ -775,7 +806,8 @@ export function applyEffect(
             ...next,
             playerKnowledge: {
               ...next.playerKnowledge,
-              [cid]: { ...prev, knownAs: label },
+              // Labeling someone implies knowing they exist.
+              [cid]: { ...prev, known: true, knownAs: label },
             },
           };
           justHappened.push({

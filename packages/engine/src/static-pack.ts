@@ -45,6 +45,8 @@ export const STATIC_POLICY = {
     "IDENTITY IS KNOWLEDGE: cast[].name and character name fields carry the player's CURRENT label (e.g. 'Orderly') — the real name appears only once the player has learned it (nameKnown). Never invent, guess, or reveal a real name early; a name reveal happens only via justHappened (name_revealed_*). Refer to every character by their current label in narration and dialogue.",
   establishedDetails:
     "ESTABLISHED DETAILS are canon for this playthrough: improvised world texture recorded earlier (location.establishedDetails, character/item establishedDetails as 'subject: fact; fact' threads). Reuse them naturally and NEVER contradict them — if the chandelier was said to have five hundred crystals, it still does. They are texture, not plot: inspecting them yields atmosphere, never evidence or secrets unless authored content says so.",
+  hiddenCharacters:
+    "The cast directory is NOT necessarily complete: people may exist that no one has mentioned yet, and new characters can enter the story mid-case (newlyKnownCast in the current turn state lists those discovered after the start). Never assert that the listed people are the only people involved, and never invent specific new characters yourself — arrivals and reveals happen only via justHappened (character_entrance_*, character_revealed_*).",
 } as const;
 
 /**
@@ -65,15 +67,19 @@ export function buildStaticCasePack(def: MysteryDefinition) {
      * their introducedAs label; the current-turn state carries knownAs as
      * identity evolves (name reveals live there, never here).
      */
-    cast: def.characters.map((c) => {
-      const nameKnownAtStart = c.nameKnownAtStart ?? true;
-      return {
-        id: c.id,
-        name: nameKnownAtStart ? c.name : c.introducedAs ?? "unknown",
-        storyRole: c.storyRole ?? "suspect",
-        shortBio: nameKnownAtStart ? c.shortBio ?? "" : "",
-      };
-    }),
+    cast: def.characters
+      // Existence fog: hidden characters never enter the static block —
+      // they arrive via newlyKnownCast in the per-turn state once revealed.
+      .filter((c) => c.knownAtStart !== false)
+      .map((c) => {
+        const nameKnownAtStart = c.nameKnownAtStart ?? true;
+        return {
+          id: c.id,
+          name: nameKnownAtStart ? c.name : c.introducedAs ?? "unknown",
+          storyRole: c.storyRole ?? "suspect",
+          shortBio: nameKnownAtStart ? c.shortBio ?? "" : "",
+        };
+      }),
     /** Static geography: base descriptions and exit labels only. */
     locations: def.locations.map((l) => ({
       id: l.id,

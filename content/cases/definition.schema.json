@@ -480,6 +480,45 @@
             "type": "string",
             "minLength": 1
           },
+          "knownAtStart": {
+            "type": "boolean",
+            "default": true
+          },
+          "entrance": {
+            "type": "object",
+            "properties": {
+              "when": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type"
+                ],
+                "additionalProperties": true
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "appear",
+                  "mention"
+                ],
+                "default": "appear"
+              },
+              "atLocationId": {
+                "type": "string"
+              },
+              "announce": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "when"
+            ],
+            "additionalProperties": false
+          },
           "introducedAs": {
             "type": "string"
           },

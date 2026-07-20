@@ -7,6 +7,7 @@ import {
   applyAccuseGate,
   applyDressing,
   buildContextPack,
+  revealCoPresentCharacters,
   directorIntentsToPatch,
   staticCasePackJson,
   validateAndApplyPatch,
@@ -325,6 +326,10 @@ export async function runTurnPipeline(args: {
     resolvedNotes: notes,
     staticCaseJson,
   });
+
+  // Meeting someone reveals them: characters sharing the player's location
+  // become known (existence fog lifts on co-presence).
+  simState = revealCoPresentCharacters(def, simState).state;
 
   // Persist improvised scene dressing (validated: closed-world, caps,
   // dedupe). Accepted facts appear in every future pack for their target.

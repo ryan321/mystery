@@ -938,6 +938,11 @@ everyone; a hired PI knows nobody. These edges are the dramatis personae.
 
 ### Character identity & profiles
 
+Character knowledge is a **three-stage ladder**, each stage authorable:
+
+> **unknown** (player doesn't know they exist) → **known, unnamed**
+> ("the groundskeeper") → **named** ("Old Tom Barrow")
+
 Decide **per character** how the player first knows them:
 
 - **Name known** (dinner-party introductions): profile starts with name +
@@ -945,6 +950,40 @@ Decide **per character** how the player first knows them:
 - **Label only** (White Room-style): the player knows them as "Orderly" or
   "the woman in 3B" until a story moment reveals the name. The performer
   and all UI use the known label — the real name never appears early.
+- **Hidden** (`knownAtStart: false`): the character does not exist for the
+  player — absent from the mystery detail page, cast lists, packs, and
+  PlayerView — until they enter the story. Author their portrait, motives,
+  knowledge, and relationships as usual; nothing leaks early.
+
+**How hidden characters enter — the `entrance` field:**
+
+```jsonc
+{
+  "id": "constable-reed",
+  "name": "Constable Reed",
+  "knownAtStart": false,
+  "entrance": {
+    "when": { "type": "time_at_least", "slotId": "after_midnight" },  // full condition language
+    "mode": "appear",                    // appear = arrives in the world
+    "atLocationId": "entrance-hall",
+    "announce": "A hammering at the storm door: a constable, soaked through."
+  }
+}
+```
+
+- `mode: "appear"` — they become known, available, and physically present
+  at `atLocationId` (the engine compiles this into a once-only beat; the
+  performer stages the arrival from `announce`). Until then they are
+  offstage (unavailable) automatically.
+- `mode: "mention"` — the player learns they *exist* (cast list grows)
+  without them appearing anywhere: hearsay, a letter, a name overheard.
+- Other reveal routes: the `reveal_character` effect on any beat/knowledge
+  moment, and **meeting them** (walking into their room reveals them).
+- Gate beats on it with the `character_known` condition.
+- Rules: never name a hidden character in opening prose (premise,
+  narration, briefing, location descriptions — the bundle lint flags it),
+  and `knownToPlayerByDefault` relationships cannot reference them
+  (schema-rejected).
 
 The expandable profile is a **dramatis personae entry, not a growing dossier**:
 portrait, known name/label, title, and a brief authored outline

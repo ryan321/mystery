@@ -103,6 +103,48 @@ function beatEligible(
 }
 
 /**
+ * Declarative character entrances (characters[].entrance) compiled into
+ * synthetic once-only beats, so `when` speaks the full condition language
+ * and firing is recorded in firedBeatIds like any other beat.
+ */
+const entranceBeatsCache = new WeakMap<MysteryDefinition, StoryBeat[]>();
+
+export function entranceBeats(def: MysteryDefinition): StoryBeat[] {
+  const cached = entranceBeatsCache.get(def);
+  if (cached) return cached;
+  const beats: StoryBeat[] = [];
+  for (const c of def.characters) {
+    if (!c.entrance) continue;
+    const appear = c.entrance.mode !== "mention";
+    beats.push({
+      id: `character_entrance_${c.id}`,
+      title: `Entrance: ${c.introducedAs ?? c.name}`,
+      once: true,
+      trigger: "on_turn",
+      when: c.entrance.when,
+      effects: appear
+        ? [
+            { type: "reveal_character", characterId: c.id },
+            { type: "set_character_available", characterId: c.id, value: true },
+            {
+              type: "move_character",
+              characterId: c.id,
+              toLocationId: c.entrance.atLocationId,
+            },
+          ]
+        : [{ type: "reveal_character", characterId: c.id }],
+      narrationHints:
+        c.entrance.announce ??
+        (appear
+          ? `${c.introducedAs ?? c.name} enters the story — stage their arrival.`
+          : `The player learns ${c.introducedAs ?? c.name} exists — hearsay, a letter, a name overheard.`),
+    } as StoryBeat);
+  }
+  entranceBeatsCache.set(def, beats);
+  return beats;
+}
+
+/**
  * Evaluate story beats in bounded cascades (maxPasses).
  * Pass event context so triggers (discover/present/talk/tick) are honored.
  */
@@ -129,7 +171,7 @@ export function evaluateBeats(
     }
 
     let firedThisPass = false;
-    for (const beat of def.beats) {
+    for (const beat of [...def.beats, ...entranceBeats(def)]) {
       if (current.status !== "active" && current.status !== "denouement") {
         break;
       }

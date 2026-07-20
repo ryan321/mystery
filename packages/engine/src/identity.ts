@@ -44,3 +44,50 @@ export function isLocationKnown(
   if (state.visitedLocationIds.includes(locationId)) return true;
   return state.locationState[locationId]?.known === true;
 }
+
+/**
+ * Existence fog: the player knows this character is part of the story.
+ * Seeded from knownAtStart; flipped by entrances, the reveal_character
+ * effect, name reveals, or meeting them (co-presence).
+ */
+export function characterKnown(
+  def: MysteryDefinition,
+  state: PlaythroughState,
+  characterId: string
+): boolean {
+  const pk = state.playerKnowledge?.[characterId];
+  if (pk) return pk.known;
+  const ch = def.characters.find((c) => c.id === characterId);
+  return ch?.knownAtStart ?? true;
+}
+
+/**
+ * Meeting someone reveals them: mark characters sharing the player's
+ * location as known. Run once per turn before persisting.
+ */
+export function revealCoPresentCharacters(
+  def: MysteryDefinition,
+  state: PlaythroughState
+): { state: PlaythroughState; revealedIds: string[] } {
+  const revealedIds: string[] = [];
+  let next = state;
+  for (const [cid, cs] of Object.entries(state.characterState)) {
+    if (!cs.available || cs.locationId !== state.locationId) continue;
+    if (characterKnown(def, next, cid)) continue;
+    const prev = next.playerKnowledge?.[cid] ?? {
+      known: false,
+      knownAs: knownAsFor(def, next, cid),
+      nameKnown:
+        def.characters.find((c) => c.id === cid)?.nameKnownAtStart ?? true,
+    };
+    next = {
+      ...next,
+      playerKnowledge: {
+        ...next.playerKnowledge,
+        [cid]: { ...prev, known: true },
+      },
+    };
+    revealedIds.push(cid);
+  }
+  return { state: next, revealedIds };
+}
