@@ -1,6 +1,6 @@
 # Player Surfaces & Ambient Knowledge
 
-**Status:** Design (adopted) — UI implementation in progress
+**Status:** Design (adopted) — implemented (engine, API, UI)
 **Date:** 2026-07-20
 **Related:** [CASE_AUTHORING.md](./CASE_AUTHORING.md) (author checklist), [CASE_DEFINITION.md](./CASE_DEFINITION.md) (state model), [ARCHITECTURE.md](./ARCHITECTURE.md) (API sketch)
 
@@ -212,14 +212,14 @@ the ContextPack (which carries narrator-only material) and is leak-tested.
 
 | Surface | Source (`buildPlayerView` field) | Status |
 |---------|----------------------------------|--------|
-| Opening package | `openingPackage` — authored `player.briefing` or derived from premise/startingKnowledge/objective | **Engine done**; UI needed |
-| Scene panel | `scene` — exits (open state, no requirement ids), presence (knownAs), object names | **Engine done**; UI needed |
-| Map (fog of war) | `map` — known locations only (`knownAtStart` ∪ visited ∪ `reveal_location`), authored `map` coords, plus `connections` (edges from visited rooms; unknown destinations = "?" stubs) | **Engine done**; `GET /map` route + UI needed |
-| Presence strip | `scene.present` — portraits + `knownAs` labels | **Engine done**; UI needed |
-| Character profile (dramatis personae) | `cast` — `knownAs`, `nameKnown`, `storyRole`, portrait, bio (suppressed until name known) | **Engine done**; UI needed |
-| Inventory panel | `inventory` — name, description, condition, tags (no item flags) | **Engine done**; UI needed |
-| Notebook (auto + player scratchpad) | `notebook` (`source: auto \| player`); player notes never enter prompts | Engine done; note-edit API + UI needed |
-| Time/weather strip | `time.label`, `environment` | **Engine done**; UI optional |
+| Opening package | `openingPackage` — authored `player.briefing` or derived from premise/startingKnowledge/objective | Done |
+| Scene panel | `scene` — exits (open state, no requirement ids), presence (knownAs), object names | Done |
+| Map (fog of war) | `map` — known locations only (`knownAtStart` ∪ visited ∪ `reveal_location`), authored `map` coords, plus `connections` (edges from visited rooms; unknown destinations = "?" stubs) | Done (rides the `playerView` field of turn/resume/start responses — no separate `GET /map`) |
+| Presence strip | `scene.present` — portraits + `knownAs` labels | Done |
+| Character profile (dramatis personae) | `cast` — `knownAs`, `nameKnown`, `storyRole`, portrait, bio (suppressed until name known) | Done |
+| Inventory panel | `inventory` — name, description, condition, tags (no item flags) | Done |
+| Notebook (auto + player scratchpad) | `notebook` (`source: auto \| player`); player notes never enter prompts | Done (`POST/PATCH/DELETE /v1/playthroughs/:id/notes`) |
+| Time/weather strip | `time.label`, `environment` | Done (StatusBar; light/crowd/ambient optional) |
 
 ## 7. Fair-play guardrails
 
@@ -244,11 +244,12 @@ the ContextPack (which carries narrator-only material) and is leak-tested.
 8. Red herrings are indistinguishable from critical evidence in every
    surface (inventory, profiles, notebook).
 
-## 8. Schema & engine reference (implemented; API routes pending)
+## 8. Schema & engine reference (implemented)
 
 Everything below is implemented in `packages/shared` + `packages/engine`
-(see `static-pack`/`identity`/`player-view` modules and their tests) except
-the API routes and UI, which consume `buildPlayerView(def, state)`.
+(see `static-pack`/`identity`/`player-view`/`player-notes` modules and their
+tests), exposed by the API (`playerView` on the three playthrough responses +
+the notes routes), and rendered by the apps/web surfaces.
 
 ```jsonc
 // definition additions (optional, backwards compatible)
@@ -270,12 +271,13 @@ the API routes and UI, which consume `buildPlayerView(def, state)`.
 - Runtime `locationState.known: boolean` + effect
   `reveal_location { locationId }` + condition `location_known`.
 - Initialize `known` from `knownAtStart` ∪ starting location.
-- `GET /v1/playthroughs/:id/map` → known locations, their known exits,
+- The map rides the `playerView` field of the start/resume/turn responses
+  (no separate `GET /map` route needed): known locations, their known exits,
   current position.
-- Notebook scratchpad: `POST /v1/playthroughs/:id/notes` (+ edit/delete of
-  `source: "player"` entries only — auto entries are immutable). Invariant:
-  player notes are write-only from the game's perspective; no engine or
-  prompt path may read them.
+- Notebook scratchpad: `POST /v1/playthroughs/:id/notes` (+ `PATCH`/`DELETE`
+  `/v1/playthroughs/:id/notes/:noteId` for `source: "player"` entries only —
+  auto entries are immutable). Invariant: player notes are write-only from
+  the game's perspective; no engine or prompt path may read them.
 
 ```jsonc
 // character identity (optional, planned)
@@ -296,9 +298,9 @@ the API routes and UI, which consume `buildPlayerView(def, state)`.
   the name is revealed". Accusation `matchHints` should include role labels
   ("orderly") for name-unknown cases so "the orderly did it" scores.
 - UI (apps/web): persistent scene panel + presence strip (portraits +
-  `knownAs`); tap → character profile (learned-facts ledger); drawers for
-  Case File / Map / Cast / Inventory / Notebook. Opening package shown at
-  case start and reopenable.
+  `knownAs`) in the left rail; tap → cast profile (front matter only, §5.4);
+  right-side drawers for Dossier / Map / Cast / Inventory / Notebook.
+  Opening package auto-opens at case start and is reopenable.
 
 ## 9. Authoring requirement
 

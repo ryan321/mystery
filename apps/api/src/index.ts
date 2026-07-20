@@ -5,6 +5,7 @@ import { cors } from "hono/cors";
 import type { Context } from "hono";
 import { join, dirname, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
+import { randomUUID } from "node:crypto";
 import type {
   MysteryDefinition,
   PlaythroughState,
@@ -12,6 +13,11 @@ import type {
 import {
   createInitialPlaythrough,
   computeMysteryProgress,
+  buildPlayerView,
+  addPlayerNote,
+  updatePlayerNote,
+  deletePlayerNote,
+  PlayerNoteError,
 } from "@mystery/engine";
 import { tryCreateOpenRouterConfig } from "@mystery/llm";
 import {
@@ -21,6 +27,7 @@ import {
   getPlaythrough,
   commitTurn,
   listTurns,
+  updateNotebook,
   databaseUrl,
 } from "./db.js";
 import { runTurnPipeline } from "./turn-pipeline.js";
@@ -436,6 +443,7 @@ app.post("/v1/playthroughs", async (c) => {
 
   return c.json({
     playthrough: publicState(state, def),
+    playerView: buildPlayerView(def, state),
     openingNarration: def.openingNarration,
     briefing: buildBriefing(def, state),
     locationName: def.locations.find((l) => l.id === state.locationId)?.name,
@@ -454,6 +462,7 @@ app.get("/v1/playthroughs/:id", async (c) => {
   const turns = await listTurns(pool, row.state.id);
   return c.json({
     playthrough: publicState(row.state, def),
+    playerView: def ? buildPlayerView(def, row.state) : undefined,
     openingNarration: row.openingNarration,
     briefing: def ? buildBriefing(def, row.state) : undefined,
     locationName: def?.locations.find((l) => l.id === row.state.locationId)
@@ -543,6 +552,7 @@ app.post("/v1/playthroughs/:id/turns", async (c) => {
     narration: result.narration,
     dialogue: result.dialogue,
     playthrough: publicState(committed, def),
+    playerView: buildPlayerView(def, committed),
     appliedPatch: result.appliedPatch,
     rejected: result.rejected,
     evidenceAdded: result.evidenceAdded,
@@ -556,6 +566,64 @@ app.post("/v1/playthroughs/:id/turns", async (c) => {
     }),
     _debug: result.debug,
   });
+});
+
+// ── Player scratchpad notes (docs/PLAYER_SURFACES.md §5.6) ──────────────
+// Player notes are inert: never parsed by the engine, never sent to any
+// prompt. Only `source: "player"` entries are writable; auto entries are
+// the case's own record and immutable from here.
+
+function noteError(c: Context, err: unknown) {
+  if (err instanceof PlayerNoteError) {
+    const status = err.code === "note_not_found" ? 404 : 400;
+    return c.json({ error: err.code }, status);
+  }
+  throw err;
+}
+
+app.post("/v1/playthroughs/:id/notes", async (c) => {
+  const row = await getPlaythrough(pool, c.req.param("id"));
+  if (!row) return c.json({ error: "not_found" }, 404);
+  const body = (await c.req.json().catch(() => ({}))) as { text?: string };
+  try {
+    const { note, notebook } = addPlayerNote(row.state.notebook, String(body.text ?? ""), {
+      id: randomUUID(),
+      now: new Date().toISOString(),
+    });
+    await updateNotebook(pool, row.state.id, notebook);
+    return c.json({ note, notebook }, 201);
+  } catch (err) {
+    return noteError(c, err);
+  }
+});
+
+app.patch("/v1/playthroughs/:id/notes/:noteId", async (c) => {
+  const row = await getPlaythrough(pool, c.req.param("id"));
+  if (!row) return c.json({ error: "not_found" }, 404);
+  const body = (await c.req.json().catch(() => ({}))) as { text?: string };
+  try {
+    const { note, notebook } = updatePlayerNote(
+      row.state.notebook,
+      c.req.param("noteId"),
+      String(body.text ?? "")
+    );
+    await updateNotebook(pool, row.state.id, notebook);
+    return c.json({ note, notebook });
+  } catch (err) {
+    return noteError(c, err);
+  }
+});
+
+app.delete("/v1/playthroughs/:id/notes/:noteId", async (c) => {
+  const row = await getPlaythrough(pool, c.req.param("id"));
+  if (!row) return c.json({ error: "not_found" }, 404);
+  try {
+    const { notebook } = deletePlayerNote(row.state.notebook, c.req.param("noteId"));
+    await updateNotebook(pool, row.state.id, notebook);
+    return c.json({ notebook });
+  } catch (err) {
+    return noteError(c, err);
+  }
 });
 
 // ── Auth: magic-link accounts (docs/SUBSCRIPTIONS.md Phase 1) ───────────

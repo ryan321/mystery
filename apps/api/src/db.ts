@@ -188,10 +188,18 @@ export async function getPlaythrough(
   pool: Db,
   id: string
 ): Promise<{ state: PlaythroughState; openingNarration: string } | null> {
-  const res = await pool.query<PlaythroughRow>(
-    `SELECT * FROM playthroughs WHERE id = $1`,
-    [id]
-  );
+  let res;
+  try {
+    res = await pool.query<PlaythroughRow>(
+      `SELECT * FROM playthroughs WHERE id = $1`,
+      [id]
+    );
+  } catch (err) {
+    // Non-UUID path params fail the uuid cast (pg 22P02) — that's a
+    // not-found, not a server error.
+    if ((err as { code?: string }).code === "22P02") return null;
+    throw err;
+  }
   const row = res.rows[0];
   if (!row) return null;
   const state = rowToState(row);
@@ -257,6 +265,27 @@ export async function updatePlaythrough(
   if (res.rowCount !== 1) {
     throw new Error("playthrough_conflict");
   }
+}
+
+/**
+ * Scratchpad-only write (PLAYER_SURFACES.md §5.6). Player notes are inert —
+ * they never touch turn machinery, so no turn_count optimistic lock. Last
+ * write wins; the web UI disables note editing while a turn is in flight.
+ * Patches both the notebook column and state_json (the authoritative copy).
+ */
+export async function updateNotebook(
+  pool: Db,
+  playthroughId: string,
+  notebook: PlaythroughState["notebook"]
+): Promise<void> {
+  await pool.query(
+    `UPDATE playthroughs SET
+      notebook = $2::jsonb,
+      state_json = jsonb_set(state_json, '{notebook}', $2::jsonb),
+      updated_at = $3
+    WHERE id = $1`,
+    [playthroughId, JSON.stringify(notebook), new Date().toISOString()]
+  );
 }
 
 export type InsertTurnArgs = {
