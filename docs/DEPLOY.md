@@ -37,6 +37,22 @@ baked into the client bundle, set in `fly.web.toml` under
 
 ## Deploy
 
+**From GitHub (the normal path).** Pushing to `main` deploys
+automatically via GitHub Actions
+(`.github/workflows/deploy-api.yml` / `deploy-web.yml`), so every
+release is built from committed repo state. Each workflow only fires
+when its app's files change (shared packages trigger both), and both
+can be run manually from the Actions tab. One-time wiring:
+
+```bash
+# Mint a deploy token and add it to the GitHub repo as FLY_API_TOKEN
+fly tokens create deploy -x 999999h
+gh secret set FLY_API_TOKEN
+```
+
+**From your machine (escape hatch).** Ships your local working tree,
+uncommitted changes included:
+
 ```bash
 pnpm deploy:api    # fly deploy -c fly.api.toml
 pnpm deploy:web    # fly deploy -c fly.web.toml
@@ -44,8 +60,9 @@ pnpm deploy:web    # fly deploy -c fly.web.toml
 
 On boot the API runs migrations and auto-imports `content/cases/*`
 (baked into the image) as published bundles — same as local dev.
-Shipping new mysteries = commit the bundle + `pnpm deploy:api`, or use
-the upload endpoint / `pnpm publish-case` against the live API.
+Shipping a new mystery = commit the bundle and push (the content path
+triggers the API workflow), or use the upload endpoint /
+`pnpm publish-case` against the live API.
 
 ## Custom domains
 
