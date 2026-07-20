@@ -31,6 +31,7 @@ function defaultObjectState(
     flags: partial?.flags ?? {},
     timesExamined: partial?.timesExamined ?? 0,
     timesUsed: partial?.timesUsed ?? 0,
+    dressing: partial?.dressing ?? [],
   };
 }
 
@@ -52,6 +53,7 @@ export function ensureObjectState(
     flags: existing.flags ?? {},
     timesExamined: existing.timesExamined ?? 0,
     timesUsed: existing.timesUsed ?? 0,
+    dressing: existing.dressing ?? [],
   };
 }
 

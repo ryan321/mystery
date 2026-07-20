@@ -60,9 +60,40 @@ export const CharacterStoryRoleSchema = z.enum([
 ]);
 export type CharacterStoryRole = z.infer<typeof CharacterStoryRoleSchema>;
 
+/**
+ * How and when a hidden character (knownAtStart: false) enters the story.
+ * Compiled by the engine into a synthetic once-only story beat, so `when`
+ * is the full condition language (time, evidence, phase, beats, …).
+ */
+export const CharacterEntranceSchema = z.object({
+  /** Condition that brings them into the story. */
+  when: z.object({ type: z.string() }).passthrough(),
+  /**
+   * appear — they arrive in the world at atLocationId (become known,
+   *          available, and physically present).
+   * mention — the player learns they exist (cast list, hearsay) without
+   *           them appearing anywhere yet.
+   */
+  mode: z.enum(["appear", "mention"]).default("appear"),
+  /** Required for mode "appear": where they show up. */
+  atLocationId: z.string().optional(),
+  /** Performer guidance for staging the entrance / the mention. */
+  announce: z.string().optional(),
+});
+export type CharacterEntrance = z.infer<typeof CharacterEntranceSchema>;
+
 export const CharacterSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
+  /**
+   * Existence fog: if false, the player does not know this character
+   * exists — hidden from the mystery detail page, cast lists, packs, and
+   * PlayerView until revealed (entrance, reveal_character effect, or
+   * meeting them). Author full content as usual; nothing leaks early.
+   */
+  knownAtStart: z.boolean().default(true),
+  /** Declarative reveal for hidden characters (see CharacterEntranceSchema). */
+  entrance: CharacterEntranceSchema.optional(),
   /**
    * The player's initial label when the name is not yet known
    * (e.g. "Orderly", "the woman in 3B"). UI and narration use this until
@@ -722,6 +753,25 @@ export const MysteryDefinitionSchema = z
       }
     }
 
+    for (const c of def.characters) {
+      if (!c.entrance) continue;
+      if (c.entrance.mode !== "mention") {
+        if (!c.entrance.atLocationId) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `Character "${c.id}" entrance mode "appear" requires atLocationId`,
+            path: ["characters"],
+          });
+        } else if (!locationIds.has(c.entrance.atLocationId)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `Character "${c.id}" entrance at unknown location "${c.entrance.atLocationId}"`,
+            path: ["characters"],
+          });
+        }
+      }
+    }
+
     for (const eid of def.solution.guiltyPartyIds) {
       if (!characterIds.has(eid) && eid !== "unknown") {
         ctx.addIssue({
@@ -742,6 +792,19 @@ export const MysteryDefinitionSchema = z
         });
       }
       relIds.add(rel.id);
+      if (rel.knownToPlayerByDefault) {
+        // Front matter cannot reference people the player doesn't know exist.
+        for (const endpoint of [rel.fromId, rel.toId]) {
+          const ch = def.characters.find((c) => c.id === endpoint);
+          if (ch && ch.knownAtStart === false) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `Relationship "${rel.id}" is knownToPlayerByDefault but "${endpoint}" is hidden (knownAtStart: false)`,
+              path: ["relationships"],
+            });
+          }
+        }
+      }
       if (!characterIds.has(rel.fromId)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,

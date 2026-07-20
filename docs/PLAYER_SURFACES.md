@@ -134,11 +134,17 @@ currently knows them as — which may be just **"Orderly"** (White Room) when
 no name has been learned, or "Mr. Vale" when introductions happened in the
 opening package.
 
-**Identity is knowledge.** The player's label for a character (`knownAs`)
-evolves: *"Orderly" → "the orderly — calls himself Marcus" → "Marcus Reed,
-night orderly, lied about the medication log."* Whether a name is known at
-start is a per-case, per-character authoring decision (a dinner party
-introduces everyone; an amnesia ward introduces no one).
+**Identity is knowledge — a three-stage ladder.** Existence first: a
+character with `knownAtStart: false` does not appear on the mystery detail
+page, the cast panel, or in any pack until they enter the story (an
+authored `entrance` — arrival or mention — a `reveal_character` effect, or
+simply being met). Then the label: `knownAs` evolves *"Orderly" → "the
+orderly — calls himself Marcus" → "Marcus Reed."* The cast panel **grows**
+during play as people are discovered — a dramatis personae that fills in,
+which is itself a storytelling surface (a new portrait appearing is an
+event). Whether a name or an existence is known at start is per-case,
+per-character authoring (a dinner party introduces everyone; an amnesia
+ward introduces no one; the best twist arrives at midnight).
 
 **Expandable profile (tap a portrait or the cast list):** a **dramatis
 personae entry, not a growing dossier.** Deliberately minimal — just enough

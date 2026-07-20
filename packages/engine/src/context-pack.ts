@@ -7,7 +7,12 @@ import {
 } from "./relationships.js";
 import { listInventory } from "./inventory.js";
 import { STATIC_POLICY } from "./static-pack.js";
-import { characterNameKnown, knownAsFor } from "./identity.js";
+import { dressingLines } from "./dressing.js";
+import {
+  characterKnown,
+  characterNameKnown,
+  knownAsFor,
+} from "./identity.js";
 
 export function buildContextPack(
   def: MysteryDefinition,
@@ -152,9 +157,16 @@ export function buildContextPack(
     .map((p) => p?.id)
     .filter(Boolean) as string[];
 
-  /** Everyone else in the case who is NOT physically here (for anti-hallucination). */
+  /**
+   * Everyone else the player KNOWS OF who is not physically here (for
+   * anti-hallucination). Hidden characters are omitted entirely —
+   * default-deny: the model cannot leak someone it was never told about.
+   */
   const notPresentCharacters = def.characters
-    .filter((c) => !presentIdList.includes(c.id))
+    .filter(
+      (c) =>
+        !presentIdList.includes(c.id) && characterKnown(def, state, c.id)
+    )
     .map((c) => ({
       id: c.id,
       name: knownAsFor(def, state, c.id),
@@ -186,18 +198,41 @@ export function buildContextPack(
      * Name→id directory for the whole case (accuse mapping).
      * NOT a list of who is in the room — see location.presentCharacters.
      */
-    cast: def.characters.map((c) => ({
-      id: c.id,
-      /**
-       * The player's current label for them ("Orderly" until a name reveal).
-       * The real name enters the pack only once the player has learned it.
-       */
-      name: knownAsFor(def, state, c.id),
-      nameKnown: characterNameKnown(def, state, c.id),
-      storyRole: c.storyRole ?? "suspect",
-      /** Relative portrait path from definition (UI resolves URL). */
-      portrait: c.portrait,
-    })),
+    cast: def.characters
+      .filter(
+        (c) =>
+          characterKnown(def, state, c.id) || presentIdList.includes(c.id)
+      )
+      .map((c) => ({
+        id: c.id,
+        /**
+         * The player's current label for them ("Orderly" until a name reveal).
+         * The real name enters the pack only once the player has learned it.
+         */
+        name: knownAsFor(def, state, c.id),
+        nameKnown: characterNameKnown(def, state, c.id),
+        storyRole: c.storyRole ?? "suspect",
+        /** Relative portrait path from definition (UI resolves URL). */
+        portrait: c.portrait,
+      })),
+    /**
+     * Characters discovered AFTER the case started (hidden at start, now
+     * known). The static case reference cannot list them — this is their
+     * directory entry for prompts (accuse mapping etc.).
+     */
+    newlyKnownCast: def.characters
+      .filter(
+        (c) =>
+          c.knownAtStart === false &&
+          (characterKnown(def, state, c.id) || presentIdList.includes(c.id))
+      )
+      .map((c) => ({
+        id: c.id,
+        name: knownAsFor(def, state, c.id),
+        nameKnown: characterNameKnown(def, state, c.id),
+        storyRole: c.storyRole ?? "suspect",
+        portrait: c.portrait,
+      })),
     /**
      * Novel-like social texture for the scene — not a player relationship map.
      * Public or player-known edges among people here.
@@ -346,6 +381,13 @@ export function buildContextPack(
         fallToLocationId: h.fallToLocationId,
         severity: h.severity,
       })),
+      /**
+       * Improvised details already established here (subject threads).
+       * Canon for this playthrough: reuse them; never contradict them.
+       */
+      establishedDetails: dressingLines(
+        state.locationState[location.id]?.dressing ?? []
+      ),
     },
     /**
      * People who exist in the case but are NOT in this room.
@@ -354,7 +396,11 @@ export function buildContextPack(
      */
     notPresentCharacters,
     /** Full inventory with per-item state (condition, tags, flags, uses). */
-    inventory,
+    inventory: inventory.map((i) => ({
+      ...i,
+      /** Improvised details established about this item — playthrough canon. */
+      establishedDetails: dressingLines(state.objectState[i.id]?.dressing ?? []),
+    })),
     evidenceHeld,
     flagsPublic,
     activeCharacter,
@@ -441,5 +487,7 @@ function characterSlice(
     })),
     memorySummary: memory?.summary ?? "",
     recentTurns: memory?.recentTurns ?? [],
+    /** Improvised details established about this person — playthrough canon. */
+    establishedDetails: dressingLines(cs?.dressing ?? []),
   };
 }

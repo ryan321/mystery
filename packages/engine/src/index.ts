@@ -7,6 +7,7 @@ export * from "./static-pack.js";
 export * from "./identity.js";
 export * from "./player-view.js";
 export * from "./player-notes.js";
+export * from "./dressing.js";
 export * from "./memory.js";
 export * from "./intents-to-patch.js";
 export * from "./conditions.js";

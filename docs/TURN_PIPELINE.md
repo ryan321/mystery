@@ -83,6 +83,25 @@ automatically; Anthropic via explicit breakpoints). Both calls therefore send:
 Retry paths preserve the prefix (soft-retry appends to the end; repair rounds
 append messages). Do not put per-turn content ahead of the case reference.
 
+## Scene dressing (improvised canon)
+
+The performer may enrich the world with durable texture the author never
+wrote (a chandelier, a worn rug) and reports it as structured
+`dressing[]` entries `{scope, id, subject, detail}` alongside narration.
+The engine validates (closed-world ids, 5/turn, 160 chars, 6 facts per
+subject, 12 subjects per target, dedupe) and stores facts on the target's
+runtime state (`locationState/characterState/objectState .dressing`).
+Facts about the same `subject` form an append-only cumulative thread
+("chandelier: hangs over the stairwell; five hundred crystals"), replayed
+into every future ContextPack as `establishedDetails` — so the model sees
+what it already established before it speaks, and turn-40 prose cannot
+contradict turn-1 improvisation.
+
+Boundary: dressing is timeless texture only — never events, damage,
+evidence, or state changes (those belong to the engine). Inspecting a
+dressed detail yields atmosphere, never clues, unless authored content
+says otherwise. Code: `packages/engine/src/dressing.ts`.
+
 ## Models (env)
 
 | Env | Role |

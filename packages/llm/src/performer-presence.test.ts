@@ -6,6 +6,7 @@ describe("filterDialogueToPresent", () => {
     const out = filterDialogueToPresent(
       {
         narration: "You look around.",
+        dressing: [],
         dialogue: [
           { characterId: "henshaw", characterName: "Henshaw", text: "Sir." },
           { characterId: "vale", characterName: "Vale", text: "Ahem." },
@@ -21,6 +22,7 @@ describe("filterDialogueToPresent", () => {
     const out = filterDialogueToPresent(
       {
         narration: "Quiet.",
+        dressing: [],
         dialogue: [
           { characterId: "vale", characterName: "Vale", text: "Hello." },
         ],

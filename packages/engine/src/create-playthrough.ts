@@ -31,10 +31,13 @@ export function createInitialPlaythrough(
       )?.id ??
       def.player.startingLocationId;
     const isVictim = c.storyRole === "victim";
+    // Hidden characters with an "appear" entrance stay offstage until it fires.
+    const hiddenUntilEntrance =
+      c.knownAtStart === false && c.entrance?.mode !== "mention";
     const available =
       c.availableByDefault !== undefined
         ? c.availableByDefault
-        : !isVictim;
+        : !isVictim && !hiddenUntilEntrance;
     characterState[c.id] = {
       locationId: defaultLoc,
       available,
@@ -46,6 +49,7 @@ export function createInitialPlaythrough(
       stance: c.defaultStance ?? (isVictim ? "deceased" : ""),
       alibiStatus: "none",
       timesTalked: 0,
+      dressing: [],
     };
   }
 
@@ -72,6 +76,7 @@ export function createInitialPlaythrough(
       flags: {},
       timesExamined: 0,
       timesUsed: 0,
+      dressing: [],
     };
   }
   // locked containers from inspectables with objectId
@@ -87,6 +92,7 @@ export function createInitialPlaythrough(
           flags: {},
           timesExamined: 0,
           timesUsed: 0,
+          dressing: [],
         };
       }
     }
@@ -103,6 +109,7 @@ export function createInitialPlaythrough(
       accessible: loc.startsAccessible ?? true,
       descriptionAppend: "",
       exitOpen,
+      dressing: [],
       // Fog-of-war seed: persona familiarity + where you start.
       known:
         (loc.knownAtStart ?? false) ||
@@ -110,11 +117,17 @@ export function createInitialPlaythrough(
     };
   }
 
-  // Identity knowledge: what the player knows each character AS at turn 0.
+  // Identity + existence knowledge at turn 0. A hidden character standing
+  // in the starting room is immediately known (they're met on arrival).
   const playerKnowledge: Record<string, PlayerCharacterKnowledge> = {};
   for (const c of def.characters) {
     const nameKnown = c.nameKnownAtStart ?? true;
+    const cs = characterState[c.id];
+    const coPresent =
+      cs?.available === true &&
+      cs.locationId === def.player.startingLocationId;
     playerKnowledge[c.id] = {
+      known: (c.knownAtStart ?? true) || coPresent,
       knownAs: nameKnown ? c.name : c.introducedAs ?? c.name,
       nameKnown,
     };

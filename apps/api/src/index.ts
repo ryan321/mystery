@@ -18,6 +18,7 @@ import {
   updatePlayerNote,
   deletePlayerNote,
   PlayerNoteError,
+  knownAsFor,
 } from "@mystery/engine";
 import { tryCreateOpenRouterConfig } from "@mystery/llm";
 import {
@@ -250,16 +251,20 @@ app.get("/v1/cases/:caseId", async (c) => {
       objective: def.player.objective,
       startingKnowledge: def.player.startingKnowledge,
     },
-    cast: def.characters.map((ch) => ({
-      id: ch.id,
-      name: ch.name,
-      shortBio: ch.shortBio,
-      storyRole: ch.storyRole ?? "suspect",
-      portrait: ch.portrait,
-      portraitUrl: ch.portrait
-        ? `/v1/cases/${def.id}/assets/${ch.portrait}`
-        : undefined,
-    })),
+    // Mystery detail page: hidden characters (knownAtStart: false) are a
+    // per-playthrough reveal — they never appear in pre-start marketing.
+    cast: def.characters
+      .filter((ch) => ch.knownAtStart !== false)
+      .map((ch) => ({
+        id: ch.id,
+        name: ch.name,
+        shortBio: ch.shortBio,
+        storyRole: ch.storyRole ?? "suspect",
+        portrait: ch.portrait,
+        portraitUrl: ch.portrait
+          ? `/v1/cases/${def.id}/assets/${ch.portrait}`
+          : undefined,
+      })),
   });
 });
 
@@ -939,35 +944,43 @@ function publicState(state: PlaythroughState, def?: MysteryDefinition) {
     },
     /** Case author progress UI default (player can only reduce). */
     progressUi: def?.meta.progressUi ?? "off",
-    // character willingness + portraits for UI
+    // character willingness + portraits for UI — only people the player
+    // knows exist (existence fog), labeled by what they know them as.
     characters: Object.fromEntries(
-      Object.entries(state.characterState).map(([id, cs]) => {
-        const ch = def?.characters.find((x) => x.id === id);
-        return [
-          id,
-          {
-            locationId: cs.locationId,
-            willingness: cs.willingness,
-            stance: cs.stance,
-            pressure: cs.pressure,
-            name: ch?.name,
-            portrait: ch?.portrait,
-            portraitUrl: ch?.portrait
-              ? `/v1/cases/${state.caseId}/assets/${ch.portrait}`
-              : undefined,
-          },
-        ];
-      })
+      Object.entries(state.characterState)
+        .filter(([id]) => state.playerKnowledge?.[id]?.known !== false)
+        .map(([id, cs]) => {
+          const ch = def?.characters.find((x) => x.id === id);
+          return [
+            id,
+            {
+              locationId: cs.locationId,
+              willingness: cs.willingness,
+              stance: cs.stance,
+              pressure: cs.pressure,
+              name: def ? knownAsFor(def, state, id) : ch?.name,
+              portrait: ch?.portrait,
+              portraitUrl: ch?.portrait
+                ? `/v1/cases/${state.caseId}/assets/${ch.portrait}`
+                : undefined,
+            },
+          ];
+        })
     ),
-    cast: def?.characters.map((ch) => ({
-      id: ch.id,
-      name: ch.name,
-      shortBio: ch.shortBio,
-      portrait: ch.portrait,
-      portraitUrl: ch.portrait
-        ? `/v1/cases/${state.caseId}/assets/${ch.portrait}`
-        : undefined,
-    })),
+    cast: def?.characters
+      .filter((ch) => state.playerKnowledge?.[ch.id]?.known !== false)
+      .map((ch) => ({
+        id: ch.id,
+        name: def ? knownAsFor(def, state, ch.id) : ch.name,
+        shortBio:
+          state.playerKnowledge?.[ch.id]?.nameKnown === false
+            ? undefined
+            : ch.shortBio,
+        portrait: ch.portrait,
+        portraitUrl: ch.portrait
+          ? `/v1/cases/${state.caseId}/assets/${ch.portrait}`
+          : undefined,
+      })),
   };
 }
 

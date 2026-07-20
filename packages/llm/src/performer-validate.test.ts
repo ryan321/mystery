@@ -6,15 +6,16 @@ import {
 
 describe("performerSoftFailure", () => {
   it("flags empty narration", () => {
-    expect(performerSoftFailure({ narration: "", dialogue: [] })).not.toBeNull();
-    expect(performerSoftFailure({ narration: "   ", dialogue: [] })).not.toBeNull();
-    expect(performerSoftFailure({ narration: "Hi", dialogue: [] })).not.toBeNull();
+    expect(performerSoftFailure({ narration: "", dialogue: [], dressing: [] })).not.toBeNull();
+    expect(performerSoftFailure({ narration: "   ", dialogue: [], dressing: [] })).not.toBeNull();
+    expect(performerSoftFailure({ narration: "Hi", dialogue: [], dressing: [] })).not.toBeNull();
   });
 
   it("accepts real narration", () => {
     expect(
       performerSoftFailure({
         narration: "You step into the hall. Rain ticks the glass.",
+        dressing: [],
         dialogue: [],
       })
     ).toBeNull();
@@ -35,7 +36,7 @@ describe("performerSoftFailure", () => {
     ).toMatch(/Vale|Blackwood/);
     expect(
       performerSoftFailure(
-        { narration: bad, dialogue: [] },
+        { narration: bad, dialogue: [], dressing: [] },
         pack
       )
     ).not.toBeNull();

@@ -120,6 +120,21 @@ export const DirectorOutputSchema = z.object({
 });
 export type DirectorOutput = z.infer<typeof DirectorOutputSchema>;
 
+/**
+ * Improvised durable detail the performer just established (scene
+ * dressing). Validated by the engine (closed-world ids, caps, dedupe) and
+ * replayed into future packs so the world stays consistent. Additive
+ * texture only — cannot move state, grant evidence, or reveal knowledge.
+ */
+export const DressingProposalSchema = z.object({
+  scope: z.enum(["location", "character", "item"]),
+  id: z.string(),
+  /** Short stable slug for the thing described, e.g. "chandelier". */
+  subject: z.string().optional(),
+  detail: z.string(),
+});
+export type DressingProposal = z.infer<typeof DressingProposalSchema>;
+
 /** Call #2 — Performer: presentation only. Must not mutate game rules. */
 export const PerformerOutputSchema = z.object({
   narration: z.string().min(1),
@@ -132,6 +147,8 @@ export const PerformerOutputSchema = z.object({
       })
     )
     .default([]),
+  /** Durable world texture established this turn (engine-validated). */
+  dressing: z.array(DressingProposalSchema).default([]),
 });
 export type PerformerOutput = z.infer<typeof PerformerOutputSchema>;
 

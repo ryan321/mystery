@@ -5,7 +5,9 @@ import type {
 } from "@mystery/shared";
 import {
   applyAccuseGate,
+  applyDressing,
   buildContextPack,
+  revealCoPresentCharacters,
   directorIntentsToPatch,
   staticCasePackJson,
   validateAndApplyPatch,
@@ -324,6 +326,18 @@ export async function runTurnPipeline(args: {
     resolvedNotes: notes,
     staticCaseJson,
   });
+
+  // Meeting someone reveals them: characters sharing the player's location
+  // become known (existence fog lifts on co-presence).
+  simState = revealCoPresentCharacters(def, simState).state;
+
+  // Persist improvised scene dressing (validated: closed-world, caps,
+  // dedupe). Accepted facts appear in every future pack for their target.
+  const dressed = applyDressing(def, simState, performer.output.dressing ?? []);
+  simState = dressed.state;
+  if (dressed.rejected.length) {
+    notes.push(...dressed.rejected.map((r) => `dressing rejected: ${r}`));
+  }
 
   let committed = appendDialogueMemory(simState, playerInput, {
     narration: performer.output.narration,
