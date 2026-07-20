@@ -15,6 +15,7 @@ Single-player, fair-play **text investigation** games. Structured mystery defini
 | [docs/TURN_PIPELINE.md](./docs/TURN_PIPELINE.md) | Two-call turn: director → engine → performer |
 | [docs/PLAYER_SURFACES.md](./docs/PLAYER_SURFACES.md) | Ambient knowledge: opening package, fog-of-war map, cast dossier, UI stance |
 | [docs/MYSTERY_BUNDLES.md](./docs/MYSTERY_BUNDLES.md) | Bundle format (zip), DB registry, upload pipeline, access/unlock model |
+| [docs/SUBSCRIPTIONS.md](./docs/SUBSCRIPTIONS.md) | Accounts (magic link), Stripe tiers, seasonal free windows, elite invitations |
 
 ## Landing page
 

@@ -116,6 +116,96 @@ describe("evaluateAccess", () => {
   });
 });
 
+describe("subscription tiers (elite, seasonal free, hidden shelves)", () => {
+  it("elite outranks premium", () => {
+    const policy = { visibility: "public" as const, minTier: "elite" as const };
+    expect(evaluateAccess(policy, anon({ tier: "premium" })).playable).toBe(false);
+    expect(evaluateAccess(policy, anon({ tier: "elite" })).playable).toBe(true);
+  });
+
+  it("NOT EVEN SHOWN: hiddenBelowTier behaves like private below the tier", () => {
+    const policy = {
+      visibility: "public" as const,
+      minTier: "elite" as const,
+      hiddenBelowTier: "elite" as const,
+    };
+    // premium user: does not exist — not listed, not reachable
+    expect(evaluateAccess(policy, anon({ tier: "premium" }))).toEqual({
+      listed: false,
+      reachable: false,
+      playable: false,
+      lockReason: "private",
+    });
+    // elite user: fully there
+    const elite = evaluateAccess(policy, anon({ tier: "elite" }));
+    expect(elite.listed).toBe(true);
+    expect(elite.playable).toBe(true);
+    // a grant also reveals it (invited playtester without the sub)
+    expect(evaluateAccess(policy, anon({ hasGrant: true })).playable).toBe(true);
+  });
+
+  it("seasonal free window waives the tier gate and surfaces freeUntil", () => {
+    const now = new Date("2026-07-20T12:00:00Z");
+    const policy = {
+      visibility: "public" as const,
+      minTier: "premium" as const,
+      freeWindows: [
+        { from: "2026-07-18T00:00:00Z", until: "2026-07-21T00:00:00Z" },
+      ],
+    };
+    const during = evaluateAccess(policy, anon(), now);
+    expect(during.playable).toBe(true);
+    expect(during.freeUntil).toBe("2026-07-21T00:00:00.000Z");
+
+    const after = evaluateAccess(
+      policy,
+      anon(),
+      new Date("2026-07-22T00:00:00Z")
+    );
+    expect(after.playable).toBe(false);
+    expect(after.lockReason).toBe("tier");
+    expect(after.freeUntil).toBeUndefined();
+  });
+
+  it("free window does not waive progression gates", () => {
+    const now = new Date("2026-07-20T12:00:00Z");
+    const policy = {
+      visibility: "public" as const,
+      minTier: "premium" as const,
+      minSolved: 2,
+      freeWindows: [
+        { from: "2026-07-18T00:00:00Z", until: "2026-07-21T00:00:00Z" },
+      ],
+    };
+    const r = evaluateAccess(policy, anon(), now);
+    expect(r.playable).toBe(false);
+    expect(r.lockReason).toBe("progression");
+    expect(r.freeUntil).toBe("2026-07-21T00:00:00.000Z");
+  });
+
+  it("parseAccessPolicy keeps freeWindows and hiddenBelowTier, drops junk", () => {
+    expect(
+      parseAccessPolicy({
+        visibility: "public",
+        hiddenBelowTier: "elite",
+        freeWindows: [
+          { from: "2026-07-18", until: "2026-07-21" },
+          { from: "not a date", until: "2026-07-21" },
+        ],
+      })
+    ).toEqual({
+      visibility: "public",
+      hiddenBelowTier: "elite",
+      freeWindows: [
+        {
+          from: new Date("2026-07-18").toISOString(),
+          until: new Date("2026-07-21").toISOString(),
+        },
+      ],
+    });
+  });
+});
+
 describe("parseAccessPolicy", () => {
   it("defaults to public with no requirements", () => {
     expect(parseAccessPolicy(null)).toEqual({ visibility: "public" });

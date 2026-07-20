@@ -31,6 +31,7 @@ export async function migrate(pool: Db): Promise<void> {
     "002_state_json.sql",
     "003_denouement_status.sql",
     "004_mysteries.sql",
+    "005_billing.sql",
   ]) {
     const sql = readFileSync(join(dir, file), "utf8");
     await pool.query(sql);

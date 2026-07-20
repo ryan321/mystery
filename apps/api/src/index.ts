@@ -30,8 +30,38 @@ import {
   accessContextFor,
   evaluateAccess,
   parseAccessPolicy,
+  TIER_ORDER,
   type Tier,
 } from "./access.js";
+import { getCookie, setCookie, deleteCookie } from "hono/cookie";
+import {
+  ANON_COOKIE,
+  SESSION_COOKIE,
+  adoptAnonPlaythroughs,
+  destroySession,
+  effectiveTier,
+  newAnonId,
+  publicUser,
+  requestMagicLink,
+  userForSession,
+  verifyMagicLink,
+  type UserRow,
+} from "./auth.js";
+import {
+  PAID_TIERS,
+  TIER_CARDS,
+  applySubscriptionUpdate,
+  bindStripeCustomer,
+  isPaidTier,
+  mintInvitation,
+  priceForTier,
+  recordBillingEvent,
+  redeemInvitation,
+  stripeClient,
+  subscriptionUpdateFrom,
+  validateInvitation,
+} from "./billing.js";
+import type Stripe from "stripe";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(__dirname, "../../..");
@@ -46,15 +76,52 @@ const pool = createPool();
 const registry = new MysteryRegistry(pool);
 const llmConfig = tryCreateOpenRouterConfig();
 
-/** Anonymous session identity until accounts land. */
-function userIdFrom(c: Context): string {
-  return c.req.header("x-user-id")?.trim() || "anon";
-}
+export type Identity = {
+  userId: string;
+  tier: Tier;
+  user: UserRow | null;
+  anonId: string | null;
+};
 
-/** Billing stub: header override for dev, else env default, else free. */
-function tierFrom(c: Context): Tier {
-  const raw = c.req.header("x-user-tier") ?? process.env.DEFAULT_USER_TIER;
-  return raw === "standard" || raw === "premium" ? raw : "free";
+/**
+ * Who is calling: session cookie (signed-in user) → dev header override
+ * (never in production) → anonymous cookie (minted on first contact).
+ * Anonymous players play free-tier content; sign-in adopts their runs.
+ */
+async function identity(c: Context): Promise<Identity> {
+  const sessionToken = getCookie(c, SESSION_COOKIE);
+  if (sessionToken) {
+    const user = await userForSession(pool, sessionToken);
+    if (user) {
+      return {
+        userId: user.id,
+        tier: effectiveTier(user),
+        user,
+        anonId: getCookie(c, ANON_COOKIE) ?? null,
+      };
+    }
+  }
+  if (process.env.NODE_ENV !== "production") {
+    const devId = c.req.header("x-user-id")?.trim();
+    if (devId) {
+      const raw =
+        c.req.header("x-user-tier") ?? process.env.DEFAULT_USER_TIER;
+      const tier = TIER_ORDER.includes(raw as Tier) ? (raw as Tier) : "free";
+      return { userId: devId, tier, user: null, anonId: null };
+    }
+  }
+  let anonId = getCookie(c, ANON_COOKIE);
+  if (!anonId) {
+    anonId = newAnonId();
+    setCookie(c, ANON_COOKIE, anonId, {
+      httpOnly: true,
+      sameSite: "Lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+      secure: process.env.NODE_ENV === "production",
+    });
+  }
+  return { userId: anonId, tier: "free", user: null, anonId };
 }
 
 /** Admin gate for upload/publish/grant routes. Open in local dev unless ADMIN_TOKEN is set. */
@@ -67,12 +134,13 @@ function adminOk(c: Context): boolean {
 async function accessFor(c: Context, caseId: string) {
   const meta = await registry.getRowMeta(caseId);
   if (!meta) return undefined;
+  const ident = await identity(c);
   const ctx = await accessContextFor(pool, {
-    userId: userIdFrom(c),
-    tier: tierFrom(c),
+    userId: ident.userId,
+    tier: ident.tier,
     caseId,
   });
-  return { meta, result: evaluateAccess(meta.access, ctx) };
+  return { meta, result: evaluateAccess(meta.access, ctx), ident };
 }
 
 const app = new Hono();
@@ -116,14 +184,13 @@ app.get("/health", async (c) => {
 });
 
 app.get("/v1/cases", async (c) => {
-  const userId = userIdFrom(c);
-  const tier = tierFrom(c);
+  const ident = await identity(c);
   const rows = await registry.listPublished();
   const list: unknown[] = [];
   for (const row of rows) {
     const ctx = await accessContextFor(pool, {
-      userId,
-      tier,
+      userId: ident.userId,
+      tier: ident.tier,
       caseId: row.caseId,
     });
     const access = evaluateAccess(row.access, ctx);
@@ -136,6 +203,8 @@ app.get("/v1/cases", async (c) => {
       locked: !access.playable,
       lockReason: access.lockReason,
       requirement: access.requirement,
+      /** Seasonal badge: "Free until …" while a free window is active. */
+      freeUntil: access.freeUntil,
     });
   }
   return c.json({ cases: list });
@@ -362,7 +431,7 @@ app.post("/v1/playthroughs", async (c) => {
   await insertPlaythrough(pool, state, def.openingNarration);
   await pool.query(`UPDATE playthroughs SET user_id = $2 WHERE id = $1`, [
     state.id,
-    userIdFrom(c),
+    found.ident.userId,
   ]);
 
   return c.json({
@@ -487,6 +556,251 @@ app.post("/v1/playthroughs/:id/turns", async (c) => {
     }),
     _debug: result.debug,
   });
+});
+
+// ── Auth: magic-link accounts (docs/SUBSCRIPTIONS.md Phase 1) ───────────
+
+app.post("/v1/auth/magic-link", async (c) => {
+  const body = (await c.req.json().catch(() => ({}))) as { email?: string };
+  const result = await requestMagicLink(pool, String(body.email ?? ""));
+  if ("error" in result) return c.json(result, 400);
+  return c.json(result);
+});
+
+app.post("/v1/auth/verify", async (c) => {
+  const body = (await c.req.json().catch(() => ({}))) as { token?: string };
+  const result = await verifyMagicLink(pool, String(body.token ?? ""));
+  if ("error" in result) return c.json(result, 400);
+
+  setCookie(c, SESSION_COOKIE, result.sessionToken, {
+    httpOnly: true,
+    sameSite: "Lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 30,
+    secure: process.env.NODE_ENV === "production",
+  });
+
+  // Adopt the anonymous cookie's playthroughs so progression follows them in.
+  const anonId = getCookie(c, ANON_COOKIE);
+  const adopted = anonId
+    ? await adoptAnonPlaythroughs(pool, result.user.id, anonId)
+    : 0;
+
+  return c.json({ user: publicUser(result.user), adoptedPlaythroughs: adopted });
+});
+
+app.post("/v1/auth/signout", async (c) => {
+  const sessionToken = getCookie(c, SESSION_COOKIE);
+  if (sessionToken) await destroySession(pool, sessionToken);
+  deleteCookie(c, SESSION_COOKIE, { path: "/" });
+  return c.json({ ok: true });
+});
+
+app.get("/v1/me", async (c) => {
+  const ident = await identity(c);
+  if (ident.user) return c.json({ user: publicUser(ident.user) });
+  return c.json({
+    anonymous: true,
+    userId: ident.userId,
+    tier: ident.tier,
+  });
+});
+
+// ── Billing: Stripe checkout / portal / webhook (Phase 3) ───────────────
+
+app.get("/v1/billing/tiers", async (c) => {
+  const stripe = stripeClient();
+  const invite = c.req.query("invite");
+  const tiers: unknown[] = [];
+  for (const tier of PAID_TIERS) {
+    const card = TIER_CARDS[tier];
+    if (card.inviteOnly) {
+      const ok = invite
+        ? (await validateInvitation(pool, invite, tier)).valid
+        : false;
+      if (!ok) continue; // elite never shows without a valid invite link
+    }
+    const priceId = priceForTier(tier);
+    let price: unknown = null;
+    if (stripe && priceId) {
+      try {
+        const p = await stripe.prices.retrieve(priceId);
+        price = {
+          amount: p.unit_amount,
+          currency: p.currency,
+          interval: p.recurring?.interval ?? "month",
+        };
+      } catch {
+        /* price fetch is cosmetic */
+      }
+    }
+    tiers.push({ tier, ...card, price, configured: Boolean(priceId) });
+  }
+  return c.json({ tiers, billingConfigured: Boolean(stripe) });
+});
+
+app.post("/v1/billing/checkout", async (c) => {
+  const stripe = stripeClient();
+  if (!stripe) return c.json({ error: "billing_not_configured" }, 501);
+  const ident = await identity(c);
+  if (!ident.user) return c.json({ error: "sign_in_required" }, 401);
+
+  const body = (await c.req.json().catch(() => ({}))) as {
+    tier?: string;
+    inviteCode?: string;
+  };
+  if (!isPaidTier(body.tier)) return c.json({ error: "invalid_tier" }, 400);
+  const tier = body.tier;
+
+  if (TIER_CARDS[tier].inviteOnly) {
+    const inv = body.inviteCode
+      ? await validateInvitation(pool, body.inviteCode, tier)
+      : { valid: false };
+    if (!inv.valid) return c.json({ error: "invitation_required" }, 403);
+  }
+
+  const price = priceForTier(tier);
+  if (!price) return c.json({ error: "price_not_configured", tier }, 501);
+
+  let customerId = ident.user.stripe_customer_id;
+  if (!customerId) {
+    const customer = await stripe.customers.create({
+      email: ident.user.email,
+      metadata: { userId: ident.user.id },
+    });
+    customerId = customer.id;
+    await bindStripeCustomer(pool, ident.user.id, customerId);
+  }
+
+  const webOrigin = process.env.WEB_ORIGIN ?? "http://localhost:3000";
+  const session = await stripe.checkout.sessions.create({
+    mode: "subscription",
+    customer: customerId,
+    line_items: [{ price, quantity: 1 }],
+    success_url: `${webOrigin}/account/billing?checkout=success`,
+    cancel_url: `${webOrigin}/subscribe?checkout=cancelled`,
+    allow_promotion_codes: true,
+    metadata: {
+      userId: ident.user.id,
+      tier,
+      ...(body.inviteCode ? { inviteCode: body.inviteCode } : {}),
+    },
+    subscription_data: { metadata: { userId: ident.user.id, tier } },
+  });
+  return c.json({ url: session.url });
+});
+
+app.post("/v1/billing/portal", async (c) => {
+  const stripe = stripeClient();
+  if (!stripe) return c.json({ error: "billing_not_configured" }, 501);
+  const ident = await identity(c);
+  if (!ident.user) return c.json({ error: "sign_in_required" }, 401);
+  if (!ident.user.stripe_customer_id) {
+    return c.json({ error: "no_subscription" }, 400);
+  }
+  const webOrigin = process.env.WEB_ORIGIN ?? "http://localhost:3000";
+  const session = await stripe.billingPortal.sessions.create({
+    customer: ident.user.stripe_customer_id,
+    return_url: `${webOrigin}/account/billing`,
+  });
+  return c.json({ url: session.url });
+});
+
+/**
+ * Stripe webhook — the single source of truth for users.tier.
+ * Raw body + signature verification; idempotent via billing_events.
+ */
+app.post("/v1/billing/webhook", async (c) => {
+  const stripe = stripeClient();
+  const secret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!stripe || !secret) return c.json({ error: "billing_not_configured" }, 501);
+
+  const raw = await c.req.text();
+  let event: Stripe.Event;
+  try {
+    event = stripe.webhooks.constructEvent(
+      raw,
+      c.req.header("stripe-signature") ?? "",
+      secret
+    );
+  } catch {
+    return c.json({ error: "invalid_signature" }, 400);
+  }
+
+  const fresh = await recordBillingEvent(pool, event.id, event.type);
+  if (!fresh) return c.json({ received: true, duplicate: true });
+
+  switch (event.type) {
+    case "checkout.session.completed": {
+      const session = event.data.object as Stripe.Checkout.Session;
+      const userId = session.metadata?.userId;
+      const customerId =
+        typeof session.customer === "string"
+          ? session.customer
+          : session.customer?.id;
+      if (userId && customerId) {
+        await bindStripeCustomer(pool, userId, customerId);
+      }
+      if (session.metadata?.inviteCode) {
+        await redeemInvitation(pool, session.metadata.inviteCode);
+      }
+      break;
+    }
+    case "customer.subscription.created":
+    case "customer.subscription.updated":
+    case "customer.subscription.deleted": {
+      const sub = event.data.object as Stripe.Subscription;
+      await applySubscriptionUpdate(pool, subscriptionUpdateFrom(sub));
+      break;
+    }
+    default:
+      break;
+  }
+  return c.json({ received: true });
+});
+
+// ── Invitations (elite gate) + admin comps ──────────────────────────────
+
+app.post("/v1/invitations", async (c) => {
+  if (!adminOk(c)) return c.json({ error: "forbidden" }, 403);
+  const body = (await c.req.json().catch(() => ({}))) as {
+    tier?: string;
+    code?: string;
+    expiresAt?: string;
+    maxUses?: number;
+  };
+  if (!isPaidTier(body.tier)) return c.json({ error: "invalid_tier" }, 400);
+  const code = await mintInvitation(pool, {
+    tier: body.tier,
+    code: body.code,
+    expiresAt: body.expiresAt,
+    maxUses: body.maxUses,
+  });
+  return c.json({ code, tier: body.tier }, 201);
+});
+
+app.get("/v1/invitations/:code", async (c) => {
+  const result = await validateInvitation(pool, c.req.param("code"));
+  return c.json(result);
+});
+
+/** Manual comps / tier overrides without Stripe (kind support, playtests). */
+app.post("/v1/admin/users/tier", async (c) => {
+  if (!adminOk(c)) return c.json({ error: "forbidden" }, 403);
+  const body = (await c.req.json().catch(() => ({}))) as {
+    email?: string;
+    tier?: string;
+    status?: string;
+  };
+  const tier = TIER_ORDER.includes(body.tier as Tier) ? body.tier : undefined;
+  if (!body.email || !tier) return c.json({ error: "invalid_request" }, 400);
+  const res = await pool.query(
+    `UPDATE users SET tier = $2, subscription_status = $3, updated_at = now()
+     WHERE email = $1 RETURNING id`,
+    [body.email.trim().toLowerCase(), tier, body.status ?? "comp"]
+  );
+  if (!res.rowCount) return c.json({ error: "user_not_found" }, 404);
+  return c.json({ updated: true, tier });
 });
 
 function buildBriefing(def: MysteryDefinition, state?: PlaythroughState) {

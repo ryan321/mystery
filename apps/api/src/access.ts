@@ -10,13 +10,26 @@
  */
 import type { Db } from "./db.js";
 
-export type Tier = "free" | "standard" | "premium";
-const TIER_ORDER: Tier[] = ["free", "standard", "premium"];
+export type Tier = "free" | "standard" | "premium" | "elite";
+export const TIER_ORDER: Tier[] = ["free", "standard", "premium", "elite"];
 
 export type AccessPolicy = {
   visibility: "public" | "unlisted" | "private";
   /** Minimum subscription tier to play. */
   minTier?: Tier;
+  /**
+   * Below this tier the mystery is not even shown: it behaves like
+   * `private` (absent from the catalog, 404 by URL, assets 404). The
+   * invitation-only shelf: elite mysteries with hiddenBelowTier: "elite"
+   * simply do not exist for anyone else.
+   */
+  hiddenBelowTier?: Tier;
+  /**
+   * Seasonal free windows: while now ∈ [from, until), the tier gate is
+   * waived (progression/series gates still apply). Catalog surfaces
+   * freeUntil so the shelf can badge "Free until Sunday".
+   */
+  freeWindows?: { from: string; until: string }[];
   /** Distinct mysteries solved before this unlocks. */
   minSolved?: number;
   /** Specific mysteries that must be solved first (series/sequels). */
@@ -37,6 +50,26 @@ export function parseAccessPolicy(raw: unknown): AccessPolicy {
   const policy: AccessPolicy = { visibility };
   if (TIER_ORDER.includes(o.minTier as Tier)) {
     policy.minTier = o.minTier as Tier;
+  }
+  if (TIER_ORDER.includes(o.hiddenBelowTier as Tier)) {
+    policy.hiddenBelowTier = o.hiddenBelowTier as Tier;
+  }
+  if (Array.isArray(o.freeWindows)) {
+    const windows = o.freeWindows
+      .map((w) => {
+        const win = (w && typeof w === "object" ? w : {}) as Record<
+          string,
+          unknown
+        >;
+        const from = new Date(String(win.from ?? ""));
+        const until = new Date(String(win.until ?? ""));
+        if (Number.isNaN(from.getTime()) || Number.isNaN(until.getTime())) {
+          return null;
+        }
+        return { from: from.toISOString(), until: until.toISOString() };
+      })
+      .filter((w): w is { from: string; until: string } => w !== null);
+    if (windows.length) policy.freeWindows = windows;
   }
   if (typeof o.minSolved === "number" && o.minSolved > 0) {
     policy.minSolved = Math.floor(o.minSolved);
@@ -68,6 +101,8 @@ export type AccessResult = {
   playable: boolean;
   lockReason?: "tier" | "progression" | "series" | "grant" | "private";
   requirement?: Record<string, unknown>;
+  /** Set while a seasonal free window is active (shelf badge). */
+  freeUntil?: string;
 };
 
 const NOT_FOUND: AccessResult = {
@@ -77,14 +112,33 @@ const NOT_FOUND: AccessResult = {
   lockReason: "private",
 };
 
+/** Active seasonal window, if any. */
+function activeFreeWindow(
+  policy: AccessPolicy,
+  now: Date
+): { from: string; until: string } | undefined {
+  return policy.freeWindows?.find(
+    (w) => now >= new Date(w.from) && now < new Date(w.until)
+  );
+}
+
 /** Pure policy evaluation — unit-testable, no IO. */
 export function evaluateAccess(
   policy: AccessPolicy,
-  ctx: AccessContext
+  ctx: AccessContext,
+  now: Date = new Date()
 ): AccessResult {
   // A grant is explicit access: reachable, on the holder's shelf, playable.
   if (ctx.hasGrant) {
     return { listed: true, reachable: true, playable: true };
+  }
+
+  // Invitation-only shelf: below the tier, the mystery does not exist.
+  if (policy.hiddenBelowTier) {
+    const need = TIER_ORDER.indexOf(policy.hiddenBelowTier);
+    if (TIER_ORDER.indexOf(ctx.tier) < need) {
+      return NOT_FOUND;
+    }
   }
 
   if (policy.visibility === "private") {
@@ -94,6 +148,10 @@ export function evaluateAccess(
 
   const listed = policy.visibility === "public";
   const reachable = true; // public + unlisted are reachable by URL
+  const freeWindow = activeFreeWindow(policy, now);
+  const freeUntil = freeWindow
+    ? new Date(freeWindow.until).toISOString()
+    : undefined;
 
   if (policy.grantOnly) {
     return {
@@ -105,7 +163,8 @@ export function evaluateAccess(
     };
   }
 
-  if (policy.minTier && policy.minTier !== "free") {
+  // Seasonal free window waives the tier gate.
+  if (!freeWindow && policy.minTier && policy.minTier !== "free") {
     const need = TIER_ORDER.indexOf(policy.minTier);
     const have = TIER_ORDER.indexOf(ctx.tier);
     if (have < need) {
@@ -131,6 +190,7 @@ export function evaluateAccess(
         playable: false,
         lockReason: "series",
         requirement: { requiresSolvedCaseIds: missing },
+        freeUntil,
       };
     }
   }
@@ -145,10 +205,11 @@ export function evaluateAccess(
         minSolved: policy.minSolved,
         solved: ctx.solvedCaseIds.length,
       },
+      freeUntil,
     };
   }
 
-  return { listed, reachable, playable: true };
+  return { listed, reachable, playable: true, freeUntil };
 }
 
 /** Distinct case ids this user has solved (progression source of truth). */
