@@ -284,3 +284,36 @@
   left: 1.2rem;
   background: var(--candle);
 }
+
+@media (max-width: 640px) {
+  .nav {
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .brand {
+    font-size: 0.9rem;
+  }
+
+  .right {
+    gap: 0.4rem;
+  }
+
+  .link {
+    padding: 0.25rem 0.45rem;
+    font-size: 0.62rem;
+    white-space: nowrap;
+  }
+
+  .iconBtn,
+  .avatarBtn {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.85rem;
+  }
+
+  .dropdown {
+    min-width: 11rem;
+    right: -0.25rem;
+  }
+}
