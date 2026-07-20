@@ -162,6 +162,20 @@ export class MysteryRegistry {
     return out;
   }
 
+  /** Bundle cover path ("cover.jpg") for a case version, if it ships one. */
+  async coverPath(
+    caseId: string,
+    version: string
+  ): Promise<string | undefined> {
+    const res = await this.#pool.query<{ path: string }>(
+      `SELECT path FROM mystery_assets
+       WHERE case_id = $1 AND content_version = $2 AND path LIKE 'cover.%'
+       LIMIT 1`,
+      [caseId, version]
+    );
+    return res.rows[0]?.path;
+  }
+
   async getAsset(
     caseId: string,
     version: string | undefined,

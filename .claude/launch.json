@@ -4,14 +4,32 @@
     {
       "name": "mystery-api",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "@mystery/api", "dev"],
+      "runtimeArgs": [
+        "--filter",
+        "@mystery/api",
+        "dev"
+      ],
       "port": 8787
     },
     {
       "name": "mystery-web",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "@mystery/web", "dev"],
+      "runtimeArgs": [
+        "--filter",
+        "@mystery/web",
+        "dev"
+      ],
       "port": 3000
+    },
+    {
+      "name": "mystery-studio",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "@mystery/studio",
+        "dev"
+      ],
+      "port": 3100
     }
   ]
 }

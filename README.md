@@ -16,6 +16,7 @@ Single-player, fair-play **text investigation** games. Structured mystery defini
 | [docs/PLAYER_SURFACES.md](./docs/PLAYER_SURFACES.md) | Ambient knowledge: opening package, fog-of-war map, cast dossier, UI stance |
 | [docs/MYSTERY_BUNDLES.md](./docs/MYSTERY_BUNDLES.md) | Bundle format (zip), DB registry, upload pipeline, access/unlock model |
 | [docs/SUBSCRIPTIONS.md](./docs/SUBSCRIPTIONS.md) | Accounts (magic link), Stripe tiers, seasonal free windows, elite invitations |
+| [docs/MYSTERY_STUDIO.md](./docs/MYSTERY_STUDIO.md) | Mystery Studio: local-only authoring & review webapp |
 
 ## Landing page
 
@@ -43,6 +44,7 @@ OpenRouter → engine validation), API surface, and phased delivery.
 ```
 apps/web          Next.js player UI
 apps/api          Hono API (turns, playthroughs)
+apps/studio       Mystery Studio — local-only authoring/review (never deployed)
 packages/shared   Zod schemas + types
 packages/engine   Pure game logic (gates, patches, context pack)
 packages/llm      OpenRouter client (stub → narrator)
@@ -62,6 +64,7 @@ cp .env.example .env   # optional: set OPENROUTER_API_KEY, DATABASE_URL
 pnpm test
 pnpm dev:api           # http://localhost:8787  (builds packages, migrates, serves)
 pnpm dev:web           # http://localhost:3000 → /play
+pnpm dev:studio        # http://localhost:3100 → Mystery Studio (authoring, local only)
 ```
 
 - **Postgres:** default `postgres://localhost:5432/mystery` (override with `DATABASE_URL`)

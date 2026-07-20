@@ -203,10 +203,13 @@ app.get("/v1/cases", async (c) => {
     });
     const access = evaluateAccess(row.access, ctx);
     if (!access.listed) continue;
+    const cover = await registry.coverPath(row.caseId, row.contentVersion);
     list.push({
       id: row.definition.id,
       contentVersion: row.contentVersion,
       meta: row.definition.meta,
+      /** Bundle cover art, when the case ships one. */
+      coverUrl: cover ? `/v1/cases/${row.caseId}/assets/${cover}` : undefined,
       // Visible-but-locked is merchandising: the shelf shows why.
       locked: !access.playable,
       lockReason: access.lockReason,
@@ -227,10 +230,12 @@ app.get("/v1/cases/:caseId", async (c) => {
   }
   const def = await registry.getDefinition(caseId, found.meta.contentVersion);
   if (!def) return c.json({ error: "not_found" }, 404);
+  const cover = await registry.coverPath(def.id, def.contentVersion);
   return c.json({
     id: def.id,
     contentVersion: def.contentVersion,
     meta: def.meta,
+    coverUrl: cover ? `/v1/cases/${def.id}/assets/${cover}` : undefined,
     locked: !found.result.playable,
     lockReason: found.result.lockReason,
     requirement: found.result.requirement,

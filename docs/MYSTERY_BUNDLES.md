@@ -35,6 +35,9 @@ blackwood-inheritance.mystery          (zip)
 - Everything the case needs is inside; nothing outside is referenced.
 - `(caseId, contentVersion)` from `definition.json` identifies the bundle.
 - A checksum over the archive detects duplicate uploads.
+- The bundle is the **single source of cover art**: the catalog
+  (`GET /v1/cases`) and case-detail responses expose it as `coverUrl`,
+  pointing at the versioned asset route.
 
 ## 3. Storage: database is the runtime source of truth
 

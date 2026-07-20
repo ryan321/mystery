@@ -10,7 +10,8 @@
     "typecheck": "pnpm -r run typecheck",
     "dev:api": "pnpm run build:packages && pnpm --filter @mystery/api dev",
     "dev:web": "pnpm --filter @mystery/web dev",
-    "publish-case": "node apps/api/scripts/publish-case.mjs"
+    "publish-case": "node apps/api/scripts/publish-case.mjs",
+    "dev:studio": "pnpm --filter @mystery/studio dev"
   },
   "engines": {
     "node": ">=20"
