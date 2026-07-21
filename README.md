@@ -31,9 +31,8 @@ python3 -m http.server 5173
 ```
 
 - Explains the product for **players**
-- Primary CTA: free short case / waitlist email
+- Primary CTA: play the free case (links straight to the app at mysterytrove.com; free account required, no waitlist)
 - Subscription mentioned; **pricing TBD**
-- Waitlist emails stored in `localStorage` for now (wire a real backend later)
 
 ## Architecture
 

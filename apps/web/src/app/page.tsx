@@ -435,9 +435,11 @@ export default function LandingPage() {
                   Do I need an account?
                 </summary>
                 <p className={styles.faqAnswer}>
-                  Not to start — the first case is free and opens straight
-                  away. Sign in when you want your shelf and progress to
-                  follow you across devices.
+                  Yes — a free account, made in seconds with your email or
+                  Google. It saves your investigation and keeps your shelf
+                  with you across devices. The first case is free to play,
+                  start to finish; a membership is only needed for the rest
+                  of the shelf.
                 </p>
               </details>
               <details className={styles.faqItem}>
