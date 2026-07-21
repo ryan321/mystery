@@ -58,7 +58,13 @@ const note = (severity, area, text) => weakPoints.push({ severity, area, text })
 // ── 1. World budget ──────────────────────────────────────────────────
 
 const living = def.characters.filter((c) => c.storyRole !== "victim");
-const budget = def.locations.length * 3 + living.length * 3;
+// Suspects demand full interrogation arcs (~3 turns); witnesses and
+// support carry one or two key testimonies (~1.5).
+const castCost = living.reduce(
+  (sum, c) => sum + (c.storyRole === "suspect" ? 3 : 1.5),
+  0
+);
+const budget = Math.round(def.locations.length * 3 + castCost);
 const bandMid = Math.round((band[0] + band[1]) / 2);
 const budgetVerdict =
   budget < band[0] ? "thin" : budget > band[1] ? "oversized" : "in band";
