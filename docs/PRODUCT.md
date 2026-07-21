@@ -134,11 +134,63 @@ on-ramp; the authored prose is the product as much as the puzzle.
 **Verdict:** deduction gamers are the beachhead (loud, findable, on a
 storefront with discovery); readers are the prize (bigger market,
 subscription-habituated — Kindle Unlimited, Audible, book boxes — and
-almost completely unserved). Reader acquisition channels: BookTok /
-Bookstagram mystery creators, true-crime podcast ads, mystery newsletters
-(CrimeReads-adjacent), Facebook/Instagram interest targeting (Christie,
-Louise Penny, Hunt A Killer, escape rooms), puzzle-daily habit surfaces.
-Never lead with "AI" to this segment; lead with the case.
+almost completely unserved).
+
+### Reaching the readers
+
+They never walk past a game store — show up in their channels, in their
+language.
+
+**Channels, by leverage:**
+
+1. **BookTok / Bookstagram mystery creators** — the Cain's Jawbone effect:
+   solving-in-public is inherently good video, and interrogating a suspect
+   live is better. Seed 30–50 micro-creators (10k–100k followers) with
+   invitation codes (the `MYST-XXXX` system already exists) + a comp month.
+   Three hits out of thirty is a win. Costs ~nothing; verdict within a month.
+2. **True-crime podcast ads** — how Hunt A Killer built 100k subscribers.
+   "Become the detective" host-reads on mid-tier shows; start with cheaper
+   programmatic buys to test.
+3. **Meta ads, book-interest targeting** — this demographic is on
+   Facebook/Instagram; target Christie / Louise Penny / Richard Osman /
+   Hunt A Killer / escape-room interests. Creative: case art styled as a
+   book cover + the authored premise hook + "First case free — play in your
+   browser." $500–1k test; judge by CAC to free-case *completion*, not click.
+4. **Mystery-lit editorial** — pitch CrimeReads etc. with "I built a
+   fair-play mystery you can interrogate — Knox's rules, enforced by
+   software." A books-editor story, not a games story. One good essay beats
+   any games-press coverage for this segment.
+5. **Puzzle-daily surfaces** (later, real product work) — a free daily
+   two-minute mini-mystery with a shareable result card, Wordle/Murdle
+   style. The best growth *mechanism* on this list: daily habit + built-in
+   sharing, funneling to full cases.
+6. **Adjacent-purchase partnerships** — escape-room newsletters, mystery
+   box subscribers, book boxes (a bundled case code costs nothing marginal).
+   Book clubs are a sleeper: readers do things in groups — a printable
+   "club night" guide (play the case, discuss who you accused) enters that
+   ecosystem before any multiplayer exists.
+
+**Messaging rules:** book language, never game language — "cases," "a new
+case every month"; comps are Christie and Osman. State fair-play as rules
+of honor ("Every clue you need is findable. The solution never changes. No
+trick endings.") — Knox's Decalogue reborn; readers recognize it. Price
+anchors from their world: less than a hardcover a month, vs Kindle
+Unlimited at $12. Suppress "AI" in reader-facing copy — it triggers
+"the computer makes it up" skepticism; lead with the case and the
+fairness guarantee.
+
+**Sequence:** (1) instrument the funnel (signup → start → finish → "felt
+fair" — every channel is judged by this); (2) creator seeding; (3) one
+CrimeReads pitch; (4) $1k Meta test across three creatives; (5) use the
+seasonal free windows (already in the access model) as BookBub-style
+list-building events; (6) later: the daily mini-mystery, and a
+commissioned case from a known mystery author — instant segment
+credibility and a press event in one.
+
+**The meta-point:** the free case is a *first chapter*. Kindle samples and
+BookBub trained this market for fifteen years that free first chapters are
+how you meet a new author. We're not teaching a new behavior — we're
+wearing the shape of one they already trust.
 
 ### Funnel
 1. **Landing page** — explain the product; convert curiosity → intent  
