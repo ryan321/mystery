@@ -321,6 +321,73 @@ give it a hook or cut it. The bundle linter warns about locations with
 no inspectables, no evidence, no character presence, and no beat
 references.
 
+## 8e. The opening: bearings, not briefing
+
+A novelist keeps control until the reader is oriented. We surrender
+control while the player is still half-oriented — and that is the
+point. The opening's job is *small*: three answers, one line each —
+where am I, why am I here, what's wrong — plus one concrete oddity
+the mind snags on. Then get out of the way.
+
+Every fact handed over in the opening is a fact the player can no
+longer discover, and discovery is the product. Feed curiosity, not
+orientation: "who is the lady in the wheeled chair?" is worth more
+unanswered. Say the staff is strangely thin; do not explain it.
+Gaps are invitations — a fully-oriented player has nowhere to lean.
+Think Colonel's Bequest: you arrive knowing almost nothing, nobody
+briefs you, and the not-knowing powers the first hour.
+
+The world is the exposition. Rooms, faces, and overheard grumbles
+carry the situation better than any preamble, because learning the
+situation IS gameplay. The freedom works because the safety net is
+invisible: the director redirects generously, no first move is
+punishable, and the world is dense enough that poking anything pays.
+
+Mechanically: the opening is **authored, fixed prose**
+(`openingNarration`, required) — never generated at runtime. Every
+player shares the same trailhead. The dossier/briefing is opt-in
+depth for players who want their bearings in writing; the narration
+is the spark, ~150 words, the best sentences in the case. Difficulty
+is the dial: an easy case may show one more visible thread; a hard
+case opens colder. The default posture: enough to get going, then
+get out of the way.
+
+## 8f. The ending: the mask comes off in three stages
+
+Scooby Doo got the structure right: catch → mask-pull → the
+explanation → consequences. But the explanation circle cannot live
+inside the fiction — the player's best questions ("why didn't he
+just call the police?") are questions about the *story's logic*
+that no character can answer without becoming the author in a
+costume, and characters who suddenly spill everything break the
+world. So the ending is three stages with two different contracts:
+
+**Stage 1 — the denouement (in-fiction, short).** Only what
+characters would actually do: the villain's confession when the
+evidence corners them (if pride or exhaustion would permit it),
+arrests, reactions, goodbyes. Nobody develops omniscience. Only the
+villain may account for their own design, and only in their own
+nature and voice.
+
+**Stage 2 — the revelation (authored, fixed).** The `revelation`
+field: the whole true story told once, mask off, by the storyteller
+— the four WHYs answered on the page. Like the opening, it is
+authored prose, never generated at runtime, and every player gets
+it — *including on failed endings*. An episode never ends without
+the mask coming off.
+
+**Stage 3 — the debrief (out of fiction, optional chat).** After
+the case closes the player may keep asking — but the interlocutor
+is the storyteller, not a character. The contract: **explain the
+story, never inventory the world.** It answers anything about what
+the player encountered — their own transcript plus everything the
+revelation told them: "why did the caretaker bury the lantern?",
+"why did she say that to me on turn 12?", counterfactuals about
+the design. It deflects gap-enumeration — "did I miss any clues?",
+"what was in the attic?" — the way a game keeps its secret rooms
+secret. A player can beat the game without finding every secret;
+what they missed stays missed, and replay keeps its value.
+
 ## 9. Obligations of the interactive medium
 
 The player IS the detective, so:
@@ -431,6 +498,61 @@ written, because detail quietly breaks earlier answers (a new clue
 placement can make WHY #3 collapse). `pnpm storycheck --case <id>`
 automates the pass against the sealed definition — WHYs and WHATs
 graded, HOWs answered with concrete suggestions.
+
+### The eight audits
+
+Storycheck judges the *story*; the audits judge the *construction*,
+each one scoped, repeatable on any case, and objective wherever a
+graph can replace a judgment call. `pnpm audits --case <id>`
+(`--audit crime,realism,characters,locations,clues,persona,opening,ending` to pick,
+`--no-llm` for the deterministic checks only):
+
+- **crime** — does the crime sequence hold? Means, opportunity,
+  physics (wounds match weapons, bodies match constraints), timeline
+  coherence, why-now trigger, concealment, and whether the villain's
+  motive survives cross-examination. Every verdict cites canon
+  event ids.
+- **realism** — is everything plausible *given the declared setting*?
+  Anachronisms, social convention, procedure (police, inquests,
+  medicine), money magnitudes, period voice.
+- **characters** — census (victim, ≥3 suspects, guilty ids valid),
+  mechanical completeness (bios, defenses, resolvable knowledge
+  gates, placements), and three-dimensionality per character
+  (want / fear / contradiction visible in the authored text).
+- **locations** — exit graph soundness (all rooms reachable, doors
+  bidirectional, map coordinates unique), every room pulls weight,
+  and a setting census: which rooms this setting demands but lacks.
+- **clues** — fully deterministic: every reference resolves, beat
+  conditions use shapes the engine actually evaluates, a fixpoint
+  reachability proof that every critical clue is obtainable from
+  turn one, flag hygiene, signpost counting (no needle without at
+  least one pointer outside its own room), rubric facts backed by
+  in-world text, and evidence spread.
+- **persona** — the player's avatar: why are they there (summons
+  plausible, arrival survives scrutiny), what is their role (does
+  authority explain the access the game assumes), does it make
+  sense (knowledge stance matches stranger/local, objective
+  actionable, NPCs have authored reasons to resist or tolerate
+  them). The persona is a **transparent avatar**: the player IS
+  the character and brings their own personality. The audit fails
+  personas that script emotions or heavy backstory, and demands
+  stakes live in the *situation* (deadlines, consequences in the
+  world), never in an authored inner life. The player is "you"
+  plus a role title — no authored name, face, or player portrait.
+- **opening** — the fixed story start (`openingNarration` is
+  authored prose, never runtime-generated). Checks the floor, not
+  the ceiling: bearings present (where / why me / what's wrong in
+  rough strokes), one concrete spark, a live starting room, nothing
+  the persona couldn't know — and **restraint**: an opening that
+  over-explains fails, because discovery is the product (§8e).
+- **ending** — the mask comes off in three stages (§8f): endings
+  authored for every outcome bucket, an authored `revelation` that
+  answers the four WHYs and matches canon, denouement notes that
+  keep characters in character, endings that land on people, and
+  failure endings that still deliver the truth with meaning.
+
+Reports land in `playtests/<case>/audit-*.json`; any FAIL exits
+nonzero, so the battery can gate publishing.
 
 ## The formula
 

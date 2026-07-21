@@ -195,15 +195,21 @@ export function applyEffect(
     // Phase is engine/AI context only (caseMeta.phase) — never player-facing.
     next = { ...next, phaseId: String(effect.phaseId) };
   } else if (t === "start_clock") {
-    next = {
-      ...next,
-      clocks: {
-        ...next.clocks,
-        [String(effect.clockId)]: Number(effect.turns),
-      },
-    };
+    // A non-finite value (e.g. a malformed LLM effect with no `turns`)
+    // would persist as JSON null and brick every later state read.
+    const turns = Number(effect.turns);
+    if (Number.isFinite(turns) && turns >= 0) {
+      next = {
+        ...next,
+        clocks: {
+          ...next.clocks,
+          [String(effect.clockId)]: turns,
+        },
+      };
+    }
   } else if (t === "queue_beat") {
-    const fireOnTurn = next.turnCount + Number(effect.delayTurns ?? 0);
+    const rawDelay = Number(effect.delayTurns ?? 0);
+    const fireOnTurn = next.turnCount + (Number.isFinite(rawDelay) ? rawDelay : 0);
     next = {
       ...next,
       beatQueue: [
@@ -288,12 +294,14 @@ export function applyEffect(
           });
         }
       } else if (effect.byMinutes != null) {
+        const byMinutes = Number(effect.byMinutes);
         next = {
           ...next,
           time: {
             ...next.time,
             minutesFromStart:
-              next.time.minutesFromStart + Number(effect.byMinutes),
+              next.time.minutesFromStart +
+              (Number.isFinite(byMinutes) ? byMinutes : 0),
             reachedSlotIdsThisTurn: [...next.time.reachedSlotIdsThisTurn],
           },
         };
@@ -373,13 +381,19 @@ export function applyEffect(
     const cid = String(effect.characterId);
     const cs = next.characterState[cid];
     if (cs) {
+      // LLM effects invent adjectives ("defensive"); an off-enum value
+      // persisted here fails every later state read. Coerce to the enum.
+      const WILLINGNESS = ["open", "guarded", "hostile", "silent", "fled"];
+      const value = WILLINGNESS.includes(String(effect.value))
+        ? (effect.value as typeof cs.willingness)
+        : "guarded";
       next = {
         ...next,
         characterState: {
           ...next.characterState,
           [cid]: {
             ...cs,
-            willingness: effect.value as typeof cs.willingness,
+            willingness: value,
           },
         },
       };

@@ -116,11 +116,24 @@ async function llm(model, messages, { json = false } = {}) {
 }
 
 async function api(path, { method = "GET", body, headers = {} } = {}) {
-  const res = await fetch(`${API}${path}`, {
-    method,
-    headers: { "content-type": "application/json", ...headers },
-    body: body ? JSON.stringify(body) : undefined,
-  });
+  // A tsx-watch dev API restarts on source changes; ride out the window
+  // instead of losing a whole sweep to one ECONNREFUSED.
+  let res;
+  for (let attempt = 1; ; attempt++) {
+    try {
+      res = await fetch(`${API}${path}`, {
+        method,
+        headers: { "content-type": "application/json", ...headers },
+        body: body ? JSON.stringify(body) : undefined,
+      });
+      break;
+    } catch (err) {
+      if (attempt >= 4) throw err;
+      const wait = attempt * 2000;
+      console.warn(`  [api] ${method} ${path} unreachable (attempt ${attempt}), retrying in ${wait / 1000}s…`);
+      await new Promise((r) => setTimeout(r, wait));
+    }
+  }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     throw new Error(`${method} ${path} → ${res.status}: ${JSON.stringify(data).slice(0, 300)}`);

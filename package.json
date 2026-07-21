@@ -16,7 +16,9 @@
     "deploy:web": "fly deploy -c fly.web.toml",
     "playtest": "node apps/api/scripts/playtest.mjs",
     "storycheck": "node apps/api/scripts/storycheck.mjs",
-    "casereport": "node apps/api/scripts/casereport.mjs"
+    "casereport": "node apps/api/scripts/casereport.mjs",
+    "audits": "node apps/api/scripts/audits/index.mjs",
+    "gen-portraits": "node apps/api/scripts/gen-portraits.mjs"
   },
   "engines": {
     "node": ">=20"

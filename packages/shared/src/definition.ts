@@ -682,6 +682,13 @@ export const MysteryDefinitionSchema = z
     canon: CanonSchema.optional(),
     endings: z.array(EndingSchema).min(1),
     openingNarration: z.string().min(1),
+    /**
+     * The Whole Story — authored mask-off prose shown once the case
+     * closes, on any outcome. Fixed like the opening: never generated
+     * at runtime (docs/MYSTERY_PRINCIPLES.md §8f). The ending audit
+     * requires it; optional here so older bundles still parse.
+     */
+    revelation: z.string().optional(),
     /** Interactive aftermath after solve/fail. Default: enabled. */
     wrapUp: WrapUpConfigSchema.optional(),
     /** Accusation formality gate. Default: confirmation required. */

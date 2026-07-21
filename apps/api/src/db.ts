@@ -90,6 +90,17 @@ function sanitizeStateJson(raw: unknown): unknown {
   if (!raw || typeof raw !== "object") return raw;
   const state = { ...(raw as Record<string, unknown>) };
 
+  // A NaN clock value persists as JSON null and would fail the schema on
+  // every read, bricking the playthrough — drop corrupt entries instead.
+  const clocksRaw = state.clocks;
+  if (clocksRaw && typeof clocksRaw === "object" && !Array.isArray(clocksRaw)) {
+    state.clocks = Object.fromEntries(
+      Object.entries(clocksRaw as Record<string, unknown>).filter(
+        ([, v]) => typeof v === "number" && Number.isFinite(v)
+      )
+    );
+  }
+
   const csRaw = state.characterState;
   if (csRaw && typeof csRaw === "object" && !Array.isArray(csRaw)) {
     const nextCs: Record<string, unknown> = {
@@ -107,6 +118,10 @@ function sanitizeStateJson(raw: unknown): unknown {
       if (c.timesTalked == null) c.timesTalked = 0;
       if (c.available == null) c.available = true;
       if (c.willingness == null) c.willingness = "open";
+      // Off-enum inventions ("defensive") persisted by older engines
+      // would fail every read; coerce to the nearest legal value.
+      if (!["open", "guarded", "hostile", "silent", "fled"].includes(c.willingness as string))
+        c.willingness = "guarded";
       if (c.stance == null) c.stance = "";
       if (c.alibiStatus == null) c.alibiStatus = "none";
       nextCs[id] = c;

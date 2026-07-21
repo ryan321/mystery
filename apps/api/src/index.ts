@@ -20,7 +20,7 @@ import {
   PlayerNoteError,
   knownAsFor,
 } from "@mystery/engine";
-import { tryCreateOpenRouterConfig } from "@mystery/llm";
+import { createOpenRouterClient, tryCreateOpenRouterConfig } from "@mystery/llm";
 import {
   createPool,
   migrate,
@@ -487,10 +487,14 @@ app.get("/v1/playthroughs/:id", async (c) => {
     row.state.contentVersion
   );
   const turns = await listTurns(pool, row.state.id);
+  const closed = ["denouement", "solved", "failed"].includes(row.state.status);
   return c.json({
     playthrough: publicState(row.state, def),
     playerView: def ? buildPlayerView(def, row.state) : undefined,
     openingNarration: row.openingNarration,
+    // Stage 2 of the ending (§8f): the authored mask-off document,
+    // delivered on any closed outcome — losers get the truth too.
+    revelation: closed ? def?.revelation : undefined,
     briefing: def ? buildBriefing(def, row.state) : undefined,
     locationName: def?.locations.find((l) => l.id === row.state.locationId)
       ?.name,
@@ -504,6 +508,83 @@ app.get("/v1/playthroughs/:id", async (c) => {
       createdAt: t.created_at,
     })),
   });
+});
+
+/**
+ * Post-case debrief — stage 3 of the ending (§8f): out-of-fiction chat
+ * with the storyteller. Contract: explain the story, never inventory
+ * the world. Available only once the case has closed.
+ */
+app.post("/v1/playthroughs/:id/debrief", async (c) => {
+  const row = await getPlaythrough(pool, c.req.param("id"));
+  if (!row) return c.json({ error: "not_found" }, 404);
+  const state = row.state;
+  if (!["denouement", "solved", "failed"].includes(state.status)) {
+    return c.json({ error: "case_still_open", status: state.status }, 400);
+  }
+  const def = await registry.getDefinition(state.caseId, state.contentVersion);
+  if (!def) return c.json({ error: "case_missing" }, 500);
+  if (!llmConfig) return c.json({ error: "debrief_unavailable" }, 503);
+
+  const body = await c.req.json().catch(() => ({}));
+  const question = String((body as { question?: string }).question ?? "").trim();
+  if (!question) return c.json({ error: "empty_question" }, 400);
+  if (question.length > 2000) return c.json({ error: "question_too_long" }, 400);
+
+  const turns = await listTurns(pool, state.id);
+  const transcript = turns
+    .map(
+      (t) =>
+        `t${t.turn_index} PLAYER: ${t.player_input}\n  SCENE: ${t.narration.slice(0, 240)}`
+    )
+    .join("\n");
+
+  const system = `You are the storyteller of a concluded interactive mystery, hosting the
+post-case debrief. The fiction is over; you are not a character. Warm, literate, a touch dry.
+
+THE CONTRACT — explain the story, never inventory the world:
+- ANSWER freely: why events happened, what characters wanted or feared, why they said or did
+  what they did in THIS player's playthrough (cite their turns when useful), and
+  counterfactuals about the design ("why didn't X just...?"). Ground everything in canon.
+- NEVER enumerate missed content: no lists of clues, evidence, secrets, or rooms the player
+  did not encounter; no "you missed..."; no walkthroughs. If asked ("did I miss any clues?",
+  "what was in the attic?"), deflect warmly in a single line and invite replay — the house
+  keeps some of its drawers shut.
+- The revelation document was shown to the player; everything in it is fair game.
+- Keep answers to a few sentences unless the question genuinely needs more.`;
+
+  const user = `CANON (sealed truth):
+${JSON.stringify(def.canon?.timeline ?? [])}
+
+SOLUTION: ${def.solution.summary}
+
+REVELATION (the player has read this):
+${def.revelation ?? "(none authored)"}
+
+OUTCOME: ${state.status}
+
+THIS PLAYER'S TRANSCRIPT:
+${transcript}
+
+PLAYER'S QUESTION: ${question}`;
+
+  try {
+    const client = createOpenRouterClient(llmConfig);
+    const completion = await client.chat.completions.create({
+      model: llmConfig.narratorModel,
+      temperature: 0.4,
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: user },
+      ],
+    });
+    const answer = completion.choices[0]?.message?.content?.trim() ?? "";
+    if (!answer) return c.json({ error: "debrief_failed" }, 502);
+    return c.json({ answer });
+  } catch (err) {
+    console.error("debrief failed", err);
+    return c.json({ error: "debrief_failed" }, 502);
+  }
 });
 
 app.post("/v1/playthroughs/:id/turns", async (c) => {
@@ -1078,7 +1159,21 @@ async function main() {
   await migrate(pool);
   // Dev authoring workspace → DB registry (published). Uploads via
   // POST /v1/mysteries need no restart at all.
-  const imported = await registry.importDirectory(contentRoot);
+  // Guard: a non-production process pointed at a remote DB must not
+  // auto-publish local drafts (that combination once pushed an unreviewed
+  // draft straight into the live catalog).
+  const dbHost = new URL(databaseUrl()).hostname;
+  const localDb = dbHost === "localhost" || dbHost === "127.0.0.1";
+  const skipImport = process.env.NODE_ENV !== "production" && !localDb;
+  if (skipImport) {
+    console.warn(
+      `Auto-import SKIPPED: dev process with remote DB (${dbHost}). ` +
+        `Use pnpm publish-case to upload intentionally.`
+    );
+  }
+  const imported = skipImport
+    ? []
+    : await registry.importDirectory(contentRoot);
   const port = Number(process.env.PORT ?? 8787);
   console.log(`Mystery API listening on http://localhost:${port}`);
   console.log(`Imported bundles: ${imported.join(", ") || "(none)"}`);

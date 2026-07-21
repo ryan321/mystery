@@ -12,6 +12,18 @@
       "port": 8787
     },
     {
+      "name": "mystery-api-localdb",
+      "runtimeExecutable": "env",
+      "runtimeArgs": [
+        "DATABASE_URL=postgres://localhost:5432/mystery",
+        "pnpm",
+        "--filter",
+        "@mystery/api",
+        "dev"
+      ],
+      "port": 8787
+    },
+    {
       "name": "mystery-web",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": [

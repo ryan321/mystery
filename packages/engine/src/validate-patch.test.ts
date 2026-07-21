@@ -13,7 +13,7 @@ const def = parseMysteryDefinition(
     readFileSync(
       join(
         dirname(fileURLToPath(import.meta.url)),
-        "../../../content/cases/blackwood-inheritance/definition.json"
+        "./__fixtures__/blackwood-fixture.json"
       ),
       "utf8"
     )

@@ -41,7 +41,9 @@ export function buildContextPack(
         : false;
       const reqEv = i.onInspect.requiresEvidenceIds ?? [];
       const canOpen =
-        reqEv.every((id) => state.evidenceIds.includes(id)) && !locked;
+        reqEv.every((id) => state.evidenceIds.includes(id)) &&
+        !locked &&
+        flagsMatch(state.flags, i.onInspect.requiresFlags);
       return {
         id: i.id,
         name: i.name,

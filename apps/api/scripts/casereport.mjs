@@ -64,7 +64,21 @@ const castCost = living.reduce(
   (sum, c) => sum + (c.storyRole === "suspect" ? 3 : 1.5),
   0
 );
-const budget = Math.round(def.locations.length * 3 + castCost);
+// Rooms cost by investigative mass: a location that yields evidence or
+// moves flags demands a real visit (~3 turns); pure-texture rooms
+// (kitchens, cellars, attics — realism, honestly empty) cost a look (~1.5).
+const investigative = (loc) =>
+  def.evidence.some((e) => e.discoverableAt?.locationId === loc.id) ||
+  (loc.inspectables ?? []).some(
+    (i) =>
+      (i.onInspect?.revealsEvidenceIds ?? []).length > 0 ||
+      Object.keys(i.onInspect?.setsFlags ?? {}).length > 0
+  );
+const locationCost = def.locations.reduce(
+  (sum, l) => sum + (investigative(l) ? 3 : 1.5),
+  0
+);
+const budget = Math.round(locationCost + castCost);
 const bandMid = Math.round((band[0] + band[1]) / 2);
 const budgetVerdict =
   budget < band[0] ? "thin" : budget > band[1] ? "oversized" : "in band";

@@ -14,7 +14,7 @@ import { buildContextPack } from "./context-pack.js";
 const rawJson = readFileSync(
   join(
     dirname(fileURLToPath(import.meta.url)),
-    "../../../content/cases/blackwood-inheritance/definition.json"
+    "./__fixtures__/blackwood-fixture.json"
   ),
   "utf8"
 );
