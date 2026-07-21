@@ -357,7 +357,7 @@ export default function LandingPage() {
 
           {/* ── Featured mysteries ───────────────────────────────────── */}
           {featured.length > 0 && (
-            <section className={styles.section}>
+            <section id="featured" className={styles.section}>
               <p className={styles.eyebrow}>From the trove</p>
               <h2 className={styles.sectionTitle}>
                 Gothic manors, gaslit streets, dead space stations
@@ -378,6 +378,7 @@ export default function LandingPage() {
                     />
                     <div className={styles.featuredBody}>
                       <h3 className={styles.featuredTitle}>{c.meta.title}</h3>
+                      <p className={styles.featuredDesc}>{c.meta.premise}</p>
                       <p className={styles.featuredMeta}>
                         {difficultyLabel(c.meta.difficulty)}
                       </p>
