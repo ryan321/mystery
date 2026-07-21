@@ -153,6 +153,29 @@ export function lintBundle(def: MysteryDefinition): string[] {
     }
   }
 
+  // Dead locations: every location must earn its place (MYSTERY_PRINCIPLES
+  // §8d). A room with no inspectables, no discoverable evidence, no beat
+  // references, and nobody scheduled there is a tax on the player's turns.
+  const beatText = JSON.stringify(def.beats ?? []);
+  const peopleLocations = new Set(
+    def.characters.flatMap((c) =>
+      [c.defaultLocationId, c.entrance?.atLocationId].filter(Boolean)
+    )
+  );
+  for (const loc of def.locations) {
+    const hasInspectables = loc.inspectables.length > 0;
+    const hasEvidence = def.evidence.some(
+      (e) => e.discoverableAt?.locationId === loc.id
+    );
+    const inBeats = beatText.includes(`"${loc.id}"`);
+    const hasPeople = peopleLocations.has(loc.id);
+    if (!hasInspectables && !hasEvidence && !inBeats && !hasPeople) {
+      warnings.push(
+        `location "${loc.id}" has no inspectables, no discoverable evidence, no beat references, and nobody stationed there — dead weight; give it a job or cut it`
+      );
+    }
+  }
+
   // Solution summary echoed into player-facing prose.
   const probe = def.solution.summary.slice(0, 40).toLowerCase();
   if (probe.length >= 20) {

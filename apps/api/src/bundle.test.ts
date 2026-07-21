@@ -122,3 +122,24 @@ describe("parseBundle", () => {
     ).toBe(true);
   });
 });
+
+describe("dead-location lint (MYSTERY_PRINCIPLES §8d)", () => {
+  it("warns for a location with no job, and not for working ones", () => {
+    const { raw } = defWithAssets();
+    const locs = (raw as { locations: Record<string, unknown>[] }).locations;
+    locs.push({
+      id: "billiard-room",
+      name: "the billiard room",
+      description: "Dust sheets over the table. Nothing stirs.",
+      exits: [{ toLocationId: "entrance-hall" }],
+      inspectables: [],
+    });
+    const entries = validEntries();
+    entries["definition.json"] = JSON.stringify(raw);
+    const parsed = parseBundle(makeZip(entries));
+    const dead = parsed.warnings.filter((w) => w.includes("dead weight"));
+    expect(dead.some((w) => w.includes("billiard-room"))).toBe(true);
+    // Real Blackwood rooms all have jobs — none of them may be flagged.
+    expect(dead.length).toBe(1);
+  });
+});

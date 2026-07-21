@@ -265,6 +265,62 @@ socially dangerous. A good mystery could happen *only in that place,
 among those people*. If the setting could be swapped without rewriting
 the clues, the case has no atmosphere, only wallpaper.
 
+## 8d. The world is exactly as big as the mystery
+
+"Enough" locations and characters is a budget, not a feeling. Each
+location worth visiting costs the player roughly three turns (arrive,
+investigate, follow up), and so does each character worth questioning.
+So size the world against the pacing band:
+
+> locations × 3 + characters × 3 ≈ the thorough player's target turns
+> (the upper half of `meta.playtest` band)
+
+Rough bands: **easy** 4–6 locations / 3–5 characters; **medium** 6–9 /
+5–7; **hard** 8–12 / 6–9. A manor can imply forty rooms; the *case*
+contains the six where the mystery lives. The rest is narration.
+
+- **Every location must earn its place.** On first visit it does at
+  least one job: holds a seam or clue, is somebody's territory, stages
+  an event, teaches the stakes (the victim's own room), or constrains
+  the geometry of opportunity (who could reach where). A room that
+  does nothing is not atmosphere, it is a tax on turns. Fifteen rooms
+  with two relevant is wasted exploration; cut or merge until nearly
+  everything rewards attention. (Absence can be a job too — the room
+  where the staged story says something happened, holding nothing —
+  but the player must be able to learn that the emptiness means
+  something.)
+- **Travel is a cost, never content.** Keep the map shallow: at most
+  two hops between any two relevant places, hub-and-spoke (the
+  entrance hall, the town square) over corridors. Never author
+  pass-through filler rooms; a hallway is a sentence, not a location.
+  Multi-site cases (town square, police office, a suspect's shop)
+  work when each site is a hub of its own and travel between them is
+  a single move.
+- **Access is part of the mystery.** The player should not wander
+  anywhere freely: doors lock, invitations matter, entering the
+  widow's private rooms uninvited looks suspicious and costs standing.
+  Every gate must be openable by play (a key, a pretext, earned trust,
+  an escort, a distraction) — and the gate itself is information: who
+  keeps this locked, who else could get in? Access asymmetry IS the
+  opportunity map of the case. Opening a new place mid-game is a
+  reward and a reorientation beat; spend it deliberately.
+- **Territory makes characters cheaper than rooms.** Give each
+  character a home turf and a schedule. The same library is new
+  content when Vale is cornered in it at midnight; a room changes
+  value with its occupant and hour. Location × character × time
+  multiplies scenes without adding map.
+
+The same earn-your-place rule applies to the cast: everyone is a
+suspect (a competing story), a witness with unique observations, a
+gatekeeper, or a stakes-carrier — roles may stack. Someone who exists
+to deliver one fact should be folded into someone else.
+
+Playtest enforcement: across a full sweep, a location no persona ever
+visits (or a character no persona ever questions) is dead weight —
+give it a hook or cut it. The bundle linter warns about locations with
+no inspectables, no evidence, no character presence, and no beat
+references.
+
 ## 9. Obligations of the interactive medium
 
 The player IS the detective, so:
@@ -349,7 +405,10 @@ Before publishing, answer honestly:
 11. Could this case happen only in this setting, among these people?
 12. Where does the villain's plan cost them — which trace exists only
     because the deception had to be maintained?
-13. Do the playtest gates pass — pacing band, evidence coverage, no
+13. Does every location earn its place (and the world budget fit the
+    pacing band: locations × 3 + characters × 3 ≈ target turns)? Is
+    every locked or forbidden place openable by play?
+14. Do the playtest gates pass — pacing band, evidence coverage, no
     leaks, fun median?
 
 ## How the platform encodes these
