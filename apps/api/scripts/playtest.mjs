@@ -174,7 +174,8 @@ async function playOnce(personaName, def, stamp) {
     if (status === "denouement" && ++denouementTurns > 2) break;
 
     const scene = view?.scene ?? {};
-    if (scene.locationName) locationsSeen.add(scene.locationName);
+    const sceneName = scene.name ?? scene.locationName;
+    if (sceneName) locationsSeen.add(sceneName);
 
     const recent = transcript
       .slice(-10)
@@ -192,7 +193,7 @@ YOUR OBJECTIVE: ${view?.player?.objective ?? "Solve the mystery."}
 TURN ${turn} of at most ${MAX_TURNS}. Status: ${status}.
 ${status === "denouement" ? "The case has been judged — wrap up naturally." : ""}
 
-CURRENT SCENE: ${scene.locationName ?? "?"} — ${trim(scene.description, 500)}
+CURRENT SCENE: ${sceneName ?? "?"} — ${trim(scene.description, 500)}
 EXITS: ${(scene.exits ?? []).map((e) => e.label ?? e.description ?? e.toLocationName ?? "").join("; ")}
 PRESENT: ${(view?.scene?.present ?? []).map((p) => p.name).join(", ") || "no one"}
 YOU NOTICE: ${(scene.objects ?? []).map((o) => o.name).join(", ") || "nothing in particular"}
