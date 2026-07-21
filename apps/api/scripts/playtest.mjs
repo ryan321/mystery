@@ -297,8 +297,13 @@ Return STRICT JSON:
   "leaks": {"found": true|false, "notes": "..."},
   "best_moment": "...",
   "worst_moment": "...",
-  "author_recommendations": ["...", "..."]
-}`;
+  "recommendations": [
+    {"layer": "content"|"engine"|"both", "fix": "...", "evidence": "what in the transcript shows this"}
+  ]
+}
+For "layer": content = this case's authored definition (gates, evidence placement, beats, rubric);
+engine = would misbehave in ANY case (director granting unearned evidence, narration leaking sealed
+info, NPCs ignoring knowledge gates, scoring too lenient). When unsure, use "both" and say why.`;
 
   const raw = await llm(CRITIC_MODEL, [{ role: "user", content: prompt }], { json: true });
   try {
