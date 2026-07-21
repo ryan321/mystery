@@ -1,65 +1,32 @@
 #!/usr/bin/env node
 /**
- * Story QA — the four WHYs (docs/MYSTERY_PRINCIPLES.md §10).
+ * Story QA — the four WHYs, six WHATs, three HOWs
+ * (docs/MYSTERY_PRINCIPLES.md §10).
  *
  *   pnpm storycheck --case blackwood-inheritance
  *
  * A critic model reads the FULL definition (sealed truth included —
- * this is an authoring tool, never player-facing) and interrogates it:
- *
- *   1. WHY did the villain do it?
- *   2. WHY did they do it the way they did?
- *   3. WHY isn't it clear who did it and what happened?
- *   4. WHY hasn't the villain been found out yet?
- *
- * ...plus contradiction hunting and the MYSTERY_PRINCIPLES checklist
- * items judgeable from the definition alone. Run it twice per case:
- * at the premise stage and again after full detail. Reports land in
- * playtests/<case>/ (gitignored).
+ * this is an authoring tool, never player-facing). Also usable as a
+ * module: import { runStorycheck } from "./storycheck.mjs".
  */
 import { config as loadEnv } from "dotenv";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 loadEnv({ path: join(repoRoot, ".env") });
 
-const args = {};
-for (let i = 2; i < process.argv.length; i++) {
-  if (process.argv[i].startsWith("--")) {
-    const key = process.argv[i].slice(2);
-    args[key] =
-      i + 1 < process.argv.length && !process.argv[i + 1].startsWith("--")
-        ? process.argv[++i]
-        : "true";
-  }
-}
-const CASE_ID = args.case;
-if (!CASE_ID) {
-  console.error("Usage: pnpm storycheck --case <caseId>");
-  process.exit(1);
-}
-const MODEL =
-  process.env.PLAYTEST_CRITIC_MODEL ??
-  process.env.LLM_NARRATOR_MODEL ??
-  "deepseek/deepseek-v4-pro";
-const KEY = process.env.OPENROUTER_API_KEY;
-if (!KEY) {
-  console.error("OPENROUTER_API_KEY missing from .env");
-  process.exit(1);
+export function storycheckModel() {
+  return (
+    process.env.PLAYTEST_CRITIC_MODEL ??
+    process.env.LLM_NARRATOR_MODEL ??
+    "deepseek/deepseek-v4-pro"
+  );
 }
 
-const defPath = join(repoRoot, "content/cases", CASE_ID, "definition.json");
-let def;
-try {
-  def = JSON.parse(readFileSync(defPath, "utf8"));
-} catch {
-  console.error(`Could not read ${defPath}`);
-  process.exit(1);
-}
-
-const prompt = `You are a mystery-fiction editor performing story QA on an interactive
+function buildPrompt(def) {
+  return `You are a mystery-fiction editor performing story QA on an interactive
 whodunit definition. You can see EVERYTHING, including the sealed solution — judge the
 authored story, not the play experience.
 
@@ -145,80 +112,108 @@ Return STRICT JSON:
   ],
   "overall": {"grade": "ready"|"needs_work"|"broken", "top_fixes": ["...", "..."]}
 }`;
-
-console.log(`Story QA: "${def.meta.title}" (${CASE_ID}@${def.contentVersion}) via ${MODEL}…`);
-
-const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-  method: "POST",
-  headers: {
-    authorization: `Bearer ${KEY}`,
-    "content-type": "application/json",
-  },
-  body: JSON.stringify({
-    model: MODEL,
-    messages: [{ role: "user", content: prompt }],
-    temperature: 0.2,
-    response_format: { type: "json_object" },
-  }),
-});
-if (!res.ok) {
-  console.error(`openrouter ${res.status}: ${(await res.text()).slice(0, 300)}`);
-  process.exit(1);
-}
-const data = await res.json();
-let report;
-try {
-  report = JSON.parse(data.choices?.[0]?.message?.content ?? "");
-} catch {
-  console.error("Critic returned unparseable output:");
-  console.error((data.choices?.[0]?.message?.content ?? "").slice(0, 1500));
-  process.exit(1);
 }
 
-const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-const dir = join(repoRoot, "playtests", CASE_ID);
-mkdirSync(dir, { recursive: true });
-const outPath = join(dir, `storycheck-${def.contentVersion}-${stamp}.json`);
-writeFileSync(
-  outPath,
-  JSON.stringify(
-    { case: CASE_ID, contentVersion: def.contentVersion, model: MODEL, report },
-    null,
-    2
-  )
-);
+/** Run the story-QA critic against a parsed definition. Returns the report. */
+export async function runStorycheck(def) {
+  const key = process.env.OPENROUTER_API_KEY;
+  if (!key) throw new Error("OPENROUTER_API_KEY missing from .env");
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${key}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      model: storycheckModel(),
+      messages: [{ role: "user", content: buildPrompt(def) }],
+      temperature: 0.2,
+      response_format: { type: "json_object" },
+    }),
+  });
+  if (!res.ok) {
+    throw new Error(`openrouter ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  }
+  const data = await res.json();
+  return JSON.parse(data.choices?.[0]?.message?.content ?? "{}");
+}
 
 const MARK = { solid: "✔", weak: "◐", missing: "✘" };
-console.log(`\n═══ Four WHYs — ${CASE_ID}@${def.contentVersion} ═══`);
-for (const w of report.whys ?? []) {
-  console.log(`  ${MARK[w.verdict] ?? "?"} ${w.question} [${w.verdict}]`);
-  console.log(`      ${w.analysis}`);
-  if (w.verdict !== "solid" && w.fix) console.log(`      fix: ${w.fix}`);
-}
-if (report.whats?.length) {
-  console.log(`\n═══ Six WHATs ═══`);
-  for (const w of report.whats) {
+
+export function printStorycheck(report, label) {
+  console.log(`\n═══ Four WHYs — ${label} ═══`);
+  for (const w of report.whys ?? []) {
     console.log(`  ${MARK[w.verdict] ?? "?"} ${w.question} [${w.verdict}]`);
-    console.log(`      ${w.answer}`);
+    console.log(`      ${w.analysis}`);
     if (w.verdict !== "solid" && w.fix) console.log(`      fix: ${w.fix}`);
   }
-}
-if (report.hows?.length) {
-  console.log(`\n═══ Three HOWs ═══`);
-  for (const h of report.hows) {
-    console.log(`  ${h.question}:`);
-    for (const s of h.suggestions ?? []) console.log(`    → ${s}`);
+  if (report.whats?.length) {
+    console.log(`\n═══ Six WHATs ═══`);
+    for (const w of report.whats) {
+      console.log(`  ${MARK[w.verdict] ?? "?"} ${w.question} [${w.verdict}]`);
+      console.log(`      ${w.answer}`);
+      if (w.verdict !== "solid" && w.fix) console.log(`      fix: ${w.fix}`);
+    }
   }
+  if (report.hows?.length) {
+    console.log(`\n═══ Three HOWs ═══`);
+    for (const h of report.hows) {
+      console.log(`  ${h.question}:`);
+      for (const s of h.suggestions ?? []) console.log(`    → ${s}`);
+    }
+  }
+  if (report.contradictions?.length) {
+    console.log(`\n  Contradictions:`);
+    for (const c of report.contradictions) console.log(`  ⚠ ${c}`);
+  }
+  console.log(`\n  Checklist:`);
+  for (const c of report.checklist ?? []) {
+    console.log(`  ${c.pass ? "✔" : "✘"} ${c.item}${c.pass ? "" : ` — ${c.notes}`}`);
+  }
+  console.log(`\n  Overall: ${report.overall?.grade?.toUpperCase() ?? "?"}`);
+  for (const f of report.overall?.top_fixes ?? []) console.log(`  → ${f}`);
 }
-if (report.contradictions?.length) {
-  console.log(`\n  Contradictions:`);
-  for (const c of report.contradictions) console.log(`  ⚠ ${c}`);
+
+// ── CLI ──────────────────────────────────────────────────────────────
+
+const isMain =
+  process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (isMain) {
+  const args = {};
+  for (let i = 2; i < process.argv.length; i++) {
+    if (process.argv[i].startsWith("--")) {
+      const k = process.argv[i].slice(2);
+      args[k] =
+        i + 1 < process.argv.length && !process.argv[i + 1].startsWith("--")
+          ? process.argv[++i]
+          : "true";
+    }
+  }
+  if (!args.case) {
+    console.error("Usage: pnpm storycheck --case <caseId>");
+    process.exit(1);
+  }
+  const def = JSON.parse(
+    readFileSync(join(repoRoot, "content/cases", args.case, "definition.json"), "utf8")
+  );
+  console.log(
+    `Story QA: "${def.meta.title}" (${args.case}@${def.contentVersion}) via ${storycheckModel()}…`
+  );
+  const report = await runStorycheck(def);
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+  const dir = join(repoRoot, "playtests", args.case);
+  mkdirSync(dir, { recursive: true });
+  const outPath = join(dir, `storycheck-${def.contentVersion}-${stamp}.json`);
+  writeFileSync(
+    outPath,
+    JSON.stringify(
+      { case: args.case, contentVersion: def.contentVersion, model: storycheckModel(), report },
+      null,
+      2
+    )
+  );
+  printStorycheck(report, `${args.case}@${def.contentVersion}`);
+  console.log(`\n  saved: ${outPath.replace(repoRoot + "/", "")}`);
+  if (report.overall?.grade === "broken") process.exitCode = 1;
 }
-console.log(`\n  Checklist:`);
-for (const c of report.checklist ?? []) {
-  console.log(`  ${c.pass ? "✔" : "✘"} ${c.item}${c.pass ? "" : ` — ${c.notes}`}`);
-}
-console.log(`\n  Overall: ${report.overall?.grade?.toUpperCase() ?? "?"}`);
-for (const f of report.overall?.top_fixes ?? []) console.log(`  → ${f}`);
-console.log(`\n  saved: ${outPath.replace(repoRoot + "/", "")}`);
-if (report.overall?.grade === "broken") process.exitCode = 1;
