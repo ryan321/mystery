@@ -14,6 +14,8 @@ import type { CaseSummary } from "../lib/types";
 import styles from "./page.module.css";
 
 const FREE_CASE_ID = "blackwood-inheritance";
+/** Kid-friendly case always closes the featured row on the landing. */
+const LANDING_LAST_CASE_ID = "cant-trick-rick";
 const FEATURED_COUNT = 6;
 
 // The sample play renders the real gameplay components, so it stays in step
@@ -52,7 +54,14 @@ export default function LandingPage() {
     };
   }, []);
 
-  const featured = cases.slice(0, FEATURED_COUNT);
+  // API order for the first slots; the pinned case is always included,
+  // always closing the row.
+  const pinned = cases.find((c) => c.id === LANDING_LAST_CASE_ID);
+  const rest = cases.filter((c) => c.id !== LANDING_LAST_CASE_ID);
+  const featured = [
+    ...rest.slice(0, pinned ? FEATURED_COUNT - 1 : FEATURED_COUNT),
+    ...(pinned ? [pinned] : []),
+  ];
 
   return (
     <>

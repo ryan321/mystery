@@ -282,6 +282,28 @@
   background: var(--candle);
 }
 
+.hamburgerWrap {
+  display: none;
+}
+
+/* Phones: the inline links/icons collapse into the hamburger menu. */
+@media (max-width: 720px) {
+  .collapseItem {
+    display: none;
+  }
+
+  .hamburgerWrap {
+    display: block;
+  }
+}
+
+/* The merged mobile menu is tall — cap it and let it scroll. */
+.mobileMenu {
+  min-width: 14rem;
+  max-height: calc(100vh - 4.5rem);
+  overflow-y: auto;
+}
+
 @media (max-width: 640px) {
   .nav {
     gap: 0.5rem;
