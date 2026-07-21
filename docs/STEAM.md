@@ -89,7 +89,7 @@ page — but the privacy policy must cover the server-side account.
 the web subscription, no "cheaper on our site" — Valve forbids steering, and
 it would tank the relationship that makes the channel valuable.**
 
-- **Model: paid base game + DLC cases.** Chosen over the in-game MTX API because DLC gets store pages, wishlists, sale participation, and launch-visibility events for free, with zero payment code on our side. Chosen over free-to-play because F2P attracts an audience that reviews harshly when asked to pay, and a paid base filters for buyers while funding inference.
+- **Model at launch scale: paid base game + DLC cases.** Chosen over the in-game MTX API because DLC gets store pages, wishlists, sale participation, and launch-visibility events for free, with zero payment code on our side. Chosen over free-to-play because F2P attracts an audience that reviews harshly when asked to pay, and a paid base filters for buyers while funding inference. Per-case DLC stops scaling past a few dozen cases — see §3b for the hundreds-of-mysteries plan.
 - **Steam's cut:** 30% (25% past $10M lifetime, 20% past $50M). Net of cut, refunds, and regional/VAT effects, expect roughly **55–65% of list price** as actual revenue per unit.
 - **Refunds:** automatic under 2 hours played / 14 days. A buyer can finish nothing in 2 hours of a 3-case bundle — front-loading the base game with real volume (below) is the defense.
 - **Subscription:** does not exist on Steam (the tooling is effectively unavailable to indies, and Steam buyers hate it). The web app remains the subscription channel; the two price books never appear in the same surface.
@@ -104,6 +104,52 @@ it would tank the relationship that makes the channel valuable.**
 | Demo (separate app) | The free case, full vertical slice | Free — this is the Next Fest vehicle |
 | Complete-your-set bundle | Base + all DLC | Rolling ~15% off |
 | Soundtrack DLC | The ambience/score already in the repo | $2.99 (marginal but free to make) |
+
+## 3b. Scaling to hundreds of mysteries
+
+Per-case DLC carries per-SKU overhead — its own store page, capsule art,
+price setup, and a Valve review pass. Fine at a dozen cases a year; absurd
+at 300. The catalog plan (hundreds of mysteries) changes the mechanism, not
+the channel:
+
+1. **In-game store via the Steam microtransaction API (`ISteamMicroTxn`) —
+   the scale answer.** Purchases happen inside the game through the Steam
+   wallet overlay: the gallery *is* the storefront, a locked case shows
+   "Unlock — $4.99," the server-side InitTxn/FinalizeTxn callback writes the
+   same access-layer grant a DLC would. No store page per mystery, no
+   per-item Valve review; scales to hundreds with zero Steamworks overhead.
+   Costs: a real (one-time, few-days) server integration, and MTX items are
+   invisible to Steam's marketing machinery — no wishlists, no launch
+   events, no sales. **Direct dollar purchases only — never an invented
+   in-game currency**; the mystery audience reads currency as F2P rot.
+2. **Real DLC stays for the flagships only.** The Blackwood-tier cases —
+   6–12 a year — keep store pages, wishlists, and launch-visibility events,
+   the things MTX cannot do. Huge DLC catalogs are viable on Steam (Train
+   Simulator 600+, Fantasy Grounds thousands); capping DLC count is a
+   workload choice, not a platform limit.
+3. **Volume packs as the no-code middle ground.** "Case Files Vol. N — six
+   mysteries" as one DLC turns hundreds of cases into dozens of SKUs, at the
+   cost of à-la-carte granularity. Use if the MTX build isn't worth it yet.
+
+**The strategic point: a hundreds-deep catalog is subscription-shaped.**
+Nobody buys 300 mysteries à la carte; a catalog that size monetizes as
+*access*. Division of labor:
+
+- **mysterytrove.com** — the full library, Stripe subscription, unlimited
+  access. The hundreds live here. This is the product.
+- **Steam** — a *curated* premium slice: base game with a strong starter
+  shelf, flagship DLC, MTX long-tail if à-la-carte demand shows up. Steam's
+  job is discovery and reaching buyers who will never subscribe to a
+  website — not mirroring the whole catalog. This keeps the store offering
+  legible, avoids syncing hundreds of SKUs across two storefronts, and
+  preserves the full-library subscription as the reason the web channel
+  exists (Valve offers indies no subscription tooling at all).
+
+**Sequencing:** launch with base + per-case DLC while the shelf is small
+(today it is two real cases). Build the MTX store only when the catalog
+outgrows SKU management — past ~20–30 cases — by which point sales data
+shows whether Steam buyers want the long tail à la carte at all, or only
+flagships.
 
 ---
 
