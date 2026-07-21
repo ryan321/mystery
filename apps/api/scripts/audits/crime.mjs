@@ -44,6 +44,9 @@ ${JSON.stringify(def.solution, null, 1)}
 CAST CONSTRAINTS (physical/positional facts that events must respect):
 ${JSON.stringify(def.characters.map((c) => ({ id: c.id, role: c.storyRole, bio: c.shortBio })), null, 1)}
 
+FIGURES (non-interactive story persons — their cards are canonical too):
+${JSON.stringify(def.figures ?? [], null, 1)}
+
 Grade EACH check pass | strain | fail. "strain" = requires generosity but a genre reader accepts it;
 "fail" = a careful reader catches it. EVERY verdict must cite the canon event id(s) it rests on.
 

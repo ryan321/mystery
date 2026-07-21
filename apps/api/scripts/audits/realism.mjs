@@ -10,6 +10,22 @@ export async function runRealismAudit(def, { llm = true } = {}) {
   const findings = [];
   const note = (severity, text) => findings.push({ severity, text });
 
+  // The setting line is the visitor's when-and-where (schema contract:
+  // "A fogbound pier, low tide, 1924."). A case that never says its era
+  // leaves the shelf visitor guessing 1880s London vs 1930s New Jersey.
+  const settingLine = def.meta?.setting ?? "";
+  const declaresWhen =
+    /\b(1[0-9]{3}|20[0-9]{2})s?\b|victorian|edwardian|georgian|regency|medieval|renaissance|colonial|antebellum|interwar|midcentury|present.day|modern.day/i.test(
+      settingLine
+    );
+  checks.push({
+    check: "setting_declares_when_where",
+    verdict: declaresWhen ? "pass" : "warn",
+    note: declaresWhen
+      ? `"${settingLine.slice(0, 80)}"`
+      : `meta.setting never says WHEN: "${settingLine.slice(0, 80)}" — a visitor cannot place the era`,
+  });
+
   if (llm) {
     const corpus = {
       meta: { setting: def.meta?.setting, theme: def.meta?.theme, tone: def.meta?.tone, premise: def.meta?.premise },
@@ -20,6 +36,7 @@ export async function runRealismAudit(def, { llm = true } = {}) {
         public: c.knowledge?.public,
         items: [...(c.knowledge?.private ?? []), ...(c.knowledge?.secrets ?? [])].map((k) => k.content) })),
       canon: def.canon?.timeline ?? [],
+      figures: def.figures ?? [],
     };
     const report = await askJson(`You are a period/setting continuity expert auditing a mystery for REALISM
 GIVEN ITS OWN SETTING. First infer the period and place from the material. Then hunt for breaks:

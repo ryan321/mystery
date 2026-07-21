@@ -705,6 +705,29 @@ export const MysteryDefinitionSchema = z
      * requires it; optional here so older bundles still parse.
      */
     revelation: z.string().optional(),
+    /**
+     * Non-interactive story persons — the dead, the absent, the prior
+     * victims whose shadows the case stands in (a first wife, a poisoned
+     * husband). One authoritative card each, so their facts live in one
+     * place instead of drifting across canon/knowledge text, and the
+     * performer draws on a single truth when the living remember them.
+     * Never player-facing directly; the player learns of figures only
+     * through the world (headstones, testimony, papers).
+     */
+    figures: z
+      .array(
+        z.object({
+          id: z.string().min(1),
+          name: z.string().min(1),
+          /** e.g. "1858–1889" */
+          dates: z.string().optional(),
+          /** Relationship shorthand: "the master's late first wife". */
+          relation: z.string().optional(),
+          /** The card: who they were, how they died, what they left. */
+          description: z.string().min(1),
+        })
+      )
+      .default([]),
     /** Interactive aftermath after solve/fail. Default: enabled. */
     wrapUp: WrapUpConfigSchema.optional(),
     /** Accusation formality gate. Default: confirmation required. */

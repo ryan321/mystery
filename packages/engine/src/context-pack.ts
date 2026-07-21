@@ -197,6 +197,19 @@ export function buildContextPack(
       caseStatus: state.status,
     },
     /**
+     * Non-interactive story persons (the dead, the absent) — one
+     * authoritative card each so performances of memory stay consistent.
+     * AI-facing background truth; fair-play rules still govern what any
+     * character would actually say about them.
+     */
+    figures: def.figures.map((f) => ({
+      id: f.id,
+      name: f.name,
+      dates: f.dates,
+      relation: f.relation,
+      description: f.description,
+    })),
+    /**
      * Name→id directory for the whole case (accuse mapping).
      * NOT a list of who is in the room — see location.presentCharacters.
      */

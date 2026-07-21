@@ -388,6 +388,20 @@ the design. It deflects gap-enumeration — "did I miss any clues?",
 secret. A player can beat the game without finding every secret;
 what they missed stays missed, and replay keeps its value.
 
+### Figures: the dead get one card each
+
+Every gothic mystery stands in somebody's shadow — a first wife, a
+poisoned husband, a prior victim. These are story persons the player
+can never interact with, and before the `figures` block they existed
+only as text scattered across canon events, evidence descriptions,
+and other characters' testimony — where facts drift (a key held
+"twenty years" that the dates make seven). Each figure gets one
+authoritative card: name, dates, relation, description. Canon and
+testimony elaborate; the card arbitrates. The performer sees figures
+in every pack, so memories of the dead stay consistent; the player
+never sees the card — they learn of figures the way the living do,
+through headstones, papers, and the people who remember.
+
 ## 9. Obligations of the interactive medium
 
 The player IS the detective, so:
