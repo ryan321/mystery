@@ -76,6 +76,16 @@
             "full"
           ]
         },
+        "theme": {
+          "type": "string",
+          "enum": [
+            "manor",
+            "station",
+            "noir",
+            "snowfall",
+            "daylight"
+          ]
+        },
         "playtest": {
           "type": "object",
           "properties": {

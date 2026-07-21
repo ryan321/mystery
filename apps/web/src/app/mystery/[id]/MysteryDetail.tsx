@@ -4,10 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import Atmosphere from "../../../components/Atmosphere";
+import { useAmbience } from "../../../components/AmbienceProvider";
 import { assetUrl, coverSrc, getCase, startCase } from "../../../lib/api";
 import { getSession } from "../../../lib/auth";
 import { difficultyLabel, themeTags } from "../../../lib/format";
 import { getPlayState, markBeingPlayed } from "../../../lib/playState";
+import { asTheme } from "../../../lib/themes";
 import type { CaseDetail } from "../../../lib/types";
 import styles from "./page.module.css";
 
@@ -65,6 +67,15 @@ export default function MysteryDetail() {
       router.replace("/gallery");
     }
   }, [loading, detail, router]);
+
+  // "Match the scene" music follows this mystery's theme while mounted.
+  const { setPageTheme } = useAmbience();
+  const pageTheme = detail ? asTheme(detail.meta.theme) : null;
+  useEffect(() => {
+    if (!pageTheme) return;
+    setPageTheme(pageTheme);
+    return () => setPageTheme(null);
+  }, [pageTheme, setPageTheme]);
 
   const playState = useMemo(() => getPlayState(id), [id, playTick]);
   const playStateStatus = playState?.status;
@@ -152,7 +163,7 @@ export default function MysteryDetail() {
 
   return (
     <>
-      <Atmosphere />
+      <Atmosphere theme={asTheme(detail.meta.theme)} />
       <main className={styles.detail}>
         <div className={styles.inner}>
           <Link href="/gallery" className={styles.back}>

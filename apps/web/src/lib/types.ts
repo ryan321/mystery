@@ -7,6 +7,8 @@ export type CaseMeta = {
   summary?: string;
   /** Central mystery question the player must answer. */
   theMystery?: string;
+  /** Atmosphere theme id from the case definition (see lib/themes.ts). */
+  theme?: string;
   tone?: string;
   tags: string[];
   difficulty?: "easy" | "medium" | "hard";
@@ -64,6 +66,8 @@ export type CaseDetail = {
 export type MysteryBriefing = {
   setting?: string;
   theMystery?: string;
+  /** Atmosphere theme id from the case definition (see lib/themes.ts). */
+  theme?: string;
   objective?: string;
   startingKnowledge?: string;
   role?: string;

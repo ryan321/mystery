@@ -610,6 +610,12 @@ export const CaseMetaSchema = z.object({
    */
   progressUi: z.enum(["off", "subtle", "full"]).optional(),
   /**
+   * Visual atmosphere theme for the web play screen + mystery detail page
+   * (rain/lightning manor, starfield station, fogbound noir, alpine snowfall,
+   * sunny daylight). Absent = "manor".
+   */
+  theme: z.enum(["manor", "station", "noir", "snowfall", "daylight"]).optional(),
+  /**
    * Playtest acceptance targets (scripts/playtest.mjs --sweep). All
    * optional — defaults derive from difficulty. minTurns is the floor a
    * speedrunner must not beat; maxTurns the ceiling a thorough player

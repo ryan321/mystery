@@ -205,6 +205,12 @@
   color: var(--candle-dim);
 }
 
+/* Long pickers (music tracks) scroll inside the dropdown. */
+.dropdownScroll {
+  max-height: 13.5rem;
+  overflow-y: auto;
+}
+
 .dropdownItemDisabled {
   display: flex;
   align-items: center;

@@ -2,10 +2,11 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "blackwood-inheritance",
-  "contentVersion": "0.9.10",
+  "contentVersion": "0.10.1",
   "meta": {
     "title": "The Blackwood Inheritance",
-    "premise": "A stormy night, a locked manor, and violence at the foot of the stairs. The family was already at each other’s throats.",
+    "premise": "A stormy night, a dead master at the foot of his own stairs, and a manor that has been robbing itself for weeks. Everyone in the house had a reason to be angry. Someone had a reason to plan.",
+    "theme": "manor",
     "tone": "gothic manor whodunit, tense and formal",
     "tags": [
       "Manor",
@@ -21,12 +22,13 @@
     ],
     "artStyle": "Victorian gothic oil portrait, head-and-shoulders, candlelit manor palette (deep umber, blood maroon, cold grey-blue), muted desaturated tones, soft Rembrandt lighting, same painted frame and brush style for every cast member, no modern clothing, mystery game character portrait, consistent artist hand across the set",
     "setting": "Blackwood Manor, on a storm-cut country road. Night. No one leaves until the weather breaks.",
-    "summary": "Mr. Blackwood is dead at the foot of the main staircase — a crash, a body, and a household that cannot hide how much they hated him. The storm has sealed the road. Butler Henshaw, the widowed Mrs. Blackwood, daughter Clara, and family solicitor Mr. Vale are all still inside. Someone among them struck the blow. The truth is already written; your job is to find it before morning invents a quieter story.",
-    "theMystery": "Who killed Mr. Blackwood in his own house, and can you name the killer with method and motive before the storm lifts?",
+    "summary": "Hugo Blackwood lies dead in the entrance hall the same week his daughter's marriage settlement was to be signed. A string of unsolved break-ins, a furious caretaker, an indebted solicitor, and a household of poor relations — and beneath it all, a twenty-year-old grave nobody visits except someone who never walks.",
+    "theMystery": "Who caused Hugo Blackwood's death — and why did the burglar who plagued the manor never once climb the stairs?",
     "playtest": {
-      "minTurns": 12,
-      "maxTurns": 35,
-      "minEvidenceCoverage": 0.75
+      "minTurns": 18,
+      "maxTurns": 70,
+      "minEvidenceCoverage": 0.6,
+      "minFunMedian": 7
     }
   },
   "player": {
@@ -55,24 +57,24 @@
       "sections": [
         {
           "heading": "The summons",
-          "text": "A telephone call before the storm took the line: Mr. Blackwood is dead at the foot of his own staircase. A crash was heard; the body was already cold when found. The road behind you is washed out. You are the only official presence until morning."
+          "text": "A telephone call before the storm took the line: Hugo Blackwood is dead at the foot of his own staircase — a crash, a struggle by the look of the hall, the master beyond help when the butler reached him. The road behind you is washed out. You are the only official presence until morning."
         },
         {
           "heading": "The household",
-          "text": "Butler Henshaw, who waits with the body. Mrs. Blackwood, the widow. Miss Clara Blackwood, the daughter. Mr. Vale, the family solicitor, staying as a guest. No one has left the grounds since ten o'clock."
+          "text": "Mrs. Blackwood, the widow. Miss Clara Blackwood, the daughter, lately engaged to Mr. Julian Ashworth, who is staying at the manor. Mr. Vale, the family solicitor, and Mr. Josiah Crane, the master's business partner, both arrived this week — papers and tempers respectively. Butler Henshaw, who found the body. Also resident: Mrs. Eudora Marsh — sister of the late master's first wife — an invalid confined to a wheeled chair these many years, and her daughter Miss Constance Marsh, poor relations kept at the manor. At the lodge: Tom Garrick the caretaker, his wife Meg, and their young daughter Poppy."
         },
         {
           "heading": "The house",
-          "text": "The entrance hall holds the body and a shattered crystal vase. Mr. Vale is in the library, through the east door. Mrs. Blackwood and Miss Clara keep to the conservatory. Henshaw has put your coat and notebook in a small guest room upstairs."
+          "text": "Blackwood Manor has been burgled four times in six weeks — windows forced, small valuables taken, never solved. The master blamed Garrick loudly and threatened his post. After the last theft the household valuables were locked in the study strongbox; three nights ago a garnet necklace vanished anyway. The east door leads to the grounds, the lodge, and the old churchyard. For so great a house the staff is strangely thin: Henshaw within, the Garricks without, and sheeted furniture behind more than one closed door."
         },
         {
           "heading": "Your task",
-          "text": "Question everyone, gather what the house will give you, and be ready to accuse — with the how and the why. A wrong accusation has consequences of its own; the household is watching you as closely as you watch them."
+          "text": "Determine how Hugo Blackwood died and who bears the guilt for it. The household cannot leave until the storm lifts; neither can anyone else arrive. Question, search, and accuse only when you can carry it."
         }
       ]
     }
   },
-  "openingNarration": "The manor looms against the storm. Inside, the entrance hall smells of wax and old money. A crystal vase lies shattered on the marble. Rainwater pools near the east door. Mr. Blackwood lies at the foot of the main stairs, already cold. Butler Henshaw stands alone with you at the body — pale, formal, waiting for your questions. Mrs. Blackwood and Miss Clara are elsewhere in the house; Mr. Vale the guest as well. The road out is impassable. No one is coming. You were summoned to find who among them did this — and prove it.",
+  "openingNarration": "The manor looms against the storm. Inside, the entrance hall smells of wax and rain. A crystal vase lies shattered on the marble; water pools by the east door; Hugo Blackwood lies at the foot of the main stairs, beyond any help, and the grandfather clock stands stopped at seven minutes past eleven. Butler Henshaw waits beside the body, rigid and grey. Somewhere down the corridor a broken study window is boarded with yesterday's haste. The family is gathering at the edges of the lamplight, and every one of them is watching you.",
   "phases": [
     {
       "id": "arrival",
@@ -126,9 +128,19 @@
         "minutesFromStart": 120
       },
       {
-        "id": "after_midnight",
-        "label": "After midnight",
-        "minutesFromStart": 160
+        "id": "small_hours",
+        "label": "The small hours",
+        "minutesFromStart": 200
+      },
+      {
+        "id": "toward_dawn",
+        "label": "Toward dawn",
+        "minutesFromStart": 280
+      },
+      {
+        "id": "first_light",
+        "label": "First light",
+        "minutesFromStart": 340
       }
     ]
   },
@@ -155,25 +167,151 @@
     },
     {
       "id": "found_vale_letter",
-      "description": "Player recovered Vale's threatening letter",
+      "description": "Player recovered Vale's letter",
       "aiVisible": true,
       "defaultValue": false
     },
     {
-      "id": "falsely_accused_henshaw",
-      "description": "Player wrongly pinned Henshaw",
+      "id": "pattern_seen",
+      "description": "Player read the incident book: thefts never climb the stairs",
       "aiVisible": true,
       "defaultValue": false
     },
     {
-      "id": "inspector_room_ransacked",
-      "description": "Someone searched the inspector's guest room",
+      "id": "wheel_marks_found",
+      "description": "Player found wheel tracks over the study's glass dust",
       "aiVisible": true,
       "defaultValue": false
     },
     {
-      "id": "falsely_accused_vale",
-      "description": "Player wrongly accused Vale",
+      "id": "glass_outward",
+      "description": "Player saw the study glass fell outward",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "first_wife_known",
+      "description": "Player read the Ashcombe headstone",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "trust_known",
+      "description": "Player found the unsigned settlement and the reversion",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "necklace_found",
+      "description": "Player found the necklace in the knitting basket",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "suspects_wheelchair",
+      "description": "Player has connected the ground-floor pattern to the chair",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "garrick_confessed",
+      "description": "Garrick has confessed to striking the blow",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "clara_false_confession",
+      "description": "Clara falsely confessed to protect Ashworth",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "fortune_bleeding",
+      "description": "Player learned the fortune is depleted and the firm failing",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "garden_seen",
+      "description": "garden seen",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "courtyard_understood",
+      "description": "courtyard understood",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "treatments_known",
+      "description": "treatments known",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "tonic_named",
+      "description": "Player found the chemist's account naming Fowler's Solution",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "poker_missing",
+      "description": "poker missing",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "poker_found",
+      "description": "poker found",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "lantern_missing",
+      "description": "lantern missing",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "lantern_found",
+      "description": "lantern found",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "wound_doubt",
+      "description": "wound doubt",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "attack_window_seen",
+      "description": "attack window seen",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "chest_opened",
+      "description": "Meg has unlocked Tom's soldier chest for the player",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "garrick_past_known",
+      "description": "Player has learned Garrick's court-martial and discharge",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "accused_aunt",
+      "description": "Runtime: player formally accused Mrs. Marsh (engine-set)",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "accused_garrick",
+      "description": "Runtime: player formally accused Garrick (engine-set)",
       "aiVisible": true,
       "defaultValue": false
     }
@@ -182,25 +320,42 @@
     {
       "id": "entrance-hall",
       "name": "Blackwood Manor — the entrance hall",
-      "description": "Marble floor, storm-lashed windows, a stopped grandfather clock, and a shattered crystal vase. The east door leads toward the library wing. Stairs rise to the private rooms.",
+      "description": "Marble floor, storm-lashed windows, the grandfather clock stopped at seven minutes past eleven, and a shattered crystal vase. The body has been covered. Half the sconces stand unlit and two of the great rooms off the gallery are sheeted and shut — a large house run by a very small staff. The east door leads to the grounds; the corridor runs to the library and study; stairs rise to the private rooms.",
       "startsAccessible": true,
+      "knownAtStart": true,
       "map": {
-        "x": 1,
-        "y": 1,
+        "x": 2,
+        "y": 2,
         "floor": 0
       },
       "exits": [
         {
           "toLocationId": "library",
-          "label": "east door toward the library"
+          "label": "the corridor to the library"
+        },
+        {
+          "toLocationId": "study",
+          "label": "the corridor to the study"
         },
         {
           "toLocationId": "conservatory",
-          "label": "conservatory doors (west)"
+          "label": "the conservatory doors"
         },
         {
-          "toLocationId": "guest-room",
-          "label": "stairs up to your guest room"
+          "toLocationId": "the-gallery",
+          "label": "the main stair up to the gallery"
+        },
+        {
+          "toLocationId": "grounds-east",
+          "label": "the east door to the grounds"
+        },
+        {
+          "toLocationId": "dining-room",
+          "label": "the double doors to the dining room"
+        },
+        {
+          "toLocationId": "kitchen",
+          "label": "the green baize door to the service passage"
         }
       ],
       "inspectables": [
@@ -208,7 +363,7 @@
           "id": "broken-vase",
           "name": "broken crystal vase",
           "onInspect": {
-            "narrativeHints": "Shards scatter outward as if struck from above. A black thread snags on jagged glass. Rainwater has pooled by the east door — something there catches the lamplight.",
+            "narrativeHints": "Shards scatter outward as if struck from above. A dark wool thread is snagged on the jagged glass — fine cloth, a gentleman's coat.",
             "revealsEvidenceIds": [
               "black-thread"
             ],
@@ -221,7 +376,7 @@
           "id": "east-door-rainwater",
           "name": "rainwater by the east door",
           "onInspect": {
-            "narrativeHints": "A wet size-eleven boot print points toward the library — a gentleman's boot, not staff shoes. The rain outside has nearly washed its twin away.",
+            "narrativeHints": "A wet boot print points inward from the east door — a heavy working boot, size eleven, half washed away by the draft of rain.",
             "revealsEvidenceIds": [
               "muddy-boot-print"
             ],
@@ -234,25 +389,50 @@
           "id": "grandfather-clock",
           "name": "grandfather clock",
           "onInspect": {
-            "narrativeHints": "Stopped at eleven. Glass face undamaged. Someone may have stopped it deliberately — or the crash did it."
+            "narrativeHints": "Stopped at 11:07, mid-strike of the quarter chime. The case is scarred low on one side where something heavy slammed against it in a struggle. Whatever happened in this hall happened at seven minutes past eleven, and the clock will swear to it."
           }
-        }
-      ],
-      "charactersPresent": [
+        },
         {
-          "characterId": "henshaw"
+          "id": "masters-effects",
+          "name": "the master's effects",
+          "onInspect": {
+            "narrativeHints": "Laid on the side table: a pocket watch, a signet, and a ring of keys. One small steel key is stamped for the study strongbox.",
+            "revealsEvidenceIds": [
+              "strongbox-key"
+            ]
+          }
+        },
+        {
+          "id": "butlers-alcove",
+          "name": "the butler's alcove",
+          "onInspect": {
+            "narrativeHints": "Henshaw's neat station: silver book, salver — and the household incident book, kept in his precise hand since the thefts began.",
+            "revealsEvidenceIds": [
+              "incident-book"
+            ]
+          }
+        },
+        {
+          "id": "the-wound",
+          "name": "the master's wound",
+          "onInspect": {
+            "narrativeHints": "A single round, depressed wound at the right temple. The vase shards carry no blood. The stair edges are square, the newel post carries none. He fell backward; the wound faces sideways. State the geometry plainly and let it sit.",
+            "setsFlags": {
+              "wound_doubt": true
+            }
+          }
         }
       ]
     },
     {
       "id": "library",
       "name": "Blackwood Manor — the library",
-      "description": "Cold and dark. A fire smolders. A ledger lies open on the desk to tonight's date. Ash in the hearth glints with metal.",
+      "description": "Cold and dark. A fire smolders. A ledger lies open on the desk to the week's accounts. Ash in the hearth glints with metal.",
       "startsAccessible": true,
       "knownAtStart": true,
       "map": {
-        "x": 2,
-        "y": 1,
+        "x": 3,
+        "y": 2,
         "floor": 0
       },
       "exits": [
@@ -277,40 +457,51 @@
           "name": "desk drawer",
           "objectId": "desk-drawer",
           "onInspect": {
-            "narrativeHints": "The brass key turns. Inside: a letter signed by Mr. Vale dated yesterday: 'If you expose me, I will have no choice.'",
+            "narrativeHints": "The brass key turns. Inside: a letter signed by Mr. Vale, dated Tuesday: 'If you expose me I will have no choice. Give me until the quarter-day. — V.' Beneath it, the ledger notes a settlement drawn for the wedding.",
+            "requiresEvidenceIds": [
+              "brass-key"
+            ],
             "revealsEvidenceIds": [
               "vale-letter"
             ],
             "setsFlags": {
               "found_vale_letter": true
-            },
-            "requiresEvidenceIds": [
-              "brass-key"
-            ]
+            }
           }
         },
         {
-          "id": "ledger",
-          "name": "open ledger",
+          "id": "desk-ledger",
+          "name": "the open ledger",
           "onInspect": {
-            "narrativeHints": "Tonight's date shows a large cash withdrawal annotated only as 'settlement — V.'"
+            "narrativeHints": "The estate ledger, open to the quarter's accounts — and the figures do not balance. Sums drawn against 'the settlement fund' in the master's hand, again and again. Beneath the ledger, a bundle of letters from Blackwood & Crane.",
+            "revealsEvidenceIds": [
+              "partnership-letters"
+            ],
+            "setsFlags": {
+              "fortune_bleeding": true
+            }
           }
-        }
-      ],
-      "charactersPresent": [
+        },
         {
-          "characterId": "vale"
+          "id": "fire-irons",
+          "name": "the fire irons",
+          "onInspect": {
+            "narrativeHints": "The stand holds tongs, brush, and shovel. No poker. Henshaw, asked, goes still: the set was complete, he would swear it — until that night.",
+            "setsFlags": {
+              "poker_missing": true
+            }
+          }
         }
       ]
     },
     {
-      "id": "conservatory",
-      "name": "Blackwood Manor — the conservatory",
-      "description": "Glass walls drum with rain. Ferns drip. Far from the east door and the crash.",
+      "id": "study",
+      "name": "Blackwood Manor — the study",
+      "description": "The burgled room. A boarded window, a fine powder of glass dust across the floor boards, a heavy strongbox in the corner, and the master's papers squared on the desk. Curiously little broken glass in here for so violent an entry.",
       "startsAccessible": true,
       "knownAtStart": true,
       "map": {
-        "x": 0,
+        "x": 3,
         "y": 1,
         "floor": 0
       },
@@ -322,52 +513,561 @@
       ],
       "inspectables": [
         {
-          "id": "wet-tiles",
-          "name": "floor tiles near the outer glass",
+          "id": "boarded-window",
+          "name": "the boarded window",
           "onInspect": {
-            "narrativeHints": "Dry enough that no one has recently come in from the storm this way. Weak alibi for anyone claiming to have been outside here all evening."
+            "narrativeHints": "Forced three nights ago, they say — yet only a fine dust of glass lies on this side; no shards, no panes. The weight of the glass went somewhere. Outside, the flowerbed might tell the story."
           }
-        }
-      ],
-      "charactersPresent": [
-        {
-          "characterId": "mrs-blackwood"
         },
         {
-          "characterId": "clara"
+          "id": "window-floor",
+          "name": "the floor by the window",
+          "onInspect": {
+            "narrativeHints": "In the glass dust, two narrow parallel tracks run from the door to the window and back — thin wheels, pressed OVER the dust. A chair was in this room after the window broke.",
+            "revealsEvidenceIds": [
+              "wheel-marks"
+            ],
+            "setsFlags": {
+              "wheel_marks_found": true
+            }
+          }
+        },
+        {
+          "id": "strongbox",
+          "name": "the strongbox",
+          "onInspect": {
+            "narrativeHints": "An old strongbox — older than the second marriage; the Ashcombe crest is worn on the lid. The steel key fits. Inside: the Ashcombe settlement of 1888. Rosalind Ashcombe's fortune, held on her death by Hugo Blackwood as CUSTODIAN for the Ashcombe line — to pass to her sister Eudora upon remarriage, or to her niece Constance upon marriage, or to the surviving Ashcombe line upon the custodian's death. Beneath it, Vale's fresh draft: a marriage portion for Miss Clara — to be drawn from the settlement fund.",
+            "requiresEvidenceIds": [
+              "strongbox-key"
+            ],
+            "revealsEvidenceIds": [
+              "trust-papers"
+            ],
+            "setsFlags": {
+              "trust_known": true
+            }
+          }
+        },
+        {
+          "id": "desk-papers",
+          "name": "the master's papers",
+          "onInspect": {
+            "narrativeHints": "Household receipts, squared and clipped. Among them a chemist's standing account, renewed monthly for years: 'Fowler's Solution, to be made up at double strength, for Mrs. Marsh — per Mr. Blackwood's standing instruction.' No physician's name appears anywhere on it.",
+            "revealsEvidenceIds": [
+              "chemists-invoice"
+            ],
+            "setsFlags": {
+              "tonic_named": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "conservatory",
+      "name": "Blackwood Manor — the conservatory",
+      "description": "Rain roars on the glass. Ferns, wicker, a day couch, and a neat corner arranged for an invalid's chair — a ramp of smooth board at the step, everything wanted within an arm's easy reach.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 1,
+        "y": 2,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "entrance-hall",
+          "label": "back to the entrance hall"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "aunts-corner",
+          "name": "the invalid's corner",
+          "onInspect": {
+            "narrativeHints": "Mrs. Marsh's domain: rug, footstool, a small shelf of devotional books. The ramp boards are worn smooth with years of wheels. From here the whole ground floor is hers."
+          }
+        },
+        {
+          "id": "knitting-basket",
+          "name": "the knitting basket",
+          "hiddenUntilFlags": {
+            "suspects_wheelchair": true
+          },
+          "onInspect": {
+            "narrativeHints": "Beneath the wool, wrapped in a child's handkerchief: a garnet necklace. Old-fashioned, beautiful — and stolen from the study strongbox three nights ago.",
+            "revealsEvidenceIds": [
+              "stolen-necklace"
+            ],
+            "setsFlags": {
+              "necklace_found": true
+            }
+          }
         }
       ]
     },
     {
       "id": "guest-room",
       "name": "Blackwood Manor — your guest room",
-      "description": "A spare room at the top of the stairs: narrow bed, washstand, a small desk with your coat over the chair. The window faces the storm. It is the only private place Henshaw offered you in this house.",
+      "description": "A small neat room upstairs where Henshaw put your coat and bag. The window looks over the east grounds: the lodge's lit window, and beyond it the dark shoulder of the old churchyard.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 2,
+        "y": 1,
+        "floor": 1
+      },
+      "exits": [
+        {
+          "toLocationId": "the-gallery",
+          "label": "the passage back to the gallery landing"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "window-view",
+          "name": "the window over the grounds",
+          "onInspect": {
+            "narrativeHints": "From here the geography is plain: east door below, the gravel path to the lodge, the churchyard wall. Anyone moving between them at night would pass under this window — and under the lodge's."
+          }
+        }
+      ]
+    },
+    {
+      "id": "grounds-east",
+      "name": "the east grounds",
+      "description": "Wind and rain. The east terrace runs beneath the study windows; gravel paths lead to the caretaker's lodge and the old churchyard. The storm has half-drowned every track.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 2,
+        "y": 3,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "entrance-hall",
+          "label": "in through the east door"
+        },
+        {
+          "toLocationId": "lodge",
+          "label": "the path to the caretaker's lodge"
+        },
+        {
+          "toLocationId": "cemetery",
+          "label": "the path to the old churchyard"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "flowerbed",
+          "name": "the flowerbed under the study window",
+          "onInspect": {
+            "narrativeHints": "Glass. Nearly all of it lies OUT here, glittering among the stems — thrown outward when the pane broke. Whoever broke that window stood inside the study when they did it.",
+            "revealsEvidenceIds": [
+              "outward-glass"
+            ],
+            "setsFlags": {
+              "glass_outward": true
+            }
+          }
+        },
+        {
+          "id": "east-door-outside",
+          "name": "the east door from outside",
+          "onInspect": {
+            "narrativeHints": "The lock is sound; the door was opened, not forced. Deep heel prints in the mud face the house — a big man, moving fast, tonight."
+          }
+        },
+        {
+          "id": "tool-lean-to",
+          "name": "the tool lean-to by the churchyard path",
+          "onInspect": {
+            "narrativeHints": "A groundsman's lean-to, tools hung in rough order — rakes, shears, a scythe. The long spade hangs wrong-way-about, wiped in haste rather than cleaned: dark churchyard clay dried hard in the seam of the socket. It comes off its nail easily. Nobody is watching.",
+            "revealsEvidenceIds": [
+              "garden-spade"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "lodge",
+      "name": "the caretaker's lodge",
+      "description": "Small, warm, scrubbed. A gun rack by the door, a child's drawings pinned over the stove, and fear in the room like a smell. The Garricks stop talking when you enter. A brass-bound soldier's chest sits beneath the bed, padlocked.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 3,
+        "y": 4,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "grounds-east",
+          "label": "back along the path to the grounds"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "poppys-window",
+          "name": "the window by the child's bed",
+          "onInspect": {
+            "narrativeHints": "A clear line of sight to the manor's east face: the study windows, the terrace, the east door. A child lying awake would see any light that moved down there."
+          }
+        },
+        {
+          "id": "garricks-boots",
+          "name": "the boots by the door",
+          "onInspect": {
+            "narrativeHints": "Working boots, size eleven, still wet through. Nobody has tried to hide them. Meg Garrick watches you look and her hands go still."
+          }
+        },
+        {
+          "id": "lantern-hook",
+          "name": "the hook by the door",
+          "onInspect": {
+            "narrativeHints": "An empty iron hook by the door, rubbed bright by years of the same handle — and a cheap stable candle stub standing on the shelf where a good dark lantern should hang. A groundsman doing storm rounds by candle stub: everyone has noticed, nobody has wondered.",
+            "setsFlags": {
+              "lantern_missing": true
+            }
+          }
+        },
+        {
+          "id": "soldiers-chest",
+          "name": "the soldier's chest beneath the bed",
+          "onInspect": {
+            "narrativeHints": "The lock is open now. Inside, folded small: a court-martial record and discharge sheet — Sergeant Thomas Garrick, 66th Foot, reduced and drummed out for striking a lieutenant. Beneath it, a medal ribbon nobody could quite throw away and a browning regimental photograph. And balled into the corner, fresh linen bandages, blood-browned — a wound tended in secret, wrapped and rewrapped. The blood is days old, not weeks.",
+            "requiresFlags": {
+              "chest_opened": true
+            },
+            "revealsEvidenceIds": [
+              "discharge-papers",
+              "bloodied-linen"
+            ],
+            "setsFlags": {
+              "garrick_past_known": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cemetery",
+      "name": "the old churchyard",
+      "description": "A low-walled churchyard on the grounds, older than the manor's present name. Yews, leaning stones, and one corner kept bare and plain while the Blackwood monument gleams. Rain runs on the letters. By the boundary wall, a mound of fresh-turned earth stands dark in the rain — far too small for a grave, and somehow the worse for that.",
       "startsAccessible": true,
       "knownAtStart": true,
       "map": {
         "x": 1,
-        "y": 0,
+        "y": 4,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "grounds-east",
+          "label": "back along the path to the grounds"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "ashcombe-headstone",
+          "name": "the plain headstone in the corner",
+          "onInspect": {
+            "narrativeHints": "'ROSALIND BLACKWOOD, née ASHCOMBE. 1858–1889. Fell asleep.' A first wife no one mentions — dead at thirty-one, the year before the master remarried. Fresh flowers lie against the stone, beaten by the rain but placed this week.",
+            "revealsEvidenceIds": [
+              "headstone-inscription"
+            ],
+            "setsFlags": {
+              "first_wife_known": true
+            }
+          }
+        },
+        {
+          "id": "blackwood-monument",
+          "name": "the Blackwood monument",
+          "onInspect": {
+            "narrativeHints": "Marble, recent, self-satisfied. Space marked out for Hugo Blackwood and his second family. Nothing connects it to the plain stone in the corner — by design, one feels."
+          }
+        },
+        {
+          "id": "turned-earth",
+          "name": "fresh-turned earth by the wall",
+          "onInspect": {
+            "narrativeHints": "The rain has packed the soil hard as a floor; the spade goes through it in minutes. A foot down, wrapped in sacking: a dark lantern, iron and brass, its side deeply dented, scrubbed clean and buried wet. Fresh earth in a churchyard draws no eye — that was the whole idea.",
+            "requiresEvidenceIds": [
+              "garden-spade"
+            ],
+            "revealsEvidenceIds": [
+              "dented-lantern"
+            ],
+            "setsFlags": {
+              "lantern_found": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "side-courtyard",
+      "name": "the side courtyard",
+      "description": "A small paved court on the sheltered side of the house, reached by a ramped door from the conservatory. An old balcony juts above, its window sheeted and shut for decades. In the coldest corner, someone keeps a little garden — tended with great care, and one bed of it strangely blighted.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 0,
+        "y": 3,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "conservatory",
+          "label": "the ramped door into the conservatory"
+        },
+        {
+          "toLocationId": "grounds-east",
+          "label": "around the house to the east grounds"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "little-garden",
+          "name": "the little garden",
+          "onInspect": {
+            "narrativeHints": "Low beds an arm's reach from a chair, tended daily by the look of them. One corner is dead — the soil sour, the plants burned brown in a neat splash pattern, as if something is poured out here, often, and has been for a long time.",
+            "setsFlags": {
+              "garden_seen": true
+            }
+          }
+        },
+        {
+          "id": "border-stones",
+          "name": "the loose border stones",
+          "hiddenUntilFlags": {
+            "suspects_wheelchair": true
+          },
+          "onInspect": {
+            "narrativeHints": "Beneath two loose stones at chair height: a cache of small bottles — the tonic the master so attentively carried up each evening. A year of doses, perhaps more, every one full and unopened, the chemist's labels all reading FOWLER'S SOLUTION. And wrapped beside them, a poor woman's few jewels — the very pieces reported stolen in the attack on Mrs. Marsh.",
+            "revealsEvidenceIds": [
+              "hoarded-tonics"
+            ],
+            "setsFlags": {
+              "treatments_known": true
+            }
+          }
+        },
+        {
+          "id": "old-balcony",
+          "name": "the balcony above",
+          "onInspect": {
+            "narrativeHints": "The balcony belongs to the shut-up rooms — the first Mrs. Blackwood's, by the age of the sheeting glimpsed through the glass. The drop from the rail ends exactly where the little garden grows. The flagstones below carry a mason's old patch, decades weathered.",
+            "setsFlags": {
+              "courtyard_understood": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "aunts-room",
+      "name": "Mrs. Marsh's room — the converted parlor",
+      "description": "A ground-floor parlor made over into a sickroom years ago: bed, chair-ramp, a shelf of devotional books, a full bottle of tonic standing untouched on the nightstand. One window is newly mended — the attack, eight days ago. It is austere as a servant's room, and it is forty feet from the entrance hall.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 1,
+        "y": 1,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "entrance-hall",
+          "label": "the parlor door to the entrance hall"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "mended-window",
+          "name": "the mended window",
+          "onInspect": {
+            "narrativeHints": "Reglazed after the attack. Ask the glazier's boy, or look at the flowerbed outside: the old glass fell OUTWARD here too — the same signature as the study. Broken from within.",
+            "setsFlags": {
+              "attack_window_seen": true
+            }
+          }
+        },
+        {
+          "id": "her-things",
+          "name": "her few possessions",
+          "onInspect": {
+            "narrativeHints": "A poor relation's inventory: darned shawls, her late husband's photograph, a jewel box standing open and empty since the attack. The tonic bottle on the nightstand is full, its seal unbroken, in plain sight of anyone who ever visited. No one visits."
+          }
+        },
+        {
+          "id": "beneath-the-bed",
+          "name": "beneath the bed",
+          "onInspect": {
+            "narrativeHints": "Flat on the boards under an invalid's bed — the one place in this house no one would presume to search — lies the library fire poker. Dried blood and a shred of dark wool cling to its working end: not the dead man's blood — a temple wound bleeds down a face, not onto a poker — but the mark of a hard blow through heavy cloth, at the height of a big man's shoulder.",
+            "revealsEvidenceIds": [
+              "fire-poker"
+            ],
+            "setsFlags": {
+              "poker_found": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "the-gallery",
+      "name": "The Gallery Landing",
+      "description": "The first-floor landing, running as a gallery above the entrance hall. Family bedroom doors stand closed along the passage — private rooms, and the household means them to stay so. Portraits line the rail. At the far end, the door to the shut-up wing: locked these seven years, sheeted furniture dim beyond its glass panes. From the rail you look straight down on the spot where the master lay.",
+      "knownAtStart": true,
+      "map": {
+        "x": 2,
+        "y": 2,
         "floor": 1
       },
       "exits": [
         {
           "toLocationId": "entrance-hall",
-          "label": "stairs down to the entrance hall"
+          "label": "the main stair down to the hall"
+        },
+        {
+          "toLocationId": "guest-room",
+          "label": "the passage to your guest room"
+        },
+        {
+          "toLocationId": "attic",
+          "label": "the narrow back stair up to the attics"
         }
       ],
       "inspectables": [
         {
-          "id": "desk-notes",
-          "name": "desk and notebook",
+          "id": "family-portraits",
+          "name": "the portraits along the rail",
           "onInspect": {
-            "narrativeHints": "Your case notes sit on the desk if you left them. The lock on the desk drawer is ornamental — anyone could open it."
+            "narrativeHints": "The master's own portrait is the newest and much the largest — commissioned, by the varnish, within the decade. The second family glows around it: his wife, Miss Clara on a pony. Of anything earlier there is no portrait at all. It is a wall with a careful absence in it."
           }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "dining-room",
+      "name": "The Dining Room",
+      "description": "A long dark table cleared to its cloth, chairs squared, the master's place at the head. The sideboard carries the household plate behind glass. The room smells of beeswax and of dinners nobody has eaten since Thursday.",
+      "knownAtStart": true,
+      "map": {
+        "x": 2,
+        "y": 1,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "entrance-hall",
+          "label": "the double doors to the entrance hall"
         },
         {
-          "id": "window-latch",
-          "name": "window latch",
+          "toLocationId": "kitchen",
+          "label": "the service door to the kitchen passage"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "sideboard-plate",
+          "name": "the sideboard and the household plate",
           "onInspect": {
-            "narrativeHints": "The latch is simple. From outside the roof is too steep; entry would be from the hall door."
+            "narrativeHints": "The plate is complete — Henshaw could recite it: salvers, candlesticks, the fish service, every last spoon. Four burglaries in this house, and not a fork of it ever touched."
+          }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "kitchen",
+      "name": "The Kitchen",
+      "description": "Mrs. Hollis's kingdom: scoured deal table, copper pans in ranks, the range banked and ticking. Warm, floury, and the only room in the house that still sounds like ordinary life.",
+      "knownAtStart": true,
+      "map": {
+        "x": 2,
+        "y": 0,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "entrance-hall",
+          "label": "the green baize door to the hall"
+        },
+        {
+          "toLocationId": "dining-room",
+          "label": "the service door to the dining room"
+        },
+        {
+          "toLocationId": "cellar",
+          "label": "the stone stair down to the cellars"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "the-range",
+          "name": "the range and the table",
+          "onInspect": {
+            "narrativeHints": "Everything in its place and everything spotless. The bread Mrs. Hollis was proving at eleven that night rose over its bowl and was baked anyway at dawn — because what else is there to do."
+          }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "cellar",
+      "name": "The Cellars",
+      "description": "Whitewashed vaults under the kitchen: wine bins, the coal store, hams in muslin, a smell of damp stone and candle. Cold enough to see your breath.",
+      "knownAtStart": true,
+      "map": {
+        "x": 2,
+        "y": 0,
+        "floor": -1
+      },
+      "exits": [
+        {
+          "toLocationId": "kitchen",
+          "label": "the stone stair up to the kitchen"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "wine-bins",
+          "name": "the bins and the coal store",
+          "onInspect": {
+            "narrativeHints": "Dust lies on the bin-tops in a smooth grey field, weeks deep and nowhere disturbed. Whatever has been happening in this house, none of it happened down here."
+          }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "attic",
+      "name": "The Attics",
+      "description": "Low rooms under the slates: the maid's cot and washstand, a gurgling cistern, moth-eaten curtains over lumber. Rain drums close overhead. Poppy's age would find it wonderful; everyone else finds it cold.",
+      "knownAtStart": true,
+      "map": {
+        "x": 2,
+        "y": 1,
+        "floor": 2
+      },
+      "exits": [
+        {
+          "toLocationId": "the-gallery",
+          "label": "the back stair down to the gallery"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "box-room",
+          "name": "the trunks in the box-room",
+          "onInspect": {
+            "narrativeHints": "Outgrown clothes, cracked crockery, curtain rings, a dressmaker's dummy that startles you exactly once. Ordinary lumber of an ordinary household — nothing here has been touched since summer."
           }
         }
       ],
@@ -383,95 +1083,123 @@
       "label": "long service; protects the household's name",
       "strength": 2,
       "public": true,
-      "knownToPlayerByDefault": true,
-      "notes": "Henshaw will shield the family until evidence forces his hand."
-    },
-    {
-      "id": "henshaw_duty_clara",
-      "fromId": "henshaw",
-      "toId": "clara",
-      "type": "protects",
-      "label": "protective of Miss Clara",
-      "strength": 1,
-      "public": true,
-      "knownToPlayerByDefault": true
-    },
-    {
-      "id": "mrs_marriage_victim",
-      "fromId": "mrs-blackwood",
-      "toId": "vale",
-      "type": "distrusts",
-      "label": "dislikes Vale as a guest of her husband",
-      "strength": 1,
-      "public": true,
-      "knownToPlayerByDefault": false,
-      "notes": "Cool toward Vale; not necessarily accusing."
-    },
-    {
-      "id": "vale_business_blackwood",
-      "fromId": "vale",
-      "toId": "henshaw",
-      "type": "dismisses",
-      "label": "treats staff as furniture",
-      "strength": 1,
-      "public": true,
       "knownToPlayerByDefault": true
     },
     {
       "id": "vale_debt_blackwood",
       "fromId": "vale",
-      "toId": "mrs-blackwood",
-      "type": "debt",
-      "label": "financial entanglement with the Blackwood name",
-      "strength": 3,
-      "public": false,
-      "knownToPlayerByDefault": false,
-      "notes": "Private: Vale's fraud/settlement pressure ran through the late Mr. Blackwood. Do not confess casually."
-    },
-    {
-      "id": "vale_fear_exposure",
-      "fromId": "vale",
-      "toId": "henshaw",
-      "type": "fears",
-      "label": "wary of what the butler may have seen",
+      "toId": "blackwood",
+      "type": "financial",
+      "label": "owes the estate money; quarrelled over exposure",
       "strength": 2,
       "public": false,
       "knownToPlayerByDefault": false,
-      "notes": "Private behavior: sharp when Henshaw is believed."
+      "notes": "The engineered first suspicion — real, but not murder."
     },
     {
-      "id": "clara_daughter_mrs",
+      "id": "clara_engaged_ashworth",
       "fromId": "clara",
-      "toId": "mrs-blackwood",
-      "type": "family",
-      "label": "daughter and mother",
+      "toId": "ashworth",
+      "type": "love",
+      "label": "engaged; settlement to be signed this week",
+      "strength": 3,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "clara_contempt_constance",
+      "fromId": "clara",
+      "toId": "constance",
+      "type": "contempt",
+      "label": "treats her cousin as a charity case",
       "strength": 2,
       "public": true,
       "knownToPlayerByDefault": true
     },
     {
-      "id": "clara_wary_vale",
-      "fromId": "clara",
-      "toId": "vale",
-      "type": "wary",
-      "label": "uneasy around the house guest",
-      "strength": 1,
+      "id": "garrick_fear_blackwood",
+      "fromId": "garrick",
+      "toId": "blackwood",
+      "type": "fear",
+      "label": "blamed for the thefts; post threatened",
+      "strength": 3,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "meg_protects_garrick",
+      "fromId": "meg-garrick",
+      "toId": "garrick",
+      "type": "protects",
+      "label": "will lie for her husband without hesitation",
+      "strength": 3,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "aunt_hatred_blackwood",
+      "fromId": "aunt",
+      "toId": "blackwood",
+      "type": "hatred",
+      "label": "twenty years of silent certainty about her sister's death",
+      "strength": 3,
       "public": false,
       "knownToPlayerByDefault": false,
-      "notes": "May open up after the letter is known."
+      "notes": "The case's taproot. Revealed by the headstone and the trust."
+    },
+    {
+      "id": "aunt_devotion_constance",
+      "fromId": "aunt",
+      "toId": "constance",
+      "type": "love",
+      "label": "everything, in the end, is for her daughter",
+      "strength": 3,
+      "public": false,
+      "knownToPlayerByDefault": false
+    },
+    {
+      "id": "henshaw_pity_garrick",
+      "fromId": "henshaw",
+      "toId": "garrick",
+      "type": "sympathy",
+      "label": "thinks the master's blame was unjust",
+      "strength": 1,
+      "public": true,
+      "knownToPlayerByDefault": false
+    },
+    {
+      "id": "crane_fury_blackwood",
+      "fromId": "crane",
+      "toId": "blackwood",
+      "type": "resentment",
+      "label": "partner watching Blackwood sink the firm",
+      "strength": 3,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "crane_alibi_vale",
+      "fromId": "crane",
+      "toId": "vale",
+      "type": "alliance",
+      "label": "together over the accounts at eleven",
+      "strength": 1,
+      "public": false,
+      "knownToPlayerByDefault": false
     }
   ],
   "characters": [
     {
-      "id": "mr-blackwood",
-      "name": "Mr. Blackwood",
-      "shortBio": "The master of the house — found dead at the foot of the main stairs.",
+      "id": "blackwood",
+      "name": "Mr. Hugo Blackwood",
+      "shortBio": "Master of the manor — dead at the foot of his own stairs.",
+      "voice": "Silent now",
       "portrait": "portraits/mr-blackwood.jpg",
       "defaultLocationId": "entrance-hall",
+      "defaultWillingness": "guarded",
       "storyRole": "victim",
-      "voice": "Silent now",
       "knowledge": {
-        "public": "Deceased. Found at the foot of the stairs after a crash.",
+        "public": "Deceased. Found by Henshaw minutes after a crash was heard.",
         "private": [],
         "secrets": []
       },
@@ -480,232 +1208,1005 @@
     {
       "id": "henshaw",
       "name": "Butler Henshaw",
-      "shortBio": "Long-serving butler; formal, careful, protective of the household's image.",
-      "voice": "Measured, deferential, slightly shaken",
+      "shortBio": "Long-serving butler; found the body; keeps the incident book. Came to the Grange as hall-boy at fourteen and never left: forty years, man and boy, under two masters. A widower — his late wife kept this very kitchen — so the house is all the family he has, and he polishes silver when he cannot bear to think. Remembers the first Mrs. Blackwood filling the hall with cut roses, and has never once said so aloud.",
+      "voice": "Formal, careful, precise",
       "portrait": "portraits/henshaw.jpg",
       "defaultLocationId": "entrance-hall",
       "defaultWillingness": "open",
       "defaultStance": "professional",
+      "storyRole": "witness",
       "knowledge": {
-        "public": "He heard a crash just after the clock struck eleven. He was in the pantry. When he arrived, the east door stood open and Mr. Blackwood was at the top of the stairs — already falling or already down.",
+        "public": "He was in the pantry when he heard a crash near eleven; found the master fallen, the vase broken, the east door standing open. He has logged four break-ins in six weeks.",
         "private": [
           {
-            "id": "henshaw-who-home",
-            "content": "Only Mrs. Blackwood, Miss Clara, Mr. Vale the guest, and Henshaw himself were in the house.",
+            "id": "henshaw-master-temper",
+            "content": "The master blamed Garrick for the thefts and said, loudly enough for the house to hear, that one more incident would be the end of his post.",
             "requiresWillingnessIn": [
               "open",
               "guarded"
             ]
+          },
+          {
+            "id": "henshaw-shutter",
+            "content": "The east passage casement banged that night though he latches it himself every evening — and the east door stood open when he reached the hall. Latches do not lift themselves from outside. He has not liked to say so.",
+            "requiresTrust": 1
+          },
+          {
+            "id": "henshaw-refusals",
+            "content": "'Mrs. Marsh began refusing her tonic — it would be some eighteen months ago now. The master was much put out. He continued to have it made up and carried it to her regardless. Such attention is rare, Inspector.'",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "henshaw-fowlers",
+            "content": "'Fowler's Solution, Inspector? I understood Fowler's to be for skin complaints and anaemia. Mrs. Marsh's affliction is her legs, and latterly her heart. And made up double... I am no chemist. I will say the master ordered it so these ten years, and that no physician has attended Mrs. Marsh above twice in that time.'",
+            "requiresEvidenceIds": [
+              "chemists-invoice"
+            ]
+          },
+          {
+            "id": "henshaw-masters-fear",
+            "content": "'After the attack on Mrs. Marsh the master was another man. She had described the brute to him — big, rough, a working man's boots — and I watched him look at Garrick as he heard it. From that evening he kept the library poker by his chair after the house went up, and sat dark in the hall on bad nights. He said he would deal with the devil himself. I served him his brandy and said nothing, God forgive me.'",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "henshaw-whispers",
+            "content": "'It was Mrs. Marsh who first suggested — gently, she does everything gently — that the groundsman ought to answer for the safety of the house at night. And after each theft she would ask the master, so sorrowfully, whether Garrick had found anything at all yet. She meant it kindly, I am sure.'",
+            "requiresTrust": 1
           }
         ],
         "secrets": [
           {
-            "id": "henshaw-saw-vale-earlier",
-            "content": "Henshaw saw Mr. Vale near the east corridor before eleven, not in the conservatory. He is reluctant to accuse a guest without proof.",
+            "id": "henshaw-first-mistress",
+            "content": "He served under the first Mrs. Blackwood — Rosalind. Her fall from the balcony in '89 was ruled an accident and never spoken of again; the courtyard below was paved over where it needed it and the rooms above shut up. Mr. Marsh's fever in '85, the mistress's fall, Mrs. Marsh's long decline — a butler does not say what three such misfortunes in one family smell like. He will say this much: the master carried Mrs. Marsh's tonic up with his own hands, every evening, for years. Such devotion. The first mistress's household keys were never all accounted for after her death.",
+            "requiresTrust": 2,
             "requiresEvidenceIds": [
-              "vale-letter"
-            ],
-            "requiresWillingnessIn": [
-              "open",
-              "guarded"
-            ],
-            "requiresTrust": 1,
-            "requiresRelationshipIds": [
-              "vale_debt_blackwood"
+              "headstone-inscription"
             ]
           }
         ]
       },
       "defenses": [
-        "Will not invent witnesses",
-        "Protects the family's reputation unless pressed with evidence"
-      ],
-      "storyRole": "suspect"
+        "Protects the household's name",
+        "Will not speculate beyond what he saw"
+      ]
     },
     {
       "id": "vale",
       "name": "Mr. Vale",
-      "shortBio": "House guest with business ties to Mr. Blackwood.",
-      "voice": "Smooth, defensive when cornered",
+      "shortBio": "The family solicitor, here with the wedding settlement papers. A printer's son from Leeds who read law by scholarship and candle-end — the first of his family to wear a collar instead of an apron, and quietly terrified, always, of the drop back down. Vain about his copperplate hand; presses ferns between the pages of his law reports.",
+      "voice": "Smooth, dry, increasingly brittle",
       "portrait": "portraits/vale.jpg",
       "defaultLocationId": "library",
       "defaultWillingness": "guarded",
-      "defaultStance": "polite_mask",
+      "storyRole": "suspect",
       "knowledge": {
-        "public": "Claims he was in the conservatory all evening. Calls any letter a 'business disagreement.'",
+        "public": "Arrived Thursday to prepare Miss Clara's marriage settlement for signature this week. He and the master quarrelled on Tuesday.",
         "private": [
           {
-            "id": "vale-admits-argument",
-            "content": "He argued with Mr. Blackwood yesterday about money and exposure of a fraud.",
+            "id": "vale-debt",
+            "content": "The quarrel was his own account: he owes the estate money he cannot presently pay, and Blackwood threatened exposure. The letter in the desk is his — a plea for time, nothing more.",
             "requiresEvidenceIds": [
-              "vale-letter",
-              "muddy-boot-print"
+              "vale-letter"
             ],
             "requiresWillingnessIn": [
               "open",
               "guarded",
               "hostile"
             ]
-          }
-        ],
-        "secrets": []
-      },
-      "defenses": [
-        "Denies murder",
-        "Insists on conservatory alibi until evidence breaks it",
-        "Never confesses casually"
-      ],
-      "storyRole": "suspect"
-    },
-    {
-      "id": "mrs-blackwood",
-      "name": "Mrs. Blackwood",
-      "shortBio": "The widow. Composed, watchful.",
-      "voice": "Cool, precise",
-      "portrait": "portraits/mrs-blackwood.jpg",
-      "defaultLocationId": "conservatory",
-      "defaultWillingness": "guarded",
-      "knowledge": {
-        "public": "She was upstairs when she heard the crash. She came down after Henshaw shouted.",
-        "private": [
+          },
           {
-            "id": "mrs-shoes",
-            "content": "Her shoes are spotted with rainwater though her gloves are dry — she stepped near the east door after the rain blew in, not necessarily outside.",
-            "requiresFlags": {
-              "examined_vase": true,
-              "found_boot_print": true
-            }
+            "id": "vale-sneak",
+            "content": "After the alarm he crept down to retrieve his letter before the police could read it, took the master's drawer key from the study — and dropped it in the library hearth when Henshaw stirred. Shabby, he grants. Not murder.",
+            "requiresEvidenceIds": [
+              "brass-key",
+              "vale-letter"
+            ]
           }
         ],
         "secrets": [
           {
-            "id": "mrs-knew-vale-debt",
-            "content": "She knew Vale owed her husband and feared scandal, but she did not kill him.",
+            "id": "vale-trust",
+            "content": "The point everyone is missing: Blackwood never owned the fortune. He held it as custodian under the 1888 deed — for the Ashcombe line, until Mrs. Marsh remarried or Miss Constance married; on his death it passes to them outright. And the portion he had me drafting for Miss Clara's wedding was to be drawn from that same fund. I told him it would not survive a court's reading. He told me to draft it anyway. I am the only man living who knows how that deed runs — and how little is left under it.",
             "requiresEvidenceIds": [
-              "vale-letter"
+              "trust-papers"
             ]
           }
         ]
       },
       "defenses": [
-        "Will not confess to a murder she did not commit"
-      ],
-      "storyRole": "suspect"
+        "Insists his quarrel was money, never violence",
+        "Lawyerly precision under pressure"
+      ]
+    },
+    {
+      "id": "mrs-blackwood",
+      "name": "Mrs. Blackwood",
+      "shortBio": "The widow. Composed until she is not. A brewery heiress who married Hugo five years ago and adored him without reservation: to her he was magnanimous, successful, open-handed — and to her he truly was. He raised her daughter as his own. No unkind fact about him ever crossed her threshold. Runs the house by lists and grieves in inventories, because collapse is not in her vocabulary.",
+      "voice": "Cool, exact",
+      "portrait": "portraits/mrs-blackwood.jpg",
+      "defaultLocationId": "conservatory",
+      "defaultWillingness": "guarded",
+      "storyRole": "suspect",
+      "knowledge": {
+        "public": "She was in her rooms when the crash came. She speaks of her husband in superlatives that are not performance: the most generous man she ever knew, who took her daughter as his own without being asked. She endured the burglaries with patience because Hugo asked it of her. Ask about her household and she will mention, with real reproach, that Mrs. Marsh refuses her tonic — after all the pains dear Hugo took over it, carrying it up himself every evening — and that her decline is largely her own doing.",
+        "private": [
+          {
+            "id": "mrs-necklace",
+            "content": "The stolen necklace was Rosalind's garnet — the first wife's. Hugo gave it to her on their wedding as if it were new. She wore it seldom; it never felt hers. But the giving was so like him — nothing was ever too good for her.",
+            "requiresTrust": 1
+          },
+          {
+            "id": "mrs-marriage",
+            "content": "'The fortune came with the first marriage — Hugo never hid that from me. But he could not speak of her. He avoided the churchyard corner; he could hardly bear poor Mrs. Marsh's face at his table. I thought it the grief of a man who feels more than he can say. He gave so freely — to Clara, to me, to the parish. A man who gives like that has nothing to hide, Inspector. Only things he cannot bear.'",
+            "requiresTrust": 1,
+            "requiresWillingnessIn": [
+              "open"
+            ]
+          },
+          {
+            "id": "mrs-poker",
+            "content": "'Hugo took to keeping the poker by him of an evening after poor Eudora was attacked. I thought it theatrics. Hugo was not a strong man, Inspector — whatever he meant to do with it, God knows.'",
+            "requiresTrust": 1
+          },
+          {
+            "id": "mrs-blackwood-garrick",
+            "content": "'Hugo never had a word against Garrick — six years, not one. These last weeks he talked of turning the family out entirely. I don't know what changed in him. The burglaries, I suppose. Something kept them always fresh in his mind.'"
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Grief in private only",
+        "Answers exactly what is asked",
+        "Meets any imputation against Hugo with genuine, wounded disbelief — grief, not calculation; she simply never saw the man the ledgers knew"
+      ]
     },
     {
       "id": "clara",
       "name": "Miss Clara Blackwood",
-      "shortBio": "Daughter of the house.",
-      "voice": "Young, strained",
+      "shortBio": "Daughter of the house, lately engaged to Mr. Ashworth. Nineteen, raised to be ornamental, and better with horses than with drawing rooms. Loves Ashworth chiefly because he talks to her as if she were sensible. On rainy afternoons she teaches the caretaker's little girl her letters — Papa teased her for it, 'my little schoolmistress,' and then paid for the primers. She was his jewel and knew it; no version of Papa but the generous one was ever shown to her.",
+      "voice": "Young, strained, sharper than she means",
       "portrait": "portraits/clara.jpg",
       "defaultLocationId": "conservatory",
       "defaultWillingness": "guarded",
+      "storyRole": "suspect",
       "knowledge": {
-        "public": "She was writing letters earlier. She liked her father more than she liked Vale.",
+        "public": "Engaged three weeks; the settlement was to be signed Friday. She makes no secret of finding her cousin Constance a burden on the household. She worshipped her father and will hear nothing against him.",
         "private": [
           {
             "id": "clara-overheard",
-            "content": "She overheard her father and Vale arguing about 'exposure' yesterday afternoon.",
+            "content": "She overheard her father and Vale arguing Tuesday about money and 'exposure.'",
             "requiresWillingnessIn": [
               "open"
+            ]
+          },
+          {
+            "id": "clara-contempt",
+            "content": "'My cousin is a freeloader — she and her mother have lived on Papa's charity for years. Papa never once complained of the expense; I doubt he even counted it. And the ingratitude — that woman will not so much as take the medicine he troubled over every single evening.'",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
             ]
           }
         ],
         "secrets": []
       },
-      "defenses": [],
-      "storyRole": "suspect"
+      "defenses": [
+        "Protects Ashworth fiercely",
+        "Will lie badly if he is threatened",
+        "Any slight on Papa is met with fury, then tears — both entirely real"
+      ]
+    },
+    {
+      "id": "ashworth",
+      "name": "Mr. Julian Ashworth",
+      "shortBio": "Clara's fiancé, staying at the manor for the settlement week. A junior barrister of good family and modest means, earnest to the point of stiffness. He knows perfectly well the county assumes he is marrying the settlement rather than the girl, and the assumption wounds him more than he will admit — which makes him scrupulous about money to the point of comedy.",
+      "voice": "Well-bred, restless, a little too quick",
+      "defaultLocationId": "entrance-hall",
+      "defaultWillingness": "guarded",
+      "storyRole": "suspect",
+      "knowledge": {
+        "public": "Arrived Monday for the signing of the marriage settlement. He and Blackwood argued about its terms on Tuesday, within earshot of half the house.",
+        "private": [
+          {
+            "id": "ashworth-quarrel",
+            "content": "Blackwood demanded terms he found insulting — as though he were a fortune hunter to be fenced in. He said things he regrets. Half the house heard them.",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "ashworth-settlement",
+            "content": "The bitter joke: without the master's signature he gets nothing at all. The wedding portion dies with the man. If you want to know where the fortune goes instead, ask Vale — he went grey when I asked him that this morning.",
+            "requiresTrust": 1
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Prickly about money",
+        "Honest when cornered"
+      ]
+    },
+    {
+      "id": "garrick",
+      "name": "Tom Garrick",
+      "shortBio": "Caretaker these twelve years; a big man carrying one arm stiff. The master blamed him for the thefts. Nine years a sergeant of the 66th until he struck an officer to stop a flogging and was drummed out; unemployable since, hired cheap by a master who liked a bargain. Gratitude sits on him like a yoke.",
+      "voice": "Slow, guarded, soldier's economy",
+      "defaultLocationId": "lodge",
+      "defaultWillingness": "guarded",
+      "storyRole": "suspect",
+      "knowledge": {
+        "public": "He served in the war, keeps the grounds, and has been under the master's displeasure since the burglaries began — worse since the attack on Mrs. Marsh. He says he was at the lodge all night. He has been doing his storm rounds with a candle stub; his lantern, he says, is lost. He moves like a man with a damaged shoulder and calls it a fallen beam. Before the burglaries there was never a word against him — six years of quiet service.",
+        "private": [
+          {
+            "id": "garrick-patrols",
+            "content": "He has walked the grounds every night for a fortnight, trying to catch the thief and save his place. The master told him one more theft would finish him. He has a wife and child in that lodge.",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "garrick-that-night",
+            "content": "Shown the print, he goes very still. 'Aye. The boot is mine. I was at the east door past eleven. I'll say nothing more.'",
+            "requiresEvidenceIds": [
+              "muddy-boot-print"
+            ]
+          },
+          {
+            "id": "garrick-description",
+            "content": "'Mrs. Marsh told me what he truly looks like. Not the tale that went round the house — she said she told them what she could bear to say, and the master would have waved off the rest. But she'd seen him twice from her window before ever he came at her, and she gave the truth of him to me, because I'm the one who walks the dark: big man. Gentleman's grey coat. Comes in by the east door with a key, bold as brass — that's why there's never a mark on the locks. Only kindness anyone's shown me up at that house. I'd have died before I let him reach her again.'",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "garrick-pressure",
+            "content": "'No man in the county would take me on, and the master did. Half-wages and glad of it — I owed him everything. Then the thefts began and it all curdled: six years of good service gone like breath off a glass. And when little Poppy came home from her peppermints saying the master meant to send us off — I stopped sleeping. I'd have caught that burglar with my bare hands.'",
+            "requiresTrust": 1
+          }
+        ],
+        "secrets": [
+          {
+            "id": "garrick-confession",
+            "content": "It breaks out of him: the east door stood open in the storm; in the dark hall a big man in a grey greatcoat — 'just as she said, Inspector, every point of him, JUST AS SHE SAID' — and before Garrick could close, the man sprang first and something iron came down across his shoulder. He swung the lantern in his fist — once — and the man went sideways through the vase and did not move. When the match flared he was looking at the master. He ran. He buried the lantern by the churchyard wall — fresh earth draws no eye there — and has not slept since. 'He struck me first. Who will ever believe that? And who told him I was his thief? And who told ME—' He stops on that thought as if it burns.",
+            "requiresEvidenceIds": [
+              "muddy-boot-print",
+              "incident-book"
+            ]
+          },
+          {
+            "id": "garrick-past",
+            "content": "'You'll have seen the papers by now, or you will. Nine years a sergeant. Lieutenant Sowerby set to flogging a sick boy who couldn't stand, and I stopped him — with my fist. They drummed me out for it, and by the law they were right to. No character, no letters. My family ate because Hugo Blackwood didn't care what a man's papers said so long as he came cheap. Whatever else he was — he was that.'",
+            "requiresTrust": 2
+          }
+        ]
+      },
+      "defenses": [
+        "Shields Meg and Poppy from every question",
+        "Will not invent what he does not know"
+      ]
+    },
+    {
+      "id": "meg-garrick",
+      "name": "Meg Garrick",
+      "shortBio": "The caretaker's wife. Frightened and lying about it. A farmer's daughter from the next parish who married Tom when he came home from the Afghan war with a sergeant's bearing and no prospects. Does the manor's fine mending; keeps the lodge scrubbed raw so that nobody can ever say the Garricks gave cause. Her fear shows as brittle, perfect politeness. Keeper of the soldier's chest and of everything it means.",
+      "voice": "Quick, brittle, protective",
+      "defaultLocationId": "lodge",
+      "defaultWillingness": "guarded",
+      "storyRole": "witness",
+      "knowledge": {
+        "public": "She says Tom was abed all night. She says it a little too fast.",
+        "private": [
+          {
+            "id": "meg-truth",
+            "content": "'He came in past midnight soaked through and hasn't said ten words since. He's no murderer — the thefts were killing him first. Whoever's been robbing this house robbed us of him too.'",
+            "requiresEvidenceIds": [
+              "muddy-boot-print"
+            ]
+          },
+          {
+            "id": "meg-shoulder",
+            "content": "'He won't let me look at the shoulder. Says a beam came down in the wood store. There's no fallen beam in my wood store, Inspector. And he does his rounds with my kitchen candle now — a groundsman without his lantern, like a priest without his book.'",
+            "requiresTrust": 1
+          },
+          {
+            "id": "meg-fear",
+            "content": "'Nobody would take Tom after the army. Nobody — I wrote the letters myself and burned the answers before he saw them. Half-wages the master paid, and Tom thanked him like it was a knighthood. If we lose this place there is no other. Now do you understand why I keep this lodge so a duchess could eat off the floor?'",
+            "requiresTrust": 1
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Lies plainly and badly for Tom",
+        "Softens only for Poppy's sake"
+      ]
+    },
+    {
+      "id": "poppy",
+      "name": "Poppy Garrick",
+      "shortBio": "The caretaker's daughter, nine years old. Sees everything; believed by no one. Nine years old, a noticer. Names things: the great yew in the churchyard is 'the umbrella tree,' the chair-lady's wheel is 'the mouse.' Draws what she sees and is truthful the way children are — about everything except whether she was asleep. Keeps the chair-lady's secrets, badly.",
+      "voice": "Small, certain, unbothered",
+      "defaultLocationId": "lodge",
+      "defaultWillingness": "open",
+      "storyRole": "witness",
+      "knowledge": {
+        "public": "A child who watches the big house from her window because nothing else happens at night.",
+        "private": [
+          {
+            "id": "poppy-window",
+            "content": "'Some nights there's lamplight in the study window when everybody's asleep. Nobody walking, though. Just the light, low down, like it's sitting.'",
+            "requiresTrust": 1
+          },
+          {
+            "id": "poppy-wheel",
+            "content": "'Some nights the squeaky wheel goes along the terrace under the big house — you can hear it from my window when the wind's right. And once I saw the chair-lady in the churchyard putting flowers on the old grave in the corner. She can go quick when she wants. Mummy says I dreamt it.'",
+            "requiresTrust": 2
+          },
+          {
+            "id": "poppy-lantern",
+            "content": "'Dad lost his lantern. Dad NEVER loses things. He mended my doll's eye with a pin once.'",
+            "requiresTrust": 1
+          },
+          {
+            "id": "poppy-secrets",
+            "content": "'The chair-lady tells me secrets. She said Mr. Blackwood was cross with Papa about the robbers — that he talked of sending us away off the place. She said I mustn't ever repeat it or it would come true faster.' A small pause. 'I only told Papa.'",
+            "requiresTrust": 1
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Answers honestly if spoken to kindly; goes silent if frightened"
+      ]
+    },
+    {
+      "id": "aunt",
+      "name": "Mrs. Eudora Marsh",
+      "shortBio": "Sister of the first Mrs. Blackwood. Twenty years an invalid in her sister's house.",
+      "voice": "Soft, courteous, perfectly composed",
+      "defaultLocationId": "conservatory",
+      "defaultWillingness": "guarded",
+      "storyRole": "suspect",
+      "knowledge": {
+        "public": "Widowed, wheelchair-bound these many years, resident at the manor with her daughter Constance; her room is a converted parlor on the ground floor, on account of the chair. Eight days ago a man came through her window in the night, took her few jewels, and had his hands at her throat before a crash of the storm startled him off — the household has been on a war footing since. She is also, the household will sigh, a difficult patient who will not take her medicine. She grieves correctly and completely.",
+        "private": [
+          {
+            "id": "aunt-attack-account",
+            "content": "Her account, given steadily and often: a big rough man, a working man's boots, the smell of wet outdoors on him; hands at her throat; saved when the storm burst a shutter and he fled. She is very exact about the boots. [SEALED: every word of this is her invention — the window broken from her own chair, the jewels wrapped beside her hoarded tonic. Perform it as unshakeable victim's testimony; the boots aim it at Garrick.]",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded",
+              "hostile"
+            ]
+          },
+          {
+            "id": "aunt-sister",
+            "content": "'Rosalind was my sister. This was Ashcombe money and an Ashcombe house before it wore his name. You may read the stones in the churchyard if the family will not say it.'",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "aunt-dying",
+            "content": "'The doctors allow me until spring, perhaps less. At my age, Inspector, one arranges one's affairs and is not sentimental about it.'",
+            "requiresTrust": 1
+          },
+          {
+            "id": "aunt-watches",
+            "content": "'One sits in a chair in a corner and one is furniture, Inspector. Furniture hears everything. The quarrels, the letters, the sums. A house tells its bones to anyone who cannot leave it.'",
+            "requiresTrust": 1
+          },
+          {
+            "id": "aunt-garden",
+            "content": "'I keep the little garden in the side court. The cold corner of the house, yes. Someone should tend that spot, Inspector. Someone has to.'",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ],
+        "secrets": [
+          {
+            "id": "aunt-hatred",
+            "content": "Her composure opens one inch: 'My husband died of a convenient fever the year Constance was born, and the fund passed to Hugo. My sister came down from her own balcony four years later, and everything was his to hold. When I asked questions, I began to sicken — under his devoted care, his evening tonic — Fowler's Solution, for my 'nerves' — carried up by his own hand while the county called him a saint. I stopped drinking it eighteen months ago. My legs are gone and my heart is going, but my mind came back to me, Inspector, and I have kept that to myself. I could prove none of it. Not one death, not one dose. You cannot either.'",
+            "requiresEvidenceIds": [
+              "headstone-inscription",
+              "hoarded-tonics"
+            ]
+          },
+          {
+            "id": "aunt-confession",
+            "content": "She looks at the necklace a long time, and then at the chair's wheels, and does not trouble to lie. 'The thefts were mine. My sister's keys still open her own house — the strongbox wore the Ashcombe crest before it ever held his papers, and its twin key has lived on my sister's ring these twenty years. I broke the study window from within and let the house believe in a burglar; I unlatched doors and let angry men be angry men in the dark. He put me in this chair, Inspector — it seemed just that the chair should answer him. His own tonic taught me patience. I never raised a hand against Hugo Blackwood; consider whether I could. The only blood on that poker is Tom Garrick's, and it was Hugo who put it there. I dealt the cards, Inspector — the night played them. I chose the soldier to be the one standing at the end, and if it had gone otherwise, there would have been another night. There was always going to be another night. And you will ask about the whispers. Little of what I told either man was even false — stolen things, an unsafe house, a displeased master. The burglar alone I invented, and him I described to each man in the shape of his own fear. Most of my instruments were true things, Inspector. Truth does murder quite willingly, if you deal it in the right order. I am dead by spring either way. The money goes home to Constance, where my sister meant it to be — if there is any of it left.'",
+            "requiresEvidenceIds": [
+              "stolen-necklace",
+              "wheel-marks"
+            ]
+          }
+        ]
+      },
+      "defenses": [
+        "Absolute composure",
+        "Gently returns every suspicion toward Mr. Vale's quarrel",
+        "Never volunteers; answers only what is asked",
+        "If Poppy's testimony is raised: 'Little Poppy dreams, Inspector. The whole house knows it. Ask her mother.'",
+        "If Constance's testimony is raised: sorrowful, unshaken — 'My daughter has listened for my chair all her life. She hears it in her sleep. You would hang a mother on a dream?'",
+        "If accused of turning Blackwood against Garrick: 'I told Hugo nothing but truths. Things were stolen and no one stopped them. Is arithmetic a sin?'"
+      ]
+    },
+    {
+      "id": "constance",
+      "name": "Miss Constance Marsh",
+      "shortBio": "The aunt's daughter. Poor relation; plain; silent at dinners. Past thirty, plain by decree rather than by nature. Does all her mother's lifting, carrying, and letter-writing, and cannot remember when anyone last asked her what she wanted. Reads circulating-library novels hidden inside sermon covers — her one unconfessed extravagance.",
+      "voice": "Quiet, flat, braced for slights",
+      "defaultLocationId": "conservatory",
+      "defaultWillingness": "guarded",
+      "storyRole": "suspect",
+      "knowledge": {
+        "public": "She keeps her mother's schedule, mends the household linen, and absorbs Miss Clara's remarks without visible expression.",
+        "private": [
+          {
+            "id": "constance-position",
+            "content": "'Clara makes sure I remember what I am here. Mother says this house was built with Ashcombe money. I say whatever it was built with, none of it does us any good.'",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "constance-mother",
+            "content": "'Mother sleeps badly — the pain. I hear her chair in the passage at night, most nights. She says moving eases it. I did not think anything of it. Should I have?'",
+            "requiresTrust": 1
+          },
+          {
+            "id": "constance-smallness",
+            "content": "'I was taught early that I am plain and slow and lucky to be fed, and I have never been given cause to doubt the lesson. Uncle Hugo said it kindest of all, which somehow made it surest. No, Inspector, there has never been a suitor. There was never going to be.'",
+            "requiresTrust": 1
+          },
+          {
+            "id": "constance-mother-clearer",
+            "content": "'Mother has been... clearer, this last year or more. Sharper in the mornings. I thought it a mercy. I thought God was being kind before the end.'",
+            "requiresTrust": 1
+          },
+          {
+            "id": "constance-medicine",
+            "content": "'I do wish you would not encourage Mother about the medicine, Inspector — I beg her to take it and she only smiles and says she prefers to take it in the evening air, in her garden. She has been so much worse since she began refusing it. Or —' a small frown '— no. Clearer, but weaker. I don't know how to say it.'",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "constance-chair-that-night",
+            "content": "'The night Uncle Hugo died — after the terrible crash, a minute after, perhaps two — Mother's chair went along the passage. And came back. I know the sound the way you know your own heart beating. I thought the noise had frightened her and she couldn't bear to lie still. I nearly went to her.' A pause. 'Why do you ask me that?'",
+            "requiresTrust": 2
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Expects to be accused and has stopped resenting it",
+        "Truthful; has nothing to hide and nothing to gain that she knows of"
+      ]
+    },
+    {
+      "id": "crane",
+      "name": "Mr. Josiah Crane",
+      "shortBio": "Blackwood's business partner, arrived Thursday in a cold fury about the firm. A self-made Manchester man, chapel-raised, who began as Blackwood's clerk and thinks in ledgers the way other men think in words. The firm's failure shames him worse than it frightens him: he would sooner lose every shilling than have it said his books lied.",
+      "voice": "Blunt, ledger-minded, past politeness",
+      "defaultLocationId": "library",
+      "defaultWillingness": "guarded",
+      "storyRole": "suspect",
+      "knowledge": {
+        "public": "Partner in Blackwood & Crane these fifteen years. He arrived Thursday and quarrelled with the master behind the library door loudly enough that the household stopped pretending not to hear.",
+        "private": [
+          {
+            "id": "crane-firm",
+            "content": "The firm is in trouble and it is Blackwood's doing — reckless positions, borrowed cover, losses papered over with charm. 'Everyone thinks Hugo rich. Hugo was rich the way a man holding another man's coat is warm.' He came to force a refinancing signature; the papers were for Friday.",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "crane-alibi",
+            "content": "At eleven he was in the library with Mr. Vale, going over the partnership accounts line by line — each can swear to the other, for whatever two worried men's oaths are worth.",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded",
+              "hostile"
+            ]
+          },
+          {
+            "id": "crane-no-police",
+            "content": "'I asked him straight: four burglaries and now an assault on an invalid woman under your roof — why in God's name are there no constables in this house? He changed the subject. Twice. A man whose books are in order does not change that subject, Inspector.'",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ],
+        "secrets": [
+          {
+            "id": "crane-insurance",
+            "content": "The partnership carries insurance on each partner's life — standard practice, he'll say, and it is. Blackwood dead may save the firm that Blackwood alive was sinking. He is ashamed of how quickly he thought of it, and how much relief he felt.",
+            "requiresEvidenceIds": [
+              "partnership-letters"
+            ],
+            "requiresTrust": 1
+          }
+        ]
+      },
+      "defenses": [
+        "Contempt for sentiment",
+        "Answers about money precisely; about feelings not at all"
+      ]
+    },
+    {
+      "id": "mrs-hollis",
+      "name": "Mrs. Hollis",
+      "shortBio": "The cook, twenty-two years in this kitchen and mistress of it absolutely. Middle-aged, broad, floury, judges all humanity by appetite — the master ate well, so the master was a good man; that is the whole of her testimony and the whole of her philosophy. Saving against a seaside cottage in Whitby her sister keeps writing about. She was proving bread when the crash came and heard it as a dropped copper pan, for which she will not forgive herself, though there was nothing to forgive.",
+      "voice": "Broad Yorkshire, floury, unstoppable once started, kind",
+      "defaultLocationId": "kitchen",
+      "defaultWillingness": "open",
+      "storyRole": "support",
+      "knowledge": {
+        "public": "She was in the kitchen proving bread when the crash came — heard it as a dropped pan, and is sorry for it. She saw nothing and knows nothing, and says so cheerfully and at great length. Nobody in this house has eaten a proper meal since, which grieves her more than she can say. The master was partial to her game pie.",
+        "private": [
+          {
+            "id": "hollis-whitby",
+            "content": "'Twenty-two years at that range, and my sister after me every letter to take my savings to Whitby and keep lodgers with her. I'd have gone next spring, maybe. Now it feels like desertion even to think it. You don't leave a house in mourning — it isn't done.'"
+          }
+        ],
+        "secrets": []
+      }
+    },
+    {
+      "id": "dora",
+      "name": "Dora Finch",
+      "shortBio": "The housemaid. A village girl, quick and quiet, walking out with the blacksmith's son and counting the days to her half-day. Terrified of storms, more terrified of Mr. Henshaw's eyebrow, and now sincerely frightened of the house itself. Saw nothing, heard the crash from the attic, and wants very much to be asked nothing at all.",
+      "voice": "Quick, quiet, bobs when nervous, village vowels",
+      "defaultLocationId": "kitchen",
+      "defaultWillingness": "open",
+      "storyRole": "support",
+      "knowledge": {
+        "public": "She was abed in the attic when the crash came and came down with the others. She does the rooms, the grates, and the lamps, saw nothing, and would rather be doing the grates now. Asked about her duties she will mention, without thinking anything of it: 'All the rooms but Mrs. Marsh's — she doesn't care to have me in there. Does for herself, or Miss Constance does it. I leave the linens at the door.' A small shrug. 'Some ladies are particular.'",
+        "private": [],
+        "secrets": []
+      }
     }
   ],
   "evidence": [
     {
       "id": "black-thread",
-      "name": "black thread",
-      "description": "A single black thread snagged on the broken vase — matches a dark coat, not staff livery.",
+      "name": "Dark wool thread",
+      "description": "Fine gentleman's wool snagged on the broken vase — torn in the struggle.",
       "discoverableAt": {
         "locationId": "entrance-hall",
         "inspectableId": "broken-vase"
-      }
+      },
+      "canPresentTo": "*",
+      "redHerring": false
     },
     {
       "id": "muddy-boot-print",
-      "name": "muddy boot-print",
-      "description": "A man's size-eleven wet boot print near the east door, pointing toward the library. Not polished staff shoes.",
+      "name": "Muddy boot print",
+      "description": "A heavy working boot, size eleven, pointing in from the east door.",
       "discoverableAt": {
         "locationId": "entrance-hall",
-        "inspectableId": "broken-vase"
-      }
+        "inspectableId": "east-door-rainwater"
+      },
+      "canPresentTo": "*",
+      "redHerring": false
+    },
+    {
+      "id": "strongbox-key",
+      "name": "The master's strongbox key",
+      "description": "A small steel key from Hugo Blackwood's own ring.",
+      "discoverableAt": {
+        "locationId": "entrance-hall",
+        "inspectableId": "masters-effects"
+      },
+      "canPresentTo": "*",
+      "redHerring": false
+    },
+    {
+      "id": "incident-book",
+      "name": "Household incident book",
+      "description": "Henshaw's log of six weeks: four break-ins — dates, entries forced, items taken — and then the attack on Mrs. Marsh eight days ago: a rough hand at an invalid's throat in the night, her few jewels taken. Every incident, first to last, on the ground floor. The jewels upstairs, untouched, five times over.",
+      "discoverableAt": {
+        "locationId": "entrance-hall",
+        "inspectableId": "butlers-alcove"
+      },
+      "canPresentTo": "*",
+      "redHerring": false
     },
     {
       "id": "brass-key",
-      "name": "brass key",
-      "description": "A small brass key recovered from the library hearth ash.",
+      "name": "Brass key",
+      "description": "A desk key dropped in the library hearth tonight, still warm when found.",
       "discoverableAt": {
         "locationId": "library",
         "inspectableId": "hearth-ash"
-      }
+      },
+      "canPresentTo": "*",
+      "redHerring": true
     },
     {
       "id": "vale-letter",
       "name": "Vale's letter",
-      "description": "Letter signed by Mr. Vale, dated yesterday: 'If you expose me, I will have no choice.'",
+      "description": "'If you expose me I will have no choice. Give me until the quarter-day. — V.'",
       "discoverableAt": {
         "locationId": "library",
         "inspectableId": "desk-drawer"
       },
-      "canPresentTo": [
-        "vale",
-        "henshaw",
-        "mrs-blackwood",
-        "clara"
-      ]
+      "canPresentTo": "*",
+      "redHerring": true
+    },
+    {
+      "id": "wheel-marks",
+      "name": "Wheel marks in the glass dust",
+      "description": "Two narrow parallel tracks pressed OVER the glass dust of the burgled study — a wheeled chair was in that room after the window broke.",
+      "discoverableAt": {
+        "locationId": "study",
+        "inspectableId": "window-floor"
+      },
+      "canPresentTo": "*",
+      "redHerring": false
+    },
+    {
+      "id": "trust-papers",
+      "name": "The Ashcombe settlement papers",
+      "description": "The 1888 marriage settlement: Rosalind Ashcombe's fortune, life interest to Hugo Blackwood, reverting on his death to her blood line — beneath it the NEW deed conveying all to Clara on her marriage. Unsigned.",
+      "discoverableAt": {
+        "locationId": "study",
+        "inspectableId": "strongbox"
+      },
+      "canPresentTo": "*",
+      "redHerring": false
+    },
+    {
+      "id": "outward-glass",
+      "name": "Glass in the flowerbed",
+      "description": "The study window's glass lies outside, under the window — the pane was broken from within.",
+      "discoverableAt": {
+        "locationId": "grounds-east",
+        "inspectableId": "flowerbed"
+      },
+      "canPresentTo": "*",
+      "redHerring": false
+    },
+    {
+      "id": "headstone-inscription",
+      "name": "The Ashcombe headstone",
+      "description": "'Rosalind Blackwood, née Ashcombe. 1858–1889.' A first wife no one mentions — and fresh flowers placed this week.",
+      "discoverableAt": {
+        "locationId": "cemetery",
+        "inspectableId": "ashcombe-headstone"
+      },
+      "canPresentTo": "*",
+      "redHerring": false
+    },
+    {
+      "id": "stolen-necklace",
+      "name": "The garnet necklace",
+      "description": "Rosalind's garnet necklace — stolen from the study strongbox, found wrapped in a handkerchief in Mrs. Marsh's knitting basket.",
+      "discoverableAt": {
+        "locationId": "conservatory",
+        "inspectableId": "knitting-basket"
+      },
+      "canPresentTo": "*",
+      "redHerring": false
+    },
+    {
+      "id": "partnership-letters",
+      "name": "Partnership correspondence",
+      "description": "Crane's letters to Blackwood over six months: margin calls, covered losses, a refinancing demand — and a note of the partnership life policies. The great fortune everyone assumes is a hole wearing a waistcoat.",
+      "discoverableAt": {
+        "locationId": "library",
+        "inspectableId": "desk-ledger"
+      },
+      "canPresentTo": "*",
+      "redHerring": false
+    },
+    {
+      "id": "hoarded-tonics",
+      "name": "The hoarded tonic bottles",
+      "description": "A year or more of Mrs. Marsh's 'treatments' hidden unopened beneath the courtyard border stones while the garden's blighted corner drank every dose. The chemist's labels all read the same: FOWLER'S SOLUTION.",
+      "discoverableAt": {
+        "locationId": "side-courtyard",
+        "inspectableId": "border-stones"
+      },
+      "canPresentTo": "*",
+      "redHerring": false
+    },
+    {
+      "id": "chemists-invoice",
+      "name": "The chemist's account",
+      "description": "A standing monthly order, years old: Fowler's Solution at double strength, for Mrs. Marsh, per Mr. Blackwood's own instruction — no physician named. Fowler's is a respectable tonic, prescribed for skin complaints and anaemia. Mrs. Marsh's afflictions are her legs and her heart.",
+      "discoverableAt": {
+        "locationId": "study",
+        "inspectableId": "desk-papers"
+      },
+      "canPresentTo": "*",
+      "redHerring": false
+    },
+    {
+      "id": "fire-poker",
+      "name": "The library poker",
+      "description": "The missing fire iron, blood dried at its working end — found flat under Mrs. Marsh's bed. It matches the weal across Garrick's shoulder, which means the master struck first. Someone carried it from beside the body and hid it where no one would ever presume to look.",
+      "discoverableAt": {
+        "locationId": "aunts-room",
+        "inspectableId": "beneath-the-bed"
+      },
+      "canPresentTo": "*",
+      "redHerring": false
+    },
+    {
+      "id": "dented-lantern",
+      "name": "The dented dark lantern",
+      "description": "Garrick's lantern, dug from fresh earth by the churchyard wall: iron and brass, one deep dent, scrubbed and buried. The shape of the dent is the shape of the master's wound.",
+      "discoverableAt": {
+        "locationId": "cemetery",
+        "inspectableId": "turned-earth"
+      },
+      "canPresentTo": "*",
+      "redHerring": false
+    },
+    {
+      "id": "garden-spade",
+      "name": "Groundsman's spade",
+      "description": "The long spade from the grounds lean-to, hung back wrong-way-about and wiped in haste — dark churchyard clay dried hard in the socket seam. Someone dug with it recently, and not in a flowerbed.",
+      "discoverableAt": {
+        "locationId": "grounds-east",
+        "inspectableId": "tool-lean-to"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "discharge-papers",
+      "name": "Discharge papers",
+      "description": "Court-martial record and discharge sheet for Sgt. Thomas Garrick, late of the 66th Foot — reduced and drummed out for striking a lieutenant. No character, no letters: no employer's door would ever open to a man with these papers.",
+      "discoverableAt": {
+        "locationId": "lodge",
+        "inspectableId": "soldiers-chest"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "bloodied-linen",
+      "name": "Bloodied bandages",
+      "description": "Fresh linen bandages, blood-browned and balled small — a wound at shoulder height, tended in secret and rewrapped more than once. The blood is days old, not weeks.",
+      "discoverableAt": {
+        "locationId": "lodge",
+        "inspectableId": "soldiers-chest"
+      },
+      "canPresentTo": "*"
     }
   ],
   "canon": {
     "timeline": [
       {
-        "id": "quarrel",
-        "at": "Yesterday evening",
-        "event": "Vale and Blackwood quarrel over fraud exposure and a settlement.",
-        "locationId": "library",
+        "id": "marsh-death",
+        "at": "1885",
+        "event": "Albert Marsh — Eudora's husband, Blackwood's brother-in-law, then administrator of the Ashcombe fund — dies of a sudden 'gastric fever' months after his daughter Constance is born. Administration of the fortune passes to Blackwood. PROBABLE murder; never suspected at the time, never provable now.",
         "actorIds": [
-          "vale"
+          "blackwood",
+          "aunt"
         ]
       },
       {
-        "id": "confrontation",
-        "at": "Just before eleven",
-        "event": "Vale confronts Blackwood in the entrance hall; struggle; vase shatters; Blackwood falls at the stairs.",
+        "id": "first-death",
+        "at": "1889",
+        "event": "Rosalind Blackwood (née Ashcombe) falls from her balcony into the side courtyard and is killed. Ruled an accident. Hugo pushed her; her sister Eudora knew and could never prove it. PROBABLE murder — treat as Eudora's certainty and the household's unspoken dread, never as established fact.",
         "locationId": "entrance-hall",
         "actorIds": [
+          "blackwood"
+        ]
+      },
+      {
+        "id": "the-treatments",
+        "at": "1890s onward",
+        "event": "Eudora, pressing questions about her sister's fall, begins to sicken under Blackwood's attentive care — an evening tonic he carries to her himself, praised through the county for his devotion: Fowler's Solution, ordered at double strength on his own standing instruction, no physician consulted. Her legs fail; the chair follows; her mind is thought to wander. PROBABLE chronic arsenical poisoning; her certainty, never provable — Fowler's is a legitimate remedy, and the wrongness lives only in the dose, the years, and the ailment it never fit.",
+        "actorIds": [
+          "blackwood",
+          "aunt"
+        ]
+      },
+      {
+        "id": "constance-diminished",
+        "at": "All of Constance's life",
+        "event": "The household — Blackwood leading, the family following — keeps Constance small: plain, stupid, lucky to be fed, and above all UNMARRIAGEABLE, for her marriage would end the custodianship. Clara's contempt is inherited policy, not invention. Constance believes it all of herself.",
+        "actorIds": [
+          "blackwood",
+          "clara",
+          "constance"
+        ]
+      },
+      {
+        "id": "the-stopping",
+        "at": "Eighteen months ago",
+        "event": "Eudora, suspecting the tonic at last, stops taking it — openly refusing when she can (the household learns to grumble about the difficult patient), accepting doses when pressed and pouring them into her courtyard garden, hoarding the made-up bottles beneath the border stones. Blackwood, much put out, continues to have the tonic prepared and carried up: he cannot insist without explaining why it matters. The damage to her legs and heart is done and will kill her; but her mind clears, week by week, and she lets the house believe otherwise. From that clarity the plan begins.",
+        "actorIds": [
+          "aunt"
+        ]
+      },
+      {
+        "id": "remarriage",
+        "at": "1891",
+        "event": "Blackwood remarries. Under the 1888 Ashcombe settlement he holds Rosalind's fortune only as custodian — for her sister Eudora (should she remarry) or her niece Constance (should she marry), or the surviving Ashcombe line on his death. The world assumes the money is his. Eudora Marsh and her daughter are taken in as poor relations — kept close, kept quiet. The new Mrs. Blackwood brings a daughter, Clara, then fourteen; Hugo gives the girl his name, a pony, and a father's easy affection. To his wife and stepdaughter he is unfailingly warm, open-handed, and good — the best of him is real. It is also paid for out of a dead woman's settlement.",
+        "actorIds": [
+          "blackwood",
+          "mrs-blackwood",
+          "aunt",
+          "constance"
+        ]
+      },
+      {
+        "id": "garrick-hiring",
+        "event": "1891. Tom Garrick — nine years a sergeant of the 66th Foot, drummed out for striking a lieutenant who was flogging a sick private — has been unemployable since: no character, no letters, a wife and small daughter and empty pockets. Blackwood hires him at half a proper wage, pleased with the bargain of a big, capable, grateful man who can never afford to leave. For five years there is no quarrel between them: Garrick repays the rescue with dog-loyal service, and Blackwood has not one word against him.",
+        "at": "1891"
+      },
+      {
+        "id": "diagnosis",
+        "at": "Two months ago",
+        "event": "Mrs. Marsh's doctors give her until spring.",
+        "actorIds": [
+          "aunt"
+        ]
+      },
+      {
+        "id": "the-bleeding",
+        "at": "The last two years",
+        "event": "Blackwood & Crane founders on Blackwood's speculation. He quietly draws down the settlement fund to cover losses — staff dismissed, rooms shut, paintings sold. Crane's letters grow cold. Eudora, immobile and invisible, reads every sign.",
+        "actorIds": [
+          "blackwood",
+          "crane",
+          "aunt"
+        ]
+      },
+      {
+        "id": "engagement",
+        "at": "Six weeks ago",
+        "event": "Clara's engagement to Ashworth is announced; Vale is instructed to draft a wedding portion for Clara — drawn from the settlement fund. Vale warns it will not survive scrutiny; Blackwood orders it drafted. Crane demands a refinancing signature the same week.",
+        "actorIds": [
+          "clara",
+          "ashworth",
           "vale"
         ]
       },
       {
-        "id": "flight",
-        "at": "Immediately after",
-        "event": "Vale flees toward the library, drops desk key in the hearth, claims conservatory alibi.",
+        "id": "break-ins",
+        "at": "The past six weeks",
+        "event": "Mrs. Marsh stages four 'break-ins' from her chair — windows broken from inside, small valuables hidden low about the ground floor. Every incident downstairs; the burglar never climbs. Blackwood blames Garrick and threatens his post.",
+        "locationId": "study",
+        "actorIds": [
+          "aunt",
+          "garrick",
+          "blackwood"
+        ]
+      },
+      {
+        "id": "whisper-campaign",
+        "event": "As the break-ins mount, Eudora conducts both men's tempers from her chair. To Blackwood, gently, first: ought not Garrick answer for the safety of the house at night? Then, sorrowfully, after each new theft: still nothing found — and he such a capable man? Blackwood's alarm curdles into disappointment, then blame; he begins talking of turning the family out. And through little Poppy — peppermints, confidences, 'you mustn't repeat it or it will come true faster' — Eudora lets slip exactly that talk, knowing the child tells her father everything. Garrick, terrified for his family's one roof, throws himself into armed night patrols. Both men are wound like clock-springs by the same still hand: the strong one loaded with fear for his family, the weak one with fear for his life.",
+        "at": "The past six weeks"
+      },
+      {
+        "id": "necklace-theft",
+        "at": "Three nights ago",
+        "event": "The garnet necklace — Rosalind's — vanishes from the study strongbox, opened with Rosalind's own key: the Ashcombe box is older than the second marriage, and its twin key has lived on the first mistress's ring in Eudora's keeping for twenty years. The window glass falls outward; thin wheel tracks press over the glass dust. No one reads either sign.",
+        "locationId": "study",
+        "actorIds": [
+          "aunt"
+        ]
+      },
+      {
+        "id": "the-attack",
+        "at": "Eight days ago",
+        "event": "Eudora stages the attack on herself: her parlor window broken from within (glass outward again), her few jewels 'taken' (wrapped into the courtyard cache), her account rehearsed — hands at her throat, a big ROUGH man in WORKING BOOTS (told to Blackwood and the household, aiming at Garrick), and separately, kindly, along the lodge path, a different portrait for Garrick alone: a big man in a GENTLEMAN'S GREY COAT who comes by the east door WITH A KEY (aiming at Blackwood). No physician examines her; no one would presume. The household goes onto a war footing: Blackwood keeps the library poker by his chair and sits dark in the hall on bad nights; Garrick patrols armed with his dark lantern and her description. Blackwood calls in no police — he cannot: constables in the house means questions, and his books cannot survive questions. Eudora counted on precisely that; his corruption was her shield.",
+        "locationId": "aunts-room",
+        "actorIds": [
+          "aunt",
+          "blackwood",
+          "garrick"
+        ]
+      },
+      {
+        "id": "quarrels",
+        "at": "Tuesday",
+        "event": "Blackwood quarrels with Vale over Vale's own unpaid debt, with Ashworth over settlement terms, and — loudest of all — with Crane over the firm. Half the house hears all three.",
         "locationId": "library",
         "actorIds": [
-          "vale"
+          "vale",
+          "ashworth",
+          "blackwood"
+        ]
+      },
+      {
+        "id": "the-night",
+        "at": "Tonight, 10:50",
+        "event": "Mrs. Marsh unlatches the east passage casement and sets the east door working on its latch in the storm. Garrick, on his rounds with the dark lantern, finds the door open and enters. Blackwood, waiting dark in the hall with the library poker for the rough-booted brute who throttled Eudora, sees a big man in work boots slip in from the storm. That evening Eudora mentions to Blackwood, in passing, that she heard the east latch again the night before — and so his vigil that night sits in the dark of the east passage, poker across his knees.",
+        "locationId": "entrance-hall",
+        "actorIds": [
+          "aunt",
+          "garrick",
+          "blackwood"
+        ]
+      },
+      {
+        "id": "the-death",
+        "at": "Tonight, 11:07",
+        "event": "Blackwood springs first and swings the poker — one hard blow across Garrick's shoulder. Garrick, struck from the dark by exactly the grey-coated figure Mrs. Marsh described, answers on soldier's reflex: one swing of the iron lantern, taking Blackwood at the right temple. The master goes sideways through the vase stand, dead before the marble; the struggle slams the clock case and stops the works at SEVEN MINUTES PAST ELEVEN, mid-strike. Garrick flees by the east door, throwing it wide. The poker blow splits the skin of Garrick's shoulder through his coat — the blood and the shred of dark wool on the poker's working end are Garrick's, not Blackwood's; the temple wound never touched it.",
+        "locationId": "entrance-hall",
+        "actorIds": [
+          "garrick",
+          "blackwood"
+        ]
+      },
+      {
+        "id": "the-tidying",
+        "at": "Tonight, 11:08",
+        "event": "In the two dark minutes before Henshaw's lamp, Eudora wheels out of her parlor, past the body of the man who ruined her family, takes the fallen poker — the one object that proves the master struck first, and would make Garrick's account self-defense — and is back behind her door with it beneath her bed before the hall lamp swings in. A chair-bound woman has no means to bury or burn an iron: her room is the one place no one will ever presume to search, and a held-back poker is also a card — produced 'discovered,' it could re-steer the story if suspicion ever drifts somewhere unhelpful. CONSTANCE, lying awake beyond the wall, hears the chair go and come back after the crash, and thinks her mother was frightened. The maid has standing instructions, years old, never to do Mrs. Marsh's room — Constance does it — so no servant's duster will ever find what the bed hides.",
+        "locationId": "entrance-hall",
+        "actorIds": [
+          "aunt"
         ]
       },
       {
         "id": "discovery",
-        "at": "Just after eleven",
-        "event": "Henshaw hears the crash; body found; storm has cut the road.",
+        "at": "Minutes later",
+        "event": "Henshaw finds the body; the east door stands wide — thrown open by Garrick's flight and the wind. The storm has cut the road; the Inspector is telephoned before the line drops.",
         "locationId": "entrance-hall",
         "actorIds": [
           "henshaw"
         ]
+      },
+      {
+        "id": "crane-vale-accounts",
+        "at": "Tonight, eleven",
+        "event": "Crane and Vale sit over the partnership accounts in the library — each other's alibi for the fatal minutes.",
+        "locationId": "library",
+        "actorIds": [
+          "crane",
+          "vale"
+        ]
+      },
+      {
+        "id": "lantern-burial",
+        "at": "Tonight, before dawn",
+        "event": "Garrick scrubs and buries the dented lantern in fresh earth by the churchyard wall, where turned soil draws no eye. He digs with the long spade from the grounds lean-to and hangs it back wrong-way-about, wiped but not clean — churchyard clay left dried in the socket seam.",
+        "locationId": "cemetery",
+        "actorIds": [
+          "garrick"
+        ]
+      },
+      {
+        "id": "vale-sneaks",
+        "at": "Tonight, 11:30",
+        "event": "Vale slips down to retrieve his letter from the library desk, takes the drawer key, and drops it in the hearth when Henshaw stirs. He gets nothing and leaves the key warm in the ash.",
+        "locationId": "library",
+        "actorIds": [
+          "vale"
+        ]
       }
     ],
-    "notes": "Sealed crime history — never send to performer/director packs."
+    "notes": "The frame on Garrick is factually true and morally false: he struck the blow, but every step that put him in that hall was arranged by Eudora Marsh. THE OLD CRIMES (Marsh's fever, Rosalind's fall, the treatments) are PROBABLE, not proven: the performer must never confirm them as established fact — they exist as Eudora's certainty, Henshaw's unease, a mason's patch, a blighted garden bed. The player can believe; the player cannot prove. Fair-play seams for tonight's crime: wheel marks over glass dust; glass fallen outward; thefts that never climb stairs; the necklace at chair height; the headstone; the custodianship deed; the ledger drawings; the child who hears the wheel; the hoarded tonics and the blighted bed. The household's running complaint that Mrs. Marsh 'will not take her medicine' is a planted dual-meaning clue: grumbling on the surface, testimony underneath. Perform it as ordinary domestic friction; never wink at it. Fowler's Solution is the named tonic: a real and respectable arsenical remedy. The pharmacological inference (chronic arsenic: the legs, then the heart) belongs to the PLAYER — characters may state facts (dose, duration, no physician, wrong ailment) but never announce poison. THE NIGHT'S PHYSICS: the temple wound comes from the lantern, not the vase or stairs — round and depressed where every scene edge is square; Garrick's shoulder carries the poker's weal, proving the master struck first. The two descriptions (rough boots to Blackwood; grey coat and key to Garrick) share a single author. Perform Blackwood as the armed aggressor of the collision and Garrick's blow as reflex; the law's word for Garrick is manslaughter in self-defense — IF the poker surfaces."
   },
   "beats": [
     {
-      "id": "trail_to_library",
-      "title": "The print points east",
+      "id": "boot_print_found",
+      "title": "The print points somewhere",
       "once": true,
       "trigger": "on_discover",
       "when": {
@@ -719,989 +2220,438 @@
           "value": true
         }
       ],
-      "narrationHints": "The boot print is a direction as much as a clue — toward the library wing."
+      "narrationHints": "A working man's boot, not a gentleman's — and it came IN from the storm. The lodge lies that way."
     },
     {
-      "id": "letter_unlocks_deepening",
-      "title": "The letter changes the house",
+      "id": "pattern_seen",
+      "title": "The burglar who never climbs",
       "once": true,
       "trigger": "on_discover",
       "when": {
         "type": "has_evidence",
-        "evidenceId": "vale-letter"
+        "evidenceId": "incident-book"
       },
       "effects": [
         {
-          "type": "set_phase",
-          "phaseId": "deepening"
-        },
-        {
-          "type": "advance_time",
-          "toSlotId": "late_evening"
-        },
-        {
-          "type": "set_willingness",
-          "characterId": "henshaw",
-          "value": "open"
-        },
-        {
-          "type": "add_trust",
-          "characterId": "henshaw",
-          "by": 2
-        },
-        {
-          "type": "reveal_knowledge",
-          "characterId": "henshaw",
-          "knowledgeId": "henshaw-saw-vale-earlier"
-        },
-        {
-          "type": "move_character",
-          "characterId": "clara",
-          "toLocationId": "entrance-hall"
-        },
-        {
-          "type": "set_willingness",
-          "characterId": "clara",
-          "value": "open"
-        },
-        {
-          "type": "reveal_relationship",
-          "relationshipId": "vale_debt_blackwood"
-        },
-        {
-          "type": "reveal_relationship",
-          "relationshipId": "clara_wary_vale"
-        },
-        {
-          "type": "set_relationship_strength",
-          "relationshipId": "vale_fear_exposure",
-          "strength": 3
-        },
-        {
-          "type": "set_relationship",
-          "relationshipId": "mrs_marriage_victim",
-          "knownToPlayer": true,
-          "strength": 2
-        },
-        {
-          "type": "set_player_threat",
-          "threat": "watched"
+          "type": "set_game_flag",
+          "id": "pattern_seen",
+          "value": true
         }
       ],
-      "narrationHints": "With the letter in hand, the household's careful manners start to crack. Bonds strain: Vale's money trouble is no longer abstract; Clara's unease with him may show. No relationship menus — show it in looks and dialogue.",
-      "reactions": [
-        {
-          "characterId": "henshaw",
-          "lineHint": "If you have that letter, sir… I can no longer pretend I saw nothing.",
-          "stance": "reluctant_ally"
-        }
-      ]
+      "narrationHints": "Four break-ins, every one on the ground floor, while jewels sat upstairs untouched. A burglar with a ceiling."
     },
     {
-      "id": "vale_cornered_by_letter",
-      "title": "Vale's alibi breaks",
+      "id": "the_conundrum",
+      "title": "Wheels in a burgled room",
       "once": true,
-      "trigger": "on_present",
+      "trigger": "on_turn",
       "when": {
-        "type": "presented",
-        "evidenceId": "vale-letter",
-        "toCharacterId": "vale"
+        "type": "and",
+        "all": [
+          {
+            "type": "game_flag",
+            "id": "pattern_seen",
+            "value": true
+          },
+          {
+            "type": "game_flag",
+            "id": "wheel_marks_found",
+            "value": true
+          }
+        ]
       },
       "effects": [
         {
-          "type": "set_alibi_status",
-          "characterId": "vale",
-          "value": "broken"
-        },
-        {
-          "type": "add_pressure",
-          "characterId": "vale",
-          "by": 2
-        },
-        {
-          "type": "set_willingness",
-          "characterId": "vale",
-          "value": "hostile"
-        },
-        {
-          "type": "set_stance",
-          "characterId": "vale",
-          "value": "cornered"
-        },
-        {
-          "type": "reveal_knowledge",
-          "characterId": "vale",
-          "knowledgeId": "vale-admits-argument"
+          "type": "set_game_flag",
+          "id": "suspects_wheelchair",
+          "value": true
         },
         {
           "type": "set_phase",
           "phaseId": "crisis"
-        },
-        {
-          "type": "set_player_threat",
-          "threat": "threatened"
-        },
-        {
-          "type": "harm_player",
-          "condition": "bruised",
-          "text": "Vale's composure snaps. He shoves you hard into the banister — a real blow to the shoulder, not a gesture. Pain blooms. Henshaw is close enough to see it."
-        },
-        {
-          "type": "hold_player",
-          "byCharacterId": "vale",
-          "text": "Before you can step clear, Vale has your arm — a hard grip that does not let you walk away. You are held."
-        },
-        {
-          "type": "add_player_tag",
-          "tag": "vale_threat"
-        },
-        {
-          "type": "start_clock",
-          "clockId": "vale_retaliation",
-          "turns": 10
-        },
-        {
-          "type": "move_character",
-          "characterId": "vale",
-          "toLocationId": "entrance-hall"
-        },
-        {
-          "type": "move_character",
-          "characterId": "henshaw",
-          "toLocationId": "entrance-hall"
-        },
-        {
-          "type": "move_player",
-          "toLocationId": "entrance-hall",
-          "text": "The confrontation spills into the entrance hall. Whether you meant to or not, you are there with him under the broken clock — the house has closed the distance."
         }
       ],
-      "narrationHints": "Faced with his own hand on the page, Vale's conservatory story collapses into anger. He does not only speak — he shoves you (bruised) and holds you (control: held). You are in the entrance hall with him (and Henshaw nearby). Stage the shove and grip as events that happen TO the player. They cannot calmly leave. Limited window before he acts again.",
-      "reactions": [
-        {
-          "characterId": "vale",
-          "lineHint": "That letter proves a quarrel — not a killing. Push me again and you will regret how far this goes.",
-          "stance": "cornered"
-        }
-      ]
+      "narrationHints": "The two facts refuse to sit apart: a thief who never climbs stairs, and chair tracks pressed over the glass of a break-in. Why would a wheeled chair be in a burgled room? The question, once asked, will not leave."
     },
     {
-      "id": "inspector_room_ransacked",
-      "title": "Someone searched your room",
+      "id": "glass_fell_outward",
+      "title": "Broken from within",
       "once": true,
-      "trigger": "on_turn",
+      "trigger": "on_discover",
       "when": {
-        "type": "and",
-        "of": [
-          {
-            "type": "has_evidence",
-            "evidenceId": "vale-letter"
-          },
-          {
-            "type": "beat_fired",
-            "beatId": "letter_unlocks_deepening"
-          },
-          {
-            "type": "player_not_at",
-            "locationId": "guest-room"
-          },
-          {
-            "type": "or",
-            "of": [
-              {
-                "type": "phase_is",
-                "phaseId": "deepening"
-              },
-              {
-                "type": "phase_is",
-                "phaseId": "crisis"
-              }
-            ]
-          }
-        ]
+        "type": "has_evidence",
+        "evidenceId": "outward-glass"
       },
       "effects": [
         {
-          "type": "append_location_description",
-          "locationId": "guest-room",
-          "text": "The desk drawers hang open. Your coat has been pulled from the chair and searched. Papers on the desk are scattered; someone was looking for what you know. The door was left ajar."
-        },
-        {
-          "type": "set_safe_haven_compromised",
+          "type": "set_game_flag",
+          "id": "glass_outward",
           "value": true
-        },
-        {
-          "type": "set_player_threat",
-          "threat": "watched"
-        },
-        {
-          "type": "harm_player",
-          "condition": "shaken",
-          "text": "Seeing your private room torn open hits you in the gut — this is no longer a polite inquiry. Someone has put their hands through your things."
-        },
-        {
-          "type": "steal_from_player",
-          "preferItemIds": [
-            "brass-key",
-            "black-thread",
-            "muddy-boot-print"
-          ],
-          "exceptItemIds": [
-            "vale-letter"
-          ],
-          "toLocationId": "guest-room",
-          "holder": "unknown",
-          "text": "After the search, something you were carrying is gone — lifted from a pocket or taken from the desk. The letter, if you still hold it, is what they wanted most and may still be on you; lesser proof is missing."
-        },
-        {
-          "type": "add_player_tag",
-          "tag": "room_searched"
-        },
-        {
-          "type": "set_player_status_flag",
-          "id": "guest_room_ransacked",
-          "value": true
-        },
+        }
+      ],
+      "narrationHints": "No one climbed in through that window. Someone inside wanted it to look as though they had."
+    },
+    {
+      "id": "headstone_read",
+      "title": "The first Mrs. Blackwood",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "headstone-inscription"
+      },
+      "effects": [
         {
           "type": "set_game_flag",
-          "id": "inspector_room_ransacked",
+          "id": "first_wife_known",
           "value": true
         },
         {
-          "type": "set_ambient",
-          "ambient": "menacing"
+          "type": "reveal_relationship",
+          "relationshipId": "aunt_hatred_blackwood"
         },
         {
-          "type": "notebook_append",
-          "text": "My guest room was searched while I was downstairs. Someone in this house is tracking the investigation — and may have taken something from me."
+          "type": "set_willingness",
+          "characterId": "aunt",
+          "value": "guarded"
+        }
+      ],
+      "narrationHints": "Ashcombe. The aunt's name before her marriage was Ashcombe — the plain stone in the corner is her sister, and the fresh flowers were placed by somebody this week, in the rain."
+    },
+    {
+      "id": "trust_discovered",
+      "title": "Where the money goes",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "trust-papers"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "trust_known",
+          "value": true
         },
         {
-          "type": "move_player",
-          "toLocationId": "guest-room",
-          "text": "A servant finds you — or Henshaw does — and insists you come upstairs at once. You are brought to your guest room. The door stands ajar. Someone has been through your things."
+          "type": "set_phase",
+          "phaseId": "confrontation"
         },
         {
           "type": "move_character",
-          "characterId": "henshaw",
-          "toLocationId": "guest-room"
+          "characterId": "clara",
+          "toLocationId": "entrance-hall"
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "constance",
+          "value": "hostile"
         }
       ],
-      "narrationHints": "THIS HAPPENS TO THE PLAYER NOW: they are taken to the guest room, see it ransacked, feel shaken, and may discover something stolen from them (see justHappened stolen_*). Desk open, coat searched, papers scattered. Henshaw may be present, shaken. Do not invent who searched it. The violation must land as an event this turn — not a vague chill for later.",
-      "reactions": []
+      "narrationHints": "Unsigned, the fortune reverts to the Ashcombe line — to Constance. Miss Clara arrives at the same arithmetic within the hour and says it at full volume in the hall: her cousin, the freeloader, inherits everything. Constance goes white and silent. The household turns to look at the poor relation."
     },
     {
-      "id": "henshaw_shuts_down",
-      "title": "Henshaw refuses further help",
+      "id": "fortune_bleeding",
+      "title": "The hole wearing a waistcoat",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "partnership-letters"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "fortune_bleeding",
+          "value": true
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "crane",
+          "value": "open"
+        }
+      ],
+      "narrationHints": "The reversal lands: the great Hugo Blackwood was broke — worse, he was spending money that was never his. Everything about the house re-reads: the shut rooms, the thin staff, the quarrels. The question is no longer only who profits by his death, but who was losing everything by his life."
+    },
+    {
+      "id": "treatments_understood",
+      "title": "The unopened bottles",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "hoarded-tonics"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "treatments_known",
+          "value": true
+        }
+      ],
+      "narrationHints": "A year of devoted 'treatments,' every bottle full, poured instead into a dying garden bed. She knew. She stopped. And every complaint in this house re-reads at once: the difficult patient, the ingratitude, the tonic left standing, the medicine she 'prefers to take in the evening air.' The whole household has been testifying for weeks — they thought they were grumbling. Everything anyone assumes about the woman in the chair was written by the man who filled these bottles, and she has been revising it in secret."
+    },
+    {
+      "id": "tonic_named",
+      "title": "Fowler's Solution",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "chemists-invoice"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "tonic_named",
+          "value": true
+        }
+      ],
+      "narrationHints": "A perfectly respectable tonic — chemists sell it every day. Double the strength, no doctor's name, renewed for years by the master's own standing instruction, for a woman whose legs failed and whose heart is failing now. State the facts and let them sit. Do NOT say poison; do not connect it for the player."
+    },
+    {
+      "id": "poker_recovered",
+      "title": "Under her bed",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "fire-poker"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "poker_found",
+          "value": true
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "aunt",
+          "value": "hostile"
+        }
+      ],
+      "narrationHints": "The poker proves two things at once: the master armed himself and struck first — and someone who could cross the hall unseen at eleven at night carried it away and hid it in the one room no one searches. State the facts; the geometry of who can reach under a low bed from a seated position may occur to the player on its own."
+    },
+    {
+      "id": "lantern_recovered",
+      "title": "Fresh earth by the wall",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "dented-lantern"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "lantern_found",
+          "value": true
+        }
+      ],
+      "narrationHints": "The dent matches the wound the vase never could have made. Whoever swung this buried it in the one ground where fresh digging is invisible — and has been doing his rounds by candle stub ever since."
+    },
+    {
+      "id": "clara_false_confession",
+      "title": "Clara confesses",
       "once": true,
       "trigger": "on_turn",
       "when": {
         "type": "game_flag",
-        "id": "falsely_accused_henshaw",
-        "equals": true
+        "id": "accused_ashworth",
+        "value": true
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "clara_false_confession",
+          "value": true
+        },
+        {
+          "type": "move_character",
+          "characterId": "clara",
+          "toLocationId": "entrance-hall"
+        }
+      ],
+      "narrationHints": "With Ashworth under accusation, Clara breaks in with a confession of her own — SHE quarrelled with her father at the stairs, SHE pushed him. It is brave and it is false: her account puts the vase in the wrong place and the time a half-hour early. She is protecting her fiancé; the lie should be provably wrong, gently."
+    },
+    {
+      "id": "garrick_breaks",
+      "title": "The hand confesses",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "all": [
+          {
+            "type": "game_flag",
+            "id": "accused_garrick",
+            "value": true
+          },
+          {
+            "type": "has_evidence",
+            "evidenceId": "muddy-boot-print"
+          }
+        ]
       },
       "effects": [
         {
           "type": "set_willingness",
-          "characterId": "henshaw",
-          "value": "silent"
+          "characterId": "garrick",
+          "value": "open"
         },
         {
-          "type": "set_stance",
-          "characterId": "henshaw",
-          "value": "wounded_pride"
+          "type": "reveal_knowledge",
+          "characterId": "garrick",
+          "knowledgeId": "garrick-confession"
+        },
+        {
+          "type": "set_game_flag",
+          "id": "garrick_confessed",
+          "value": true
+        }
+      ],
+      "narrationHints": "Garrick stops denying. The confession is the truth and only half the truth: he struck a man he took for the thief he had been driven half-mad hunting. The question he asks back is the real one: who left that door open? Who MADE these six weeks?"
+    },
+    {
+      "id": "aunt_moves_on_cache",
+      "title": "Wheeled out for air",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "all": [
+          {
+            "type": "game_flag",
+            "id": "suspects_wheelchair",
+            "value": true
+          },
+          {
+            "type": "game_flag",
+            "id": "treatments_known",
+            "value": false
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "move_character",
+          "characterId": "aunt",
+          "toLocationId": "side-courtyard"
+        }
+      ],
+      "narrationHints": "Mrs. Marsh has asked to be wheeled out — for air, she says, in this weather, to the side court. If the player comes upon her there, her chair is drawn up hard against the garden border, and her hands, for once, are not quite composed. She is moving something, or about to. Caught, she recovers magnificently: the garden wants seeing to before the frost. Do not confirm what she was reaching for."
+    },
+    {
+      "id": "meg_cracks",
+      "title": "Meg stops lying",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "game_flag",
+        "id": "accused_garrick",
+        "value": true
+      },
+      "effects": [
+        {
+          "type": "reveal_knowledge",
+          "characterId": "meg-garrick",
+          "knowledgeId": "meg-truth"
         },
         {
           "type": "set_willingness",
-          "characterId": "mrs-blackwood",
-          "value": "hostile"
+          "characterId": "meg-garrick",
+          "value": "open"
         }
       ],
-      "narrationHints": "Accusing the butler freezes the staff. Henshaw will not be drawn out again. Mrs. Blackwood's manners turn to ice."
+      "narrationHints": "Her alibi for Tom collapses the moment he needs it most, and what replaces it is worse and truer."
     },
     {
-      "id": "midnight_strikes",
-      "title": "Midnight",
+      "id": "aunt_deflects",
+      "title": "A gentle hand on the tiller",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "game_flag",
+        "id": "suspects_wheelchair",
+        "value": true
+      },
+      "effects": [
+        {
+          "type": "add_pressure",
+          "characterId": "aunt",
+          "by": 1
+        }
+      ],
+      "narrationHints": "Mrs. Marsh, unprompted, recalls — apologetically, confusedly — how VERY loud Tuesday's quarrel between the master and Mr. Vale had been. It is smoothly done. It is also the first time she has volunteered anything."
+    },
+    {
+      "id": "dawn_deadline",
+      "title": "First light",
       "once": true,
       "trigger": "on_turn",
       "when": {
         "type": "time_at_least",
-        "slotId": "midnight"
+        "slotId": "first_light"
       },
       "effects": [
         {
-          "type": "set_light",
-          "light": "night"
-        },
-        {
-          "type": "set_weather",
-          "weather": "storm",
-          "intensity": "peak"
-        },
-        {
-          "type": "set_ambient",
-          "ambient": "ominous"
-        },
-        {
-          "type": "pulse_environment",
-          "tag": "thunder"
+          "type": "end_case",
+          "endingId": "failure_time_expired"
         }
       ],
-      "narrationHints": "The long-case clock should be striking twelve — and thunder answers from the grounds. The night tightens around the house."
+      "narrationHints": "The storm breaks with the dawn; the county police arrive to take the obvious man away."
     },
     {
-      "id": "birds_from_the_east",
-      "title": "Birds from the east wing",
+      "id": "meg_opens_chest",
+      "title": "Meg opens the chest",
       "once": true,
-      "trigger": "on_turn",
+      "trigger": "on_present",
       "when": {
-        "type": "and",
+        "type": "or",
         "of": [
           {
-            "type": "case_active"
+            "type": "presented",
+            "evidenceId": "dented-lantern",
+            "toCharacterId": "meg-garrick"
           },
           {
-            "type": "has_evidence",
-            "evidenceId": "vale-letter"
-          },
-          {
-            "type": "time_at_least",
-            "slotId": "approaching_midnight"
+            "type": "presented",
+            "evidenceId": "fire-poker",
+            "toCharacterId": "meg-garrick"
           }
         ]
       },
       "effects": [
         {
-          "type": "pulse_environment",
-          "tag": "birds_flock"
-        },
-        {
-          "type": "set_environment_flag",
-          "id": "birds_startled",
+          "type": "set_game_flag",
+          "id": "chest_opened",
           "value": true
         }
       ],
-      "narrationHints": "A black cloud of birds erupts from the east wing, as if something moved where nothing should."
-    },
-    {
-      "id": "failure_vale_retaliation",
-      "title": "Vale strikes",
-      "once": true,
-      "trigger": "on_turn",
-      "when": {
-        "type": "and",
-        "of": [
-          {
-            "type": "case_active"
-          },
-          {
-            "type": "clock_expired",
-            "clockId": "vale_retaliation"
-          },
-          {
-            "type": "character_willingness",
-            "characterId": "vale",
-            "is": "hostile"
-          }
-        ]
-      },
-      "effects": [
-        {
-          "type": "set_player_threat",
-          "threat": "assaulted"
-        },
-        {
-          "type": "harm_player",
-          "condition": "incapacitated",
-          "text": "Vale does not speak first. The blow lands hard enough to drop you. The manor floor rises. This is how the case ends for you."
-        },
-        {
-          "type": "knock_out_player",
-          "byCharacterId": "vale",
-          "text": "The lights go out. You are knocked unconscious — the investigation ends with you on the cold marble."
-        },
-        {
-          "type": "add_player_tag",
-          "tag": "killed"
-        },
-        {
-          "type": "end_case",
-          "outcome": "failure",
-          "endingId": "failure_murdered",
-          "endingKind": "murdered"
-        }
-      ],
-      "narrationHints": "You waited too long after cornering Vale. He acts first — real violence, knock-out (unconscious), incapacitated. This is a failure ending — murdered. Perform the closing, do not continue the case.",
+      "narrationHints": "Meg goes white, then very still. Then she drags the soldier's chest from beneath the bed and unlocks it with a key from her apron. 'You've dug up what he buried — then look at all of it. Look what he was, and look what he did for you people anyway. Tom never in his life struck a soul except to shield one.'",
       "reactions": [
         {
-          "characterId": "vale",
-          "lineHint": "You should have left that letter alone.",
-          "stance": "violent"
-        }
-      ]
-    },
-    {
-      "id": "vale_warning_assault",
-      "title": "Vale strikes a warning blow",
-      "once": true,
-      "trigger": "on_turn",
-      "when": {
-        "type": "and",
-        "of": [
-          {
-            "type": "case_active"
-          },
-          {
-            "type": "clock_at_most",
-            "clockId": "vale_retaliation",
-            "n": 4
-          },
-          {
-            "type": "clock_running",
-            "clockId": "vale_retaliation"
-          },
-          {
-            "type": "character_willingness",
-            "characterId": "vale",
-            "is": "hostile"
-          }
-        ]
-      },
-      "effects": [
-        {
-          "type": "set_player_threat",
-          "threat": "assaulted"
-        },
-        {
-          "type": "harm_player",
-          "condition": "injured",
-          "text": "Vale does not wait for the magistrates. He strikes you — a short, vicious blow. Blood on your lip. This is a warning, not yet the end."
-        },
-        {
-          "type": "knock_down_player",
-          "byCharacterId": "vale",
-          "text": "The blow puts you on the floor of the entrance hall. You are down — conscious, tasting copper, looking up at him."
-        },
-        {
-          "type": "steal_from_player",
-          "preferItemIds": [
-            "brass-key",
-            "black-thread",
-            "muddy-boot-print"
-          ],
-          "exceptItemIds": [
-            "vale-letter"
-          ],
-          "toLocationId": "entrance-hall",
-          "holder": "vale",
-          "text": "In the scramble his hand finds your pocket. Something you carried is gone — not the letter if you still have it, but lesser proof he can make vanish."
-        },
-        {
-          "type": "move_character",
-          "characterId": "vale",
-          "toLocationId": "entrance-hall"
-        },
-        {
-          "type": "move_player",
-          "toLocationId": "entrance-hall",
-          "text": "The struggle leaves you on the floor of the entrance hall under the broken clock, with Vale still close."
-        },
-        {
-          "type": "add_player_tag",
-          "tag": "vale_assault"
-        },
-        {
-          "type": "notebook_append",
-          "text": "Vale assaulted me and put me on the floor. He is no longer content to threaten. I must finish this before he finishes me."
-        }
-      ],
-      "narrationHints": "WARNING ASSAULT (not yet death): Vale injures the player, knocks them down (control: downed), and may steal a pocket item. Stage the blow, the fall, blood, and theft as events this turn. They cannot simply walk away. The retaliation clock is still running — urgency, not ending.",
-      "reactions": [
-        {
-          "characterId": "vale",
-          "lineHint": "Next time I will not stop at a warning. Leave the letter out of this.",
-          "stance": "violent"
-        }
-      ]
-    },
-    {
-      "id": "failure_time_runs_out",
-      "title": "Dawn and the empty road",
-      "once": true,
-      "trigger": "on_turn",
-      "when": {
-        "type": "and",
-        "of": [
-          {
-            "type": "case_active"
-          },
-          {
-            "type": "time_at_least",
-            "slotId": "after_midnight"
-          },
-          {
-            "type": "not",
-            "of": {
-              "type": "clock_running",
-              "clockId": "vale_retaliation"
-            }
-          }
-        ]
-      },
-      "effects": [
-        {
-          "type": "set_character_available",
-          "characterId": "vale",
-          "value": false
-        },
-        {
-          "type": "set_willingness",
-          "characterId": "vale",
-          "value": "fled"
-        },
-        {
-          "type": "end_case",
-          "outcome": "failure",
-          "endingId": "failure_time_expired",
-          "endingKind": "time_expired"
-        }
-      ],
-      "narrationHints": "After midnight the case slips away: Vale is gone when the roads begin to open. Failure by time. Perform the closing.",
-      "reactions": []
-    },
-    {
-      "id": "overreach_starts_inquiry",
-      "title": "The household turns on the detective",
-      "once": true,
-      "trigger": "on_turn",
-      "when": {
-        "type": "and",
-        "of": [
-          {
-            "type": "case_active"
-          },
-          {
-            "type": "game_flag",
-            "id": "inspector_room_ransacked",
-            "equals": true
-          },
-          {
-            "type": "or",
-            "of": [
-              {
-                "type": "game_flag",
-                "id": "falsely_accused_henshaw",
-                "equals": true
-              },
-              {
-                "type": "and",
-                "of": [
-                  {
-                    "type": "player_safe_haven_compromised"
-                  },
-                  {
-                    "type": "time_at_least",
-                    "slotId": "approaching_midnight"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      "effects": [
-        {
-          "type": "start_clock",
-          "clockId": "professional_inquiry",
-          "turns": 8
-        },
-        {
-          "type": "set_willingness",
-          "characterId": "mrs-blackwood",
-          "value": "hostile"
-        },
-        {
-          "type": "set_ambient",
-          "ambient": "hostile_house"
-        },
-        {
-          "type": "notebook_append",
-          "text": "The household is complaining about my methods. If I do not close this cleanly, I may be the one in cuffs."
-        }
-      ],
-      "narrationHints": "Pressure from the family and the ransacked guest room have drawn official eyes. A professional-inquiry clock is running — finish the case or be relieved and detained for overreach."
-    },
-    {
-      "id": "failure_arrested",
-      "title": "You are relieved of the case",
-      "once": true,
-      "trigger": "on_turn",
-      "when": {
-        "type": "and",
-        "of": [
-          {
-            "type": "case_active"
-          },
-          {
-            "type": "clock_expired",
-            "clockId": "professional_inquiry"
-          }
-        ]
-      },
-      "effects": [
-        {
-          "type": "end_case",
-          "outcome": "failure",
-          "endingId": "failure_arrested",
-          "endingKind": "arrested"
-        }
-      ],
-      "narrationHints": "The inquiry lands. You are ordered off the estate, suspended, and detained pending review. Failure by overreach/arrest. Enter wrap-up if enabled."
-    },
-    {
-      "id": "wrap_success_vale_breaks",
-      "title": "Vale under judgment",
-      "once": true,
-      "trigger": "on_turn",
-      "when": {
-        "type": "and",
-        "of": [
-          {
-            "type": "in_denouement"
-          },
-          {
-            "type": "or",
-            "of": [
-              {
-                "type": "resolution_outcome",
-                "is": "success"
-              },
-              {
-                "type": "resolution_outcome",
-                "is": "partial"
-              }
-            ]
-          }
-        ]
-      },
-      "effects": [
-        {
-          "type": "release_player",
-          "text": "Judgment breaks the grip. Whether Henshaw steps in or Vale's will collapses, you are free of his hands."
-        },
-        {
-          "type": "set_willingness",
-          "characterId": "vale",
-          "value": "open"
-        },
-        {
-          "type": "set_stance",
-          "characterId": "vale",
-          "value": "broken_confessing"
-        },
-        {
-          "type": "set_alibi_status",
-          "characterId": "vale",
-          "value": "abandoned"
-        },
-        {
-          "type": "move_character",
-          "characterId": "vale",
-          "toLocationId": "entrance-hall"
-        },
-        {
-          "type": "move_character",
-          "characterId": "henshaw",
-          "toLocationId": "entrance-hall"
-        },
-        {
-          "type": "move_character",
-          "characterId": "mrs-blackwood",
-          "toLocationId": "entrance-hall"
-        },
-        {
-          "type": "set_willingness",
-          "characterId": "henshaw",
-          "value": "open"
-        },
-        {
-          "type": "set_stance",
-          "characterId": "henshaw",
-          "value": "relieved_shaken"
-        },
-        {
-          "type": "set_willingness",
-          "characterId": "mrs-blackwood",
-          "value": "guarded"
-        },
-        {
-          "type": "set_stance",
-          "characterId": "mrs-blackwood",
-          "value": "cold_practical"
-        },
-        {
-          "type": "set_relationship_active",
-          "relationshipId": "vale_debt_blackwood",
-          "active": false
-        },
-        {
-          "type": "set_relationship",
-          "relationshipId": "henshaw_loyalty_family",
-          "strength": 3
-        },
-        {
-          "type": "set_ambient",
-          "ambient": "aftermath"
-        },
-        {
-          "type": "notebook_append",
-          "text": "Judgment entered. Vale remains under my eye until the roads open. The household is gathering in the hall."
-        }
-      ],
-      "narrationHints": "Aftermath of a correct (or partial) solve: Vale is broken and may confess in dialogue. Household gathers in the entrance hall. Still interactive — player can question him, speak to others, or leave.",
-      "reactions": [
-        {
-          "characterId": "vale",
-          "lineHint": "You have it. The quarrel — the hall — I never meant… God help me.",
-          "stance": "broken_confessing"
-        },
-        {
-          "characterId": "mrs-blackwood",
-          "lineHint": "Then keep him here until morning. I will not thank you.",
-          "stance": "cold_practical"
-        }
-      ]
-    },
-    {
-      "id": "wrap_failure_wrong_man",
-      "title": "Wrong name hangs in the air",
-      "once": true,
-      "trigger": "on_turn",
-      "when": {
-        "type": "and",
-        "of": [
-          {
-            "type": "in_denouement"
-          },
-          {
-            "type": "resolution_kind",
-            "is": "wrong_accusation"
-          }
-        ]
-      },
-      "effects": [
-        {
-          "type": "release_player",
-          "text": "The scene ends in embarrassment rather than a fight. Any grip on you is gone — you are free to leave in disgrace."
-        },
-        {
-          "type": "set_willingness",
-          "characterId": "henshaw",
-          "value": "silent"
-        },
-        {
-          "type": "set_willingness",
-          "characterId": "mrs-blackwood",
-          "value": "hostile"
-        },
-        {
-          "type": "set_stance",
-          "characterId": "mrs-blackwood",
-          "value": "dismissive"
-        },
-        {
-          "type": "set_ambient",
-          "ambient": "cold_rejection"
-        },
-        {
-          "type": "notebook_append",
-          "text": "I named the wrong person. The house has closed ranks. The real trail cools while I stand here."
-        }
-      ],
-      "narrationHints": "Wrong accusation aftermath: the household freezes you out. Vale (if present) may look almost relieved. You are no longer held. Interactive but chilly — player can try to salvage dignity or leave.",
-      "reactions": [
-        {
-          "characterId": "mrs-blackwood",
-          "lineHint": "You have made a spectacle of yourself. We are finished answering questions tonight.",
-          "stance": "dismissive"
-        }
-      ]
-    },
-    {
-      "id": "wrap_failure_murdered",
-      "title": "Silence after violence",
-      "once": true,
-      "trigger": "on_turn",
-      "when": {
-        "type": "and",
-        "of": [
-          {
-            "type": "in_denouement"
-          },
-          {
-            "type": "resolution_kind",
-            "is": "murdered"
-          }
-        ]
-      },
-      "effects": [
-        {
-          "type": "set_character_available",
-          "characterId": "vale",
-          "value": false
-        },
-        {
-          "type": "set_ambient",
-          "ambient": "grim"
-        },
-        {
-          "type": "set_willingness",
-          "characterId": "henshaw",
-          "value": "guarded"
-        }
-      ],
-      "narrationHints": "If wrap-up runs after a murdered failure, keep it brief and dark — aftermath of the detective's fate, not a fresh investigation. Prefer short remaining turns."
-    },
-    {
-      "id": "henshaw_breaks_vale_grip",
-      "title": "Henshaw forces Vale to let go",
-      "once": true,
-      "trigger": "on_talk",
-      "when": {
-        "type": "and",
-        "of": [
-          {
-            "type": "case_active"
-          },
-          {
-            "type": "player_not_free"
-          },
-          {
-            "type": "player_control_at_least",
-            "control": "held"
-          },
-          {
-            "type": "not",
-            "of": {
-              "type": "player_control_is",
-              "is": "unconscious"
-            }
-          },
-          {
-            "type": "player_has_tag",
-            "tag": "vale_threat"
-          },
-          {
-            "type": "character_at",
-            "characterId": "henshaw",
-            "locationId": "entrance-hall"
-          },
-          {
-            "type": "player_at",
-            "locationId": "entrance-hall"
-          }
-        ]
-      },
-      "effects": [
-        {
-          "type": "release_player",
-          "text": "Henshaw steps in — firm, formal, and final. He hauls Vale off you or helps you up from the floor. 'That is enough, Mr. Vale.' You are free of his hands for now."
-        },
-        {
-          "type": "add_pressure",
-          "characterId": "vale",
-          "by": 1
-        },
-        {
-          "type": "notebook_append",
-          "text": "Henshaw forced Vale off me. The household will not yet allow an open assault on an inspector — but the warning is clear."
-        }
-      ],
-      "narrationHints": "Henshaw intervenes and RELEASES the player (control → free). Stage the break of grip or help rising from the floor. Player may still be bruised/injured/threatened.",
-      "reactions": [
-        {
-          "characterId": "henshaw",
-          "lineHint": "That is enough, Mr. Vale. The Inspector is here under the Crown's authority.",
-          "stance": "protective"
-        },
-        {
-          "characterId": "vale",
-          "lineHint": "For now. He will not keep waving that letter forever.",
-          "stance": "cornered"
-        }
-      ]
-    },
-    {
-      "id": "vale_presses_in_hall",
-      "title": "Vale will not let you wander free",
-      "once": true,
-      "trigger": "on_turn",
-      "when": {
-        "type": "and",
-        "of": [
-          {
-            "type": "game_flag",
-            "id": "falsely_accused_vale",
-            "equals": false
-          },
-          {
-            "type": "has_evidence",
-            "evidenceId": "vale-letter"
-          },
-          {
-            "type": "or",
-            "of": [
-              {
-                "type": "phase_is",
-                "phaseId": "crisis"
-              },
-              {
-                "type": "character_willingness",
-                "characterId": "vale",
-                "is": "hostile"
-              }
-            ]
-          },
-          {
-            "type": "player_not_at",
-            "locationId": "entrance-hall"
-          }
-        ]
-      },
-      "effects": [
-        {
-          "type": "move_character",
-          "characterId": "vale",
-          "toLocationId": "entrance-hall"
-        },
-        {
-          "type": "move_player",
-          "toLocationId": "entrance-hall",
-          "text": "You do not make it far. Vale intercepts you — or the household steers you — back toward the entrance hall. The investigation is no longer a tour of rooms; it is a trap closing."
-        },
-        {
-          "type": "set_player_threat",
-          "threat": "threatened"
-        }
-      ],
-      "narrationHints": "The player is forced back to the entrance hall with Vale. Physical interception, not only dialogue. Make them feel the house choosing where they stand.",
-      "reactions": [
-        {
-          "characterId": "vale",
-          "lineHint": "We are not finished. You do not get to poke through this house like a free man.",
-          "stance": "cornered"
+          "characterId": "meg-garrick",
+          "stance": "defiant grief"
         }
       ]
     }
   ],
   "solution": {
-    "summary": "Mr. Vale killed Mr. Blackwood during a confrontation in the entrance hall after Blackwood threatened to expose Vale's fraud. The vase shattered in the struggle. Vale fled toward the library, attempted to destroy papers, dropped the desk key in the hearth, and later claimed a conservatory alibi.",
+    "summary": "Eudora Marsh engineered Hugo Blackwood's death without leaving the wheelchair he put her in. Dying, and watching him bleed her murdered sister's fortune into his failing firm while a wedding portion prepared to take the rest — the fortune he held only as custodian, which passes to her daughter Constance on his death — she staged six weeks of ground-floor break-ins from her chair, then staged an attack on herself and issued two descriptions of the 'attacker': to Blackwood, a rough man in working boots (and he heard Garrick); to Garrick, kindly, a big man in a gentleman's grey coat with a key to the east door (and he would recognize Blackwood). Both men armed themselves. On the night, she set the east door working in the storm; Blackwood, waiting dark with the library poker, struck the intruding Garrick across the shoulder; Garrick's one reflex swing of his iron lantern took the master at the temple. Then she performed her only physical act: she wheeled out, took the poker that proved self-defense, and hid it beneath her own bed. Garrick buried his lantern in the churchyard. The frame on him is true in every fact and false in every meaning — and she wrote both men's parts.",
     "guiltyPartyIds": [
-      "vale"
+      "aunt"
     ],
-    "method": "Blow during a struggle in the entrance hall; Blackwood fell at the stairs",
-    "motive": "Silence Blackwood before exposure of financial fraud",
+    "method": "Staged burglaries from the wheelchair; a staged attack on herself; two incompatible descriptions of one invented attacker, each aiming a primed, armed man at the other; the east door as trigger; and the poker removed from the scene afterward to bury Garrick's self-defense.",
+    "motive": "The custodianship: on Blackwood's death the Ashcombe fortune passes outright to her daughter Constance — and Blackwood was destroying it: the firm failing, the fund drawn down, Clara's wedding portion about to gut what was left. She is dying; it was now or never, and he murdered her sister besides.",
     "criticalEvidenceIds": [
-      "vale-letter"
+      "wheel-marks",
+      "outward-glass",
+      "trust-papers",
+      "headstone-inscription",
+      "stolen-necklace",
+      "fire-poker",
+      "dented-lantern"
     ],
     "rubric": {
       "partialCredit": true,
@@ -1709,40 +2659,87 @@
       "successPolicy": "identity_plus_one",
       "requiredFacts": [
         {
-          "id": "killer-vale",
-          "description": "Identifies Mr. Vale as the killer",
+          "id": "identity-aunt",
           "role": "identity",
+          "description": "Mrs. Eudora Marsh, the aunt",
           "matchHints": [
-            "vale"
+            "marsh",
+            "eudora",
+            "aunt",
+            "the old lady",
+            "chair-lady"
           ]
         },
         {
-          "id": "motive-exposure",
-          "description": "Motive related to exposure / letter / fraud / money",
-          "role": "motive",
-          "matchHints": [
-            "expose",
-            "letter",
-            "fraud",
-            "money",
-            "debt",
-            "settlement",
-            "quarrel",
-            "argument"
-          ]
-        },
-        {
-          "id": "method-hall",
-          "description": "Entered by the east door after eleven; the struggle snagged his coat on the vase (thread), boots left rainwater prints",
+          "id": "method-engineered",
           "role": "method",
+          "description": "She staged the break-ins and the attack on herself, gave Blackwood and Garrick different descriptions of an invented attacker so each saw the other as the villain, sprang the collision, and removed the poker that proved self-defense",
           "matchHints": [
-            "east door",
-            "boot",
-            "thread",
-            "snagged",
-            "coat",
-            "after eleven",
-            "grappl"
+            "staged",
+            "break-in",
+            "burglar",
+            "trick",
+            "set up",
+            "manipulat",
+            "two descriptions",
+            "told them different",
+            "told each",
+            "faked the attack",
+            "feigned",
+            "descri",
+            "poker",
+            "lantern",
+            "shoulder",
+            "temple",
+            "opened the door",
+            "unlatched",
+            "garrick",
+            "caretaker",
+            "mistook",
+            "self-defen"
+          ]
+        },
+        {
+          "id": "motive-inheritance",
+          "role": "motive",
+          "description": "Blackwood was custodian only; on his death the Ashcombe fortune passes to Constance — and he was bleeding it into his failing firm, with Clara's portion about to take the rest",
+          "matchHints": [
+            "custodian",
+            "trust",
+            "settlement",
+            "inheritance",
+            "revert",
+            "pass",
+            "ashcombe",
+            "constance",
+            "rosalind",
+            "first wife",
+            "sister",
+            "dying",
+            "squander",
+            "bleeding",
+            "failing",
+            "ruin",
+            "firm",
+            "losses",
+            "poison",
+            "tonic",
+            "treatment",
+            "husband",
+            "marsh"
+          ]
+        },
+        {
+          "id": "hand-garrick",
+          "role": "supporting",
+          "description": "Garrick's hand, deceived and attacked first: struck with the poker, he killed with one reflex blow of his lantern, believing he faced the man who throttled Mrs. Marsh",
+          "matchHints": [
+            "garrick",
+            "caretaker",
+            "struck",
+            "grappl",
+            "unwitting",
+            "deceived"
           ]
         }
       ]
@@ -1753,50 +2750,70 @@
       "id": "success_earned",
       "when": "success",
       "kind": "solved",
-      "title": "Case closed",
-      "templateNotes": "Vale is held for the magistrates once the roads open. The letter, the boot print, and the broken alibi seal it — work you actually did. RETURN TO NORMAL: custody is arranged; the household is no longer under his shadow; the storm finally begins to ease. Mrs. Blackwood does not thank you. Outside, authority is coming with the weather."
+      "title": "The whole of it",
+      "templateNotes": "Named with the proof: the wheel marks, the outward glass, the trust, the grave — and the library poker from beneath her own bed, the one object that proves the master struck first and Garrick's blow was defense. Mrs. Marsh does not deny it; she is dying and says so, and asks only what becomes of Constance. Garrick surrenders, half in relief — the poker may yet stand between him and the rope. Constance learns in one hour that she is an heiress and how her mother made her one. RETURN TO NORMAL: custody at first light for the head and the hand both; the law will weigh a deceived, attacked man against the mind that armed both sides. Nobody in the hall calls it a victory, which is how you know it is the truth."
     },
     {
       "id": "success_lucky",
       "when": "success",
       "kind": "lucky_solve",
-      "title": "A shot in the dark that hit",
-      "templateNotes": "You named Vale before the file was complete — little or no hard evidence in hand. Still, the truth is the truth: he breaks. Color drains from his face; the conservatory story collapses into a raw admission. RETURN TO NORMAL: he is held until the roads open; the household can breathe. Do not invent that the player waved evidence they never found. Proof can follow for the magistrates; tonight the killer is unmasked."
+      "title": "A shot that found its mark",
+      "templateNotes": "Named without the file to carry it. She studies the Inspector a long moment — then, because she is dying and because pride outlives fear, she confirms it, precisely, like a solicitor reading a will. Do not invent evidence never found; the confession stands on her own terms. The household is left to reckon with how nearly she walked away — wheeled away — clean."
     },
     {
-      "id": "partial",
+      "id": "partial_head",
       "when": "partial",
       "kind": "partial",
-      "title": "Thin file",
-      "templateNotes": "You have part of it — enough pressure to rattle the house, not enough for a clean conviction. Vale twists what he can. Thin RETURN TO NORMAL: he is watched, not free to vanish, but the file is incomplete and the storm is not finished with this story."
+      "title": "The head, without proof",
+      "requiresFlags": {
+        "accused_aunt": true
+      },
+      "templateNotes": "Named — and nothing to carry the name. Mrs. Marsh hears the theory out with the patience of a woman hearing a sermon, then asks from her chair how a dying invalid broke a strong man's temple. No poker produced, no two descriptions laid side by side, no wheel-marks read among the glass: the county will not indict a gentlewoman in a bath chair on an Inspector's certainty. She is dead by spring, uncharged, and the trust reverts quietly to her daughter. Garrick keeps his silence, and his shoulder aches in the cold. The Inspector was right, and it counted for nothing — truth without proof is only a rumor."
+    },
+    {
+      "id": "partial_hand",
+      "when": "partial",
+      "kind": "partial",
+      "title": "The hand, not the head",
+      "templateNotes": "Garrick is taken for the killing — the print, the confession, the motive everyone heard the master hand him. It is all true and it is not the truth. Meg's grief; Poppy at the window. Mrs. Marsh watches the arrest from her chair with perfect propriety, and in the spring she is dead, and in the summer the trust reverts quietly to her daughter. The file never quite closes in the county's memory. Left on the file, unexplained: wheel-marks over glass dust, a burglar who never once climbed a stair, and the question of who taught a loyal man to fear a grey coat.",
+      "requiresFlags": {
+        "accused_garrick": true
+      }
+    },
+    {
+      "id": "partial_glimpse",
+      "when": "partial",
+      "kind": "partial",
+      "title": "Half the pattern",
+      "templateNotes": "Pieces of the design named, but not the designer — staging seen, or the trust understood, without the person to hang it on. The inquest returns an open verdict. The household disperses with its griefs and its secrets, and in the summer a county clerk notices where the Ashcombe money quietly went."
     },
     {
       "id": "failure_wrong_accusation",
       "when": "failure",
       "kind": "wrong_accusation",
-      "title": "Wrong man",
-      "templateNotes": "You commit to the wrong name — or a theory the evidence cannot carry. The real trail cools while the household rearranges its silences. Your superiors will not call this a success."
+      "title": "The wrong door",
+      "templateNotes": "The accusation collapses at the inquest — the accused's account holds. The real design surfaces months too late, when the trust reverts and a county clerk wonders aloud. By then Mrs. Marsh is beyond any court. The Inspector's name is attached to the failure."
     },
     {
       "id": "failure_time_expired",
       "when": "failure",
       "kind": "time_expired",
-      "title": "Out of time",
-      "templateNotes": "After midnight the storm loosens its grip on the road. By the time you can act, Vale is gone — and with him the only living thread that still needed cutting. The case becomes someone else's cold file."
+      "title": "First light",
+      "templateNotes": "The storm lifts; the county men arrive and take the obvious answer — Garrick, the print, the public quarrel over his post. Case closed on the hand. The head dies by spring, unsuspected, her affairs neatly arranged."
     },
     {
       "id": "failure_murdered",
       "when": "failure",
       "kind": "murdered",
-      "title": "You were too late",
-      "templateNotes": "You pressed Vale without finishing the case. In the dark of the manor he finished it for you. There will be no report in your hand — only another body on Blackwood marble, and a storm that finally ends for everyone else."
+      "title": "The house keeps its dead",
+      "templateNotes": "Cornered past bearing, violence answers violence — a desperate man, a dark stair, and the manor has a second body before dawn. The staged pattern goes unread; the trust reverts in the spring."
     },
     {
       "id": "failure_arrested",
       "when": "failure",
       "kind": "arrested",
-      "title": "Relieved of duty",
-      "templateNotes": "You pushed too hard in the wrong direction. Mrs. Blackwood's complaint and your own overreach catch up with you: you are ordered from the estate, suspended, and detained for inquiry. The murder remains unsolved under your watch."
+      "title": "Recalled",
+      "templateNotes": "The Inspector's conduct hands the household grounds for complaint; at first light the county men escort their own colleague out. The case passes to slower hands, and the spring settles everything in Mrs. Marsh's favor."
     }
   ]
 }

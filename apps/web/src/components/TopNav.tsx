@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAmbience } from "./AmbienceProvider";
-import { AMBIENCE_PACKS } from "../lib/ambience";
+import { AMBIENCE_PACKS, MUSIC_AUTO, MUSIC_TRACKS } from "../lib/ambience";
 import {
   getSession,
   refreshSession,
@@ -79,9 +79,11 @@ export default function TopNav() {
     packId,
     soundsEnabled,
     musicEnabled,
+    musicId,
     setSoundsEnabled,
     setMusicEnabled,
     setPackId,
+    setMusicId,
   } = useAmbience();
 
   useEffect(() => {
@@ -139,6 +141,26 @@ export default function TopNav() {
           {p.name}
         </button>
       ))}
+      <div className={styles.dropdownSectionTitle}>Music</div>
+      <div className={styles.dropdownScroll}>
+        <button
+          type="button"
+          className={`${styles.dropdownItem} ${musicId === MUSIC_AUTO ? styles.dropdownItemActive : ""}`}
+          onClick={() => setMusicId(MUSIC_AUTO)}
+        >
+          Match the scene
+        </button>
+        {MUSIC_TRACKS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            className={`${styles.dropdownItem} ${musicId === t.id ? styles.dropdownItemActive : ""}`}
+            onClick={() => setMusicId(t.id)}
+          >
+            {t.name}
+          </button>
+        ))}
+      </div>
     </DropdownSection>
   );
 

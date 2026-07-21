@@ -159,6 +159,7 @@ Validate by parsing with `parseMysteryDefinition` (shared package) or loading th
     "summary": "Longer jacket blurb: scene, stakes, cast, no spoilers",
     "theMystery": "The central question the player must answer",
     "tone": "how it should feel",
+    "theme": "atmosphere theme: manor | station | noir | snowfall | daylight (optional)",
     "tags": ["Manor"],
     "difficulty": "medium",
     "contentWarnings": ["murder"]
@@ -845,6 +846,26 @@ Compose with `and` / `or` / `not`.
 | `full` | Toasts + coarse depth meter (not a solve %) |
 
 Players pick Off / Subtle / Full **per playthrough** via the gear icon in the play chrome (Play settings), not as a global account setting. Different mystery runs keep different choices. If the author sets `off`, progress UI stays off for that mystery. Engine computes signals from phase, story beats, and critical evidence — never solution spoilers.
+
+### Atmosphere theme (optional)
+
+```json
+"meta": {
+  "theme": "manor" | "station" | "noir" | "snowfall" | "daylight"
+}
+```
+
+Picks the animated backdrop on the web play screen and the mystery detail
+page. Omitted or unknown values fall back to `manor` (the brand backdrop the
+rest of the site uses). Purely presentational — the engine never reads it.
+
+| Theme | Mood | Used by |
+|-------|------|---------|
+| `manor` | Storm, lightning, gothic silhouette | blackwood-inheritance, the-white-room |
+| `station` | Starfield, planetary glow, blinking beacon | dead-air |
+| `noir` | Gaslit fog, amber glow, heavy grain | london-1888, pier-at-low-tide, last-broadcast, hostile-takeover |
+| `snowfall` | Falling snow, pine treeline, firelight | snowbound-lodge |
+| `daylight` | Sunny sky, drifting clouds, warm motes | cant-trick-rick |
 
 ### Plot hits the player (core engine — open situations, fixed tools)
 

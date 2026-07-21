@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import Atmosphere from "../../../components/Atmosphere";
+import { useAmbience } from "../../../components/AmbienceProvider";
 import GameShell, { Panel } from "../../../components/GameShell";
 import StatusBar from "../../../components/StatusBar";
 import Log, { type LogItem } from "../../../components/Log";
@@ -35,6 +36,7 @@ import {
   setPlayProgressPref,
   type ProgressUiMode,
 } from "../../../lib/progressPrefs";
+import { asTheme, DEFAULT_THEME, type AtmosphereTheme } from "../../../lib/themes";
 import type {
   MapLocation,
   MysteryBriefing,
@@ -199,6 +201,15 @@ export default function PlaythroughPage() {
     useState<ProgressUiMode>("off");
   const [openDrawer, setOpenDrawer] = useState<DrawerKind | null>(null);
   const [castFocusId, setCastFocusId] = useState<string | undefined>(undefined);
+  /** Atmosphere theme from the case definition (via the briefing). */
+  const [theme, setTheme] = useState<AtmosphereTheme>(DEFAULT_THEME);
+  const { setPageTheme } = useAmbience();
+
+  // "Match the scene" music follows this page's theme while it's mounted.
+  useEffect(() => {
+    setPageTheme(theme);
+    return () => setPageTheme(null);
+  }, [theme, setPageTheme]);
 
   const placeSettingsPanel = useCallback(() => {
     const btn = settingsBtnRef.current;
@@ -304,6 +315,7 @@ export default function PlaythroughPage() {
             /* ignore */
           }
         }
+        setTheme(asTheme(briefing?.theme));
         setLog(buildLog(opening, data.turns, data.playthrough, briefing));
       } catch {
         if (!cancelled) setError("Playthrough not found");
@@ -641,7 +653,7 @@ export default function PlaythroughPage() {
 
   return (
     <>
-      <Atmosphere />
+      <Atmosphere theme={theme} />
       <GameShell left={left} center={center} />
 
       <SideDrawer

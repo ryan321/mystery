@@ -74,7 +74,7 @@
   opacity: 0.7;
 }
 
-.rain {
+.canvas {
   position: absolute;
   inset: 0;
   opacity: 0.7;
@@ -144,12 +144,268 @@
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.18'/%3E%3C/svg%3E");
 }
 
+/* ── Station: dead space, Jupiter below, one live beacon ─────────── */
+
+.atmosphere[data-theme="station"] {
+  background:
+    radial-gradient(ellipse 75% 55% at 78% 115%, rgba(186, 118, 62, 0.3), transparent 60%),
+    radial-gradient(ellipse 55% 45% at 15% -12%, rgba(58, 82, 138, 0.32), transparent 55%),
+    linear-gradient(180deg, #020409 0%, #04070e 50%, #03050a 100%);
+}
+
+.atmosphere[data-theme="station"] .glow {
+  background:
+    radial-gradient(ellipse 45% 35% at 50% 45%, rgba(120, 160, 220, 0.04), transparent 70%),
+    radial-gradient(ellipse 80% 50% at 78% 115%, rgba(186, 118, 62, 0.16), transparent 55%);
+}
+
+/* Interior haze instead of weather — thinner and cooler than manor fog. */
+.atmosphere[data-theme="station"] .fogA {
+  opacity: 0.35;
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 100%,
+    rgba(70, 95, 135, 0.14),
+    transparent 70%
+  );
+}
+
+.atmosphere[data-theme="station"] .fogB {
+  opacity: 0.22;
+  background: radial-gradient(
+    ellipse 90% 50% at 40% 100%,
+    rgba(60, 85, 125, 0.14),
+    transparent 65%
+  );
+}
+
+/* Jupiter hangs low right — banded, soft, never sharper than a memory. */
+.planet {
+  position: absolute;
+  right: -14%;
+  bottom: -32%;
+  width: 62vmin;
+  height: 62vmin;
+  border-radius: 50%;
+  background:
+    repeating-linear-gradient(
+      174deg,
+      rgba(255, 205, 150, 0.06) 0 9%,
+      rgba(110, 62, 36, 0.07) 9% 18%
+    ),
+    radial-gradient(
+      circle at 40% 34%,
+      rgba(216, 158, 96, 0.5),
+      rgba(148, 88, 50, 0.3) 48%,
+      rgba(56, 30, 20, 0.12) 70%,
+      transparent 73%
+    );
+  filter: blur(1.5px);
+  opacity: 0.6;
+}
+
+.beacon {
+  position: absolute;
+  top: 11%;
+  right: 8%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffb35c;
+  box-shadow: 0 0 14px 4px rgba(255, 170, 80, 0.5);
+  animation: beacon-blink 3.4s ease-in-out infinite;
+}
+
+@keyframes beacon-blink {
+  0%,
+  100% {
+    opacity: 0.12;
+  }
+  7% {
+    opacity: 1;
+  }
+  14% {
+    opacity: 0.12;
+  }
+}
+
+/* ── Noir: gaslight, coal smoke, fog that takes its time ─────────── */
+
+.atmosphere[data-theme="noir"] {
+  background:
+    radial-gradient(ellipse 55% 45% at 68% 15%, rgba(32, 27, 20, 0.9), transparent 55%),
+    linear-gradient(180deg, #040406 0%, #08090c 50%, #050608 100%);
+}
+
+.atmosphere[data-theme="noir"] .glow {
+  background:
+    radial-gradient(ellipse 32% 24% at 50% 28%, rgba(255, 190, 92, 0.08), transparent 70%),
+    radial-gradient(ellipse 80% 50% at 50% 112%, rgba(26, 28, 36, 0.55), transparent 55%);
+}
+
+/* Heavier, slower fog than the manor — street-level and yellowed. */
+.atmosphere[data-theme="noir"] .fog {
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 100%,
+    rgba(128, 118, 96, 0.2),
+    transparent 70%
+  );
+}
+
+.atmosphere[data-theme="noir"] .fogA {
+  opacity: 0.9;
+  animation-duration: 46s;
+}
+
+.atmosphere[data-theme="noir"] .fogB {
+  opacity: 0.6;
+  animation-duration: 62s;
+  background: radial-gradient(
+    ellipse 90% 50% at 40% 100%,
+    rgba(110, 102, 84, 0.22),
+    transparent 65%
+  );
+}
+
+.atmosphere[data-theme="noir"] .vignette {
+  background: radial-gradient(ellipse 75% 55% at 50% 38%, transparent 0%, rgba(2, 2, 4, 0.58) 100%);
+}
+
+.atmosphere[data-theme="noir"] .grain {
+  opacity: 0.2;
+}
+
+/* ── Snowfall: blue night, firelight low, pines along the ridge ───── */
+
+.atmosphere[data-theme="snowfall"] {
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 112%, rgba(255, 148, 60, 0.12), transparent 55%),
+    linear-gradient(180deg, #060c17 0%, #0b1524 45%, #0a1220 100%);
+}
+
+.atmosphere[data-theme="snowfall"] .glow {
+  background:
+    radial-gradient(ellipse 40% 30% at 50% 40%, rgba(180, 200, 230, 0.04), transparent 70%),
+    radial-gradient(ellipse 55% 35% at 50% 112%, rgba(255, 148, 60, 0.12), transparent 60%);
+}
+
+/* Blowing-snow haze at ground level. */
+.atmosphere[data-theme="snowfall"] .fogA {
+  opacity: 0.5;
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 100%,
+    rgba(160, 180, 205, 0.16),
+    transparent 70%
+  );
+}
+
+.atmosphere[data-theme="snowfall"] .fogB {
+  opacity: 0.35;
+  background: radial-gradient(
+    ellipse 90% 50% at 40% 100%,
+    rgba(140, 165, 195, 0.16),
+    transparent 65%
+  );
+}
+
+.treeline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 32%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 480 120' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'%3E%3Cpath d='M-3.2 120L15 88.5L33.2 120ZM1 100.4L15 68.9L29 100.4ZM5.2 80.8L15 49.3L24.8 80.8ZM13 120L13 111.6L17 111.6L17 120ZM27.7 120L55 72.8L82.3 120ZM34 90.6L55 43.4L76 90.6ZM40.3 61.2L55 14L69.7 61.2ZM53 120L53 107.4L57 107.4L57 120ZM78.7 120L100 83.1L121.3 120ZM83.6 97L100 60.1L116.4 97ZM88.5 74.1L100 37.2L111.5 74.1ZM98 120L98 110.2L102 110.2L102 120ZM109.3 120L140 66.9L170.7 120ZM116.4 87L140 33.9L163.6 87ZM123.5 53.9L140 0.8L156.5 53.9ZM138 120L138 105.8L142 105.8L142 120ZM167.3 120L185 89.4L202.7 120ZM171.4 101L185 70.4L198.6 101ZM175.5 81.9L185 51.3L194.5 81.9ZM183 120L183 111.8L187 111.8L187 120ZM200.3 120L225 77.3L249.7 120ZM206 93.4L225 50.7L244 93.4ZM211.7 66.8L225 24L238.3 66.8ZM223 120L223 108.6L227 108.6L227 120ZM240.9 120L270 69.6L299.1 120ZM247.6 88.6L270 38.2L292.4 88.6ZM254.3 57.3L270 6.9L285.7 57.3ZM268 120L268 106.6L272 106.6L272 120ZM295.2 120L315 85.8L334.8 120ZM299.8 98.7L315 64.5L330.2 98.7ZM304.4 77.4L315 43.2L325.6 77.4ZM313 120L313 110.9L317 110.9L317 120ZM329 120L355 75L381 120ZM335 92L355 47L375 92ZM341 64L355 19L369 64ZM353 120L353 108L357 108L357 120ZM377.9 120L400 81.8L422.1 120ZM383 96.2L400 58L417 96.2ZM388.1 72.4L400 34.2L411.9 72.4ZM398 120L398 109.8L402 109.8L402 120ZM411.4 120L440 70.5L468.6 120ZM418 89.2L440 39.7L462 89.2ZM424.6 58.4L440 8.9L455.4 58.4ZM438 120L438 106.8L442 106.8L442 120ZM456.3 120L475 87.6L493.7 120ZM460.6 99.8L475 67.4L489.4 99.8ZM464.9 79.7L475 47.3L485.1 79.7ZM473 120L473 111.4L477 111.4L477 120Z' fill='%2304070d'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: bottom;
+  background-size: auto 100%;
+  opacity: 0.85;
+}
+
+/* ── Daylight: soft afternoon sky, warm sun, slow clouds ─────────── */
+
+.atmosphere[data-theme="daylight"] {
+  background:
+    radial-gradient(ellipse 55% 40% at 74% 10%, rgba(255, 220, 150, 0.4), transparent 60%),
+    linear-gradient(180deg, #40607c 0%, #5f8199 38%, #93a8ab 68%, #7d8b74 100%);
+}
+
+.atmosphere[data-theme="daylight"] .glow {
+  background:
+    radial-gradient(ellipse 50% 35% at 74% 12%, rgba(255, 226, 160, 0.22), transparent 65%),
+    radial-gradient(ellipse 80% 50% at 50% 112%, rgba(90, 100, 80, 0.3), transparent 55%);
+}
+
+/* No weather fog on a sunny afternoon. */
+.atmosphere[data-theme="daylight"] .fog {
+  display: none;
+}
+
+.atmosphere[data-theme="daylight"] .vignette {
+  background: radial-gradient(ellipse 85% 65% at 50% 42%, transparent 0%, rgba(28, 38, 48, 0.3) 100%);
+}
+
+.atmosphere[data-theme="daylight"] .grain {
+  opacity: 0.08;
+}
+
+.sun {
+  position: absolute;
+  top: 5%;
+  right: 12%;
+  width: 24vmin;
+  height: 24vmin;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 240, 196, 0.85),
+    rgba(255, 218, 140, 0.32) 45%,
+    transparent 70%
+  );
+}
+
+.cloud {
+  position: absolute;
+  left: 0;
+  width: 42%;
+  height: 16%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.32),
+    transparent 70%
+  );
+  filter: blur(16px);
+  animation: cloud-drift 90s linear infinite;
+}
+
+.cloudA {
+  top: 9%;
+}
+
+.cloudB {
+  top: 24%;
+  height: 20%;
+  opacity: 0.65;
+  animation-duration: 130s;
+  animation-delay: -55s;
+}
+
+@keyframes cloud-drift {
+  from {
+    transform: translateX(-60vw);
+  }
+  to {
+    transform: translateX(160vw);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .fog,
-  .lightning {
+  .lightning,
+  .beacon,
+  .cloud {
     animation: none !important;
   }
-  .rain {
+  .canvas {
     opacity: 0.2;
   }
 }

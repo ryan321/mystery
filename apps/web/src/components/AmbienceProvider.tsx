@@ -13,14 +13,23 @@ import {
   DEFAULT_AMBIENCE,
   getAmbiencePack,
   loadAmbience,
+  resolveMusicTrack,
   saveAmbience,
   type AmbienceState,
 } from "../lib/ambience";
+import type { AtmosphereTheme } from "../lib/themes";
 
 type AmbienceContextValue = AmbienceState & {
   setSoundsEnabled: (v: boolean) => void;
   setMusicEnabled: (v: boolean) => void;
   setPackId: (id: string) => void;
+  setMusicId: (id: string) => void;
+  /**
+   * The atmosphere theme of the page currently on screen (play screen,
+   * mystery detail). Drives "Match the scene" music. null = brand default.
+   */
+  pageTheme: AtmosphereTheme | null;
+  setPageTheme: (t: AtmosphereTheme | null) => void;
 };
 
 const AmbienceContext = createContext<AmbienceContextValue | null>(null);
@@ -55,6 +64,14 @@ export default function AmbienceProvider({ children }: { children: ReactNode }) 
   const setPackId = useCallback((id: string) => {
     setState((s) => ({ ...s, packId: id }));
   }, []);
+
+  const setMusicId = useCallback((id: string) => {
+    setState((s) => ({ ...s, musicId: id }));
+  }, []);
+
+  // Page-driven, never persisted: the play screen and detail page report
+  // their case theme here (and reset on unmount).
+  const [pageTheme, setPageTheme] = useState<AtmosphereTheme | null>(null);
 
   // Server + first client render use the defaults (no hydration flash);
   // stored settings land on mount, then every change is persisted.
@@ -186,10 +203,10 @@ export default function AmbienceProvider({ children }: { children: ReactNode }) 
     };
   }, [state.soundsEnabled, state.packId, hasGestured, startRain, stopRain]);
 
-  // Music (placeholder — no music yet)
+  // Music: the user's pick, or the scene's theme default ("Match the scene").
   useEffect(() => {
-    const pack = getAmbiencePack(state.packId);
-    if (!state.musicEnabled || !pack?.music) {
+    const track = resolveMusicTrack(state.musicId, pageTheme);
+    if (!state.musicEnabled || !track) {
       if (musicRef.current) {
         musicRef.current.pause();
         musicRef.current = null;
@@ -197,7 +214,7 @@ export default function AmbienceProvider({ children }: { children: ReactNode }) 
       return;
     }
 
-    const audio = new Audio(pack.music);
+    const audio = new Audio(track.file);
     audio.loop = true;
     audio.volume = 0.5;
     audio.play().catch(() => {
@@ -209,7 +226,7 @@ export default function AmbienceProvider({ children }: { children: ReactNode }) 
       audio.pause();
       if (musicRef.current === audio) musicRef.current = null;
     };
-  }, [state.musicEnabled, state.packId]);
+  }, [state.musicEnabled, state.musicId, pageTheme]);
 
   return (
     <AmbienceContext.Provider
@@ -218,6 +235,9 @@ export default function AmbienceProvider({ children }: { children: ReactNode }) 
         setSoundsEnabled,
         setMusicEnabled,
         setPackId,
+        setMusicId,
+        pageTheme,
+        setPageTheme,
       }}
     >
       {children}

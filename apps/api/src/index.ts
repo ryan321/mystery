@@ -969,6 +969,7 @@ function buildBriefing(def: MysteryDefinition, state?: PlaythroughState) {
   return {
     setting: def.meta.setting,
     theMystery: def.meta.theMystery,
+    theme: def.meta.theme,
     objective: p?.objective ?? def.player.objective,
     startingKnowledge:
       p?.startingKnowledge ?? def.player.startingKnowledge,
