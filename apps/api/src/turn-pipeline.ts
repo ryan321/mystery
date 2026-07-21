@@ -13,6 +13,7 @@ import {
   validateAndApplyPatch,
   appendDialogueMemory,
   advancePassiveTime,
+  enterResolution,
   evaluateBeats,
   accusationNarrationHints,
   finalizeDenouement,
@@ -55,6 +56,18 @@ export type TurnPipelineResult = {
 };
 
 /**
+ * Hard ceiling on investigation length. Cost bound, not pacing: every turn
+ * is two paid LLM calls, so an endless run is an endless bill. Set at 4×
+ * the case's thorough-player band (meta.playtest.maxTurns) with a generous
+ * floor — no engaged player meets it; a script or an idler eventually does.
+ * The case closes through the normal resolution machinery, so an authored
+ * failure ending and wrap-up play out instead of a bare error.
+ */
+export function turnHardCap(def: MysteryDefinition): number {
+  return Math.max(150, (def.meta.playtest?.maxTurns ?? 45) * 4);
+}
+
+/**
  * Turn loop:
  *  1. Passive time + clock tick
  *  2. Beats on tick (time_expired, clock_expired — before player acts)
@@ -81,6 +94,19 @@ export async function runTurnPipeline(args: {
   state = tickBeats.state;
   const justHappened: JustHappened[] = [...tickBeats.justHappened];
   const allFired = [...tickBeats.fired];
+
+  // Turn ceiling: judged exactly like a tick-fired ending — the world moves
+  // on without the player's answer, and the accuse window closes below.
+  if (state.status === "active" && state.turnCount >= turnHardCap(def)) {
+    const capped = enterResolution(def, state, { outcome: "failure" });
+    state = capped.state;
+    justHappened.push({
+      id: "investigation_expired",
+      summary: "The investigation runs out of time",
+      narrationHints:
+        "The case will not wait any longer. Events overtake the investigation and the matter is decided without the player's answer. Narrate the world closing the question, not a rule.",
+    });
+  }
 
   // If tick ended the investigation (e.g. murdered on clock), still allow
   // denouement interaction with this input — strip investigate-only intents later.

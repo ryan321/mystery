@@ -125,6 +125,7 @@ export async function classifyPhysicalAction(
       const completion = await client.chat.completions.create({
         model,
         temperature: 0,
+        max_tokens: 600,
         response_format: { type: "json_object" },
         messages: [
           { role: "system", content: SYSTEM },

@@ -58,6 +58,7 @@ export async function narrateTurn(
   const completion = await client.chat.completions.create({
     model: config.narratorModel,
     temperature: 0.7,
+    max_tokens: 2000,
     response_format: { type: "json_object" },
     messages: [
       { role: "system", content: NARRATOR_SYSTEM },
@@ -77,6 +78,7 @@ export async function narrateTurn(
     const repair = await client.chat.completions.create({
       model: config.narratorModel,
       temperature: 0,
+      max_tokens: 2000,
       response_format: { type: "json_object" },
       messages: [
         { role: "system", content: NARRATOR_SYSTEM },

@@ -23,12 +23,21 @@ export function createOpenRouterClient(config: LlmConfig): OpenAI {
   });
 }
 
+/**
+ * Every completion carries a hard output ceiling — an unbounded reply is an
+ * unbounded bill. Generous: well above the largest legitimate director or
+ * performer turn.
+ */
+export const DEFAULT_MAX_OUTPUT_TOKENS = 3000;
+
 export type CompleteJsonOptions = {
   client: OpenAI;
   model: string;
   system: string;
   user: string;
   temperature?: number;
+  /** Output token ceiling. Default DEFAULT_MAX_OUTPUT_TOKENS. */
+  maxTokens?: number;
   /**
    * Transport retries for 429/5xx/network (in addition to the first try).
    * Default 2 → up to 3 transport attempts.
@@ -49,10 +58,12 @@ async function onceChatJson(args: {
   model: string;
   messages: OpenAI.Chat.ChatCompletionMessageParam[];
   temperature: number;
+  maxTokens?: number;
 }): Promise<string> {
   const completion = await args.client.chat.completions.create({
     model: args.model,
     temperature: args.temperature,
+    max_tokens: args.maxTokens ?? DEFAULT_MAX_OUTPUT_TOKENS,
     response_format: { type: "json_object" },
     messages: args.messages,
   });
@@ -127,6 +138,7 @@ export async function completeJson(
         model: args.model,
         messages: baseMessages,
         temperature,
+        maxTokens: args.maxTokens,
       });
 
       try {
@@ -162,6 +174,7 @@ export async function completeJson(
             client: args.client,
             model: args.model,
             temperature: 0,
+            maxTokens: args.maxTokens,
             messages: [
               ...baseMessages,
               { role: "assistant", content: raw || "(empty)" },
@@ -290,6 +303,7 @@ export async function completeJsonValidated<T>(
         system: args.system,
         user: args.user,
         temperature,
+        maxTokens: args.maxTokens,
         maxTransportRetries: args.maxTransportRetries,
         jsonRepair: args.jsonRepair,
       });
@@ -311,6 +325,7 @@ export async function completeJsonValidated<T>(
           client: args.client,
           model: args.model,
           temperature: temperature ?? 0,
+          maxTokens: args.maxTokens,
           messages: [
             { role: "system", content: args.system },
             { role: "user", content: args.user },

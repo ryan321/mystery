@@ -56,6 +56,7 @@ type PlaythroughRow = {
   updated_at: Date;
   state_json: unknown;
   phase_id: string | null;
+  user_id: string | null;
 };
 
 /**
@@ -203,7 +204,11 @@ export async function insertPlaythrough(
 export async function getPlaythrough(
   pool: Db,
   id: string
-): Promise<{ state: PlaythroughState; openingNarration: string } | null> {
+): Promise<{
+  state: PlaythroughState;
+  openingNarration: string;
+  userId: string | null;
+} | null> {
   let res;
   try {
     res = await pool.query<PlaythroughRow>(
@@ -237,6 +242,51 @@ export async function getPlaythrough(
   return {
     state,
     openingNarration: row.opening_narration,
+    userId: row.user_id ?? null,
+  };
+}
+
+export type TurnWindowCounts = {
+  last10s: number;
+  last60s: number;
+  last24h: number;
+};
+
+/**
+ * Recent turn volume for rate limiting. Keyed on the owning user when the
+ * playthrough has one; legacy pre-account (anonymous) runs fall back to
+ * per-playthrough counting so they stay playable but still bounded.
+ */
+export async function countRecentTurns(
+  pool: Db,
+  key: { userId: string } | { playthroughId: string }
+): Promise<TurnWindowCounts> {
+  const windows = `
+    count(*) FILTER (WHERE t.created_at > now() - interval '10 seconds')::int AS last_10s,
+    count(*) FILTER (WHERE t.created_at > now() - interval '60 seconds')::int AS last_60s,
+    count(*) FILTER (WHERE t.created_at > now() - interval '24 hours')::int AS last_24h`;
+  const res =
+    "userId" in key
+      ? await pool.query(
+          `SELECT ${windows}
+           FROM turns t
+           JOIN playthroughs p ON p.id = t.playthrough_id
+           WHERE p.user_id = $1
+             AND t.created_at > now() - interval '24 hours'`,
+          [key.userId]
+        )
+      : await pool.query(
+          `SELECT ${windows}
+           FROM turns t
+           WHERE t.playthrough_id = $1
+             AND t.created_at > now() - interval '24 hours'`,
+          [key.playthroughId]
+        );
+  const row = res.rows[0] ?? {};
+  return {
+    last10s: Number(row.last_10s ?? 0),
+    last60s: Number(row.last_60s ?? 0),
+    last24h: Number(row.last_24h ?? 0),
   };
 }
 

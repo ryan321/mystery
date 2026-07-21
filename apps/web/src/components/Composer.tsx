@@ -51,6 +51,7 @@ export default function Composer({
           placeholder={closed ? "The case is closed." : placeholder}
           disabled={disabled}
           aria-label="What do you say or do?"
+          maxLength={500}
           rows={1}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {

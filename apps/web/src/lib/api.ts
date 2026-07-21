@@ -53,7 +53,10 @@ async function apiFetch(path: string, init: RequestInit = {}): Promise<Response>
 async function json<T>(res: Response): Promise<T> {
   const data = (await res.json()) as T & { error?: string; message?: string };
   if (!res.ok) {
-    throw new Error(data.error ?? data.message ?? `API ${res.status}`);
+    // Prefer the human-readable message (rate limits, turn-in-flight) over
+    // the machine code; callers that branch on a code (signin_required)
+    // still get it — those responses carry no message field.
+    throw new Error(data.message ?? data.error ?? `API ${res.status}`);
   }
   return data;
 }

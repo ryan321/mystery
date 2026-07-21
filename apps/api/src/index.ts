@@ -27,6 +27,7 @@ import {
   insertPlaythrough,
   getPlaythrough,
   commitTurn,
+  countRecentTurns,
   listTurns,
   updateNotebook,
   databaseUrl,
@@ -575,6 +576,7 @@ PLAYER'S QUESTION: ${question}`;
     const completion = await client.chat.completions.create({
       model: llmConfig.narratorModel,
       temperature: 0.4,
+      max_tokens: 1000,
       messages: [
         { role: "system", content: system },
         { role: "user", content: user },
@@ -588,6 +590,20 @@ PLAYER'S QUESTION: ${question}`;
     return c.json({ error: "debrief_failed" }, 502);
   }
 });
+
+// Every turn is two paid LLM calls, so the turn route is the abuse surface.
+// Limits are set where no human player ever meets them: people read the
+// narration and type — scripts don't.
+const TURN_RATE = {
+  per10s: 3, // burst
+  per60s: 8, // ~6/min sustained with slack
+  per24h: 300, // ~4 thorough playthroughs in a day
+} as const;
+
+// One in-flight turn per playthrough (per process). Serializes hammering to
+// our own LLM latency and prevents state races; across processes the
+// optimistic turn_count lock in updatePlaythrough is the backstop.
+const turnsInFlight = new Set<string>();
 
 app.post("/v1/playthroughs/:id/turns", async (c) => {
   const row = await getPlaythrough(pool, c.req.param("id"));
@@ -605,58 +621,101 @@ app.post("/v1/playthroughs/:id/turns", async (c) => {
     );
   }
 
+  const counts = await countRecentTurns(
+    pool,
+    row.userId ? { userId: row.userId } : { playthroughId: state.id }
+  );
+  const retryAfterSec =
+    counts.last24h >= TURN_RATE.per24h
+      ? 3600
+      : counts.last60s >= TURN_RATE.per60s
+        ? 30
+        : counts.last10s >= TURN_RATE.per10s
+          ? 10
+          : 0;
+  if (retryAfterSec > 0) {
+    c.header("Retry-After", String(retryAfterSec));
+    return c.json(
+      {
+        error: "rate_limited",
+        retryAfterSec,
+        message: "The investigation needs a moment to breathe.",
+      },
+      429
+    );
+  }
+
   const def = await registry.getDefinition(state.caseId, state.contentVersion);
   if (!def) return c.json({ error: "case_missing" }, 500);
 
   const body = await c.req.json();
   const input = String((body as { input?: string }).input ?? "").trim();
   if (!input) return c.json({ error: "empty_input" }, 400);
-  if (input.length > 4000) {
-    return c.json({ error: "input_too_long" }, 400);
+  if (input.length > 500) {
+    return c.json({ error: "input_too_long", maxLength: 500 }, 400);
   }
 
-  let result;
-  try {
-    result = await runTurnPipeline({
-      def,
-      state,
-      playerInput: input,
-      llmConfig,
-    });
-  } catch (err) {
-    console.error("turn pipeline failed", err);
+  // Check-and-acquire must stay adjacent — an await between them would let
+  // two concurrent requests both pass the check.
+  if (turnsInFlight.has(state.id)) {
+    c.header("Retry-After", "5");
     return c.json(
       {
-        error: "turn_failed",
-        message: err instanceof Error ? err.message : "unknown",
+        error: "turn_in_flight",
+        message: "The previous turn is still resolving.",
       },
-      500
+      429
     );
+  }
+  turnsInFlight.add(state.id);
+  let result;
+  try {
+    try {
+      result = await runTurnPipeline({
+        def,
+        state,
+        playerInput: input,
+        llmConfig,
+      });
+    } catch (err) {
+      console.error("turn pipeline failed", err);
+      return c.json(
+        {
+          error: "turn_failed",
+          message: err instanceof Error ? err.message : "unknown",
+        },
+        500
+      );
+    }
+
+    const committed = result.state;
+
+    try {
+      await commitTurn(pool, committed, {
+        playthroughId: committed.id,
+        turnIndex: committed.turnCount,
+        playerInput: input,
+        narration: result.narration,
+        dialogue: result.dialogue,
+        appliedPatch: result.appliedPatch,
+        rejected: result.rejected,
+        evidenceAdded: result.evidenceAdded,
+        model: `${result.debug.directorModel}+${result.debug.performerModel}`,
+        mock: result.debug.directorMock || result.debug.performerMock,
+        latencyMs:
+          result.debug.directorLatencyMs + result.debug.performerLatencyMs,
+      });
+    } catch (err) {
+      if (err instanceof Error && err.message === "playthrough_conflict") {
+        return c.json({ error: "conflict", message: "Stale playthrough" }, 409);
+      }
+      throw err;
+    }
+  } finally {
+    turnsInFlight.delete(state.id);
   }
 
   const committed = result.state;
-
-  try {
-    await commitTurn(pool, committed, {
-      playthroughId: committed.id,
-      turnIndex: committed.turnCount,
-      playerInput: input,
-      narration: result.narration,
-      dialogue: result.dialogue,
-      appliedPatch: result.appliedPatch,
-      rejected: result.rejected,
-      evidenceAdded: result.evidenceAdded,
-      model: `${result.debug.directorModel}+${result.debug.performerModel}`,
-      mock: result.debug.directorMock || result.debug.performerMock,
-      latencyMs:
-        result.debug.directorLatencyMs + result.debug.performerLatencyMs,
-    });
-  } catch (err) {
-    if (err instanceof Error && err.message === "playthrough_conflict") {
-      return c.json({ error: "conflict", message: "Stale playthrough" }, 409);
-    }
-    throw err;
-  }
 
   return c.json({
     narration: result.narration,
