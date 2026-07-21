@@ -2,10 +2,10 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "blackwood-inheritance",
-  "contentVersion": "0.10.4",
+  "contentVersion": "0.10.5",
   "meta": {
     "title": "The Blackwood Inheritance",
-    "premise": "A stormy night, a dead master at the foot of his own stairs, and a manor that has been robbing itself for weeks. Everyone in the house had a reason to be angry. Someone had a reason to plan.",
+    "premise": "A stormy night, a dead master at the foot of his own stairs, and six weeks of break-ins no one has explained. Everyone in the house had a reason to be angry. Someone had a reason to plan.",
     "theme": "manor",
     "tone": "gothic manor whodunit, tense and formal",
     "tags": [
@@ -22,8 +22,8 @@
     ],
     "artStyle": "Victorian gothic oil portrait, head-and-shoulders, candlelit manor palette (deep umber, blood maroon, cold grey-blue), muted desaturated tones, soft Rembrandt lighting, same painted frame and brush style for every cast member, no modern clothing, mystery game character portrait, consistent artist hand across the set",
     "setting": "Blackwood Manor, on a storm-cut country road. Night. No one leaves until the weather breaks.",
-    "summary": "Hugo Blackwood lies dead in the entrance hall the same week his daughter's marriage settlement was to be signed. A string of unsolved break-ins, a furious caretaker, an indebted solicitor, and a household of poor relations — and beneath it all, a twenty-year-old grave nobody visits except someone who never walks.",
-    "theMystery": "Who caused Hugo Blackwood's death — and why did the burglar who plagued the manor never once climb the stairs?",
+    "summary": "Hugo Blackwood lies dead in the entrance hall the same week his daughter's marriage settlement was to be signed. A string of unsolved break-ins, a caretaker under the master's displeasure, a solicitor who quarrelled with the master on Tuesday, and a household of poor relations — and no way for anyone to leave until the storm breaks.",
+    "theMystery": "Who caused Hugo Blackwood's death — and what pattern in six weeks of break-ins has the whole household missed?",
     "playtest": {
       "minTurns": 18,
       "maxTurns": 70,
