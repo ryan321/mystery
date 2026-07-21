@@ -12,6 +12,8 @@ import {
 import {
   DEFAULT_AMBIENCE,
   getAmbiencePack,
+  loadAmbience,
+  saveAmbience,
   type AmbienceState,
 } from "../lib/ambience";
 
@@ -53,6 +55,18 @@ export default function AmbienceProvider({ children }: { children: ReactNode }) 
   const setPackId = useCallback((id: string) => {
     setState((s) => ({ ...s, packId: id }));
   }, []);
+
+  // Server + first client render use the defaults (no hydration flash);
+  // stored settings land on mount, then every change is persisted.
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => {
+    setState(loadAmbience());
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (hydrated) saveAmbience(state);
+  }, [hydrated, state]);
 
   // First pointer/key interaction unlocks the Web Audio pipeline.
   useEffect(() => {
