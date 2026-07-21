@@ -11,9 +11,8 @@ primary_region = "iad"
   # Browsers allowed to call the API (comma-separated).
   CORS_ORIGINS = "https://mysterytrove.com,https://www.mysterytrove.com,https://mysterytrove-web.fly.dev"
   # Public origins for magic-link emails and the Google OAuth dance.
-  # Swap for the custom domains once they're live.
-  API_ORIGIN = "https://mysterytrove-api.fly.dev"
-  WEB_ORIGIN = "https://mysterytrove-web.fly.dev"
+  API_ORIGIN = "https://api.mysterytrove.com"
+  WEB_ORIGIN = "https://mysterytrove.com"
 
 [http_service]
   internal_port = 8787

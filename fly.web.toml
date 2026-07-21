@@ -5,11 +5,9 @@ primary_region = "iad"
 [build]
   dockerfile = "Dockerfile.web"
 
-  # Baked into the client bundle at build time. Point this at the API's
-  # public URL (switch to https://api.mysterytrove.com once the custom
-  # domain + cert exist).
+  # Baked into the client bundle at build time.
   [build.args]
-    NEXT_PUBLIC_API_URL = "https://mysterytrove-api.fly.dev"
+    NEXT_PUBLIC_API_URL = "https://api.mysterytrove.com"
 
 [http_service]
   internal_port = 3000
