@@ -368,6 +368,32 @@ culprit's complete strategy and derive everything else:
 Suspects and clues then arise naturally: the staged story determines
 the structure of the entire mystery.
 
+### The four WHYs
+
+Interrogate every case with four questions, and accept no shrug for an
+answer:
+
+1. **WHY did the villain do it?** Motive rooted in this person's
+   character, values, and desperation — something only they would do.
+2. **WHY did they do it the way they did?** Every choice — the time,
+   the place, the method, the staging — must be reasonable from the
+   villain's point of view, given what they knew, feared, and had
+   available. An arbitrary method makes the staged story incoherent.
+3. **WHY isn't it clear who did it and what happened?** The obscurity
+   must have causes inside the world: the villain's staging, innocent
+   noise, the assumptions everyone brings. If the answer is "because
+   the author hides it," the mystery is fog, not misdirection.
+4. **WHY hasn't the villain been found out yet?** The deception's
+   survival up to turn one needs an explanation: who already looked,
+   why they failed, what kept the household from seeing it. Nobody
+   around the crime may be oblivious for no reason.
+
+Run the four WHYs **twice**: once at the premise stage, when the
+answers are cheap to change, and again after the full detail is
+written, because detail quietly breaks earlier answers (a new clue
+placement can make WHY #3 collapse). `pnpm storycheck --case <id>`
+automates the pass against the sealed definition.
+
 ## The formula
 
 > The puzzle provides satisfaction. The people provide meaning. The
