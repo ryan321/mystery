@@ -310,6 +310,7 @@ export function buildContextPack(
           ),
           method: state.pendingAccusation.method,
           motive: state.pendingAccusation.motive,
+          missing: state.pendingAccusation.missing,
           turnsRemaining: Math.max(
             0,
             state.pendingAccusation.expiresAfterTurn - state.turnCount

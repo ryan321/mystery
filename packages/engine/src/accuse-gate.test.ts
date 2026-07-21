@@ -209,3 +209,57 @@ describe("opaque withheld knowledge", () => {
     expect(mustNotReveal.some((l) => /undisclosed fact/.test(l))).toBe(true);
   });
 });
+
+describe("pending accusation names the player's own gaps (leak-safe)", () => {
+  it("flags missing method and motive from the player's stated case", () => {
+    const state = createInitialPlaythrough(def, "t-gaps-1");
+    const res = applyAccuseGate(
+      def,
+      state,
+      { accuse: { summary: "Vale did it", suspectIds: ["vale"] } },
+      "Vale did it"
+    );
+    expect(res.state.pendingAccusation?.missing).toEqual(["method", "motive"]);
+    const hint = res.justHappened[0]?.narrationHints ?? "";
+    expect(hint).toContain("HOW it was done");
+    expect(hint).toContain("WHY");
+  });
+
+  it("flags only the part left unsaid", () => {
+    const state = createInitialPlaythrough(def, "t-gaps-2");
+    const res = applyAccuseGate(
+      def,
+      state,
+      {
+        accuse: {
+          summary: "Vale pushed him down the stairs",
+          suspectIds: ["vale"],
+          method: "pushed him in a struggle by the stairs",
+        },
+      },
+      "Vale pushed him down the stairs"
+    );
+    expect(res.state.pendingAccusation?.missing).toEqual(["motive"]);
+  });
+
+  it("flags nothing when the case states who, how, and why", () => {
+    const state = createInitialPlaythrough(def, "t-gaps-3");
+    const res = applyAccuseGate(
+      def,
+      state,
+      {
+        accuse: {
+          summary: "Vale, over the debt, in the hall",
+          suspectIds: ["vale"],
+          method: "struggle in the hall",
+          motive: "the debt and exposure",
+        },
+      },
+      "Vale did it over the debt"
+    );
+    expect(res.state.pendingAccusation?.missing).toEqual([]);
+    expect(res.justHappened[0]?.narrationHints ?? "").not.toContain(
+      "silent on"
+    );
+  });
+});

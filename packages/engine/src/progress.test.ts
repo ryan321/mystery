@@ -52,6 +52,7 @@ describe("computeMysteryProgress", () => {
       pendingAccusation: {
         summary: "Vale did it",
         suspectIds: ["vale"],
+        missing: ["method", "motive"],
         madeOnTurn: 1,
         expiresAfterTurn: 10,
       },

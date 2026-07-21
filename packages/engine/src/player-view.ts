@@ -229,6 +229,8 @@ export function buildPlayerView(
           suspectNames: state.pendingAccusation.suspectIds.map((id) =>
             knownAsFor(def, state, id)
           ),
+          // Reflects only the player's own stated case (no truth compare).
+          missing: state.pendingAccusation.missing,
           turnsRemaining: Math.max(
             0,
             state.pendingAccusation.expiresAfterTurn - state.turnCount

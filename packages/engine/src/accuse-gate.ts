@@ -123,6 +123,11 @@ export function applyAccuseGate(
 
     // Informal: park it (replacing any differing pending) and ask for commitment.
     const suspectIds = namedIds;
+    // Reflect what the player's own case leaves unsaid — never a
+    // comparison against the truth, so it is safe to voice in-fiction.
+    const missing: ("method" | "motive")[] = [];
+    if (!patch.accuse.method?.trim()) missing.push("method");
+    if (!patch.accuse.motive?.trim()) missing.push("motive");
     next = withAccusedFlags(
       {
         ...next,
@@ -131,6 +136,7 @@ export function applyAccuseGate(
           suspectIds,
           method: patch.accuse.method,
           motive: patch.accuse.motive,
+          missing,
           madeOnTurn: state.turnCount,
           expiresAfterTurn: state.turnCount + pendingTurns,
         },
@@ -138,10 +144,15 @@ export function applyAccuseGate(
       suspectIds
     );
     const names = suspectNames(def, next, suspectIds);
+    const gapText = missing.length
+      ? ` Their stated case is silent on ${missing
+          .map((m) => (m === "method" ? "HOW it was done" : "WHY"))
+          .join(" and ")} — have a character (or their own doubt) press on exactly that gap, without implying whether the theory is right.`
+      : "";
     justHappened.push({
       id: "accusation_pending",
       summary: `Accusation pending confirmation${names.length ? `: ${names.join(", ")}` : ""}`,
-      narrationHints: `The player has voiced a theory naming ${names.join(", ") || "a suspect"}. Judgment has NOT happened. In-fiction, make the weight of a formal accusation felt and ask whether they commit to it — committing decides the case. Do not confirm or deny the theory, reveal nothing, keep the scene interactive.`,
+      narrationHints: `The player has voiced a theory naming ${names.join(", ") || "a suspect"}. Judgment has NOT happened. In-fiction, make the weight of a formal accusation felt and ask whether they commit to it — committing decides the case. Do not confirm or deny the theory, reveal nothing, keep the scene interactive.${gapText}`,
     });
     notes.push("accuse pending confirmation");
     const { accuse: _gated, ...rest } = patch;

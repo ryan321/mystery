@@ -235,6 +235,12 @@ export const PendingAccusationSchema = z.object({
   suspectIds: z.array(z.string()).default([]),
   method: z.string().optional(),
   motive: z.string().optional(),
+  /**
+   * What the player's OWN stated case leaves unsaid (no how / no why).
+   * Purely reflective of their accusation text — never compared against
+   * the truth, so surfacing it leaks nothing.
+   */
+  missing: z.array(z.enum(["method", "motive"])).default([]),
   madeOnTurn: z.number().int().nonnegative(),
   /** Last turnCount at which this pending accusation can still be confirmed. */
   expiresAfterTurn: z.number().int().nonnegative(),

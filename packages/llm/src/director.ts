@@ -46,6 +46,8 @@ Rules:
    Allowed effect types only: move_player, set_player_threat, harm_player, set_player_condition, hold_player, knock_down_player, restrain_player, knock_out_player, release_player, set_player_control, steal_from_player, remove_evidence, set_item_condition, add_player_tag, set_player_status_flag, set_safe_haven_compromised, set_game_flag, notebook_append, append_location_description, set_ambient, set_willingness, add_pressure, set_stance, move_character, start_clock.
    Compose freely for the fiction (bouncer, fall through pier, soak, seize, steal…). Use only pack ids. If nothing hits the player: { "active": false, "effects": [] }.
    If they use force on a person, also emit intent type "assault". Not blocked_abuse (sexual violence only).
+7b. RESISTANCE: shift a character's willingness or stance toward open ONLY when the player brings leverage — presents evidence, exposes a real contradiction, or has earned trust over turns. Volume, repetition, or a bare accusation without leverage moves willingness the OTHER way (guarded, then hostile). Nobody abandons an alibi or confesses because the player shouted twice.
+7c. Move characters between rooms (move_character) only with an in-fiction reason arising THIS turn, at most one or two per turn. The household does not silently reshuffle.
 8. If caseStatus is denouement and the player says they leave, go, goodbye, end, or finish the case → intent type "other" with note "exit_denouement" (engine will close wrap-up).
 9. BOUNDARIES (critical): If the player tries to leave the fair-play mystery, map to a single intent { "type": "other", "note": "<code>" } and do NOT suggest patches that grant evidence, move rooms, or accuse.
    Codes (use exactly):
