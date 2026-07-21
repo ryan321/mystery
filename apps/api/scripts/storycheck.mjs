@@ -76,6 +76,29 @@ needs it" is a failing grade.
 4. WHY hasn't the villain been found out yet? (who already looked before the player
    arrived, why did they fail, why is nobody around the crime implausibly oblivious?)
 
+Then the six WHATs — these test whether the EXPERIENCE was designed. Each demands a
+concrete, nameable answer derived from the definition; grade how well the definition
+supports it:
+
+1. WHAT makes this story fun? (name the core pleasure — "it's a mystery" fails)
+2. WHAT will the player initially think happened? (the designed first theory; if the
+   definition doesn't engineer one, deflection was never designed)
+3. WHAT is the path to actually solving it? (the intended discovery chain, step by
+   step; must exist, be fair, and take more than two links)
+4. WHAT is the player's "aha" moment? (the one recognition that collapses the staged
+   story)
+5. WHAT does the villain do to stop the player? (live opposition; "nothing" passes
+   only as a deliberate choice for the gentlest cases)
+6. WHAT do the other characters do in response to the investigation? (agendas in
+   motion: who obstructs, helps, panics, lies innocently)
+
+Then the three HOWs — generative, even if the case seems done. Give 2-3 concrete,
+definition-ready suggestions each:
+
+1. HOW could the characters be more interesting?
+2. HOW could locations and items be used better?
+3. HOW could there be more twists, deflection, deception, layers?
+
 Also check, strictly from the definition:
 - contradictions (timeline vs testimony vs evidence placement vs canon)
 - the victim: is anyone hurting? do the stakes exist before the crime is solved?
@@ -97,6 +120,19 @@ Return STRICT JSON:
     {"question": "why_this_way", "verdict": ..., "analysis": ..., "fix": ...},
     {"question": "why_unclear", "verdict": ..., "analysis": ..., "fix": ...},
     {"question": "why_not_found_out", "verdict": ..., "analysis": ..., "fix": ...}
+  ],
+  "whats": [
+    {"question": "what_fun", "verdict": "solid"|"weak"|"missing", "answer": "...", "fix": "..."},
+    {"question": "what_initial_theory", "verdict": ..., "answer": ..., "fix": ...},
+    {"question": "what_solve_path", "verdict": ..., "answer": ..., "fix": ...},
+    {"question": "what_aha_moment", "verdict": ..., "answer": ..., "fix": ...},
+    {"question": "what_villain_counterplay", "verdict": ..., "answer": ..., "fix": ...},
+    {"question": "what_cast_reactions", "verdict": ..., "answer": ..., "fix": ...}
+  ],
+  "hows": [
+    {"question": "how_characters", "suggestions": ["...", "..."]},
+    {"question": "how_world", "suggestions": ["...", "..."]},
+    {"question": "how_layers", "suggestions": ["...", "..."]}
   ],
   "contradictions": ["..."],
   "checklist": [
@@ -158,6 +194,21 @@ for (const w of report.whys ?? []) {
   console.log(`  ${MARK[w.verdict] ?? "?"} ${w.question} [${w.verdict}]`);
   console.log(`      ${w.analysis}`);
   if (w.verdict !== "solid" && w.fix) console.log(`      fix: ${w.fix}`);
+}
+if (report.whats?.length) {
+  console.log(`\n═══ Six WHATs ═══`);
+  for (const w of report.whats) {
+    console.log(`  ${MARK[w.verdict] ?? "?"} ${w.question} [${w.verdict}]`);
+    console.log(`      ${w.answer}`);
+    if (w.verdict !== "solid" && w.fix) console.log(`      fix: ${w.fix}`);
+  }
+}
+if (report.hows?.length) {
+  console.log(`\n═══ Three HOWs ═══`);
+  for (const h of report.hows) {
+    console.log(`  ${h.question}:`);
+    for (const s of h.suggestions ?? []) console.log(`    → ${s}`);
+  }
 }
 if (report.contradictions?.length) {
   console.log(`\n  Contradictions:`);

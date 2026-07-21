@@ -388,11 +388,49 @@ answer:
    why they failed, what kept the household from seeing it. Nobody
    around the crime may be oblivious for no reason.
 
-Run the four WHYs **twice**: once at the premise stage, when the
+### The six WHATs
+
+The WHYs test whether the story holds together; the WHATs test whether
+the *experience* was actually designed. Each demands a concrete,
+nameable answer:
+
+1. **WHAT makes this story fun?** Name the core pleasure — the trick,
+   the confrontations, the setting fantasy. "It's a mystery" is not an
+   answer.
+2. **WHAT will the player initially think happened?** The designed
+   first theory. If the author cannot predict it, the deflection was
+   never designed — this is the staged story seen from the player's
+   side.
+3. **WHAT is the path to actually solving it?** The intended chain of
+   discoveries, step by step. It must exist, be fair, and take more
+   than two links.
+4. **WHAT is the player's "aha" moment?** The specific recognition
+   that flips the case — one nameable beat where the quiet fact
+   collapses the staged story.
+5. **WHAT does the villain do to stop the player?** Live opposition
+   during the investigation. "Nothing" is acceptable only as a
+   conscious choice for the gentlest cases.
+6. **WHAT do the other characters do in response to the
+   investigation?** Agendas in motion — who obstructs, who helps, who
+   panics, who lies for innocent reasons.
+
+### The three HOWs
+
+Improvement prompts, asked even when the case seems done:
+
+1. **HOW could the characters be more interesting?** Sharper wants,
+   fears, voices, entanglements.
+2. **HOW could locations and items be used better?** Rooms and objects
+   that earn their place harder; territory, schedules, access gates.
+3. **HOW could there be more twists, deflection, deception, layers?**
+   Where the case is still a straight line, and what would bend it.
+
+Run the full battery **twice**: once at the premise stage, when the
 answers are cheap to change, and again after the full detail is
 written, because detail quietly breaks earlier answers (a new clue
 placement can make WHY #3 collapse). `pnpm storycheck --case <id>`
-automates the pass against the sealed definition.
+automates the pass against the sealed definition — WHYs and WHATs
+graded, HOWs answered with concrete suggestions.
 
 ## The formula
 
