@@ -28,7 +28,8 @@ export type CaseSummary = {
 export type CastMember = {
   id: string;
   name: string;
-  shortBio?: string;
+  /** Dramatis-personae line — "The caretaker". Never the AI's shortBio. */
+  cardTitle?: string;
   storyRole?: "suspect" | "victim" | "witness" | "support";
   portrait?: string;
   portraitUrl?: string;
@@ -203,7 +204,7 @@ export type PlaythroughState = {
   cast?: {
     id: string;
     name: string;
-    shortBio?: string;
+    cardTitle?: string;
     portrait?: string;
     portraitUrl?: string;
   }[];

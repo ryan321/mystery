@@ -98,8 +98,11 @@ export function buildPlayerView(
         nameKnown,
         storyRole: c.storyRole ?? "suspect",
         portrait: c.portrait,
-        // shortBio may contain the real name — front matter only once known.
-        bio: nameKnown ? c.shortBio ?? "" : "",
+        // Player-facing card line. NEVER shortBio — that is the AI's
+        // character card and may carry secrets ("nothing about her manner
+        // is false…"). cardTitle is the authored dramatis-personae line;
+        // it may also identify an unnamed character, so gate on nameKnown.
+        bio: nameKnown ? c.cardTitle ?? "" : "",
       };
     });
 

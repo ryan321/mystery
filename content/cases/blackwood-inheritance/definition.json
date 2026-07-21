@@ -2,7 +2,7 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "blackwood-inheritance",
-  "contentVersion": "0.10.3",
+  "contentVersion": "0.10.4",
   "meta": {
     "title": "The Blackwood Inheritance",
     "premise": "A stormy night, a dead master at the foot of his own stairs, and a manor that has been robbing itself for weeks. Everyone in the house had a reason to be angry. Someone had a reason to plan.",
@@ -1211,126 +1211,8 @@
         "private": [],
         "secrets": []
       },
-      "defenses": []
-    },
-    {
-      "id": "henshaw",
-      "name": "Butler Henshaw",
-      "shortBio": "Long-serving butler; found the body; keeps the incident book. Came to the Grange as hall-boy at fourteen and never left: forty years, man and boy, under two masters. A widower — his late wife kept this very kitchen — so the house is all the family he has, and he polishes silver when he cannot bear to think. Remembers the first Mrs. Blackwood filling the hall with cut roses, and has never once said so aloud.",
-      "voice": "Formal, careful, precise",
-      "portrait": "portraits/henshaw.jpg",
-      "defaultLocationId": "entrance-hall",
-      "defaultWillingness": "open",
-      "defaultStance": "professional",
-      "storyRole": "witness",
-      "knowledge": {
-        "public": "He was in the pantry when he heard a crash near eleven; found the master fallen, the vase broken, the east door standing open. He has logged four break-ins in six weeks. He has kept the household incident book in his own precise hand since the thefts began — every date, every item, every window. And he has noticed, because he notices everything, that Garrick has been begging candle ends from the kitchen for his rounds this past week; the man's good lantern must be broken, though he has not said so.",
-        "private": [
-          {
-            "id": "henshaw-master-temper",
-            "content": "The master blamed Garrick for the thefts and said, loudly enough for the house to hear, that one more incident would be the end of his post.",
-            "requiresWillingnessIn": [
-              "open",
-              "guarded"
-            ]
-          },
-          {
-            "id": "henshaw-shutter",
-            "content": "The east passage casement banged that night though he latches it himself every evening — and the east door stood open when he reached the hall. Latches do not lift themselves from outside. He has not liked to say so.",
-            "requiresTrust": 1
-          },
-          {
-            "id": "henshaw-refusals",
-            "content": "'Mrs. Marsh began refusing her tonic — it would be some eighteen months ago now. The master was much put out. He continued to have it made up and carried it to her regardless. Such attention is rare, Inspector.'",
-            "requiresWillingnessIn": [
-              "open",
-              "guarded"
-            ]
-          },
-          {
-            "id": "henshaw-fowlers",
-            "content": "'Fowler's Solution, Inspector? I understood Fowler's to be for skin complaints and anaemia. Mrs. Marsh's affliction is her legs, and latterly her heart. And made up double... I am no chemist. I will say the master ordered it so these ten years, and that no physician has attended Mrs. Marsh above twice in that time.'",
-            "requiresEvidenceIds": [
-              "chemists-invoice"
-            ]
-          },
-          {
-            "id": "henshaw-masters-fear",
-            "content": "'After the attack on Mrs. Marsh the master was another man. She had described the brute to him — big, rough, a working man's boots — and I watched him look at Garrick as he heard it. From that evening he kept the library poker by his chair after the house went up, and sat dark in the hall on bad nights. He said he would deal with the devil himself. I served him his brandy and said nothing, God forgive me.'",
-            "requiresWillingnessIn": [
-              "open",
-              "guarded"
-            ]
-          },
-          {
-            "id": "henshaw-whispers",
-            "content": "'It was Mrs. Marsh who first suggested — gently, she does everything gently — that the groundsman ought to answer for the safety of the house at night. And after each theft she would ask the master, so sorrowfully, whether Garrick had found anything at all yet. She meant it kindly, I am sure.'",
-            "requiresTrust": 1
-          }
-        ],
-        "secrets": [
-          {
-            "id": "henshaw-first-mistress",
-            "content": "He served under the first Mrs. Blackwood — Rosalind. Her fall from the balcony in '89 was ruled an accident and never spoken of again; the courtyard below was paved over where it needed it and the rooms above shut up. Mr. Marsh's fever in '85, the mistress's fall, Mrs. Marsh's long decline — a butler does not say what three such misfortunes in one family smell like. He will say this much: the master carried Mrs. Marsh's tonic up with his own hands, every evening, for years. Such devotion. The first mistress's household keys were never all accounted for after her death.",
-            "requiresTrust": 2,
-            "requiresEvidenceIds": [
-              "headstone-inscription"
-            ]
-          }
-        ]
-      },
-      "defenses": [
-        "Protects the household's name",
-        "Will not speculate beyond what he saw"
-      ]
-    },
-    {
-      "id": "vale",
-      "name": "Mr. Vale",
-      "shortBio": "The family solicitor, here with the wedding settlement papers. A printer's son from Leeds who read law by scholarship and candle-end — the first of his family to wear a collar instead of an apron, and quietly terrified, always, of the drop back down. Vain about his copperplate hand; presses ferns between the pages of his law reports.",
-      "voice": "Smooth, dry, increasingly brittle",
-      "portrait": "portraits/vale.jpg",
-      "defaultLocationId": "library",
-      "defaultWillingness": "guarded",
-      "storyRole": "suspect",
-      "knowledge": {
-        "public": "Arrived Thursday to prepare Miss Clara's marriage settlement for signature this week. He and the master quarrelled on Tuesday.",
-        "private": [
-          {
-            "id": "vale-debt",
-            "content": "The quarrel was his own account: he owes the estate money he cannot presently pay, and Blackwood threatened exposure. The letter in the desk is his — a plea for time, nothing more.",
-            "requiresEvidenceIds": [
-              "vale-letter"
-            ],
-            "requiresWillingnessIn": [
-              "open",
-              "guarded",
-              "hostile"
-            ]
-          },
-          {
-            "id": "vale-sneak",
-            "content": "After the alarm he crept down to retrieve his letter before the police could read it, took the master's drawer key from the study — and dropped it in the library hearth when Henshaw stirred. Shabby, he grants. Not murder.",
-            "requiresEvidenceIds": [
-              "brass-key",
-              "vale-letter"
-            ]
-          }
-        ],
-        "secrets": [
-          {
-            "id": "vale-trust",
-            "content": "The point everyone is missing: Blackwood never owned the fortune. He held it as custodian under the 1888 deed — for the Ashcombe line, until Mrs. Marsh remarried or Miss Constance married; on his death it passes to them outright. And the portion he had me drafting for Miss Clara's wedding was to be drawn from that same fund. I told him it would not survive a court's reading. He told me to draft it anyway. I am the only man living who knows how that deed runs — and how little is left under it.",
-            "requiresEvidenceIds": [
-              "trust-papers"
-            ]
-          }
-        ]
-      },
-      "defenses": [
-        "Insists his quarrel was money, never violence",
-        "Lawyerly precision under pressure"
-      ]
+      "defenses": [],
+      "cardTitle": "Master of Blackwood Manor"
     },
     {
       "id": "mrs-blackwood",
@@ -1374,7 +1256,8 @@
         "Grief in private only",
         "Answers exactly what is asked",
         "Meets any imputation against Hugo with genuine, wounded disbelief — grief, not calculation; she simply never saw the man the ledgers knew"
-      ]
+      ],
+      "cardTitle": "The widow"
     },
     {
       "id": "clara",
@@ -1410,7 +1293,8 @@
         "Protects Ashworth fiercely",
         "Will lie badly if he is threatened",
         "Any slight on Papa is met with fury, then tears — both entirely real"
-      ]
+      ],
+      "cardTitle": "Daughter of the house"
     },
     {
       "id": "ashworth",
@@ -1443,145 +1327,8 @@
         "Prickly about money",
         "Honest when cornered"
       ],
-      "portrait": "portraits/ashworth.jpg"
-    },
-    {
-      "id": "garrick",
-      "name": "Tom Garrick",
-      "shortBio": "Caretaker these five years; a big man carrying one arm stiff. The master blamed him for the thefts. Nine years a sergeant of the 66th until he struck an officer to stop a flogging and was drummed out; unemployable since, hired cheap by a master who liked a bargain. Gratitude sits on him like a yoke.",
-      "voice": "Slow, guarded, soldier's economy",
-      "defaultLocationId": "lodge",
-      "defaultWillingness": "guarded",
-      "storyRole": "suspect",
-      "knowledge": {
-        "public": "He served in the war, keeps the grounds, and has been under the master's displeasure since the burglaries began — worse since the attack on Mrs. Marsh. He says he was at the lodge all night. He has been doing his storm rounds with a candle stub; his lantern, he says, is lost. He moves like a man with a damaged shoulder and calls it a fallen beam. Before the burglaries there was never a word against him — six years of quiet service.",
-        "private": [
-          {
-            "id": "garrick-patrols",
-            "content": "He has walked the grounds every night for a fortnight, trying to catch the thief and save his place. The master told him one more theft would finish him. He has a wife and child in that lodge.",
-            "requiresWillingnessIn": [
-              "open",
-              "guarded"
-            ]
-          },
-          {
-            "id": "garrick-that-night",
-            "content": "Shown the print, he goes very still. 'Aye. The boot is mine. I was at the east door past eleven. I'll say nothing more.'",
-            "requiresEvidenceIds": [
-              "muddy-boot-print"
-            ]
-          },
-          {
-            "id": "garrick-description",
-            "content": "'Mrs. Marsh told me what he truly looks like. Not the tale that went round the house — she said she told them what she could bear to say, and the master would have waved off the rest. But she'd seen him twice from her window before ever he came at her, and she gave the truth of him to me, because I'm the one who walks the dark: big man. Gentleman's grey coat. Comes in by the east door with a key, bold as brass — that's why there's never a mark on the locks. Only kindness anyone's shown me up at that house. I'd have died before I let him reach her again.'",
-            "requiresWillingnessIn": [
-              "open",
-              "guarded"
-            ]
-          },
-          {
-            "id": "garrick-pressure",
-            "content": "'No man in the county would take me on, and the master did. Half-wages and glad of it — I owed him everything. Then the thefts began and it all curdled: six years of good service gone like breath off a glass. And when little Poppy came home from her peppermints saying the master meant to send us off — I stopped sleeping. I'd have caught that burglar with my bare hands.'",
-            "requiresTrust": 1
-          }
-        ],
-        "secrets": [
-          {
-            "id": "garrick-confession",
-            "content": "It breaks out of him: the east door stood open in the storm; in the dark hall a big man in a grey greatcoat — 'just as she said, Inspector, every point of him, JUST AS SHE SAID' — and before Garrick could close, the man sprang first and something iron came down across his shoulder. He swung the lantern in his fist — once — and the man went sideways through the vase and did not move. When the match flared he was looking at the master. He ran. He buried the lantern by the churchyard wall — fresh earth draws no eye there — and has not slept since. 'He struck me first. Who will ever believe that? And who told him I was his thief? And who told ME—' He stops on that thought as if it burns.",
-            "requiresEvidenceIds": [
-              "muddy-boot-print",
-              "incident-book"
-            ]
-          },
-          {
-            "id": "garrick-past",
-            "content": "'You'll have seen the papers by now, or you will. Nine years a sergeant. Lieutenant Sowerby set to flogging a sick boy who couldn't stand, and I stopped him — with my fist. They drummed me out for it, and by the law they were right to. No character, no letters. My family ate because Hugo Blackwood didn't care what a man's papers said so long as he came cheap. Whatever else he was — he was that.'",
-            "requiresTrust": 2
-          }
-        ]
-      },
-      "defenses": [
-        "Shields Meg and Poppy from every question",
-        "Will not invent what he does not know"
-      ],
-      "portrait": "portraits/garrick.jpg"
-    },
-    {
-      "id": "meg-garrick",
-      "name": "Meg Garrick",
-      "shortBio": "The caretaker's wife. Frightened and lying about it. A farmer's daughter from the next parish who married Tom when he came home from the Afghan war with a sergeant's bearing and no prospects. Does the manor's fine mending; keeps the lodge scrubbed raw so that nobody can ever say the Garricks gave cause. Her fear shows as brittle, perfect politeness. Keeper of the soldier's chest and of everything it means.",
-      "voice": "Quick, brittle, protective",
-      "defaultLocationId": "lodge",
-      "defaultWillingness": "guarded",
-      "storyRole": "witness",
-      "knowledge": {
-        "public": "She says Tom was abed all night. She says it a little too fast.",
-        "private": [
-          {
-            "id": "meg-truth",
-            "content": "'He came in past midnight soaked through and hasn't said ten words since. He's no murderer — the thefts were killing him first. Whoever's been robbing this house robbed us of him too.'",
-            "requiresEvidenceIds": [
-              "muddy-boot-print"
-            ]
-          },
-          {
-            "id": "meg-shoulder",
-            "content": "'He won't let me look at the shoulder. Says a beam came down in the wood store. There's no fallen beam in my wood store, Inspector. And he does his rounds with my kitchen candle now — a groundsman without his lantern, like a priest without his book.'",
-            "requiresTrust": 1
-          },
-          {
-            "id": "meg-fear",
-            "content": "'Nobody would take Tom after the army. Nobody — I wrote the letters myself and burned the answers before he saw them. Half-wages the master paid, and Tom thanked him like it was a knighthood. If we lose this place there is no other. Now do you understand why I keep this lodge so a duchess could eat off the floor?'",
-            "requiresTrust": 1
-          }
-        ],
-        "secrets": []
-      },
-      "defenses": [
-        "Lies plainly and badly for Tom",
-        "Softens only for Poppy's sake"
-      ],
-      "portrait": "portraits/meg-garrick.jpg"
-    },
-    {
-      "id": "poppy",
-      "name": "Poppy Garrick",
-      "shortBio": "The caretaker's daughter, nine years old. Sees everything; believed by no one. Nine years old, a noticer. Names things: the great yew in the churchyard is 'the umbrella tree,' the chair-lady's wheel is 'the mouse.' Draws what she sees and is truthful the way children are — about everything except whether she was asleep. Keeps the chair-lady's secrets, badly.",
-      "voice": "Small, certain, unbothered",
-      "defaultLocationId": "lodge",
-      "defaultWillingness": "open",
-      "storyRole": "witness",
-      "knowledge": {
-        "public": "A child who watches the big house from her window because nothing else happens at night.",
-        "private": [
-          {
-            "id": "poppy-window",
-            "content": "'Some nights there's lamplight in the study window when everybody's asleep. Nobody walking, though. Just the light, low down, like it's sitting.'",
-            "requiresTrust": 1
-          },
-          {
-            "id": "poppy-wheel",
-            "content": "'Some nights the squeaky wheel goes along the terrace under the big house — you can hear it from my window when the wind's right. And once I saw the chair-lady in the churchyard putting flowers on the old grave in the corner. She can go quick when she wants. Mummy says I dreamt it.'",
-            "requiresTrust": 2
-          },
-          {
-            "id": "poppy-lantern",
-            "content": "'Dad lost his lantern. Dad NEVER loses things. He mended my doll's eye with a pin once.'",
-            "requiresTrust": 1
-          },
-          {
-            "id": "poppy-secrets",
-            "content": "'The chair-lady tells me secrets. She said Mr. Blackwood was cross with Papa about the robbers — that he talked of sending us away off the place. She said I mustn't ever repeat it or it would come true faster.' A small pause. 'I only told Papa.'",
-            "requiresTrust": 1
-          }
-        ],
-        "secrets": []
-      },
-      "defenses": [
-        "Answers honestly if spoken to kindly; goes silent if frightened"
-      ],
-      "portrait": "portraits/poppy.jpg"
+      "portrait": "portraits/ashworth.jpg",
+      "cardTitle": "Miss Clara's fiancé"
     },
     {
       "id": "aunt",
@@ -1657,7 +1404,8 @@
         "If Constance's testimony is raised: sorrowful, unshaken — 'My daughter has listened for my chair all her life. She hears it in her sleep. You would hang a mother on a dream?'",
         "If accused of turning Blackwood against Garrick: 'I told Hugo nothing but truths. Things were stolen and no one stopped them. Is arithmetic a sin?'"
       ],
-      "portrait": "portraits/aunt.jpg"
+      "portrait": "portraits/aunt.jpg",
+      "cardTitle": "The invalid aunt"
     },
     {
       "id": "constance",
@@ -1713,7 +1461,57 @@
         "Expects to be accused and has stopped resenting it",
         "Truthful; has nothing to hide and nothing to gain that she knows of"
       ],
-      "portrait": "portraits/constance.jpg"
+      "portrait": "portraits/constance.jpg",
+      "cardTitle": "The aunt's daughter"
+    },
+    {
+      "id": "vale",
+      "name": "Mr. Vale",
+      "shortBio": "The family solicitor, here with the wedding settlement papers. A printer's son from Leeds who read law by scholarship and candle-end — the first of his family to wear a collar instead of an apron, and quietly terrified, always, of the drop back down. Vain about his copperplate hand; presses ferns between the pages of his law reports.",
+      "voice": "Smooth, dry, increasingly brittle",
+      "portrait": "portraits/vale.jpg",
+      "defaultLocationId": "library",
+      "defaultWillingness": "guarded",
+      "storyRole": "suspect",
+      "knowledge": {
+        "public": "Arrived Thursday to prepare Miss Clara's marriage settlement for signature this week. He and the master quarrelled on Tuesday.",
+        "private": [
+          {
+            "id": "vale-debt",
+            "content": "The quarrel was his own account: he owes the estate money he cannot presently pay, and Blackwood threatened exposure. The letter in the desk is his — a plea for time, nothing more.",
+            "requiresEvidenceIds": [
+              "vale-letter"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded",
+              "hostile"
+            ]
+          },
+          {
+            "id": "vale-sneak",
+            "content": "After the alarm he crept down to retrieve his letter before the police could read it, took the master's drawer key from the study — and dropped it in the library hearth when Henshaw stirred. Shabby, he grants. Not murder.",
+            "requiresEvidenceIds": [
+              "brass-key",
+              "vale-letter"
+            ]
+          }
+        ],
+        "secrets": [
+          {
+            "id": "vale-trust",
+            "content": "The point everyone is missing: Blackwood never owned the fortune. He held it as custodian under the 1888 deed — for the Ashcombe line, until Mrs. Marsh remarried or Miss Constance married; on his death it passes to them outright. And the portion he had me drafting for Miss Clara's wedding was to be drawn from that same fund. I told him it would not survive a court's reading. He told me to draft it anyway. I am the only man living who knows how that deed runs — and how little is left under it.",
+            "requiresEvidenceIds": [
+              "trust-papers"
+            ]
+          }
+        ]
+      },
+      "defenses": [
+        "Insists his quarrel was money, never violence",
+        "Lawyerly precision under pressure"
+      ],
+      "cardTitle": "The family solicitor"
     },
     {
       "id": "crane",
@@ -1767,7 +1565,80 @@
         "Contempt for sentiment",
         "Answers about money precisely; about feelings not at all"
       ],
-      "portrait": "portraits/crane.jpg"
+      "portrait": "portraits/crane.jpg",
+      "cardTitle": "The master's business partner"
+    },
+    {
+      "id": "henshaw",
+      "name": "Butler Henshaw",
+      "shortBio": "Long-serving butler; found the body; keeps the incident book. Came to the Grange as hall-boy at fourteen and never left: forty years, man and boy, under two masters. A widower — his late wife kept this very kitchen — so the house is all the family he has, and he polishes silver when he cannot bear to think. Remembers the first Mrs. Blackwood filling the hall with cut roses, and has never once said so aloud.",
+      "voice": "Formal, careful, precise",
+      "portrait": "portraits/henshaw.jpg",
+      "defaultLocationId": "entrance-hall",
+      "defaultWillingness": "open",
+      "defaultStance": "professional",
+      "storyRole": "witness",
+      "knowledge": {
+        "public": "He was in the pantry when he heard a crash near eleven; found the master fallen, the vase broken, the east door standing open. He has logged four break-ins in six weeks. He has kept the household incident book in his own precise hand since the thefts began — every date, every item, every window. And he has noticed, because he notices everything, that Garrick has been begging candle ends from the kitchen for his rounds this past week; the man's good lantern must be broken, though he has not said so.",
+        "private": [
+          {
+            "id": "henshaw-master-temper",
+            "content": "The master blamed Garrick for the thefts and said, loudly enough for the house to hear, that one more incident would be the end of his post.",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "henshaw-shutter",
+            "content": "The east passage casement banged that night though he latches it himself every evening — and the east door stood open when he reached the hall. Latches do not lift themselves from outside. He has not liked to say so.",
+            "requiresTrust": 1
+          },
+          {
+            "id": "henshaw-refusals",
+            "content": "'Mrs. Marsh began refusing her tonic — it would be some eighteen months ago now. The master was much put out. He continued to have it made up and carried it to her regardless. Such attention is rare, Inspector.'",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "henshaw-fowlers",
+            "content": "'Fowler's Solution, Inspector? I understood Fowler's to be for skin complaints and anaemia. Mrs. Marsh's affliction is her legs, and latterly her heart. And made up double... I am no chemist. I will say the master ordered it so these ten years, and that no physician has attended Mrs. Marsh above twice in that time.'",
+            "requiresEvidenceIds": [
+              "chemists-invoice"
+            ]
+          },
+          {
+            "id": "henshaw-masters-fear",
+            "content": "'After the attack on Mrs. Marsh the master was another man. She had described the brute to him — big, rough, a working man's boots — and I watched him look at Garrick as he heard it. From that evening he kept the library poker by his chair after the house went up, and sat dark in the hall on bad nights. He said he would deal with the devil himself. I served him his brandy and said nothing, God forgive me.'",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "henshaw-whispers",
+            "content": "'It was Mrs. Marsh who first suggested — gently, she does everything gently — that the groundsman ought to answer for the safety of the house at night. And after each theft she would ask the master, so sorrowfully, whether Garrick had found anything at all yet. She meant it kindly, I am sure.'",
+            "requiresTrust": 1
+          }
+        ],
+        "secrets": [
+          {
+            "id": "henshaw-first-mistress",
+            "content": "He served under the first Mrs. Blackwood — Rosalind. Her fall from the balcony in '89 was ruled an accident and never spoken of again; the courtyard below was paved over where it needed it and the rooms above shut up. Mr. Marsh's fever in '85, the mistress's fall, Mrs. Marsh's long decline — a butler does not say what three such misfortunes in one family smell like. He will say this much: the master carried Mrs. Marsh's tonic up with his own hands, every evening, for years. Such devotion. The first mistress's household keys were never all accounted for after her death.",
+            "requiresTrust": 2,
+            "requiresEvidenceIds": [
+              "headstone-inscription"
+            ]
+          }
+        ]
+      },
+      "defenses": [
+        "Protects the household's name",
+        "Will not speculate beyond what he saw"
+      ],
+      "cardTitle": "The butler"
     },
     {
       "id": "mrs-hollis",
@@ -1787,7 +1658,8 @@
         ],
         "secrets": []
       },
-      "portrait": "portraits/mrs-hollis.jpg"
+      "portrait": "portraits/mrs-hollis.jpg",
+      "cardTitle": "The cook"
     },
     {
       "id": "dora",
@@ -1802,7 +1674,149 @@
         "private": [],
         "secrets": []
       },
-      "portrait": "portraits/dora.jpg"
+      "portrait": "portraits/dora.jpg",
+      "cardTitle": "The housemaid"
+    },
+    {
+      "id": "garrick",
+      "name": "Tom Garrick",
+      "shortBio": "Caretaker these five years; a big man carrying one arm stiff. The master blamed him for the thefts. Nine years a sergeant of the 66th until he struck an officer to stop a flogging and was drummed out; unemployable since, hired cheap by a master who liked a bargain. Gratitude sits on him like a yoke.",
+      "voice": "Slow, guarded, soldier's economy",
+      "defaultLocationId": "lodge",
+      "defaultWillingness": "guarded",
+      "storyRole": "suspect",
+      "knowledge": {
+        "public": "He served in the war, keeps the grounds, and has been under the master's displeasure since the burglaries began — worse since the attack on Mrs. Marsh. He says he was at the lodge all night. He has been doing his storm rounds with a candle stub; his lantern, he says, is lost. He moves like a man with a damaged shoulder and calls it a fallen beam. Before the burglaries there was never a word against him — six years of quiet service.",
+        "private": [
+          {
+            "id": "garrick-patrols",
+            "content": "He has walked the grounds every night for a fortnight, trying to catch the thief and save his place. The master told him one more theft would finish him. He has a wife and child in that lodge.",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "garrick-that-night",
+            "content": "Shown the print, he goes very still. 'Aye. The boot is mine. I was at the east door past eleven. I'll say nothing more.'",
+            "requiresEvidenceIds": [
+              "muddy-boot-print"
+            ]
+          },
+          {
+            "id": "garrick-description",
+            "content": "'Mrs. Marsh told me what he truly looks like. Not the tale that went round the house — she said she told them what she could bear to say, and the master would have waved off the rest. But she'd seen him twice from her window before ever he came at her, and she gave the truth of him to me, because I'm the one who walks the dark: big man. Gentleman's grey coat. Comes in by the east door with a key, bold as brass — that's why there's never a mark on the locks. Only kindness anyone's shown me up at that house. I'd have died before I let him reach her again.'",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "garrick-pressure",
+            "content": "'No man in the county would take me on, and the master did. Two-thirds wages and glad of it — I owed him everything. Then the thefts began and it all curdled: six years of good service gone like breath off a glass. And when little Poppy came home from her peppermints saying the master meant to send us off — I stopped sleeping. I'd have caught that burglar with my bare hands.'",
+            "requiresTrust": 1
+          }
+        ],
+        "secrets": [
+          {
+            "id": "garrick-confession",
+            "content": "It breaks out of him: the east door stood open in the storm; in the dark hall a big man in a grey greatcoat — 'just as she said, Inspector, every point of him, JUST AS SHE SAID' — and before Garrick could close, the man sprang first and something iron came down across his shoulder. He swung the lantern in his fist — once — and the man went sideways through the vase and did not move. When the match flared he was looking at the master. He ran. He buried the lantern by the churchyard wall — fresh earth draws no eye there — and has not slept since. 'He struck me first. Who will ever believe that? And who told him I was his thief? And who told ME—' He stops on that thought as if it burns.",
+            "requiresEvidenceIds": [
+              "muddy-boot-print",
+              "incident-book"
+            ]
+          },
+          {
+            "id": "garrick-past",
+            "content": "'You'll have seen the papers by now, or you will. Nine years a sergeant. Lieutenant Sowerby set to flogging a sick boy who couldn't stand, and I stopped him — with my fist. They drummed me out for it, and by the law they were right to. No character, no letters. My family ate because Hugo Blackwood didn't care what a man's papers said so long as he came cheap. Whatever else he was — he was that.'",
+            "requiresTrust": 2
+          }
+        ]
+      },
+      "defenses": [
+        "Shields Meg and Poppy from every question",
+        "Will not invent what he does not know"
+      ],
+      "portrait": "portraits/garrick.jpg",
+      "cardTitle": "The caretaker"
+    },
+    {
+      "id": "meg-garrick",
+      "name": "Meg Garrick",
+      "shortBio": "The caretaker's wife. Frightened and lying about it. A farmer's daughter from the next parish who married Tom when he came home from the Afghan war with a sergeant's bearing and no prospects. Does the manor's fine mending; keeps the lodge scrubbed raw so that nobody can ever say the Garricks gave cause. Her fear shows as brittle, perfect politeness. Keeper of the soldier's chest and of everything it means.",
+      "voice": "Quick, brittle, protective",
+      "defaultLocationId": "lodge",
+      "defaultWillingness": "guarded",
+      "storyRole": "witness",
+      "knowledge": {
+        "public": "She says Tom was abed all night. She says it a little too fast.",
+        "private": [
+          {
+            "id": "meg-truth",
+            "content": "'He came in past midnight soaked through and hasn't said ten words since. He's no murderer — the thefts were killing him first. Whoever's been robbing this house robbed us of him too.'",
+            "requiresEvidenceIds": [
+              "muddy-boot-print"
+            ]
+          },
+          {
+            "id": "meg-shoulder",
+            "content": "'He won't let me look at the shoulder. Says a beam came down in the wood store. There's no fallen beam in my wood store, Inspector. And he does his rounds with my kitchen candle now — a groundsman without his lantern, like a priest without his book.'",
+            "requiresTrust": 1
+          },
+          {
+            "id": "meg-fear",
+            "content": "'Nobody would take Tom after the army. Nobody — I wrote the letters myself and burned the answers before he saw them. Two-thirds wages the master paid, and Tom thanked him like it was a knighthood. My mending brings in the rest, and Poppy helps Mrs. Hollis when there's company. If we lose this place there is no other. Now do you understand why I keep this lodge so a duchess could eat off the floor?'",
+            "requiresTrust": 1
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Lies plainly and badly for Tom",
+        "Softens only for Poppy's sake"
+      ],
+      "portrait": "portraits/meg-garrick.jpg",
+      "cardTitle": "The caretaker's wife"
+    },
+    {
+      "id": "poppy",
+      "name": "Poppy Garrick",
+      "shortBio": "The caretaker's daughter, nine years old. Sees everything; believed by no one. Nine years old, a noticer. Names things: the great yew in the churchyard is 'the umbrella tree,' the chair-lady's wheel is 'the mouse.' Draws what she sees and is truthful the way children are — about everything except whether she was asleep. Keeps the chair-lady's secrets, badly.",
+      "voice": "Small, certain, unbothered",
+      "defaultLocationId": "lodge",
+      "defaultWillingness": "open",
+      "storyRole": "witness",
+      "knowledge": {
+        "public": "A child who watches the big house from her window because nothing else happens at night.",
+        "private": [
+          {
+            "id": "poppy-window",
+            "content": "'Some nights there's lamplight in the study window when everybody's asleep. Nobody walking, though. Just the light, low down, like it's sitting.'",
+            "requiresTrust": 1
+          },
+          {
+            "id": "poppy-wheel",
+            "content": "'Some nights the squeaky wheel goes along the terrace under the big house — you can hear it from my window when the wind's right. And once I saw the chair-lady in the churchyard putting flowers on the old grave in the corner. She can go quick when she wants. Mummy says I dreamt it.'",
+            "requiresTrust": 2
+          },
+          {
+            "id": "poppy-lantern",
+            "content": "'Dad lost his lantern. Dad NEVER loses things. He mended my doll's eye with a pin once.'",
+            "requiresTrust": 1
+          },
+          {
+            "id": "poppy-secrets",
+            "content": "'The chair-lady tells me secrets. She said Mr. Blackwood was cross with Papa about the robbers — that he talked of sending us away off the place. She said I mustn't ever repeat it or it would come true faster.' A small pause. 'I only told Papa.'",
+            "requiresTrust": 1
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "Answers honestly if spoken to kindly; goes silent if frightened"
+      ],
+      "portrait": "portraits/poppy.jpg",
+      "cardTitle": "The caretaker's daughter"
     }
   ],
   "evidence": [
@@ -2020,8 +2034,7 @@
         "at": "1885",
         "event": "Albert Marsh — Eudora's husband, Blackwood's brother-in-law, then administrator of the Ashcombe fund — dies of a sudden 'gastric fever', his daughter Constance then a young woman of twenty. Administration of the fortune passes to Blackwood. PROBABLE murder; never suspected at the time, never provable now.",
         "actorIds": [
-          "blackwood",
-          "aunt"
+          "blackwood"
         ]
       },
       {
@@ -2073,7 +2086,7 @@
       },
       {
         "id": "garrick-hiring",
-        "event": "1891. Tom Garrick — nine years a sergeant of the 66th Foot, drummed out for striking a lieutenant who was flogging a sick private — has been unemployable since: no character, no letters, a wife and small daughter and empty pockets. Blackwood hires him at half a proper wage, pleased with the bargain of a big, capable, grateful man who can never afford to leave. For five years there is no quarrel between them: Garrick repays the rescue with dog-loyal service, and Blackwood has not one word against him.",
+        "event": "1891. Tom Garrick — nine years a sergeant of the 66th Foot, drummed out for striking a lieutenant who was flogging a sick private — has been unemployable since: no character, no letters, a wife and small daughter and empty pockets. Blackwood hires him at two-thirds of a proper wage, pleased with the bargain of a big, capable, grateful man who can never afford to leave. For five years there is no quarrel between them: Garrick repays the rescue with dog-loyal service, and Blackwood has not one word against him.",
         "at": "1891"
       },
       {
@@ -2132,7 +2145,7 @@
       {
         "id": "the-attack",
         "at": "Eight days ago",
-        "event": "Eudora stages the attack on herself: her parlor window broken from within (glass outward again), her few jewels 'taken' (wrapped into the courtyard cache), her account rehearsed — hands at her throat, a big ROUGH man in WORKING BOOTS (told to Blackwood and the household, aiming at Garrick), and separately, kindly, along the lodge path, a different portrait for Garrick alone: a big man in a GENTLEMAN'S GREY COAT who comes by the east door WITH A KEY (aiming at Blackwood). No physician examines her; no one would presume. The household goes onto a war footing: Blackwood keeps the library poker by his chair and sits dark in the hall on bad nights; Garrick patrols armed with his dark lantern and her description. Blackwood calls in no police — he cannot: constables in the house means questions, and his books cannot survive questions. Eudora counted on precisely that; his corruption was her shield.",
+        "event": "Eudora stages the attack on herself: her parlor window broken from within (glass outward again), her few jewels 'taken' (wrapped into the courtyard cache), her account rehearsed — hands at her throat, a big ROUGH man in WORKING BOOTS (told to Blackwood and the household, aiming at Garrick), and separately, kindly, along the lodge path, a different portrait for Garrick alone: a big man in a GENTLEMAN'S GREY COAT who comes by the east door WITH A KEY (aiming at Blackwood). No physician examines her; no one would presume. The household goes onto a war footing: Blackwood keeps the library poker by his chair and sits dark in the hall on bad nights; Garrick patrols armed with his dark lantern and her description. Blackwood calls in no police — he cannot: constables in the house means questions, and his books cannot survive questions. Eudora counted on precisely that; his corruption was her shield. Blackwood does send for the doctor; Mrs. Marsh — bruised only, she says, and pious about her person — refuses to be examined by a man, and the household accepts it as her characteristic delicacy. Of course she refuses. There is nothing to find.",
         "locationId": "aunts-room",
         "actorIds": [
           "aunt",

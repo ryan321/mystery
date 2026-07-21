@@ -269,12 +269,14 @@ app.get("/v1/cases/:caseId", async (c) => {
     },
     // Mystery detail page: hidden characters (knownAtStart: false) are a
     // per-playthrough reveal — they never appear in pre-start marketing.
+    // Only cardTitle ships here: shortBio is the AI's character card and
+    // may contain secrets. Array order is the authored display order.
     cast: def.characters
       .filter((ch) => ch.knownAtStart !== false)
       .map((ch) => ({
         id: ch.id,
         name: ch.name,
-        shortBio: ch.shortBio,
+        cardTitle: ch.cardTitle,
         storyRole: ch.storyRole ?? "suspect",
         portrait: ch.portrait,
         portraitUrl: ch.portrait
@@ -1142,10 +1144,12 @@ function publicState(state: PlaythroughState, def?: MysteryDefinition) {
       .map((ch) => ({
         id: ch.id,
         name: def ? knownAsFor(def, state, ch.id) : ch.name,
-        shortBio:
+        // Dramatis-personae line only — shortBio is the AI's card and
+        // may carry secrets; it never reaches a player surface.
+        cardTitle:
           state.playerKnowledge?.[ch.id]?.nameKnown === false
             ? undefined
-            : ch.shortBio,
+            : ch.cardTitle,
         portrait: ch.portrait,
         portraitUrl: ch.portrait
           ? `/v1/cases/${state.caseId}/assets/${ch.portrait}`

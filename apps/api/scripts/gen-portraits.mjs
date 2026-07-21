@@ -97,6 +97,46 @@ Subject of the painting (head-and-shoulders, Victorian 1890s England): ${desc}.
 Square image, 1024x1024. No modern elements. No text anywhere except the nameplate.`;
 }
 
+/** --deframe: edit an existing portrait — strip frame/wall/nameplate. */
+async function deframeOne(id) {
+  const file = join(caseDir, "portraits", `${id}.jpg`);
+  const b64 = readFileSync(file).toString("base64");
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
+    body: JSON.stringify({
+      model: MODEL,
+      modalities: ["image", "text"],
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "image_url", image_url: { url: `data:image/jpeg;base64,${b64}` } },
+            {
+              type: "text",
+              text: "Remove the wooden picture frame, the wall behind it, the candle, and the brass nameplate entirely. Output ONLY the oil painting itself — the painted canvas must touch all four edges of the image with NO border of any kind: no white mat, no margin, no frame, no vignette edge. The exact same person, pose, expression, clothing, brushwork, and candlelit palette, on the same plain dark painted backdrop. No text anywhere.",
+            },
+          ],
+        },
+      ],
+    }),
+  });
+  if (!res.ok) throw new Error(`openrouter ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  const data = await res.json();
+  const msg = data.choices?.[0]?.message ?? {};
+  let url = msg.images?.[0]?.image_url?.url;
+  if (!url && Array.isArray(msg.content)) {
+    const part = msg.content.find((p) => p.type === "image_url");
+    url = part?.image_url?.url;
+  }
+  if (!url?.startsWith("data:image/")) throw new Error(`no image in response`);
+  const out64 = url.slice(url.indexOf(",") + 1);
+  const tmp = join(caseDir, "portraits", `.${id}.tmp.png`);
+  writeFileSync(tmp, Buffer.from(out64, "base64"));
+  execFileSync("sips", ["-s", "format", "jpeg", "-s", "formatOptions", "90", tmp, "--out", file], { stdio: "ignore" });
+  execFileSync("rm", [tmp]);
+}
+
 async function generateOne(id, subject) {
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
@@ -131,6 +171,26 @@ async function generateOne(id, subject) {
   execFileSync("sips", ["-s", "format", "jpeg", "-s", "formatOptions", "90", tmp, "--out", out], { stdio: "ignore" });
   execFileSync("rm", [tmp]);
   return `portraits/${id}.jpg`;
+}
+
+if (args.deframe === "true" || (args.deframe && args.deframe !== "false")) {
+  const ids = (args.deframe === "true"
+    ? def.characters.filter((c) => c.portrait).map((c) => c.id)
+    : args.deframe.split(",").map((s) => s.trim())
+  ).filter((id) => existsSync(join(caseDir, "portraits", `${id}.jpg`)));
+  console.log(`Deframing ${ids.length} portraits via ${MODEL}: ${ids.join(", ")}`);
+  for (const id of ids) {
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        await deframeOne(id);
+        console.log(`  ✔ ${id} deframed`);
+        break;
+      } catch (err) {
+        console.warn(`  ✘ ${id} attempt ${attempt}: ${err.message.slice(0, 160)}`);
+      }
+    }
+  }
+  process.exit(0);
 }
 
 const todo = def.characters.filter((c) => {

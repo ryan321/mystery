@@ -304,42 +304,35 @@ export default function MysteryDetail() {
             <section className={styles.charactersSection}>
               <h2 className={styles.sectionTitle}>The characters in this mystery</h2>
               <div className={styles.characters}>
-                {[...detail.cast]
-                  .sort((a, b) => {
-                    const rank = (r?: string) =>
-                      r === "victim" ? 0 : r === "suspect" ? 1 : 2;
-                    return rank(a.storyRole) - rank(b.storyRole);
-                  })
-                  .map((c) => (
-                    <div key={c.id} className={styles.characterCard}>
-                      <div className={styles.characterPortrait}>
-                        {c.portraitUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={assetUrl(c.portraitUrl)}
-                            alt=""
-                            width={140}
-                            height={140}
-                          />
-                        ) : (
-                          <span className={styles.characterInitial}>
-                            {c.name.charAt(0)}
-                          </span>
-                        )}
-                      </div>
-                      <div className={styles.characterInfo}>
-                        <div className={styles.characterName}>{c.name}</div>
-                        {c.storyRole === "victim" ? (
-                          <span className={styles.roleBadge}>Victim</span>
-                        ) : c.storyRole === "witness" ? (
-                          <span className={styles.roleBadgeMuted}>Witness</span>
-                        ) : null}
-                        {c.shortBio ? (
-                          <div className={styles.characterBio}>{c.shortBio}</div>
-                        ) : null}
-                      </div>
+                {/* Authored order from the definition — families stay together. */}
+                {detail.cast.map((c) => (
+                  <div key={c.id} className={styles.characterCard}>
+                    <div className={styles.characterPortrait}>
+                      {c.portraitUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={assetUrl(c.portraitUrl)}
+                          alt=""
+                          width={140}
+                          height={140}
+                        />
+                      ) : (
+                        <span className={styles.characterInitial}>
+                          {c.name.charAt(0)}
+                        </span>
+                      )}
                     </div>
-                  ))}
+                    <div className={styles.characterInfo}>
+                      <div className={styles.characterName}>{c.name}</div>
+                      {c.storyRole === "victim" ? (
+                        <span className={styles.roleBadge}>Victim</span>
+                      ) : null}
+                      {c.cardTitle ? (
+                        <div className={styles.characterBio}>{c.cardTitle}</div>
+                      ) : null}
+                    </div>
+                  </div>
+                ))}
               </div>
             </section>
           ) : null}

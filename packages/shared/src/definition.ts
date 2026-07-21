@@ -106,6 +106,22 @@ export const CharacterSchema = z.object({
    */
   nameKnownAtStart: z.boolean().default(true),
   shortBio: z.string().optional(),
+  /**
+   * Dramatis-personae line for pre-game marketing surfaces (case detail
+   * cast list): a short title only — "The caretaker", "The widow".
+   * shortBio is the AI's character card and may contain secrets; it must
+   * never reach the shelf. Cast order on those surfaces follows the
+   * characters array: author it deliberately (keep families together).
+   */
+  cardTitle: z.string().optional(),
+  /**
+   * Spoiler-safe one-liner for pre-game marketing surfaces (case detail
+   * cast list). shortBio is the AI's character card and may contain
+   * secrets — it must never reach the shelf. Cast order on those
+   * surfaces follows the characters array: author it deliberately
+   * (keep families together).
+   */
+  cardBio: z.string().optional(),
   voice: z.string().optional(),
   /**
    * Path to portrait image relative to the case content folder
