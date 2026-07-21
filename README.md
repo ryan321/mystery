@@ -9,6 +9,7 @@ Single-player, fair-play **text investigation** games. Structured mystery defini
 | [WHAT.md](./WHAT.md) | Product definition — what the game *is* |
 | [docs/PRODUCT.md](./docs/PRODUCT.md) | Full brief: market, monetization, roadmap, landing goals |
 | [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | System design: API, engine, LLM, turn pipeline |
+| [docs/MYSTERY_PRINCIPLES.md](./docs/MYSTERY_PRINCIPLES.md) | **What makes a good mystery** — the principles every case is held to |
 | [docs/CASE_AUTHORING.md](./docs/CASE_AUTHORING.md) | **Write a case:** full `definition.json` reference |
 | [content/cases/definition.schema.json](./content/cases/definition.schema.json) | JSON Schema for editor autocomplete (`pnpm schema`) |
 | [docs/CASE_DEFINITION.md](./docs/CASE_DEFINITION.md) | Design model: entity state, beats, philosophy |
