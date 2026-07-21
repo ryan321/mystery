@@ -104,6 +104,42 @@ Likely on **execution** (leaky NPCs, weak first case, awkward solve) — not on 
 
 ## 7. Go-to-market & monetization
 
+### Audience: two segments, two doors
+
+Not "gamers vs readers" — two reachable segments that map onto the two
+channels:
+
+| Segment | Who | Door | Sell them |
+|---------|-----|------|-----------|
+| **Deduction gamers** | Obra Dinn / Golden Idol / Her Story / Disco Elysium players — gamers who read, in volume, and want the game to refuse to think for them | Steam, à la carte (see [STEAM.md](./STEAM.md)) | Challenge language: fair-play, no hand-holding, the solution is fixed and earnable |
+| **Mystery readers** | The Christie/cozy/true-crime audience — much larger, mostly unserved by anything playable | Browser + subscription | Immersion language: "step inside the mystery, question the suspects yourself" — book comps, never game comps |
+
+**Mystery readers were never passive.** The fair-play contract (Knox's
+rules, Ellery Queen's "Challenge to the Reader") exists because mystery
+reading is already a competition with the author. The product lets readers
+actually play the game they were silently playing. Behavioral proof they'll
+cross over when the door is right: Hunt A Killer (~100k mostly-non-gamer
+subscribers doing evidence homework), escape rooms, murder-party kits,
+Cain's Jawbone on BookTok, Murdle. What they won't tolerate is gamer
+friction — downloads, launchers, gaming literacy. The browser app is the
+right door: no install, and the whole interface is typing sentences, which
+ChatGPT has normalized even for the 60-year-old Christie devotee.
+
+**Design guardrails the reader segment depends on** (already built — protect
+them): failure endings still deliver the revelation, so a wrong accusation
+reads like finishing the book having guessed wrong, not like losing a video
+game; the difficulty ladder (easy tier, progress pulses) is the reader
+on-ramp; the authored prose is the product as much as the puzzle.
+
+**Verdict:** deduction gamers are the beachhead (loud, findable, on a
+storefront with discovery); readers are the prize (bigger market,
+subscription-habituated — Kindle Unlimited, Audible, book boxes — and
+almost completely unserved). Reader acquisition channels: BookTok /
+Bookstagram mystery creators, true-crime podcast ads, mystery newsletters
+(CrimeReads-adjacent), Facebook/Instagram interest targeting (Christie,
+Louise Penny, Hunt A Killer, escape rooms), puzzle-daily habit surfaces.
+Never lead with "AI" to this segment; lead with the case.
+
 ### Funnel
 1. **Landing page** — explain the product; convert curiosity → intent  
 2. **Free short case** — full vertical slice of the real game (not a fake trailer)  
