@@ -6,7 +6,8 @@
  *   pnpm audit --case blackwood-inheritance --audit clues,locations
  *   pnpm audit --case blackwood-inheritance --no-llm        # deterministic checks only
  *
- * Audits: crime | realism | characters | locations | clues
+ * Audits: crime | realism | characters | locations | clues | persona |
+ * opening | ending | details
  * Each saves playtests/<case>/audit-<name>-<version>-<stamp>.json and prints
  * a report. Exit 1 if any audit grades FAIL.
  */
@@ -21,6 +22,7 @@ import { runCluesAudit } from "./clues.mjs";
 import { runPersonaAudit } from "./persona.mjs";
 import { runOpeningAudit } from "./opening.mjs";
 import { runEndingAudit } from "./ending.mjs";
+import { runDetailsAudit } from "./details.mjs";
 
 const args = {};
 for (let i = 2; i < process.argv.length; i++) {
@@ -33,7 +35,7 @@ for (let i = 2; i < process.argv.length; i++) {
   }
 }
 if (!args.case) {
-  console.error("Usage: pnpm audit --case <caseId> [--audit crime,realism,characters,locations,clues] [--no-llm]");
+  console.error("Usage: pnpm audit --case <caseId> [--audit crime,realism,characters,locations,clues,persona,opening,ending,details] [--no-llm]");
   process.exit(1);
 }
 
@@ -41,7 +43,7 @@ const caseDir = join(repoRoot, "content/cases", args.case);
 const def = JSON.parse(readFileSync(join(caseDir, "definition.json"), "utf8"));
 const llm = args["no-llm"] !== "true";
 const wanted = (args.audit ?? "all") === "all"
-  ? ["crime", "realism", "characters", "locations", "clues", "persona", "opening", "ending"]
+  ? ["crime", "realism", "characters", "locations", "clues", "persona", "opening", "ending", "details"]
   : args.audit.split(",").map((s) => s.trim());
 
 const RUNNERS = {
@@ -53,6 +55,7 @@ const RUNNERS = {
   persona: () => runPersonaAudit(def, { llm }),
   opening: () => runOpeningAudit(def, { llm }),
   ending: () => runEndingAudit(def, { llm }),
+  details: () => runDetailsAudit(def, { llm }),
 };
 
 const label = `${args.case}@${def.contentVersion}`;
