@@ -609,6 +609,20 @@ export const CaseMetaSchema = z.object({
    * full — toasts + coarse depth meter
    */
   progressUi: z.enum(["off", "subtle", "full"]).optional(),
+  /**
+   * Playtest acceptance targets (scripts/playtest.mjs --sweep). All
+   * optional — defaults derive from difficulty. minTurns is the floor a
+   * speedrunner must not beat; maxTurns the ceiling a thorough player
+   * should finish within.
+   */
+  playtest: z
+    .object({
+      minTurns: z.number().int().positive().optional(),
+      maxTurns: z.number().int().positive().optional(),
+      minEvidenceCoverage: z.number().min(0).max(1).optional(),
+      minFunMedian: z.number().min(1).max(10).optional(),
+    })
+    .optional(),
 });
 export type CaseMeta = z.infer<typeof CaseMetaSchema>;
 

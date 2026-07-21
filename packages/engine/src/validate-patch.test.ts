@@ -39,7 +39,10 @@ describe("validateAndApplyPatch", () => {
       setLocationId: "library",
     }).nextState;
     state = validateAndApplyPatch(def, state, {
-      addEvidenceIds: ["brass-key", "vale-letter"],
+      addEvidenceIds: ["brass-key"],
+    }).nextState;
+    state = validateAndApplyPatch(def, state, {
+      addEvidenceIds: ["vale-letter"],
       setFlags: { found_vale_letter: true },
     }).nextState;
     const beats = evaluateBeats(def, state, 3, {
@@ -164,15 +167,21 @@ describe("validateAndApplyPatch", () => {
     expect(ok.nextState.locationId).toBe("library");
   });
 
-  it("grants vase evidence", () => {
+  it("grants vase evidence one discovery per turn (pacing cap)", () => {
     const state = createInitialPlaythrough(def, "test-3");
+    // The playtest leak: a broad look-around must not empty the room.
     const got = validateAndApplyPatch(def, state, {
       addEvidenceIds: ["black-thread", "muddy-boot-print"],
       setFlags: { examined_vase: true, found_boot_print: true },
     });
-    expect(got.evidenceAdded).toEqual(
-      expect.arrayContaining(["black-thread", "muddy-boot-print"])
-    );
+    expect(got.evidenceAdded).toEqual(["black-thread"]);
+    expect(got.rejected.join(" ")).toContain("muddy-boot-print");
+
+    // The second clue still waits for a follow-up inspection.
+    const followUp = validateAndApplyPatch(def, got.nextState, {
+      addEvidenceIds: ["muddy-boot-print"],
+    });
+    expect(followUp.evidenceAdded).toEqual(["muddy-boot-print"]);
   });
 
   it("requires brass-key evidence for letter (not magic flag)", () => {

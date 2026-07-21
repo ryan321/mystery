@@ -2,7 +2,7 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "blackwood-inheritance",
-  "contentVersion": "0.9.8",
+  "contentVersion": "0.9.9",
   "meta": {
     "title": "The Blackwood Inheritance",
     "premise": "A stormy night, a locked manor, and violence at the foot of the stairs. The family was already at each other’s throats.",
@@ -22,7 +22,12 @@
     "artStyle": "Victorian gothic oil portrait, head-and-shoulders, candlelit manor palette (deep umber, blood maroon, cold grey-blue), muted desaturated tones, soft Rembrandt lighting, same painted frame and brush style for every cast member, no modern clothing, mystery game character portrait, consistent artist hand across the set",
     "setting": "Blackwood Manor, on a storm-cut country road. Night. No one leaves until the weather breaks.",
     "summary": "Mr. Blackwood is dead at the foot of the main staircase — a crash, a body, and a household that cannot hide how much they hated him. The storm has sealed the road. Butler Henshaw, the widowed Mrs. Blackwood, daughter Clara, and family solicitor Mr. Vale are all still inside. Someone among them struck the blow. The truth is already written; your job is to find it before morning invents a quieter story.",
-    "theMystery": "Who killed Mr. Blackwood in his own house, and can you name the killer with method and motive before the storm lifts?"
+    "theMystery": "Who killed Mr. Blackwood in his own house, and can you name the killer with method and motive before the storm lifts?",
+    "playtest": {
+      "minTurns": 12,
+      "maxTurns": 35,
+      "minEvidenceCoverage": 0.75
+    }
   },
   "player": {
     "personaId": "inspector-cross",
@@ -179,7 +184,11 @@
       "name": "Blackwood Manor — the entrance hall",
       "description": "Marble floor, storm-lashed windows, a stopped grandfather clock, and a shattered crystal vase. The east door leads toward the library wing. Stairs rise to the private rooms.",
       "startsAccessible": true,
-      "map": { "x": 1, "y": 1, "floor": 0 },
+      "map": {
+        "x": 1,
+        "y": 1,
+        "floor": 0
+      },
       "exits": [
         {
           "toLocationId": "library",
@@ -199,13 +208,24 @@
           "id": "broken-vase",
           "name": "broken crystal vase",
           "onInspect": {
-            "narrativeHints": "Shards scatter outward as if struck from above. A black thread snags on jagged glass. Near the east door, a wet size-eleven boot print points toward the library — not staff shoes.",
+            "narrativeHints": "Shards scatter outward as if struck from above. A black thread snags on jagged glass. Rainwater has pooled by the east door — something there catches the lamplight.",
             "revealsEvidenceIds": [
-              "black-thread",
+              "black-thread"
+            ],
+            "setsFlags": {
+              "examined_vase": true
+            }
+          }
+        },
+        {
+          "id": "east-door-rainwater",
+          "name": "rainwater by the east door",
+          "onInspect": {
+            "narrativeHints": "A wet size-eleven boot print points toward the library — a gentleman's boot, not staff shoes. The rain outside has nearly washed its twin away.",
+            "revealsEvidenceIds": [
               "muddy-boot-print"
             ],
             "setsFlags": {
-              "examined_vase": true,
               "found_boot_print": true
             }
           }
@@ -230,7 +250,11 @@
       "description": "Cold and dark. A fire smolders. A ledger lies open on the desk to tonight's date. Ash in the hearth glints with metal.",
       "startsAccessible": true,
       "knownAtStart": true,
-      "map": { "x": 2, "y": 1, "floor": 0 },
+      "map": {
+        "x": 2,
+        "y": 1,
+        "floor": 0
+      },
       "exits": [
         {
           "toLocationId": "entrance-hall",
@@ -285,7 +309,11 @@
       "description": "Glass walls drum with rain. Ferns drip. Far from the east door and the crash.",
       "startsAccessible": true,
       "knownAtStart": true,
-      "map": { "x": 0, "y": 1, "floor": 0 },
+      "map": {
+        "x": 0,
+        "y": 1,
+        "floor": 0
+      },
       "exits": [
         {
           "toLocationId": "entrance-hall",
@@ -316,7 +344,11 @@
       "description": "A spare room at the top of the stairs: narrow bed, washstand, a small desk with your coat over the chair. The window faces the storm. It is the only private place Henshaw offered you in this house.",
       "startsAccessible": true,
       "knownAtStart": true,
-      "map": { "x": 1, "y": 0, "floor": 1 },
+      "map": {
+        "x": 1,
+        "y": 0,
+        "floor": 1
+      },
       "exits": [
         {
           "toLocationId": "entrance-hall",
@@ -506,7 +538,8 @@
             "id": "vale-admits-argument",
             "content": "He argued with Mr. Blackwood yesterday about money and exposure of a fraud.",
             "requiresEvidenceIds": [
-              "vale-letter"
+              "vale-letter",
+              "muddy-boot-print"
             ],
             "requiresWillingnessIn": [
               "open",
@@ -539,7 +572,8 @@
             "id": "mrs-shoes",
             "content": "Her shoes are spotted with rainwater though her gloves are dry — she stepped near the east door after the rain blew in, not necessarily outside.",
             "requiresFlags": {
-              "examined_vase": true
+              "examined_vase": true,
+              "found_boot_print": true
             }
           }
         ],

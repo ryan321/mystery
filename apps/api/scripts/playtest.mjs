@@ -9,6 +9,13 @@
  *   pnpm playtest --case blackwood-inheritance
  *   pnpm playtest --case dead-air --persona speedrunner --max-turns 50
  *   pnpm playtest --case dead-air --persona all --runs 2
+ *   pnpm playtest --case dead-air --sweep        # full matrix + scorecard + gates
+ *
+ * Sweep mode aggregates all runs into playtests/<case>/scorecard-*.json
+ * with pass/fail acceptance gates (pacing band, evidence coverage,
+ * leaks, fun median) and exits non-zero when a gate fails. Per-case
+ * targets live in the definition's meta.playtest; defaults derive from
+ * difficulty.
  *
  * Runs against a local dev API (default http://localhost:8787) using
  * the dev-header identity, so no account is needed and prod data is
@@ -324,8 +331,10 @@ try {
   process.exit(1);
 }
 
-const personas =
-  args.persona === "all"
+const SWEEP = args.sweep === "true";
+const personas = SWEEP
+  ? Object.keys(PERSONAS)
+  : args.persona === "all"
     ? Object.keys(PERSONAS)
     : [args.persona ?? "sleuth"];
 for (const p of personas) {
@@ -335,9 +344,20 @@ for (const p of personas) {
   }
 }
 
+// Acceptance targets: definition overrides, difficulty defaults otherwise.
+const band = PACING_BANDS[def.meta.difficulty ?? "medium"] ?? PACING_BANDS.medium;
+const TARGETS = {
+  minTurns: def.meta.playtest?.minTurns ?? band[0],
+  maxTurns: def.meta.playtest?.maxTurns ?? band[1],
+  minEvidenceCoverage: def.meta.playtest?.minEvidenceCoverage ?? 0.7,
+  minFunMedian: def.meta.playtest?.minFunMedian ?? 7,
+};
+
 console.log(
-  `Playtesting "${def.meta.title}" (${CASE_ID}) — personas: ${personas.join(", ")} × ${RUNS} run(s), max ${MAX_TURNS} turns, player model ${PLAYER_MODEL}`
+  `Playtesting "${def.meta.title}" (${CASE_ID}@${def.contentVersion}) — personas: ${personas.join(", ")} × ${RUNS} run(s), max ${MAX_TURNS} turns, player model ${PLAYER_MODEL}`
 );
+
+const allResults = [];
 
 for (const personaName of personas) {
   for (let runIdx = 1; runIdx <= RUNS; runIdx++) {
@@ -355,6 +375,9 @@ for (const personaName of personas) {
       resolution: run.resolution,
       evidenceCollected: run.inventory.length,
       evidenceTotal: def.evidence.length,
+      evidenceCoverage: def.evidence.length
+        ? Number((run.inventory.length / def.evidence.length).toFixed(2))
+        : null,
       locationsSeen: run.locationsSeen.length,
       locationsTotal: def.locations.length,
       engagementAvg: avgEng ? Number(avgEng) : null,
@@ -369,13 +392,25 @@ for (const personaName of personas) {
     mkdirSync(dir, { recursive: true });
     writeFileSync(
       join(dir, "eval.json"),
-      JSON.stringify({ case: CASE_ID, persona: personaName, playthroughId: run.pid, metrics, eval: evalResult }, null, 2)
+      JSON.stringify(
+        {
+          case: CASE_ID,
+          contentVersion: def.contentVersion,
+          persona: personaName,
+          playthroughId: run.pid,
+          models: { player: PLAYER_MODEL, critic: CRITIC_MODEL },
+          metrics,
+          eval: evalResult,
+        },
+        null,
+        2
+      )
     );
     writeFileSync(
       join(dir, "transcript.md"),
       [
         `# ${def.meta.title} — ${personaName} (${stamp})`,
-        `Playthrough ${run.pid} · ${metrics.turns} turns · ${metrics.finalStatus} · engagement avg ${avgEng ?? "?"}`,
+        `Playthrough ${run.pid} · v${def.contentVersion} · ${metrics.turns} turns · ${metrics.finalStatus} · engagement avg ${avgEng ?? "?"}`,
         "",
         ...run.transcript.map(
           (t) =>
@@ -388,5 +423,107 @@ for (const personaName of personas) {
       `  ✔ ${metrics.turns} turns → ${metrics.finalStatus}; fun ${evalResult.fun_score ?? "?"}/10, pacing ${evalResult.pacing?.verdict ?? "?"}, content ${evalResult.content_density?.verdict ?? "?"}`
     );
     console.log(`  saved: playtests/${CASE_ID}/${stamp}-${personaName}/`);
+    allResults.push({ persona: personaName, stamp, metrics, eval: evalResult });
   }
+}
+
+// ── Scorecard + gates (sweep mode) ───────────────────────────────────
+
+if (SWEEP && allResults.length) {
+  const median = (xs) => {
+    const s = xs.filter((x) => x != null).sort((a, b) => a - b);
+    return s.length ? s[Math.floor(s.length / 2)] : null;
+  };
+  const byPersona = (p) => allResults.filter((r) => r.persona === p);
+  const resolved = (r) =>
+    ["solved", "failed", "denouement"].includes(r.metrics.finalStatus);
+
+  const speedTurns = byPersona("speedrunner")
+    .filter(resolved)
+    .map((r) => r.metrics.turns);
+  const sleuthRuns = byPersona("sleuth");
+  const funMedian = median(allResults.map((r) => r.eval.fun_score));
+  const leaks = allResults.filter((r) => r.eval.leaks?.found);
+  const stalls = allResults.filter(
+    (r) => r.eval.momentum?.repetition === "heavy" || r.eval.pacing?.verdict === "stalled"
+  );
+
+  const gates = [
+    {
+      name: "guessing_is_not_cheap",
+      target: `speedrunner needs ≥ ${TARGETS.minTurns} turns to resolve`,
+      actual: speedTurns.length ? Math.min(...speedTurns) : "n/a",
+      pass: speedTurns.every((t) => t >= TARGETS.minTurns),
+    },
+    {
+      name: "thorough_play_finishes",
+      target: `sleuth resolves within ${TARGETS.maxTurns} turns`,
+      actual: median(sleuthRuns.map((r) => r.metrics.turns)),
+      pass: sleuthRuns.every(
+        (r) => resolved(r) && r.metrics.turns <= TARGETS.maxTurns
+      ),
+    },
+    {
+      name: "world_gets_explored",
+      target: `sleuth evidence coverage ≥ ${TARGETS.minEvidenceCoverage}`,
+      actual: median(sleuthRuns.map((r) => r.metrics.evidenceCoverage)),
+      pass: sleuthRuns.every(
+        (r) => (r.metrics.evidenceCoverage ?? 0) >= TARGETS.minEvidenceCoverage
+      ),
+    },
+    {
+      name: "no_leaks",
+      target: "no run reports sealed-info leaks",
+      actual: `${leaks.length} run(s) with leaks`,
+      pass: leaks.length === 0,
+    },
+    {
+      name: "fun_median",
+      target: `median fun ≥ ${TARGETS.minFunMedian}`,
+      actual: funMedian,
+      pass: (funMedian ?? 0) >= TARGETS.minFunMedian,
+    },
+    {
+      name: "no_stalls",
+      target: "no run stalls or repeats heavily",
+      actual: `${stalls.length} stalled run(s)`,
+      pass: stalls.length === 0,
+    },
+  ];
+
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+  const scorecard = {
+    case: CASE_ID,
+    contentVersion: def.contentVersion,
+    stamp,
+    models: { player: PLAYER_MODEL, critic: CRITIC_MODEL },
+    targets: TARGETS,
+    runs: allResults.map((r) => ({
+      persona: r.persona,
+      stamp: r.stamp,
+      turns: r.metrics.turns,
+      finalStatus: r.metrics.finalStatus,
+      evidenceCoverage: r.metrics.evidenceCoverage,
+      fun: r.eval.fun_score,
+      pacing: r.eval.pacing?.verdict,
+      content: r.eval.content_density?.verdict,
+      leaks: r.eval.leaks?.found ?? null,
+    })),
+    gates,
+    pass: gates.every((g) => g.pass),
+  };
+  const scorecardPath = join(
+    repoRoot,
+    "playtests",
+    CASE_ID,
+    `scorecard-${def.contentVersion}-${stamp}.json`
+  );
+  writeFileSync(scorecardPath, JSON.stringify(scorecard, null, 2));
+
+  console.log(`\n═══ Scorecard ${CASE_ID}@${def.contentVersion} ═══`);
+  for (const g of gates) {
+    console.log(`  ${g.pass ? "✔" : "✘"} ${g.name}: ${g.actual} (target: ${g.target})`);
+  }
+  console.log(`  → ${scorecard.pass ? "PASS" : "FAIL"} · saved ${scorecardPath.replace(repoRoot + "/", "")}`);
+  if (!scorecard.pass) process.exitCode = 1;
 }

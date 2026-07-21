@@ -274,6 +274,16 @@ export function validateAndApplyPatch(
     const added: string[] = [];
     for (const id of patch.addEvidenceIds) {
       if (evidenceIds.includes(id)) continue;
+      // Pacing guard: discovery pays out one item per turn. A broad
+      // "search everything" should surface a lead worth pursuing, not
+      // empty the room into the player's pockets (playtest finding:
+      // handing over multiple critical clues at once collapses pacing).
+      if (added.length >= 1) {
+        rejected.push(
+          `Evidence "${id}" withheld: one discovery per turn — the rest stays hidden for a closer look`
+        );
+        continue;
+      }
       if (evidenceDiscoverableHere(def, probe(), id)) {
         added.push(id);
         evidenceAdded.push(id);

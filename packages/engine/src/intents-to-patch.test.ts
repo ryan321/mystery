@@ -20,7 +20,7 @@ const def = parseMysteryDefinition(
 );
 
 describe("directorIntentsToPatch", () => {
-  it("maps inspect vase to evidence grants", () => {
+  it("maps inspect vase to evidence grants (one per turn)", () => {
     const state = createInitialPlaythrough(def, "t1");
     const { patch } = directorIntentsToPatch(
       def,
@@ -31,9 +31,20 @@ describe("directorIntentsToPatch", () => {
       "Examine the broken vase"
     );
     const applied = validateAndApplyPatch(def, state, patch);
-    expect(applied.evidenceAdded).toEqual(
-      expect.arrayContaining(["black-thread", "muddy-boot-print"])
+    // The vase yields the thread; the boot print now lives at its own
+    // east-door inspectable (v0.9.9 spread the discoveries out).
+    expect(applied.evidenceAdded).toEqual(["black-thread"]);
+
+    const followUp = directorIntentsToPatch(
+      def,
+      applied.nextState,
+      {
+        intents: [{ type: "inspect", targetHint: "rainwater by the east door" }],
+      },
+      "Look closer at the rainwater by the east door"
     );
+    const again = validateAndApplyPatch(def, applied.nextState, followUp.patch);
+    expect(again.evidenceAdded).toEqual(["muddy-boot-print"]);
   });
 
   it("maps move to library", () => {
