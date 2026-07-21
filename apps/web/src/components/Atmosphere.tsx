@@ -116,7 +116,7 @@ export default function Atmosphere({
       <div className={`${styles.fog} ${styles.fogA}`} />
       <div className={`${styles.fog} ${styles.fogB}`} />
       {showManor ? (
-        <img className={styles.manor} src="/images/manor-hero.png" alt="" />
+        <img className={styles.manor} src="/images/manor-hero.webp" alt="" />
       ) : null}
       <canvas ref={canvasRef} className={styles.rain} />
       <div className={styles.lightning} />

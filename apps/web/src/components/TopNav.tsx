@@ -116,7 +116,7 @@ export default function TopNav() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           className={styles.brandLogo}
-          src="/brand/logo-one-line.png"
+          src="/brand/logo-one-line.webp"
           alt="MysteryTrove"
         />
       </Link>

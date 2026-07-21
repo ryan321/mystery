@@ -33,6 +33,9 @@ export function useAmbience() {
 
 export default function AmbienceProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AmbienceState>(DEFAULT_AMBIENCE);
+  // Browsers block audible autoplay anyway, so don't fetch/decode audio
+  // until the first user gesture makes playback actually possible.
+  const [hasGestured, setHasGestured] = useState(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const rainSourceRef = useRef<AudioBufferSourceNode | null>(null);
   const rainGainRef = useRef<GainNode | null>(null);
@@ -50,6 +53,18 @@ export default function AmbienceProvider({ children }: { children: ReactNode }) 
   const setPackId = useCallback((id: string) => {
     setState((s) => ({ ...s, packId: id }));
   }, []);
+
+  // First pointer/key interaction unlocks the Web Audio pipeline.
+  useEffect(() => {
+    if (hasGestured) return;
+    const mark = () => setHasGestured(true);
+    window.addEventListener("pointerdown", mark, { once: true });
+    window.addEventListener("keydown", mark, { once: true });
+    return () => {
+      window.removeEventListener("pointerdown", mark);
+      window.removeEventListener("keydown", mark);
+    };
+  }, [hasGestured]);
 
   // Stop rain
   const stopRain = useCallback(() => {
@@ -120,7 +135,7 @@ export default function AmbienceProvider({ children }: { children: ReactNode }) 
 
   // Thunder on random intervals (only when sounds enabled)
   useEffect(() => {
-    if (!state.soundsEnabled) {
+    if (!state.soundsEnabled || !hasGestured) {
       stopRain();
       return;
     }
@@ -155,7 +170,7 @@ export default function AmbienceProvider({ children }: { children: ReactNode }) 
       clearTimeout(timeout);
       stopRain();
     };
-  }, [state.soundsEnabled, state.packId, startRain, stopRain]);
+  }, [state.soundsEnabled, state.packId, hasGestured, startRain, stopRain]);
 
   // Music (placeholder — no music yet)
   useEffect(() => {

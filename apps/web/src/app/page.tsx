@@ -64,7 +64,7 @@ export default function LandingPage() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             className={styles.logo}
-            src="/brand/logo.png"
+            src="/brand/logo.webp"
             alt="MysteryTrove"
           />
           <div className={styles.heroMessage}>
