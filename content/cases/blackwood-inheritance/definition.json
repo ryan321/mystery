@@ -1333,7 +1333,7 @@
     {
       "id": "aunt",
       "name": "Mrs. Eudora Marsh",
-      "shortBio": "The victim's aunt by his first marriage — Rosalind's elder sister, taken in as a poor relation and kept, with her daughter, on conspicuous charity. Dying, and knows it. Genuinely wheelchair-bound; genuinely gentle-voiced; genuinely fond of the caretaker's little girl. Answers only what is asked, thanks everyone for small kindnesses, and watches the household the way a clockmaker watches a mechanism she assembled. Nothing about her manner is false except everything it conceals.",
+      "shortBio": "The victim's sister-in-law — elder sister of his late first wife, taken in as a poor relation and kept, with her daughter, on conspicuous charity. Dying, and knows it. Genuinely wheelchair-bound; genuinely gentle-voiced; genuinely fond of the caretaker's little girl. Answers only what is asked, thanks everyone for small kindnesses, and watches the household the way a clockmaker watches a mechanism she assembled. Nothing about her manner is false except everything it conceals.",
       "voice": "Soft, courteous, perfectly composed",
       "defaultLocationId": "conservatory",
       "defaultWillingness": "guarded",
@@ -1405,7 +1405,7 @@
         "If accused of turning Blackwood against Garrick: 'I told Hugo nothing but truths. Things were stolen and no one stopped them. Is arithmetic a sin?'"
       ],
       "portrait": "portraits/aunt.jpg",
-      "cardTitle": "The invalid aunt"
+      "cardTitle": "The master's sister-in-law"
     },
     {
       "id": "constance",
@@ -1462,7 +1462,7 @@
         "Truthful; has nothing to hide and nothing to gain that she knows of"
       ],
       "portrait": "portraits/constance.jpg",
-      "cardTitle": "The aunt's daughter"
+      "cardTitle": "Mrs. Marsh's daughter"
     },
     {
       "id": "vale",
