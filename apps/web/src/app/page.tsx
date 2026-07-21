@@ -3,13 +3,26 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Atmosphere from "../components/Atmosphere";
-import { coverSrc, listCases } from "../lib/api";
+import MessageBubble from "../components/MessageBubble";
+import StatusBar from "../components/StatusBar";
+import SystemCard from "../components/SystemCard";
+import composerStyles from "../components/Composer.module.css";
+import logStyles from "../components/Log.module.css";
+import { coverSrc, listCases, playerAssetUrl } from "../lib/api";
 import { difficultyLabel } from "../lib/format";
 import type { CaseSummary } from "../lib/types";
 import styles from "./page.module.css";
 
 const FREE_CASE_ID = "blackwood-inheritance";
 const FEATURED_COUNT = 6;
+
+// The sample play renders the real gameplay components, so it stays in step
+// with the play screen — portraits included.
+const HENSHAW_PORTRAIT = playerAssetUrl(
+  FREE_CASE_ID,
+  "portraits/henshaw.jpg"
+);
+const VALE_PORTRAIT = playerAssetUrl(FREE_CASE_ID, "portraits/vale.jpg");
 
 function Ornament() {
   return (
@@ -138,121 +151,103 @@ export default function LandingPage() {
                   </span>
                 </header>
                 <div className={styles.demoBody}>
-                  <p className={styles.statusLine}>
-                    <span className={styles.statusLabel}>Location</span>
-                    Blackwood Manor — the entrance hall
-                  </p>
-                  <p className={styles.sysLine}>
+                  <div className={styles.demoStatus}>
+                    <StatusBar
+                      locationName="Blackwood Manor — the entrance hall"
+                      time={{ slotId: "just_after_eleven", minutesFromStart: 0 }}
+                      environment={{
+                        weather: "storm",
+                        light: "lamplight",
+                        crowd: "the household",
+                        flags: {},
+                        activePulses: [],
+                      }}
+                      turnCount={4}
+                    />
+                  </div>
+                  <p className={logStyles.narration}>
                     The manor looms against the storm. A crystal vase lies
                     shattered on the marble. Rainwater pools near the east
                     door, and the grandfather clock has stopped at eleven.
                   </p>
-                  <div className={`${styles.msg} ${styles.msgYou}`}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      className={styles.avatar}
-                      src="/images/avatar-player.png"
-                      alt=""
-                    />
-                    <div className={styles.bubble}>
-                      <span className={styles.bubbleLabel}>You</span>
-                      Examine the broken vase and the floor around it.
-                    </div>
-                  </div>
-                  <p className={styles.sysLine}>
+                  <MessageBubble
+                    variant="player"
+                    name="You"
+                    text="Examine the broken vase and the floor around it."
+                  />
+                  <p className={logStyles.narration}>
                     The pieces scatter outward, as if struck from above. Among
                     the shards, a single black thread. Near the east door, a
                     wet boot-print points toward the library — a man&apos;s
                     boot, not the polished shoes the staff wear.
                   </p>
-                  <p className={styles.itemLine}>
-                    <span aria-hidden="true">✦</span> Black thread and a muddy
-                    boot-print added to your evidence.
+                  <SystemCard>
+                    Black thread and a muddy boot-print added to your
+                    evidence.
+                  </SystemCard>
+                  <MessageBubble
+                    variant="player"
+                    name="You"
+                    text="“Henshaw. What did you see tonight?”"
+                  />
+                  <MessageBubble
+                    variant="npc"
+                    name="Butler Henshaw"
+                    avatarUrl={HENSHAW_PORTRAIT}
+                    text="“I heard the crash just after the clock struck eleven, sir. When I arrived, the east door stood open and Mr. Blackwood was at the top of the stairs.”"
+                  />
+                  <MessageBubble
+                    variant="player"
+                    name="You"
+                    text="Follow the footprint to the library."
+                  />
+                  <p className={logStyles.narration}>
+                    A fire smolders in the hearth of the library. On the desk,
+                    a ledger lies open to tonight&apos;s date. A brass key
+                    glints in the ash.
                   </p>
-                  <div className={`${styles.msg} ${styles.msgYou}`}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      className={styles.avatar}
-                      src="/images/avatar-player.png"
-                      alt=""
-                    />
-                    <div className={styles.bubble}>
-                      <span className={styles.bubbleLabel}>You</span>
-                      “Henshaw. What did you see tonight?”
-                    </div>
-                  </div>
-                  <div className={`${styles.msg} ${styles.msgNpc}`}>
-                    <span className={styles.avatarInitial} aria-hidden="true">
-                      B
-                    </span>
-                    <div className={styles.bubble}>
-                      <span className={styles.bubbleLabel}>Butler Henshaw</span>
-                      “I heard the crash just after the clock struck eleven,
-                      sir. When I arrived, the east door stood open and Mr.
-                      Blackwood was at the top of the stairs.”
-                    </div>
-                  </div>
-                  <div className={`${styles.msg} ${styles.msgYou}`}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      className={styles.avatar}
-                      src="/images/avatar-player.png"
-                      alt=""
-                    />
-                    <div className={styles.bubble}>
-                      <span className={styles.bubbleLabel}>You</span>
-                      Follow the footprint to the library.
-                    </div>
-                  </div>
-                  <p className={styles.statusLine}>
-                    <span className={styles.statusLabel}>Location</span>
-                    Blackwood Manor — the library
-                  </p>
-                  <p className={styles.sysLine}>
-                    A fire smolders in the hearth. On the desk, a ledger lies
-                    open to tonight&apos;s date. A brass key glints in the ash.
-                  </p>
-                  <div className={`${styles.msg} ${styles.msgYou}`}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      className={styles.avatar}
-                      src="/images/avatar-player.png"
-                      alt=""
-                    />
-                    <div className={styles.bubble}>
-                      <span className={styles.bubbleLabel}>You</span>
-                      Take the brass key and try it on the desk drawer.
-                    </div>
-                  </div>
-                  <p className={styles.sysLine}>
+                  <MessageBubble
+                    variant="player"
+                    name="You"
+                    text="Take the brass key and try it on the desk drawer."
+                  />
+                  <p className={logStyles.narration}>
                     The key turns with a dry click. Inside: a letter signed by
                     Mr. Vale, dated yesterday. “If you expose me, I will have
                     no choice.”
                   </p>
-                  <p className={styles.itemLine}>
-                    <span aria-hidden="true">✦</span> Vale&apos;s letter added
-                    to your evidence.
-                  </p>
-                  <div className={`${styles.msg} ${styles.msgNpc}`}>
-                    <span className={styles.avatarInitial} aria-hidden="true">
-                      V
-                    </span>
-                    <div className={styles.bubble}>
-                      <span className={styles.bubbleLabel}>Mr. Vale</span>
-                      He turns from the window. “Nothing. A business
-                      disagreement. I was in the conservatory all evening.”
-                    </div>
-                  </div>
-                  <p className={styles.sysLine}>
+                  <SystemCard>
+                    Vale&apos;s letter added to your evidence.
+                  </SystemCard>
+                  <MessageBubble
+                    variant="npc"
+                    name="Mr. Vale"
+                    avatarUrl={VALE_PORTRAIT}
+                    text="He turns from the window. “Nothing. A business disagreement. I was in the conservatory all evening.”"
+                  />
+                  <p className={logStyles.narration}>
                     The conservatory is on the west side — far from the east
                     door, the broken vase, and the footprint that points away
                     from it.
                   </p>
-                  <p className={styles.composerLine}>
-                    <span className={styles.composerPrompt}>&gt;</span>
-                    Ask Mrs. Blackwood where she was at eleven…
-                    <span className={styles.cursor} aria-hidden="true" />
-                  </p>
+                </div>
+                {/* Decorative replica of the real composer — inert on purpose. */}
+                <div className={composerStyles.composer} aria-hidden="true">
+                  <div className={composerStyles.frame}>
+                    <div className={composerStyles.input}>
+                      Ask Mrs. Blackwood where she was at eleven…
+                    </div>
+                    <button
+                      type="button"
+                      className={composerStyles.send}
+                      tabIndex={-1}
+                    >
+                      <span className={composerStyles.seal} aria-hidden="true">
+                        ✦
+                      </span>
+                      Send
+                    </button>
+                  </div>
                 </div>
               </div>
               <p className={styles.demoCaption}>

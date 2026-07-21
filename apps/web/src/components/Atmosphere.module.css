@@ -80,6 +80,14 @@
   opacity: 0.7;
 }
 
+/* Small screens crop the art hard (cover on a tall frame); the 80% anchor
+   shoves the house off-frame, so center it like the hero content. */
+@media (max-width: 980px) {
+  .manor {
+    object-position: 50% 30%;
+  }
+}
+
 .lightning {
   position: absolute;
   inset: 0;

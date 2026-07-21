@@ -62,13 +62,13 @@
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--paper-warm);
-  background: linear-gradient(180deg, var(--blood-bright), var(--blood));
-  border: 1px solid rgba(212, 181, 106, 0.45);
+  color: var(--ink);
+  background: linear-gradient(180deg, #e3c47e 0%, var(--candle) 55%, #b8985a 100%);
+  border: 1px solid #e8cd8a;
   border-radius: 3px;
   cursor: pointer;
   box-shadow:
-    0 4px 14px rgba(184, 58, 58, 0.35),
+    0 4px 14px rgba(212, 181, 106, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.12);
   transition:
     transform 0.15s ease,
@@ -79,7 +79,7 @@
 .send:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow:
-    0 6px 18px rgba(184, 58, 58, 0.45),
+    0 6px 18px rgba(212, 181, 106, 0.42),
     inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 

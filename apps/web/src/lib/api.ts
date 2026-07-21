@@ -42,6 +42,14 @@ export function playerAssetUrl(
   return assetUrl(`/v1/cases/${caseId}/assets/${path}`);
 }
 
+/**
+ * All API calls carry credentials: the session cookie lives on the API
+ * origin, and playthroughs/notes belong to the signed-in account.
+ */
+async function apiFetch(path: string, init: RequestInit = {}): Promise<Response> {
+  return fetch(`${API}${path}`, { credentials: "include", ...init });
+}
+
 async function json<T>(res: Response): Promise<T> {
   const data = (await res.json()) as T & { error?: string; message?: string };
   if (!res.ok) {
@@ -50,49 +58,85 @@ async function json<T>(res: Response): Promise<T> {
   return data;
 }
 
+const JSON_HEADERS = { "Content-Type": "application/json" };
+
 export async function listCases(): Promise<CaseSummary[]> {
-  const res = await fetch(`${API}/v1/cases`);
-  const data = await json<{ cases: CaseSummary[] }>(res);
+  const data = await json<{ cases: CaseSummary[] }>(await apiFetch("/v1/cases"));
   return data.cases;
 }
 
 export async function getCase(caseId: string): Promise<CaseDetail> {
-  const res = await fetch(`${API}/v1/cases/${caseId}`);
-  return json<CaseDetail>(res);
+  return json<CaseDetail>(await apiFetch(`/v1/cases/${caseId}`));
 }
 
 export async function startCase(caseId: string): Promise<StartCaseResponse> {
-  const res = await fetch(`${API}/v1/playthroughs`, {
+  const res = await apiFetch("/v1/playthroughs", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: JSON_HEADERS,
     body: JSON.stringify({ caseId }),
   });
   return json<StartCaseResponse>(res);
 }
 
 export async function getPlaythrough(id: string): Promise<GetPlaythroughResponse> {
-  const res = await fetch(`${API}/v1/playthroughs/${id}`);
-  return json<GetPlaythroughResponse>(res);
+  return json<GetPlaythroughResponse>(await apiFetch(`/v1/playthroughs/${id}`));
 }
 
 export async function sendTurn(
   id: string,
   input: string
 ): Promise<SendTurnResponse> {
-  const res = await fetch(`${API}/v1/playthroughs/${id}/turns`, {
+  const res = await apiFetch(`/v1/playthroughs/${id}/turns`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: JSON_HEADERS,
     body: JSON.stringify({ input }),
   });
   return json<SendTurnResponse>(res);
 }
 
+// ── Auth (magic link + session; Google lives at /v1/auth/google) ────────
+
+export type MeResponse = {
+  user?: { id: string; email: string; displayName: string; tier: string };
+  anonymous?: boolean;
+};
+
+export async function requestMagicLink(
+  email: string,
+  next?: string
+): Promise<{ sent: boolean; devLink?: string }> {
+  const res = await apiFetch("/v1/auth/magic-link", {
+    method: "POST",
+    headers: JSON_HEADERS,
+    body: JSON.stringify({ email, next }),
+  });
+  return json<{ sent: boolean; devLink?: string }>(res);
+}
+
+export async function verifyMagicToken(token: string): Promise<void> {
+  await json(
+    await apiFetch("/v1/auth/verify", {
+      method: "POST",
+      headers: JSON_HEADERS,
+      body: JSON.stringify({ token }),
+    })
+  );
+}
+
+export async function fetchMe(): Promise<MeResponse> {
+  return json<MeResponse>(await apiFetch("/v1/me"));
+}
+
+export async function apiSignOut(): Promise<void> {
+  await apiFetch("/v1/auth/signout", { method: "POST" }).catch(() => {});
+}
+
 // ── Player scratchpad notes (docs/PLAYER_SURFACES.md §5.6) ───────────────
 
 export async function addNote(id: string, text: string): Promise<NoteResponse> {
-  const res = await fetch(`${API}/v1/playthroughs/${id}/notes`, {
+  const res = await apiFetch(`/v1/playthroughs/${id}/notes`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: JSON_HEADERS,
     body: JSON.stringify({ text }),
   });
   return json<NoteResponse>(res);
@@ -103,9 +147,9 @@ export async function updateNote(
   noteId: string,
   text: string
 ): Promise<NoteResponse> {
-  const res = await fetch(`${API}/v1/playthroughs/${id}/notes/${noteId}`, {
+  const res = await apiFetch(`/v1/playthroughs/${id}/notes/${noteId}`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
+    headers: JSON_HEADERS,
     body: JSON.stringify({ text }),
   });
   return json<NoteResponse>(res);
@@ -115,7 +159,7 @@ export async function deleteNote(
   id: string,
   noteId: string
 ): Promise<NoteResponse> {
-  const res = await fetch(`${API}/v1/playthroughs/${id}/notes/${noteId}`, {
+  const res = await apiFetch(`/v1/playthroughs/${id}/notes/${noteId}`, {
     method: "DELETE",
   });
   return json<NoteResponse>(res);

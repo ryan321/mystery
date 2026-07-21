@@ -77,9 +77,9 @@
   padding: 0.7rem 1rem;
   font-weight: 600;
   font-size: 0.95rem;
-  color: #fff;
-  background: linear-gradient(180deg, #c94a4a, #a83030);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--ink);
+  background: linear-gradient(180deg, #e3c47e 0%, var(--candle) 55%, #b8985a 100%);
+  border: 1px solid #e8cd8a;
   border-radius: 4px;
   cursor: pointer;
   transition: filter 0.15s ease;

@@ -104,7 +104,8 @@ export type Identity = {
 /**
  * Who is calling: session cookie (signed-in user) → dev header override
  * (never in production) → anonymous cookie (minted on first contact).
- * Anonymous players play free-tier content; sign-in adopts their runs.
+ * Anonymous visitors browse the gallery and case details; starting a
+ * playthrough requires an account. Sign-in adopts any legacy anon runs.
  */
 async function identity(c: Context): Promise<Identity> {
   const sessionToken = getCookie(c, SESSION_COOKIE);
@@ -440,6 +441,12 @@ app.post("/v1/playthroughs", async (c) => {
   if (!found || !found.result.reachable) {
     return c.json({ error: "unknown_case" }, 404);
   }
+  // Playing requires an account — even for free cases. Browsing the
+  // gallery and case details stays anonymous; existing playthroughs
+  // are grandfathered (turn routes stay open).
+  if (!found.ident.user && found.ident.anonId !== null) {
+    return c.json({ error: "signin_required" }, 401);
+  }
   if (!found.result.playable) {
     return c.json(
       {
@@ -649,8 +656,15 @@ app.delete("/v1/playthroughs/:id/notes/:noteId", async (c) => {
 // ── Auth: magic-link accounts (docs/SUBSCRIPTIONS.md Phase 1) ───────────
 
 app.post("/v1/auth/magic-link", async (c) => {
-  const body = (await c.req.json().catch(() => ({}))) as { email?: string };
-  const result = await requestMagicLink(pool, String(body.email ?? ""));
+  const body = (await c.req.json().catch(() => ({}))) as {
+    email?: string;
+    next?: string;
+  };
+  const result = await requestMagicLink(
+    pool,
+    String(body.email ?? ""),
+    typeof body.next === "string" ? body.next : undefined
+  );
   if ("error" in result) return c.json(result, 400);
   return c.json(result);
 });

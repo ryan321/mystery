@@ -296,128 +296,11 @@
 .demoBody {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
-  padding: 1rem 1.1rem 1.2rem;
-  font-size: 0.92rem;
+  padding: 1rem 1.1rem 1.1rem;
 }
 
-.statusLine {
-  margin: 0;
-  font-size: 0.8rem;
-  color: var(--fog);
-}
-
-.statusLabel {
-  margin-right: 0.5rem;
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--candle-dim);
-}
-
-.sysLine {
-  margin: 0;
-  color: var(--fog);
-  line-height: 1.6;
-}
-
-.itemLine {
-  margin: 0;
-  color: var(--candle);
-  font-size: 0.85rem;
-}
-
-.msg {
-  display: flex;
-  gap: 0.6rem;
-  align-items: flex-start;
-}
-
-.avatar {
-  flex-shrink: 0;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid rgba(212, 181, 106, 0.35);
-}
-
-.avatarInitial {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  font-family: var(--font-display);
-  font-size: 0.85rem;
-  color: var(--candle);
-  background: rgba(212, 181, 106, 0.1);
-  border: 1px solid rgba(212, 181, 106, 0.35);
-  border-radius: 50%;
-}
-
-.bubble {
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  color: var(--paper);
-  line-height: 1.55;
-}
-
-.msgYou .bubble {
-  background: rgba(212, 181, 106, 0.08);
-  border: 1px solid rgba(212, 181, 106, 0.22);
-}
-
-.msgNpc .bubble {
-  background: rgba(154, 175, 196, 0.08);
-  border: 1px solid rgba(154, 175, 196, 0.2);
-}
-
-.bubbleLabel {
-  display: block;
-  margin-bottom: 0.15rem;
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--candle-dim);
-}
-
-.composerLine {
-  margin: 0.2rem 0 0;
-  padding-top: 0.7rem;
-  display: flex;
-  gap: 0.5rem;
-  align-items: baseline;
-  border-top: 1px dashed rgba(154, 175, 196, 0.18);
-  color: var(--fog);
-  font-style: italic;
-  font-size: 0.88rem;
-}
-
-.composerPrompt {
-  color: var(--candle);
-  font-family: var(--font-mono);
-  font-style: normal;
-}
-
-.cursor {
-  display: inline-block;
-  width: 0.5em;
-  height: 1em;
-  margin-left: 0.15rem;
-  vertical-align: text-bottom;
-  background: var(--candle);
-  opacity: 0.8;
-  animation: cursor-blink 1.1s steps(1) infinite;
-}
-
-@keyframes cursor-blink {
-  50% {
-    opacity: 0;
-  }
+.demoStatus {
+  margin-bottom: 0.9rem;
 }
 
 .demoCaption {
@@ -709,13 +592,12 @@
   }
 
   .demoBody {
-    padding: 0.85rem 0.8rem 1rem;
+    padding: 0.85rem 0.8rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .logo,
-  .cursor {
+  .logo {
     animation: none;
   }
 }

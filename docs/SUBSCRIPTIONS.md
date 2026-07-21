@@ -12,7 +12,7 @@
 
 | Tier | What it is |
 |------|------------|
-| `free` | Anonymous or signed-in without a subscription. Free mysteries + seasonal windows. |
+| `free` | Signed-in without a subscription. Free mysteries + seasonal windows. (Anonymous visitors browse the gallery and case details but must create an account to play.) |
 | `standard` | The regular shelf. |
 | `premium` | Standard + the advanced/super-hard mysteries. |
 | `elite` | **Invitation-only.** Its mysteries can be completely invisible to everyone else (`hiddenBelowTier`), and the subscribe page never lists it without a valid invite link. |
@@ -59,8 +59,13 @@ On top of the existing policy (MYSTERY_BUNDLES §6):
   player into their account.
 - `POST /v1/auth/signout`, `GET /v1/me` (user + effective tier +
   subscription state; or `{anonymous, userId, tier}`).
-- Anonymous play: an httpOnly `mystery_anon` cookie is minted on first
-  contact; anonymous players are `free` tier.
+- Anonymous browsing: an httpOnly `mystery_anon` cookie is minted on first
+  contact. Anonymous visitors can browse everything public, but
+  `POST /v1/playthroughs` answers **401 `signin_required`** without an
+  account — playing (even the free case) requires signing up. Existing
+  playthroughs are grandfathered; sign-in adopts legacy anon runs.
+- Google sign-in: `GET /v1/auth/google` → OAuth code flow →
+  same session cookie (see `google-auth.ts`).
 - The old `x-user-id` / `x-user-tier` headers are **dev-only overrides**
   (ignored when `NODE_ENV=production`).
 

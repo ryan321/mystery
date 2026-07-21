@@ -3,9 +3,9 @@
  *
  * Magic-link email auth: POST /v1/auth/magic-link emails a one-time link
  * (Resend); verifying it creates the user (by email) and a DB session,
- * delivered as an httpOnly cookie. Anonymous play keeps working via an
- * anon cookie; sign-in adopts the anon playthroughs so progression
- * follows the player into their account.
+ * delivered as an httpOnly cookie. Anonymous visitors can browse but
+ * not play (POST /v1/playthroughs requires an account); sign-in adopts
+ * any legacy anon playthroughs so old progression follows the player in.
  *
  * Without RESEND_API_KEY (local dev) the link is logged to the console
  * and returned in the response as devLink.
@@ -14,6 +14,7 @@ import { randomBytes } from "node:crypto";
 import type { Db } from "./db.js";
 import type { Tier } from "./access.js";
 import { TIER_ORDER } from "./access.js";
+import { safeNextPath } from "./google-auth.js";
 
 export const SESSION_COOKIE = "mystery_session";
 export const ANON_COOKIE = "mystery_anon";
@@ -107,7 +108,8 @@ async function sendViaResend(args: {
 
 export async function requestMagicLink(
   pool: Db,
-  rawEmail: string
+  rawEmail: string,
+  next?: string
 ): Promise<{ sent: boolean; devLink?: string } | { error: string }> {
   const email = normalizeEmail(rawEmail);
   if (!email) return { error: "invalid_email" };
@@ -119,7 +121,9 @@ export async function requestMagicLink(
   );
 
   const webOrigin = process.env.WEB_ORIGIN ?? "http://localhost:3000";
-  const link = `${webOrigin}/signin/verify?token=${t}`;
+  const link = `${webOrigin}/signin/verify?token=${t}&next=${encodeURIComponent(
+    safeNextPath(next)
+  )}`;
 
   if (process.env.RESEND_API_KEY) {
     await sendViaResend({ to: email, link });

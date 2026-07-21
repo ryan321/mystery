@@ -1,40 +1,24 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import Atmosphere from "../../components/Atmosphere";
 import GoogleButton from "../../components/GoogleButton";
-import { signIn } from "../../lib/auth";
+import MagicLinkForm from "../../components/MagicLinkForm";
 import styles from "./page.module.css";
 
-export default function SignUpPage() {
-  const router = useRouter();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+/** Same-site paths only (mirrors the API's open-redirect guard). */
+function safeNext(raw: string | null): string {
+  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return "/gallery";
+  return raw;
+}
 
-  function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    setError(null);
-    const trimmed = email.trim();
-    if (!name.trim()) {
-      setError("Enter a name.");
-      return;
-    }
-    if (!trimmed || !trimmed.includes("@")) {
-      setError("Enter a valid email.");
-      return;
-    }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
-      return;
-    }
-    // Stub: create a local session (no backend yet).
-    signIn(trimmed, name.trim());
-    router.push("/gallery");
-  }
+export default function SignUpPage() {
+  const [next, setNext] = useState("/gallery");
+
+  useEffect(() => {
+    setNext(safeNext(new URLSearchParams(window.location.search).get("next")));
+  }, []);
 
   return (
     <>
@@ -45,60 +29,14 @@ export default function SignUpPage() {
             <h1 className={styles.cardTitle}>Create account</h1>
           </div>
           <div className={styles.cardBody}>
-            <form className={styles.cardBody} onSubmit={onSubmit}>
-              <div className={styles.field}>
-                <label className={styles.label} htmlFor="name">
-                  Name
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  className={styles.input}
-                  placeholder="Your name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  autoComplete="name"
-                  required
-                />
-              </div>
-              <div className={styles.field}>
-                <label className={styles.label} htmlFor="email">
-                  Email
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  className={styles.input}
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="email"
-                  required
-                />
-              </div>
-              <div className={styles.field}>
-                <label className={styles.label} htmlFor="password">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  className={styles.input}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="new-password"
-                  required
-                />
-              </div>
-              {error ? <p className={styles.error}>{error}</p> : null}
-              <button type="submit" className={styles.btnPrimary}>
-                Sign up
-              </button>
-            </form>
-            <GoogleButton />
+            <p className={styles.switch} style={{ textAlign: "left" }}>
+              No password to invent: we email you a link, and your first
+              sign-in creates the account.
+            </p>
+            <MagicLinkForm next={next} submitLabel="Create my account" />
+            <GoogleButton next={next} />
             <p className={styles.switch}>
-              Already have an account? <Link href="/signin">Sign in</Link>
+              Already a member? <Link href={`/signin?next=${encodeURIComponent(next)}`}>Sign in</Link>
             </p>
           </div>
         </div>

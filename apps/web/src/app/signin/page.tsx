@@ -1,41 +1,32 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import Atmosphere from "../../components/Atmosphere";
 import GoogleButton from "../../components/GoogleButton";
-import { signIn } from "../../lib/auth";
+import MagicLinkForm from "../../components/MagicLinkForm";
 import styles from "./page.module.css";
 
+/** Same-site paths only (mirrors the API's open-redirect guard). */
+function safeNext(raw: string | null): string {
+  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return "/gallery";
+  return raw;
+}
+
 export default function SignInPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [next, setNext] = useState("/gallery");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).get("error") === "google") {
+    const params = new URLSearchParams(window.location.search);
+    setNext(safeNext(params.get("next")));
+    const err = params.get("error");
+    if (err === "google") {
       setError("Google sign-in didn't go through. Try again.");
+    } else if (err === "link") {
+      setError("That sign-in link expired or was already used. Request a fresh one.");
     }
   }, []);
-
-  function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    setError(null);
-    const trimmed = email.trim();
-    if (!trimmed || !trimmed.includes("@")) {
-      setError("Enter a valid email.");
-      return;
-    }
-    if (!password) {
-      setError("Enter your password.");
-      return;
-    }
-    // Stub: accept any credentials and open a local session.
-    signIn(trimmed);
-    router.push("/gallery");
-  }
 
   return (
     <>
@@ -46,45 +37,11 @@ export default function SignInPage() {
             <h1 className={styles.cardTitle}>Sign in</h1>
           </div>
           <div className={styles.cardBody}>
-            <form className={styles.cardBody} onSubmit={onSubmit}>
-              <div className={styles.field}>
-                <label className={styles.label} htmlFor="email">
-                  Email
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  className={styles.input}
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="email"
-                  required
-                />
-              </div>
-              <div className={styles.field}>
-                <label className={styles.label} htmlFor="password">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  className={styles.input}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="current-password"
-                  required
-                />
-              </div>
-              {error ? <p className={styles.error}>{error}</p> : null}
-              <button type="submit" className={styles.btnPrimary}>
-                Sign in
-              </button>
-            </form>
-            <GoogleButton />
+            {error ? <p className={styles.error}>{error}</p> : null}
+            <MagicLinkForm next={next} />
+            <GoogleButton next={next} />
             <p className={styles.switch}>
-              No account? <Link href="/signup">Sign up</Link>
+              First time? <Link href={`/signup?next=${encodeURIComponent(next)}`}>Create an account</Link>
             </p>
           </div>
         </div>

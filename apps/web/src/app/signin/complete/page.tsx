@@ -2,8 +2,7 @@
 
 import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { API } from "../../../lib/api";
-import { signIn } from "../../../lib/auth";
+import { refreshSession } from "../../../lib/auth";
 import styles from "../page.module.css";
 
 /**
@@ -22,20 +21,8 @@ function CompleteInner() {
       ? next
       : "/gallery";
     (async () => {
-      try {
-        const res = await fetch(`${API}/v1/me`, { credentials: "include" });
-        const data = (await res.json()) as {
-          user?: { email: string; displayName: string };
-        };
-        if (data.user) {
-          signIn(data.user.email, data.user.displayName);
-          router.replace(safeNext);
-          return;
-        }
-        router.replace("/signin?error=google");
-      } catch {
-        router.replace("/signin?error=google");
-      }
+      const session = await refreshSession();
+      router.replace(session ? safeNext : "/signin?error=google");
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

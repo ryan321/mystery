@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import Atmosphere from "../../../components/Atmosphere";
 import { assetUrl, coverSrc, getCase, startCase } from "../../../lib/api";
+import { getSession } from "../../../lib/auth";
 import { difficultyLabel, themeTags } from "../../../lib/format";
 import { getPlayState, markBeingPlayed } from "../../../lib/playState";
 import type { CaseDetail } from "../../../lib/types";
@@ -71,8 +72,23 @@ export default function CaseDetailPage() {
     playStateStatus === "being_played" || playStateStatus === "completed";
   const busy = starting || restarting;
 
+  /** Playing needs an account (browsing doesn't) — funnel to sign-up. */
+  function requireAccount(): boolean {
+    if (getSession()) return false;
+    router.push(`/signup?next=${encodeURIComponent(`/mystery/${id}`)}`);
+    return true;
+  }
+
+  function handleStartError(e: unknown) {
+    const message = e instanceof Error ? e.message : "Failed to start";
+    if (message === "signin_required") {
+      router.push(`/signup?next=${encodeURIComponent(`/mystery/${id}`)}`);
+      return;
+    }
+    setError(message);
+  }
+
   async function handleStart() {
-    setStarting(true);
     setError(null);
 
     // If already playing, continue the existing playthrough
@@ -80,6 +96,8 @@ export default function CaseDetailPage() {
       router.push(`/play/${playState.playthroughId}`);
       return;
     }
+    if (requireAccount()) return;
+    setStarting(true);
 
     // Fresh start or play-again after completion
     try {
@@ -88,7 +106,7 @@ export default function CaseDetailPage() {
       setPlayTick((n) => n + 1);
       router.push(`/play/${data.playthrough.id}`);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to start");
+      handleStartError(e);
       setStarting(false);
     }
   }
@@ -99,6 +117,7 @@ export default function CaseDetailPage() {
       ? "Start this mystery from the beginning? Your current investigation will be left behind and cannot be continued from where you were."
       : "Start a completely new investigation of this mystery?";
     if (!window.confirm(message)) return;
+    if (requireAccount()) return;
 
     setRestarting(true);
     setError(null);
@@ -108,7 +127,7 @@ export default function CaseDetailPage() {
       setPlayTick((n) => n + 1);
       router.push(`/play/${data.playthrough.id}`);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to restart");
+      handleStartError(e);
       setRestarting(false);
     }
   }

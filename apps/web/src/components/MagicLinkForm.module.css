@@ -1,40 +1,4 @@
-.auth {
-  position: relative;
-  z-index: 1;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem 1.5rem;
-}
-
-.card {
-  width: 100%;
-  max-width: 24rem;
-  background: var(--glass);
-  border: 1px solid rgba(200, 165, 110, 0.2);
-  border-radius: 6px;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-  overflow: hidden;
-}
-
-.cardHeader {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid rgba(200, 165, 110, 0.15);
-  background: rgba(8, 12, 20, 0.5);
-}
-
-.cardTitle {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--paper);
-}
-
-.cardBody {
-  padding: 1.5rem;
+.form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -89,19 +53,35 @@
   filter: brightness(1.1);
 }
 
-.switch {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--fog);
-  text-align: center;
-}
-
-.switch a {
-  color: var(--candle);
+.btnPrimary:disabled {
+  opacity: 0.6;
+  cursor: default;
 }
 
 .error {
   margin: 0;
   font-size: 0.85rem;
   color: #ff8a7a;
+}
+
+.sent {
+  padding: 0.5rem 0;
+}
+
+.sentTitle {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--paper-warm);
+}
+
+.sentText {
+  margin: 0 0 0.3rem;
+  font-size: 0.9rem;
+  color: var(--fog);
+  line-height: 1.55;
+}
+
+.devLink {
+  color: var(--candle);
 }

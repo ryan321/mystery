@@ -1,7 +1,10 @@
 /**
- * Lightweight client-side auth stub until real accounts land.
- * Session lives in localStorage so the nav menu can branch on sign-in state.
+ * Client-side view of the API session. The truth is the httpOnly
+ * session cookie on the API origin (magic link or Google); this store
+ * is a localStorage mirror so the nav can branch synchronously.
+ * refreshSession() reconciles the mirror against GET /v1/me.
  */
+import { apiSignOut, fetchMe } from "./api";
 
 export type AuthSession = {
   email: string;
@@ -58,7 +61,30 @@ export function signOut(): void {
   } catch {
     /* ignore */
   }
+  // Destroy the real API session too (fire and forget).
+  void apiSignOut();
   notify();
+}
+
+/**
+ * Reconcile the localStorage mirror with the API session. Signed in →
+ * refresh the mirror; explicitly anonymous → clear a stale mirror.
+ * Network errors leave the mirror untouched.
+ */
+export async function refreshSession(): Promise<AuthSession | null> {
+  try {
+    const me = await fetchMe();
+    if (me.user) {
+      return signIn(me.user.email, me.user.displayName);
+    }
+    if (me.anonymous && getSession()) {
+      localStorage.removeItem(STORAGE_KEY);
+      notify();
+    }
+    return null;
+  } catch {
+    return getSession();
+  }
 }
 
 /** Subscribe to session changes (same tab + storage events from other tabs). */

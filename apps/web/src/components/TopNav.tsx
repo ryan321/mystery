@@ -7,6 +7,7 @@ import { useAmbience } from "./AmbienceProvider";
 import { AMBIENCE_PACKS } from "../lib/ambience";
 import {
   getSession,
+  refreshSession,
   signOut,
   subscribeAuth,
   type AuthSession,
@@ -83,6 +84,8 @@ export default function TopNav() {
 
   useEffect(() => {
     setSession(getSession());
+    // Reconcile the local mirror with the real API session.
+    void refreshSession();
     return subscribeAuth(() => setSession(getSession()));
   }, []);
 
@@ -109,12 +112,13 @@ export default function TopNav() {
 
   return (
     <nav className={styles.nav}>
-      <Link href="/" className={styles.brand}>
-        <span className={styles.brandMark}>◆</span>
-        <span>
-          Mystery
-          <span className={styles.brandTrove}>Trove</span>
-        </span>
+      <Link href="/" className={styles.brand} aria-label="MysteryTrove home">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          className={styles.brandLogo}
+          src="/brand/logo-one-line.png"
+          alt="MysteryTrove"
+        />
       </Link>
 
       <div className={styles.right}>
@@ -124,12 +128,14 @@ export default function TopNav() {
         >
           Gallery
         </Link>
-        <Link
-          href="/my-mysteries"
-          className={`${styles.link} ${isActive("/my-mysteries") ? styles.active : ""}`}
-        >
-          My mysteries
-        </Link>
+        {session ? (
+          <Link
+            href="/my-mysteries"
+            className={`${styles.link} ${isActive("/my-mysteries") ? styles.active : ""}`}
+          >
+            My mysteries
+          </Link>
+        ) : null}
         <Link
           href="/help"
           className={`${styles.iconBtn} ${isActive("/help") ? styles.iconBtnActive : ""}`}

@@ -18,9 +18,9 @@
   --focus: #8ec5ff;
   --glass: rgba(12, 18, 28, 0.72);
 
-  --font-display: "Cinzel", "Times New Roman", serif;
-  --font-body: "Source Sans 3", system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-display: var(--font-cinzel), "Times New Roman", serif;
+  --font-body: var(--font-source-sans), system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
 
   --radius: 3px;
 }
