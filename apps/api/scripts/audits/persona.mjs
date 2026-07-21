@@ -69,13 +69,16 @@ Grade each check pass | strain | fail, with a one-sentence note and, where not p
 - stakes_situational: does the SITUATION make the outcome matter — a deadline, a consequence,
   a cost in the world if the player fails or is wrong? (Judge the world's pressure, not the
   avatar's feelings. An authored personal wound does NOT satisfy this check.)
-- avatar_transparency: is the persona thin enough to inhabit? Fail if it scripts emotions,
-  heavy backstory, or a personality the player must perform. ALSO fail if it authors a
-  personal name (the correct form of address is a role title — "Inspector", "Doctor"), a
-  face/age description, or a fixed gender: the player is addressed as "you" plus title, has
-  no portrait, and brings their own self. Clothing, carried objects, and bearing are fine.
-  Pass when it gives role, address title, voice register, and reputation — then gets out
-  of the way.
+- avatar_transparency: is the persona thin enough to inhabit? The player needs to know who
+  they are IN THE WORLD — role, address title, authority — and nothing about who they are
+  as a person. Fail on ANY authored characterization: emotions, backstory, reputation
+  ("known for closing cases"), temperament or bearing ("unhurried, watchful"), voice
+  register ("dry under pressure") — the player brings their own self. ALSO fail if it
+  authors a personal name (the correct form of address is a role title — "Inspector",
+  "Doctor"), a face/age description, or a fixed gender: the player is addressed as "you"
+  plus title and has no portrait. Clothing and carried objects are fine. publicPerception
+  must describe the household's stance toward the OFFICE, never traits of its holder.
+  Pass when it gives role, address title, and authority — then gets out of the way.
 - objective_actionable: is the stated objective concrete, achievable, and matched to how the
   case actually scores (identity + how + why)?
 - household_tension: do the NPCs have an authored reason to resist, tolerate, or court this

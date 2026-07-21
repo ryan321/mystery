@@ -548,11 +548,18 @@ graph can replace a judgment call. `pnpm audits --case <id>`
   sense (knowledge stance matches stranger/local, objective
   actionable, NPCs have authored reasons to resist or tolerate
   them). The persona is a **transparent avatar**: the player IS
-  the character and brings their own personality. The audit fails
-  personas that script emotions or heavy backstory, and demands
-  stakes live in the *situation* (deadlines, consequences in the
-  world), never in an authored inner life. The player is "you"
-  plus a role title — no authored name, face, or player portrait.
+  the character and brings their own personality. The player needs
+  to know who they are *in the world* — role, title, authority —
+  and nothing about who they are as a person: reputation,
+  temperament, bearing, and voice register are all characterization,
+  and any authored characterization is a defect ("we just need to
+  know the player is the Inspector"). The audit fails personas that
+  script any of it, and demands stakes live in the *situation*
+  (deadlines, consequences in the world), never in an authored
+  inner life. The player is "you" plus a role title — no authored
+  name, face, or player portrait. Clothing and carried objects are
+  fine; `publicPerception` describes the household's stance toward
+  the office, never traits of its holder.
 - **opening** — the fixed story start (`openingNarration` is
   authored prose, never runtime-generated). Checks the floor, not
   the ceiling: bearings present (where / why me / what's wrong in
