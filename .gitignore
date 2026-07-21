@@ -9,3 +9,6 @@ dist
 coverage
 *.tsbuildinfo
 .claude/worktrees/
+
+# AI playtest artifacts (transcripts + evals) — local only
+playtests/

@@ -13,7 +13,8 @@
     "publish-case": "node apps/api/scripts/publish-case.mjs",
     "dev:studio": "pnpm --filter @mystery/studio dev",
     "deploy:api": "fly deploy -c fly.api.toml",
-    "deploy:web": "fly deploy -c fly.web.toml"
+    "deploy:web": "fly deploy -c fly.web.toml",
+    "playtest": "node apps/api/scripts/playtest.mjs"
   },
   "engines": {
     "node": ">=20"
