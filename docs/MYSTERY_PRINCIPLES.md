@@ -42,6 +42,12 @@ Test: name who is hurting because of this disturbance and what happens
 to them if it is never resolved. The denouement must pay those stakes
 off, so the reveal lands as a moral event, not a quiz answer.
 
+And one step further: **the truth itself must matter, not only the
+crime.** Solving should clear an innocent, prevent another wrong,
+expose a betrayal, reveal who someone really was, or force a hard
+choice. The deep question is never just "who took the skateboard?" but
+"what happens to these people if the truth stays hidden?"
+
 ## 2. The solution is a magic trick
 
 The player sees something that appears impossible, contradictory, or
@@ -71,7 +77,15 @@ events is incomplete. Obligations that come with the trick:
 - **The best clues initially appear to do something else** —
   establish character, support an alibi, justify an object's presence,
   reinforce the villain's false story. Later the player realizes the
-  clue always contained more information than they understood.
+  clue always contained more information than they understood (the
+  open window suggests entry — until you learn it only opens from
+  inside).
+- **Know the ways a clue fails**: hidden beyond reach; visible but
+  with no apparent significance; pointing at the culprit too early;
+  supporting any interpretation equally; depending on obscure outside
+  knowledge; or resolved by the game with information the player never
+  received. Fair does not mean easy — it means the truth was genuinely
+  available in hindsight.
 
 Pacing corollary: early discoveries widen the mystery (new questions);
 late discoveries narrow it (answers). If questions never widen, the
@@ -79,10 +93,22 @@ case solves too fast and feels thin.
 
 ## 3. Suspects are a field of competing stories
 
-Multiple suspects is not a headcount. Done well, each serious suspect
-represents a different *story about what the crime means* — the rival
-wanted the office; the manager feared exposure; the spouse wanted
-protection; the donor wanted control. A web, not a lineup.
+The deep requirement is **multiple plausible explanations** — usually
+embodied as multiple suspects, but not always: some strong mysteries
+are about how a known person did the impossible, whether a crime
+happened at all, or (inverted) watching the known culprit's plan
+develop a flaw. When it is a whodunit, each serious suspect represents
+a different *story about what the crime means* — the rival wanted the
+office; the manager feared exposure; the spouse wanted protection. A
+web, not a lineup.
+
+**Vivid characters beat headcount.** Three people whose lives overlap
+in complicated ways outplay five interchangeable motive-holders. Each
+important character needs something they want, something they fear,
+something they hide, a distinct relationship to the victim, and a
+recognizable voice. The player should form opinions beyond
+guilt/innocence — "I like her, but I think she's lying to protect
+someone" is a far stronger state than "she is suspect #3."
 
 Suspicion does not require lying. **Only the villain must deceive.**
 Every other suspect can stay suspectable through honest routes:
@@ -144,6 +170,22 @@ work leaves traces.** The smarter the villain, the more evidence their
 cleverness creates. A villain who deflected nothing would be harder to
 catch. That tension powers the genre.
 
+**The villain is clever but not omnipotent.** They anticipate ordinary
+reactions, exploit existing tensions, plan around known routines — and
+make tradeoffs and mistakes under pressure. They could fake the
+timeline, but only by moving an object; frame a rival, but only by
+revealing knowledge they should not possess; build an alibi, but only
+on a witness whose memory can be challenged. The best evidence comes
+from the *cost of maintaining the deception*. A plan requiring
+miraculous foresight is as broken as no plan at all.
+
+**Red herrings must have a real cause.** A false trail exists because
+of an innocent secret, a misunderstanding, the villain's staging, the
+victim's own actions, or a coincidence the characters themselves
+misread — never because the author wanted to waste time. And a dead
+end should still pay something: a character understood, a smaller
+wrong exposed, a relationship changed. Chasing it was not wasted play.
+
 ## 5. It is a battle of wits — and the villain can keep playing
 
 The real contest is player versus villain; the player just does not
@@ -198,6 +240,31 @@ feeling to engineer, at least twice per case:
 
 > "We have been asking the wrong question."
 
+## 8b. The reveal answers "why this person"; the ending lands on people
+
+A mechanically brilliant solution can still feel cold. The reveal must
+answer who, how, and *why this was the choice this particular person
+made* — motive connected to personality, values, desperation,
+relationships. Not merely something the culprit could have done:
+something only they would have.
+
+And after the intellectual satisfaction, the story needs a human
+landing. Who feels betrayed? Is the innocent vindicated? Does the
+victim's reputation change? Was the culprit monstrous, sympathetic, or
+both? Sometimes solving the mystery creates a new moral problem — those
+endings are the memorable ones. This is what the denouement phase is
+for: judgment is not the end of the story.
+
+## 8c. Atmosphere is structure, not decoration
+
+The same clue skeleton feels completely different in a snowed-in
+lodge, a dead space station, or a school science fair — because the
+setting decides who can enter or leave, what people value, what
+evidence can exist, which behaviors look normal, and which secrets are
+socially dangerous. A good mystery could happen *only in that place,
+among those people*. If the setting could be swapped without rewriting
+the clues, the case has no atmosphere, only wallpaper.
+
 ## 9. Obligations of the interactive medium
 
 The player IS the detective, so:
@@ -220,6 +287,13 @@ The player IS the detective, so:
 - **Endings honor effort.** Earned solves, lucky guesses, partials,
   and failures each get endings that acknowledge how the player got
   there.
+- **Difficulty lives at "I nearly understand this."** Between
+  too-obvious (no investigation) and too-arbitrary (no deduction) sits
+  the compelling state: almost grasping it. Feed it with periodic
+  confirmations of progress — a lie exposed, a timeline narrowed, a
+  suspect eliminated, an oddity finally explained — so the player
+  stays uncertain about the answer while feeling increasingly capable.
+  (The playtest engagement curve measures exactly this.)
 
 ## 10. Design the case from the villain's strategy
 
@@ -238,6 +312,18 @@ culprit's complete strategy and derive everything else:
 Suspects and clues then arise naturally: the staged story determines
 the structure of the entire mystery.
 
+## The formula
+
+> The puzzle provides satisfaction. The people provide meaning. The
+> investigation provides agency. The revelation joins all three.
+
+A meaningful disturbance creates an urgent unanswered question. A
+group of distinctive characters offers competing versions of reality,
+shaped by their motives and secrets. The player actively uncovers fair
+but initially misinterpreted evidence, repeatedly revises their
+theory, and ultimately exposes a solution that is surprising, logical,
+emotionally significant, and consequential.
+
 ## Author's checklist
 
 Before publishing, answer honestly:
@@ -255,9 +341,15 @@ Before publishing, answer honestly:
    theory reasonable?
 8. Does the villain act during the investigation, at least once?
 9. After the reveal, does the solution transform the meaning of
-   earlier events (not merely name the culprit)? Could the player
-   replay the case and see every clue was available?
-10. Do the playtest gates pass — pacing band, evidence coverage, no
+   earlier events (not merely name the culprit)? Does it answer why
+   *this person* made *this choice*? Could the player replay the case
+   and see every clue was available?
+10. Does every red herring have a real cause, and does chasing it pay
+    something even when it clears no one?
+11. Could this case happen only in this setting, among these people?
+12. Where does the villain's plan cost them — which trace exists only
+    because the deception had to be maintained?
+13. Do the playtest gates pass — pacing band, evidence coverage, no
     leaks, fun median?
 
 ## How the platform encodes these
