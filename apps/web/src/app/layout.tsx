@@ -20,9 +20,29 @@ const monoFont = IBM_Plex_Mono({
   variable: "--font-plex-mono",
 });
 
+const SITE_DESCRIPTION =
+  "Handcrafted whodunits with real, sealed solutions. Question a living cast, search the scene, and accuse when you are ready.";
+
 export const metadata: Metadata = {
-  title: "MysteryTrove",
-  description: "Handcrafted interactive mysteries you investigate.",
+  // Canonical origin — OG/Twitter image URLs resolve against this.
+  metadataBase: new URL("https://mysterytrove.com"),
+  title: {
+    default: "MysteryTrove — interactive whodunits",
+    template: "%s · MysteryTrove",
+  },
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    siteName: "MysteryTrove",
+    type: "website",
+    title: "MysteryTrove — interactive whodunits",
+    description: SITE_DESCRIPTION,
+    // images: app/opengraph-image.jpg is picked up by file convention.
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MysteryTrove — interactive whodunits",
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export default function RootLayout({
