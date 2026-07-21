@@ -2,7 +2,7 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "blackwood-inheritance",
-  "contentVersion": "0.9.9",
+  "contentVersion": "0.9.10",
   "meta": {
     "title": "The Blackwood Inheritance",
     "premise": "A stormy night, a locked manor, and violence at the foot of the stairs. The family was already at each other’s throats.",
@@ -1733,18 +1733,16 @@
         },
         {
           "id": "method-hall",
-          "description": "Violence in the hall / struggle / stairs",
+          "description": "Entered by the east door after eleven; the struggle snagged his coat on the vase (thread), boots left rainwater prints",
           "role": "method",
           "matchHints": [
-            "hall",
-            "struggle",
-            "stairs",
-            "vase",
-            "crash",
-            "entrance",
-            "blow",
-            "push",
-            "struck"
+            "east door",
+            "boot",
+            "thread",
+            "snagged",
+            "coat",
+            "after eleven",
+            "grappl"
           ]
         }
       ]

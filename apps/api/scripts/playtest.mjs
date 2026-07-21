@@ -237,7 +237,10 @@ ACTION: <what you say or do next, in plain natural language, 1-2 sentences. To a
     }
 
     const dialogue = (result.dialogue ?? [])
-      .map((d) => `${d.speakerName ?? d.speakerId}: "${d.line ?? d.text ?? ""}"`)
+      .map(
+        (d) =>
+          `${d.characterName ?? d.characterId ?? d.speakerName ?? "?"}: "${d.text ?? d.line ?? ""}"`
+      )
       .join(" ");
     lastNarration = [result.narration, dialogue].filter(Boolean).join("\n");
     view = result.playerView;

@@ -374,7 +374,7 @@ export function filterDialogueToPresent(
   return { ...output, dialogue };
 }
 
-function heuristicPerform(args: {
+export function heuristicPerform(args: {
   contextPack: unknown;
   playerInput: string;
   justHappened?: JustHappened[];
@@ -383,21 +383,23 @@ function heuristicPerform(args: {
   const pack = args.contextPack as {
     location?: { name?: string; description?: string };
   };
+  // Player-visible fallback: this narration reaches the player when the
+  // AI performer fails, so it must stay diegetic. narrationHints are
+  // STAGE DIRECTIONS for the AI (playtest finding: echoing them leaked
+  // "Applied effects: …" and accusation meta into the story) — only the
+  // short human summaries may appear, and never the raw player input or
+  // engine notes.
   const bits: string[] = [];
   if (args.justHappened?.length) {
     for (const j of args.justHappened) {
-      bits.push(j.narrationHints ?? j.summary);
+      if (j.summary) bits.push(j.summary);
     }
   }
   bits.push(
-    `You act on: “${args.playerInput}”`,
     pack.location?.description
       ? `You are in ${pack.location.name}. ${pack.location.description}`
       : "The house waits."
   );
-  if (args.resolvedNotes?.length) {
-    bits.push(`(${args.resolvedNotes.join("; ")})`);
-  }
   return {
     narration: bits.join(" "),
     dialogue: [],
