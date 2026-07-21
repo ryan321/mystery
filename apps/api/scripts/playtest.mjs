@@ -219,9 +219,22 @@ ENGAGEMENT: <1-5, how fun/engaging this moment feels to you as a player>
 THOUGHT: <one sentence of your reasoning as this persona>
 ACTION: <what you say or do next, in plain natural language, 1-2 sentences. To accuse, say "I formally accuse NAME" and include method and motive.>`;
 
-    const reply = parsePlayerReply(
-      await llm(PLAYER_MODEL, [{ role: "user", content: playerPrompt }])
-    );
+    // The player model occasionally returns an empty completion — retry
+    // before falling back to a neutral action; never abort a whole run.
+    let reply = { engagement: null, thought: "", action: "" };
+    for (let attempt = 0; attempt < 3 && !reply.action; attempt++) {
+      try {
+        reply = parsePlayerReply(
+          await llm(PLAYER_MODEL, [{ role: "user", content: playerPrompt }])
+        );
+      } catch (err) {
+        console.warn(`    player LLM attempt ${attempt + 1} failed: ${err.message}`);
+      }
+    }
+    if (!reply.action) {
+      reply.action = "I take a careful look around and press on with my strongest lead.";
+      reply.thought = "(fallback action after empty player-model replies)";
+    }
     if (reply.engagement) engagements.push(reply.engagement);
 
     let result;
