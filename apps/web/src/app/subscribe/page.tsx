@@ -226,7 +226,7 @@ export default function SubscribePage() {
                         </p>
                       </div>
                     ) : isCurrent ? (
-                      <Link href="/account/billing" className={styles.btnOwned}>
+                      <Link href="/account" className={styles.btnOwned}>
                         Your current plan · Manage
                       </Link>
                     ) : !hasPrice ? (
@@ -313,8 +313,8 @@ export default function SubscribePage() {
               </summary>
               <p className={styles.faqAnswer}>
                 Yes. Manage or cancel anytime from your{" "}
-                <Link href="/account/billing" className={styles.link}>
-                  billing page
+                <Link href="/account" className={styles.link}>
+                  account page
                 </Link>
                 . Payments are handled securely by Stripe.
               </p>

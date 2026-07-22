@@ -128,8 +128,8 @@ export default function HelpPage() {
                 Subscribe page
               </Link>
               , and view or manage your plan, including its renewal date, on your{" "}
-              <Link href="/account/billing" className={styles.link}>
-                billing page
+              <Link href="/account" className={styles.link}>
+                account page
               </Link>
               .
             </p>

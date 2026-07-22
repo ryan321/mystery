@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Atmosphere from "../../components/Atmosphere";
 import BackLink from "../../components/BackLink";
-import { fetchMe, type MeResponse } from "../../lib/api";
+import { fetchMe, openBillingPortal, type MeResponse } from "../../lib/api";
+import { refreshSession } from "../../lib/auth";
 import { tierLabel } from "../../lib/format";
 import styles from "./page.module.css";
 
@@ -39,11 +40,20 @@ function formatDate(iso?: string): string | null {
 export default function AccountPage() {
   const [me, setMe] = useState<MeResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [success, setSuccess] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const justPaid =
+      new URLSearchParams(window.location.search).get("checkout") === "success";
+    setSuccess(justPaid);
     let dead = false;
     (async () => {
       try {
+        // Checkout just returned → the webhook may have changed the tier;
+        // reconcile the nav mirror before reading /v1/me.
+        if (justPaid) await refreshSession();
         const res = await fetchMe();
         if (!dead) setMe(res);
       } catch {
@@ -56,6 +66,24 @@ export default function AccountPage() {
       dead = true;
     };
   }, []);
+
+  // Opens the Stripe Billing Portal (update card, cancel, invoices, proration).
+  async function manage() {
+    setError(null);
+    setBusy(true);
+    try {
+      const url = await openBillingPortal();
+      window.location.href = url;
+    } catch (e) {
+      const code = e instanceof Error ? e.message : "error";
+      setError(
+        code === "no_subscription"
+          ? "No billing account on file yet."
+          : "Couldn't open the billing portal. Please try again."
+      );
+      setBusy(false);
+    }
+  }
 
   const user = me?.user;
   const sub = user?.subscription;
@@ -73,6 +101,14 @@ export default function AccountPage() {
             <p className={styles.eyebrow}>Account</p>
             <h1 className={styles.title}>Your account</h1>
           </header>
+
+          {success ? (
+            <p className={styles.success}>
+              You’re subscribed. Every mystery your plan includes is open to you
+              now.
+            </p>
+          ) : null}
+          {error ? <p className={styles.errorNote}>{error}</p> : null}
 
           <section className={styles.section}>
             <div className={styles.sectionHeader}>
@@ -132,12 +168,14 @@ export default function AccountPage() {
                   <div className={styles.subActions}>
                     {isPaid ? (
                       <>
-                        <Link
-                          href="/account/billing"
+                        <button
+                          type="button"
                           className={styles.btnPrimary}
+                          onClick={manage}
+                          disabled={busy}
                         >
-                          Manage subscription
-                        </Link>
+                          {busy ? "Opening…" : "Manage subscription"}
+                        </button>
                         <Link href="/subscribe" className={styles.btnGhost}>
                           Change plan
                         </Link>

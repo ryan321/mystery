@@ -1141,7 +1141,7 @@ app.post("/v1/billing/checkout", async (c) => {
     mode: "subscription",
     customer: customerId,
     line_items: [{ price, quantity: 1 }],
-    success_url: `${webOrigin}/account/billing?checkout=success`,
+    success_url: `${webOrigin}/account?checkout=success`,
     cancel_url: `${webOrigin}/subscribe?checkout=cancelled`,
     allow_promotion_codes: true,
     metadata: {
@@ -1165,7 +1165,7 @@ app.post("/v1/billing/portal", async (c) => {
   const webOrigin = process.env.WEB_ORIGIN ?? "https://mysterytrove.com";
   const session = await stripe.billingPortal.sessions.create({
     customer: ident.user.stripe_customer_id,
-    return_url: `${webOrigin}/account/billing`,
+    return_url: `${webOrigin}/account`,
   });
   return c.json({ url: session.url });
 });
