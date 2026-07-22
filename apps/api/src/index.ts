@@ -1600,7 +1600,39 @@ async function main() {
   console.log(
     `Narrator: ${llmConfig ? llmConfig.narratorModel : "heuristic (no OPENROUTER_API_KEY)"}`
   );
-  serve({ fetch: app.fetch, port });
+  const server = serve({ fetch: app.fetch, port });
+
+  // Graceful shutdown so a deploy never kills a turn mid-flight. A turn is two
+  // LLM calls (~20-30s) — far longer than Fly's default 5s kill grace — so a
+  // naive SIGTERM would drop the request and the player would see a load error
+  // even though the turn hadn't committed. On a stop signal we stop accepting
+  // new connections, let the in-flight turns finish and flush their responses,
+  // then exit. Fly waits up to kill_timeout (fly.api.toml) before SIGKILL.
+  const closeIdle = () =>
+    (server as { closeIdleConnections?: () => void }).closeIdleConnections?.();
+  let shuttingDown = false;
+  const shutdown = (signal: string) => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    console.log(`${signal} received — draining in-flight requests before exit`);
+    // Reap keep-alive sockets as they fall idle so the drain finishes promptly
+    // once the last in-flight turn has responded (server.close waits for all
+    // sockets, and idle keep-alives would otherwise hold it open).
+    const reaper = setInterval(closeIdle, 1000);
+    server.close(() => {
+      clearInterval(reaper);
+      console.log("drain complete — exiting");
+      void pool.end().finally(() => process.exit(0));
+    });
+    closeIdle();
+    // Backstop: never hang past the kill window if a socket is wedged.
+    setTimeout(() => {
+      console.warn("drain timeout — forcing exit");
+      process.exit(0);
+    }, 50_000).unref();
+  };
+  process.on("SIGTERM", () => shutdown("SIGTERM"));
+  process.on("SIGINT", () => shutdown("SIGINT"));
 }
 
 main().catch((err) => {

@@ -3,6 +3,11 @@
 app = "mysterytrove-api"
 primary_region = "iad"
 
+# A turn is two LLM calls (~20-30s). Give the process time to drain in-flight
+# turns on a deploy before SIGKILL (default is 5s) — see the graceful-shutdown
+# handler in apps/api/src/index.ts. Fly sends SIGINT, then SIGKILL after this.
+kill_timeout = "60s"
+
 [build]
   dockerfile = "Dockerfile.api"
 
