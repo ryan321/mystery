@@ -103,6 +103,14 @@ const DEAD_STATUSES = new Set([
   "paused",
 ]);
 
+/**
+ * A live Stripe subscription the customer manages in the Billing Portal.
+ * A tier change for these is an in-place, prorated swap — never a second
+ * checkout (which would create a duplicate subscription). "comp" is excluded:
+ * complimentary access has no Stripe subscription to manage.
+ */
+export const LIVE_SUB_STATUSES = new Set(["active", "trialing", "past_due"]);
+
 export function tierForSubscription(u: SubscriptionUpdate): Tier {
   if (DEAD_STATUSES.has(u.status)) return "free";
   const tier = u.priceId ? tierForPrice(u.priceId) : undefined;

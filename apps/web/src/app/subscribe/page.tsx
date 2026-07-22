@@ -7,6 +7,7 @@ import Atmosphere from "../../components/Atmosphere";
 import {
   fetchBillingTiers,
   fetchMe,
+  openBillingPortal,
   startCheckout,
   type BillingTiersResponse,
   type MeResponse,
@@ -15,8 +16,8 @@ import { formatPrice, tierLabel } from "../../lib/format";
 import type { BillingTier } from "../../lib/types";
 import styles from "./page.module.css";
 
-const TIER_ORDER = ["free", "standard", "premium", "elite"];
-const rank = (t?: string) => Math.max(0, TIER_ORDER.indexOf(t ?? "free"));
+/** Live Stripe statuses — a subscriber changes tiers via the portal, not checkout. */
+const LIVE_SUB = new Set(["active", "trialing", "past_due"]);
 
 /** Render text with the word "Difficult" in the gold accent color. */
 function goldDifficult(text: string) {
@@ -70,6 +71,22 @@ export default function SubscribePage() {
 
   const currentTier = me?.user?.tier ?? "free";
   const signedIn = Boolean(me?.user);
+  const subStatus = me?.user?.subscription?.status ?? undefined;
+  const hasSub = Boolean(subStatus && LIVE_SUB.has(subStatus));
+
+  // Changing tiers while subscribed is an in-place, prorated swap handled by
+  // the Stripe Billing Portal — never a second checkout.
+  async function changePlan() {
+    setError(null);
+    setBusyTier("__portal__");
+    try {
+      const url = await openBillingPortal();
+      window.location.href = url;
+    } catch {
+      setError("Couldn't open the billing portal. Please try again.");
+      setBusyTier(null);
+    }
+  }
 
   async function subscribe(tier: BillingTier) {
     setError(null);
@@ -89,6 +106,11 @@ export default function SubscribePage() {
       const code = e instanceof Error ? e.message : "error";
       if (code === "sign_in_required") {
         router.push(`/signin?next=${encodeURIComponent(next)}`);
+        return;
+      }
+      if (code === "already_subscribed") {
+        // Stale client — the right move is the portal, not a second checkout.
+        await changePlan();
         return;
       }
       setError(
@@ -149,12 +171,12 @@ export default function SubscribePage() {
           ) : (
             <div className={styles.plans}>
               {allTiers.map((tier) => {
-                const owned = rank(currentTier) >= rank(tier.tier);
+                const isCurrent = hasSub && tier.tier === currentTier;
                 const hasPrice = Boolean(tier.configured && tier.price);
                 const busy = busyTier === tier.tier;
                 // Genius: whispered + earned. Locked until eligible or invited.
                 const earnedLock =
-                  Boolean(tier.inviteOnly) && !tier.purchasable && !owned;
+                  Boolean(tier.inviteOnly) && !tier.purchasable && !isCurrent;
                 const remaining = tier.requirement
                   ? Math.max(
                       0,
@@ -203,7 +225,7 @@ export default function SubscribePage() {
                           ) : null}
                         </p>
                       </div>
-                    ) : owned ? (
+                    ) : isCurrent ? (
                       <Link href="/account/billing" className={styles.btnOwned}>
                         Your current plan · Manage
                       </Link>
@@ -212,6 +234,15 @@ export default function SubscribePage() {
                         {tier.inviteOnly
                           ? "You’ve earned it · coming soon"
                           : "Coming soon"}
+                      </button>
+                    ) : hasSub ? (
+                      <button
+                        type="button"
+                        className={styles.btnBuy}
+                        onClick={changePlan}
+                        disabled={busyTier === "__portal__"}
+                      >
+                        {busyTier === "__portal__" ? "Opening…" : "Change plan"}
                       </button>
                     ) : (
                       <button

@@ -77,6 +77,7 @@ import {
   applySubscriptionUpdate,
   bindStripeCustomer,
   isPaidTier,
+  LIVE_SUB_STATUSES,
   mintInvitation,
   priceForTier,
   recordBillingEvent,
@@ -1100,6 +1101,16 @@ app.post("/v1/billing/checkout", async (c) => {
   };
   if (!isPaidTier(body.tier)) return c.json({ error: "invalid_tier" }, 400);
   const tier = body.tier;
+
+  // Already subscribed → a tier change is an in-place, prorated swap in the
+  // Billing Portal, not a second checkout that would create a duplicate
+  // subscription (and double-charge). Send them to the portal instead.
+  if (
+    ident.user.subscription_status &&
+    LIVE_SUB_STATUSES.has(ident.user.subscription_status)
+  ) {
+    return c.json({ error: "already_subscribed" }, 409);
+  }
 
   if (TIER_CARDS[tier].inviteOnly) {
     // Genius is earned (3 Hard solves) or invited — either opens checkout.
