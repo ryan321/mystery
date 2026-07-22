@@ -181,7 +181,7 @@ export default function AccountBillingPage() {
               {!isPaid ? (
                 <p className={styles.muted} style={{ marginTop: "1rem" }}>
                   You’re on the free plan — The Blackwood Inheritance is yours
-                  to play. Subscribe to open the rest of the shelf.
+                  to play. Subscribe to open more of the Gallery.
                 </p>
               ) : null}
             </div>

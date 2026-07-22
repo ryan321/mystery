@@ -54,17 +54,18 @@ export const TIER_CARDS: Record<
 > = {
   standard: {
     name: "Sleuth",
-    blurb: "The full shelf of mysteries, with fresh cases as they’re released.",
+    blurb:
+      "Every Easy and Medium mystery in the Gallery, plus each new one as it’s published. New mysteries added often.",
   },
   premium: {
     name: "Master Detective",
     blurb:
-      "Everything a Sleuth gets, plus the advanced cases — longer nights, harder truths.",
+      "Every mystery in the Gallery: Easy, Medium, and Difficult, plus each new one as it’s published. New mysteries added often.",
   },
   elite: {
     name: "Genius",
     blurb:
-      "By invitation only. Mysteries that appear on no shelf you’ve seen.",
+      "By invitation only. Exclusive mysteries for the most skilled detectives, with new ones added often.",
     inviteOnly: true,
   },
 };

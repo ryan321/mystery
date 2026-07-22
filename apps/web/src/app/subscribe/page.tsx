@@ -103,11 +103,11 @@ export default function SubscribePage() {
           </Link>
 
           <header className={styles.header}>
-            <p className={styles.eyebrow}>Membership</p>
+            <p className={styles.eyebrow}>Subscription</p>
             <h1 className={styles.title}>Unlock more mysteries</h1>
             <p className={styles.subtitle}>
-              The Blackwood Inheritance is free to all. Subscribe to open more
-              of the catalog — new cases as they’re published.
+              The Blackwood Inheritance, a complete mystery, is free to play.
+              Subscribe to open more of the Gallery.
             </p>
             {signedIn ? (
               <p className={styles.current}>
@@ -119,7 +119,7 @@ export default function SubscribePage() {
 
           {cancelled ? (
             <p className={styles.notice}>
-              Checkout cancelled — no charge was made. Pick a plan whenever
+              Checkout cancelled. No charge was made; pick a plan whenever
               you’re ready.
             </p>
           ) : null}
@@ -129,7 +129,7 @@ export default function SubscribePage() {
             <p className={styles.muted}>Loading plans…</p>
           ) : !data?.billingConfigured ? (
             <p className={styles.muted}>
-              Subscriptions aren’t open yet — check back soon.
+              Subscriptions aren’t open yet. Check back soon.
             </p>
           ) : allTiers.length === 0 ? (
             <p className={styles.muted}>New plans are coming soon.</p>
@@ -170,9 +170,6 @@ export default function SubscribePage() {
 
                     {earnedLock ? (
                       <div className={styles.earnBlock}>
-                        <p className={styles.earnNote}>
-                          There is a tier above this. It cannot be purchased.
-                        </p>
                         <p className={styles.earnProgress}>
                           {remaining > 0
                             ? `Solve ${remaining} more Difficult ${remaining === 1 ? "mystery" : "mysteries"} to earn your invitation.`
@@ -218,15 +215,60 @@ export default function SubscribePage() {
             </div>
           )}
 
-          <footer className={styles.footer}>
-            <p className={styles.muted}>
-              Payments are handled securely by Stripe. Cancel anytime from{" "}
-              <Link href="/account/billing" className={styles.link}>
-                your billing page
-              </Link>
-              .
-            </p>
-          </footer>
+          <section className={styles.faq}>
+            <h2 className={styles.faqTitle}>Questions</h2>
+            <details className={styles.faqItem}>
+              <summary className={styles.faqQuestion}>
+                How do the tiers work?
+              </summary>
+              <p className={styles.faqAnswer}>
+                Sleuth unlocks every Easy and Medium mystery. Master Detective
+                adds the Difficult ones, so you get the whole Gallery. Genius is
+                an invitation-only tier of exclusive mysteries.
+              </p>
+            </details>
+            <details className={styles.faqItem}>
+              <summary className={styles.faqQuestion}>
+                Do you add new mysteries?
+              </summary>
+              <p className={styles.faqAnswer}>
+                Often. New mysteries are published regularly, and your
+                subscription automatically includes every new one that matches
+                your tier, at no extra cost.
+              </p>
+            </details>
+            <details className={styles.faqItem}>
+              <summary className={styles.faqQuestion}>
+                What is Genius, and how do I get it?
+              </summary>
+              <p className={styles.faqAnswer}>
+                An invitation-only tier of exclusive mysteries you won’t find
+                anywhere else. It can’t be bought. You earn the invitation by
+                solving 3 Difficult mysteries.
+              </p>
+            </details>
+            <details className={styles.faqItem}>
+              <summary className={styles.faqQuestion}>
+                Is the first mystery really free?
+              </summary>
+              <p className={styles.faqAnswer}>
+                Yes. The Blackwood Inheritance is a complete mystery, free to
+                play start to finish with a free account.
+              </p>
+            </details>
+            <details className={styles.faqItem}>
+              <summary className={styles.faqQuestion}>
+                Can I cancel anytime?
+              </summary>
+              <p className={styles.faqAnswer}>
+                Yes. Manage or cancel anytime from your{" "}
+                <Link href="/account/billing" className={styles.link}>
+                  billing page
+                </Link>
+                . Payments are handled securely by Stripe.
+              </p>
+            </details>
+          </section>
         </div>
       </main>
     </>

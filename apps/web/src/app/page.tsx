@@ -436,10 +436,10 @@ export default function LandingPage() {
                 </summary>
                 <p className={styles.faqAnswer}>
                   Yes — a free account, made in seconds with your email or
-                  Google. It saves your investigation and keeps your shelf
+                  Google. It saves your investigation and keeps your Gallery
                   with you across devices. The first case is free to play,
-                  start to finish; a membership is only needed for the rest
-                  of the shelf.
+                  start to finish; a subscription is only needed for the rest
+                  of the Gallery.
                 </p>
               </details>
               <details className={styles.faqItem}>

@@ -257,7 +257,7 @@ export default function MysteryDetail() {
                     {detail.lockReason === "tier" ? (
                       <>
                         <p className={styles.playMeta}>
-                          Unlock this mystery and the whole shelf with a
+                          Unlock this mystery and more of the Gallery with a
                           subscription.
                         </p>
                         <button
