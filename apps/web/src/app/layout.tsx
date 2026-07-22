@@ -31,6 +31,10 @@ export const metadata: Metadata = {
     template: "%s · MysteryTrove",
   },
   description: SITE_DESCRIPTION,
+  // Label shown under the icon when saved to the iOS home screen.
+  appleWebApp: {
+    title: "MysteryTrove",
+  },
   openGraph: {
     siteName: "MysteryTrove",
     type: "website",
