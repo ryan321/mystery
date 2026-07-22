@@ -20,11 +20,11 @@ export function formatPrice(price?: TierPrice | null): string | null {
 export function tierLabel(tier?: string): string {
   switch (tier) {
     case "standard":
-      return "Standard";
+      return "Sleuth";
     case "premium":
-      return "Premium";
+      return "Master Detective";
     case "elite":
-      return "Elite";
+      return "The Inner Circle";
     default:
       return "Free";
   }

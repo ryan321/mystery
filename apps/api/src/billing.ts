@@ -53,18 +53,18 @@ export const TIER_CARDS: Record<
   { name: string; blurb: string; inviteOnly?: boolean }
 > = {
   standard: {
-    name: "Standard",
-    blurb: "The full shelf of regular mysteries, new cases as they release.",
+    name: "Sleuth",
+    blurb: "The full shelf of mysteries, with fresh cases as they’re released.",
   },
   premium: {
-    name: "Premium",
+    name: "Master Detective",
     blurb:
-      "Everything in Standard, plus the advanced mysteries — longer nights, harder truths.",
+      "Everything a Sleuth gets, plus the advanced cases — longer nights, harder truths.",
   },
   elite: {
-    name: "Elite",
+    name: "The Inner Circle",
     blurb:
-      "By invitation. Mysteries that are not on any shelf you have seen.",
+      "By invitation only. Mysteries that appear on no shelf you’ve seen.",
     inviteOnly: true,
   },
 };
