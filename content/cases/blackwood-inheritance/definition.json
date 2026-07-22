@@ -2,7 +2,7 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "blackwood-inheritance",
-  "contentVersion": "0.10.10",
+  "contentVersion": "0.10.14",
   "meta": {
     "title": "The Blackwood Inheritance",
     "premise": "A stormy night, a dead master at the foot of his own stairs, and six weeks of break-ins no one has explained. Everyone in the house had a reason to be angry. Someone had a reason to plan.",
@@ -59,11 +59,11 @@
         },
         {
           "heading": "The house",
-          "text": "Burgled four times in six weeks — windows forced, small valuables taken, never solved. The master blamed Garrick loudly and threatened his post. After the last theft the valuables went into the study strongbox; three nights ago a garnet necklace vanished from it anyway. And for so great a house the staff is strangely thin — no footmen, no housekeeper, sheeted furniture behind more than one closed door."
+          "text": "Burgled four times in six weeks — windows forced, small valuables taken, never solved. The master blamed Garrick loudly for failing to stop it and threatened his post. After the last theft the valuables went into the study strongbox; three nights ago a garnet necklace vanished from it anyway. And for so great a house the staff is strangely thin — no footmen, no housekeeper, sheeted furniture behind more than one closed door."
         },
         {
           "heading": "Your task",
-          "text": "Determine how Hugo Blackwood died and who bears the guilt for it. No one leaves and no one arrives until the storm lifts — and at first light the road clears and the county police come through it, for Tom Garrick, the man the master spent his last week accusing. If you cannot bring them something better by dawn, they will take the obvious man and call it justice. Question, search, and accuse only when it will hold."
+          "text": "Determine how Hugo Blackwood died and who bears the guilt for it. No one leaves and no one arrives until the storm lifts; the house, and the truth, are yours for the night. Question, search, and accuse only when it will hold."
         }
       ]
     }
@@ -1575,7 +1575,7 @@
         "private": [
           {
             "id": "henshaw-master-temper",
-            "content": "The master held Garrick to answer for the break-ins — the grounds and the night rounds being his charge — and said, loudly enough for the house to hear, that one more incident would be the end of his post. Latterly it had gone past duty: the master spoke as though Garrick were doing it himself, though Henshaw never heard him offer a particle of proof.",
+            "content": "The master held Garrick to answer for the break-ins — the grounds and the night rounds being his charge — and his temper rose with each one: six weeks of forced windows and his own man with nothing to show for it. By the end he was saying, loudly enough for the house to hear, that one more incident would see the family turned out of the lodge.",
             "requiresWillingnessIn": [
               "open",
               "guarded"
@@ -1603,7 +1603,7 @@
           },
           {
             "id": "henshaw-masters-fear",
-            "content": "'After the attack on Mrs. Marsh the master was another man. She had described the brute to him — big, rough, a working man's boots — and I watched him look at Garrick as he heard it. From that evening he kept the library poker by his chair after the house went up, and sat dark in the hall on bad nights. He said he would deal with the devil himself. I served him his brandy and said nothing, God forgive me.'",
+            "content": "'After the attack on Mrs. Marsh the master was another man. She had described the brute to him — big, rough, a working man's boots — and something in him went hard and quiet as he heard it. A man who would throttle an invalid woman in her own parlor, with the mistress and Miss Clara sleeping down the same corridor — he said as much, once, and did not finish the sentence. He would have no constables in the house, and with the settlement to be signed within the week, no scandal; and I collect he no longer trusted the business to other hands — Garrick had had six weeks of it and caught nothing. From that evening he kept the library poker by his chair after the house went up, and sat dark in the hall on bad nights. He said he would catch the devil at his work and deal with him himself. I served him his brandy and said nothing, God forgive me.'",
             "requiresWillingnessIn": [
               "open",
               "guarded"
@@ -2137,7 +2137,7 @@
       {
         "id": "the-attack",
         "at": "Eight days ago",
-        "event": "Eudora stages the attack on herself: her parlor window broken from within (glass outward again), her few jewels 'taken' (wrapped into the courtyard cache), her account rehearsed — hands at her throat, a big ROUGH man in WORKING BOOTS (told to Blackwood and the household, aiming at Garrick), and separately, kindly, along the lodge path, a different portrait for Garrick alone: a big man in a GENTLEMAN'S GREY COAT who comes by the east door WITH A KEY (aiming at Blackwood). No physician examines her; no one would presume. The household goes onto a war footing: Blackwood keeps the library poker by his chair and sits dark in the hall on bad nights; Garrick patrols armed with his dark lantern and her description. Blackwood calls in no police — he cannot: constables in the house means questions, and his books cannot survive questions. Eudora counted on precisely that; his corruption was her shield. Blackwood does send for the doctor; Mrs. Marsh — bruised only, she says, and pious about her person — refuses to be examined by a man, and the household accepts it as her characteristic delicacy. Of course she refuses. There is nothing to find.",
+        "event": "Eudora stages the attack on herself: her parlor window broken from within (glass outward again), her few jewels 'taken' (wrapped into the courtyard cache), her account rehearsed — hands at her throat, a big ROUGH man in WORKING BOOTS (told to Blackwood and the household, to put him in fear for his family and set him armed and waiting), and separately, kindly, along the lodge path, a different portrait for Garrick alone: a big man in a GENTLEMAN'S GREY COAT who comes by the east door WITH A KEY (aiming at Blackwood). No physician examines her; no one would presume. The household goes onto a war footing: Blackwood keeps the library poker by his chair and sits dark in the hall on bad nights; Garrick patrols armed with his dark lantern and her description. Blackwood calls in no police — he cannot: constables in the house means questions, and his books cannot survive questions. Eudora counted on precisely that; his corruption was her shield. Blackwood does send for the doctor; Mrs. Marsh — bruised only, she says, and pious about her person — refuses to be examined by a man, and the household accepts it as her characteristic delicacy. Of course she refuses. There is nothing to find.",
         "locationId": "aunts-room",
         "actorIds": [
           "aunt",
@@ -2584,23 +2584,6 @@
       "narrationHints": "Mrs. Marsh, unprompted, recalls — apologetically, confusedly — how VERY loud Tuesday's quarrel between the master and Mr. Vale had been. It is smoothly done. It is also the first time she has volunteered anything."
     },
     {
-      "id": "dawn_deadline",
-      "title": "First light",
-      "once": true,
-      "trigger": "on_turn",
-      "when": {
-        "type": "time_at_least",
-        "slotId": "first_light"
-      },
-      "effects": [
-        {
-          "type": "end_case",
-          "endingId": "failure_time_expired"
-        }
-      ],
-      "narrationHints": "The storm breaks with the dawn; the county police arrive to take the obvious man away."
-    },
-    {
       "id": "meg_opens_chest",
       "title": "Meg opens the chest",
       "once": true,
@@ -2637,11 +2620,11 @@
     }
   ],
   "solution": {
-    "summary": "Eudora Marsh engineered Hugo Blackwood's death without leaving the wheelchair he put her in. Dying, and watching him bleed her murdered sister's fortune into his failing firm while a wedding portion prepared to take the rest — the fortune he held only as custodian, which passes to her daughter Constance on his death — she staged six weeks of ground-floor break-ins from her chair, then staged an attack on herself and issued two descriptions of the 'attacker': to Blackwood, a rough man in working boots (and he heard Garrick); to Garrick, kindly, a big man in a gentleman's grey coat with a key to the east door (and he would recognize Blackwood). Both men armed themselves. On the night, she set the east door working in the storm; Blackwood, waiting dark with the library poker, struck the intruding Garrick across the shoulder; Garrick's one reflex swing of his iron lantern took the master at the temple. Then she performed her only physical act: she wheeled out, took the poker that proved self-defense, and hid it beneath her own bed. Garrick buried his lantern in the churchyard. The frame on him is true in every fact and false in every meaning — and she wrote both men's parts.",
+    "summary": "Eudora Marsh engineered Hugo Blackwood's death without leaving the wheelchair he put her in. Dying, and watching him bleed her murdered sister's fortune into his failing firm while a wedding portion prepared to take the rest — the fortune he held only as custodian, which passes to her daughter Constance on his death — she staged six weeks of ground-floor break-ins from her chair, then staged an attack on herself and issued two descriptions of the 'attacker': to Blackwood, a rough man in working boots (and, in fear for his wife and daughter, he resolved to catch the man himself); to Garrick, kindly, a big man in a gentleman's grey coat with a key to the east door (and he would recognize Blackwood). Both men armed themselves. On the night, she set the east door working in the storm; Blackwood, waiting dark with the library poker, struck the intruding Garrick across the shoulder; Garrick's one reflex swing of his iron lantern took the master at the temple. Then she performed her only physical act: she wheeled out, took the poker that proved self-defense, and hid it beneath her own bed. Garrick buried his lantern in the churchyard. The frame on him is true in every fact and false in every meaning — and she wrote both men's parts.",
     "guiltyPartyIds": [
       "aunt"
     ],
-    "method": "Staged burglaries from the wheelchair; a staged attack on herself; two incompatible descriptions of one invented attacker, each aiming a primed, armed man at the other; the east door as trigger; and the poker removed from the scene afterward to bury Garrick's self-defense.",
+    "method": "Staged burglaries from the wheelchair; a staged attack on herself; two incompatible descriptions of one invented attacker — one to set the master waiting armed in his own dark hall, the other to send the caretaker to the same door primed to fight; the east door as trigger; and the poker removed from the scene afterward to bury Garrick's self-defense.",
     "motive": "The custodianship: on Blackwood's death the Ashcombe fortune passes outright to her daughter Constance — and Blackwood was destroying it: the firm failing, the fund drawn down, Clara's wedding portion about to gut what was left. She is dying; it was now or never, and he murdered her sister besides.",
     "criticalEvidenceIds": [
       "wheel-marks",
@@ -2672,7 +2655,7 @@
         {
           "id": "method-engineered",
           "role": "method",
-          "description": "She staged the break-ins and the attack on herself, gave Blackwood and Garrick different descriptions of an invented attacker so each saw the other as the villain, sprang the collision, and removed the poker that proved self-defense",
+          "description": "She staged the break-ins and the attack on herself, gave Blackwood and Garrick different descriptions of an invented attacker — the master lying in wait for a brute in working boots, the caretaker hunting a grey-coated gentleman — sprang the collision, and removed the poker that proved self-defense",
           "matchHints": [
             "staged",
             "break-in",
@@ -2794,13 +2777,6 @@
       "templateNotes": "The accusation collapses at the inquest — the accused's account holds. The real design surfaces months too late, when the trust reverts and a county clerk wonders aloud. By then Mrs. Marsh is beyond any court. The Inspector's name is attached to the failure."
     },
     {
-      "id": "failure_time_expired",
-      "when": "failure",
-      "kind": "time_expired",
-      "title": "First light",
-      "templateNotes": "The storm lifts; the county men arrive and take the obvious answer — Garrick, the print, the public quarrel over his post. Case closed on the hand. The head dies by spring, unsuspected, her affairs neatly arranged."
-    },
-    {
       "id": "failure_murdered",
       "when": "failure",
       "kind": "murdered",
@@ -2815,7 +2791,7 @@
       "templateNotes": "The Inspector's conduct hands the household grounds for complaint; at first light the county men escort their own colleague out. The case passes to slower hands, and the spring settles everything in Mrs. Marsh's favor. Garrick is taken at first light all the same — the obvious man, with nobody left to argue otherwise — and the file closes on him by Lady Day. Constance inherits in the spring, and keeps her mother's counsel, such as she ever had of it."
     }
   ],
-  "revelation": "Begin where she began: in 1885, when Josiah Marsh died conveniently and his widow Eudora came with her sister Rosalind's charity into this house; and in 1889, when Rosalind Blackwood, née Ashcombe, fell from her own balcony into the little court below — an accident, the county ruled, because Hugo Blackwood grieved so very well. The fortune was never his. Under the Ashcombe settlement he held it only as custodian, and it would pass — to Eudora if she remarried, to her daughter Constance if she married, or to the Ashcombe line at his death. So he made sure of them. Constance was kept plain, penniless, and unmarriageable. And Eudora, who saw too much, began to receive her devoted brother-in-law's tonic — Fowler's Solution, carried up each evening with his own hands, double strength, year after year, until her legs failed and the household learned to look past the woman in the wheelchair.\n\nShe stopped taking it eighteen months ago — poured it, dose by dose, into the garden bed where her sister died, where the roses burned brown and nobody wondered. The damage stayed. Then, two months ago, a doctor gave her until spring. And six weeks ago, Vale was told to draft a wedding portion for Clara from the settlement fund while the firm of Blackwood & Crane drank the rest. She was out of time, and out of patience, and she had spent twenty years learning exactly how this house worked.\n\nSo the manor began to rob itself. Windows broken from the inside, glass falling outward into the flowerbeds; small things taken from rooms a chair could reach, never from the floors it could not — a burglar with a ceiling. The master, who could not call in the police his ledgers would not survive, armed himself instead. Then she staged the attack on herself — her own window, her own jewels wrapped beneath the border stones with the year of hoarded tonic — and gave each man his own burglar. To Hugo: a rough man in working boots, and he heard Garrick in every word of it. To Tom Garrick, kindly, on the lodge path: a big man in a gentleman's grey coat who came by the east door with a key — and she told the child peppermint secrets about dismissal, knowing Poppy tells her father everything. Two frightened men, wound like clock-springs by the same still hand, patrolling the same dark house for each other.\n\nOn the night, she mentioned to Hugo — in passing, at tea — that she had heard the east latch again. Then she unlatched it. Hugo waited in the dark hall with the library poker and struck the shape that came through; the blow split Tom Garrick's shoulder through his coat, and Garrick's one answering swing — the dark lantern, iron and brass — found the temple. Hugo Blackwood fell through his own hall table and its vase, and the clock stopped at seven minutes past eleven. She wheeled out into the dark, took up the poker that proved the master struck first — the only evidence of Tom's innocence — and was back behind her door with it beneath her bed before Henshaw's lamp swung in. Constance, lying awake, heard the chair go and come back, and thought her mother had been frightened. Garrick buried his lantern in the churchyard, where fresh earth draws no eye, and did his rounds after by candle stub.\n\nShe never lied about anything that could be checked, and she never touched the man who died. Hugo heard true facts and Tom heard true fears, and each did with them what was already in him to do. She chose the soldier to be the one standing at the end — and if the night had gone otherwise, there would have been another night. There was always going to be another night. What remains is what truth leaves behind: Constance, an heiress who learned in one hour what her mother was and what her mother did for her; the Garricks, whose one roof stood on a dead man's mercy and now stands on a court's; and a little garden in a cold courtyard, planted where a sister fell, fed for a year on the medicine that was meant to finish the work it started.",
+  "revelation": "Begin where she began: in 1885, when Josiah Marsh died conveniently and his widow Eudora came with her sister Rosalind's charity into this house; and in 1889, when Rosalind Blackwood, née Ashcombe, fell from her own balcony into the little court below — an accident, the county ruled, because Hugo Blackwood grieved so very well. The fortune was never his. Under the Ashcombe settlement he held it only as custodian, and it would pass — to Eudora if she remarried, to her daughter Constance if she married, or to the Ashcombe line at his death. So he made sure of them. Constance was kept plain, penniless, and unmarriageable. And Eudora, who saw too much, began to receive her devoted brother-in-law's tonic — Fowler's Solution, carried up each evening with his own hands, double strength, year after year, until her legs failed and the household learned to look past the woman in the wheelchair.\n\nShe stopped taking it eighteen months ago — poured it, dose by dose, into the garden bed where her sister died, where the roses burned brown and nobody wondered. The damage stayed. Then, two months ago, a doctor gave her until spring. And six weeks ago, Vale was told to draft a wedding portion for Clara from the settlement fund while the firm of Blackwood & Crane drank the rest. She was out of time, and out of patience, and she had spent twenty years learning exactly how this house worked.\n\nSo the manor began to rob itself. Windows broken from the inside, glass falling outward into the flowerbeds; small things taken from rooms a chair could reach, never from the floors it could not — a burglar with a ceiling. The master, who could not call in the police his ledgers would not survive, armed himself instead. Then she staged the attack on herself — her own window, her own jewels wrapped beneath the border stones with the year of hoarded tonic — and gave each man his own burglar. To Hugo: a rough man in working boots, a brute who had throttled an invalid under his roof and would come again, with his wife and daughter asleep upstairs — and Hugo, who would have no constables, resolved to be waiting for him. To Tom Garrick, kindly, on the lodge path: a big man in a gentleman's grey coat who came by the east door with a key — and she told the child peppermint secrets about dismissal, knowing Poppy tells her father everything. Two frightened men, wound like clock-springs by the same still hand, hunting the same dark house for a burglar who never existed.\n\nOn the night, she mentioned to Hugo — in passing, at tea — that she had heard the east latch again. Then she unlatched it. Hugo waited in the dark hall with the library poker and struck the shape that came through; the blow split Tom Garrick's shoulder through his coat, and Garrick's one answering swing — the dark lantern, iron and brass — found the temple. Hugo Blackwood fell through his own hall table and its vase, and the clock stopped at seven minutes past eleven. She wheeled out into the dark, took up the poker that proved the master struck first — the only evidence of Tom's innocence — and was back behind her door with it beneath her bed before Henshaw's lamp swung in. Constance, lying awake, heard the chair go and come back, and thought her mother had been frightened. Garrick buried his lantern in the churchyard, where fresh earth draws no eye, and did his rounds after by candle stub.\n\nShe never lied about anything that could be checked, and she never touched the man who died. Hugo heard true facts and Tom heard true fears, and each did with them what was already in him to do. She chose the soldier to be the one standing at the end — and if the night had gone otherwise, there would have been another night. There was always going to be another night. What remains is what truth leaves behind: Constance, an heiress who learned in one hour what her mother was and what her mother did for her; the Garricks, whose one roof stood on a dead man's mercy and now stands on a court's; and a little garden in a cold courtyard, planted where a sister fell, fed for a year on the medicine that was meant to finish the work it started.",
   "figures": [
     {
       "id": "rosalind",
