@@ -257,6 +257,8 @@ export type StartCaseResponse = {
   briefing?: MysteryBriefing;
   locationName?: string;
   progress?: MysteryProgress;
+  /** true when the server resumed an existing open run instead of starting fresh. */
+  resumed?: boolean;
 };
 
 export type GetPlaythroughResponse = {

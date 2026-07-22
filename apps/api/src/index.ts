@@ -27,6 +27,8 @@ import {
   insertPlaythrough,
   getPlaythrough,
   listPlaythroughsFor,
+  findOpenPlaythroughFor,
+  abandonOpenPlaythroughsFor,
   commitTurn,
   countRecentTurns,
   listTurns,
@@ -472,6 +474,36 @@ app.post("/v1/playthroughs", async (c) => {
 
   const def = await registry.getDefinition(caseId, found.meta.contentVersion);
   if (!def) return c.json({ error: "unknown_case" }, 404);
+
+  // One investigation per mystery per user. A plain start resumes the
+  // open run when one exists (the client may not know about it — fresh
+  // browser, new device); only an explicit restart forks, and it leaves
+  // the old run behind as abandoned.
+  if ((body as { restart?: boolean }).restart === true) {
+    await abandonOpenPlaythroughsFor(pool, found.ident.userId, caseId);
+  } else {
+    const openId = await findOpenPlaythroughFor(pool, found.ident.userId, caseId);
+    const open = openId ? await getPlaythrough(pool, openId) : null;
+    if (open) {
+      const openDef = await registry.getDefinition(
+        caseId,
+        open.state.contentVersion
+      );
+      return c.json({
+        playthrough: publicState(open.state, openDef),
+        playerView: openDef ? buildPlayerView(openDef, open.state) : undefined,
+        openingNarration: open.openingNarration,
+        briefing: openDef ? buildBriefing(openDef, open.state) : undefined,
+        locationName: openDef?.locations.find(
+          (l) => l.id === open.state.locationId
+        )?.name,
+        progress: openDef
+          ? computeMysteryProgress(openDef, open.state)
+          : undefined,
+        resumed: true,
+      });
+    }
+  }
 
   const state = createInitialPlaythrough(def);
   await insertPlaythrough(pool, state, def.openingNarration);

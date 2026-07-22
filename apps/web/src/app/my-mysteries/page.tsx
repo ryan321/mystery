@@ -51,6 +51,8 @@ export default function MyMysteriesPage() {
       try {
         const server = await listMyPlaythroughs();
         for (const p of server) {
+          // Runs left behind by a restart are history, not shelf items.
+          if (p.status === "abandoned") continue;
           const status = shelfStatus(p.status);
           const existing = merged[p.caseId];
           // An open run outranks a closed one for the same mystery;

@@ -133,7 +133,8 @@ export default function MysteryDetail() {
     setRestarting(true);
     setError(null);
     try {
-      const data = await startCase(id);
+      // Explicit fresh start — the server abandons the old open run.
+      const data = await startCase(id, true);
       beginPlaythrough(id, data);
       setPlayTick((n) => n + 1);
       router.push(`/play/${data.playthrough.id}`);

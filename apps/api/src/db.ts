@@ -289,8 +289,42 @@ export async function listPlaythroughsFor(
   }));
 }
 
-export type TurnWindowCounts = {
-  last10s: number;
+/**
+ * The user's open run for a case (active or denouement), if any. One
+ * investigation per mystery per user: a second start resumes this run
+ * instead of spawning a parallel one.
+ */
+export async function findOpenPlaythroughFor(
+  pool: Db,
+  userId: string,
+  caseId: string
+): Promise<string | null> {
+  const res = await pool.query<{ id: string }>(
+    `SELECT id FROM playthroughs
+     WHERE user_id = $1 AND case_id = $2
+       AND status IN ('active', 'denouement')
+     ORDER BY updated_at DESC
+     LIMIT 1`,
+    [userId, caseId]
+  );
+  return res.rows[0]?.id ?? null;
+}
+
+/** Explicit restart: close any open runs for the case as abandoned. */
+export async function abandonOpenPlaythroughsFor(
+  pool: Db,
+  userId: string,
+  caseId: string
+): Promise<void> {
+  await pool.query(
+    `UPDATE playthroughs SET status = 'abandoned', updated_at = now()
+     WHERE user_id = $1 AND case_id = $2
+       AND status IN ('active', 'denouement')`,
+    [userId, caseId]
+  );
+}
+
+export type TurnWindowCounts = {  last10s: number;
   last60s: number;
   last24h: number;
 };

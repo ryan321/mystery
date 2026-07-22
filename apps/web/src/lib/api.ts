@@ -73,11 +73,14 @@ export async function getCase(caseId: string): Promise<CaseDetail> {
   return json<CaseDetail>(await apiFetch(`/v1/cases/${caseId}`));
 }
 
-export async function startCase(caseId: string): Promise<StartCaseResponse> {
+export async function startCase(
+  caseId: string,
+  restart = false
+): Promise<StartCaseResponse> {
   const res = await apiFetch("/v1/playthroughs", {
     method: "POST",
     headers: JSON_HEADERS,
-    body: JSON.stringify({ caseId }),
+    body: JSON.stringify({ caseId, restart }),
   });
   return json<StartCaseResponse>(res);
 }
