@@ -42,6 +42,7 @@ import {
   accessContextFor,
   evaluateAccess,
   parseAccessPolicy,
+  solvedCaseIdsFor,
   TIER_ORDER,
   type Tier,
 } from "./access.js";
@@ -170,6 +171,39 @@ async function accessFor(c: Context, caseId: string) {
     caseId,
   });
   return { meta, result: evaluateAccess(meta.access, ctx), ident };
+}
+
+/** Distinct solved "hard" mysteries that must be earned to reach Genius. */
+const GENIUS_HARD_SOLVES_REQUIRED = 3;
+
+export type GeniusEligibility = {
+  hardSolved: number;
+  required: number;
+  eligible: boolean;
+};
+
+/**
+ * Genius (docs/TIER_STRATEGY.md §5) is earned, not bought: a player unlocks
+ * the right to subscribe by solving GENIUS_HARD_SOLVES_REQUIRED distinct
+ * Difficult mysteries. "In the Master Detective tier" is implicit — Hard cases
+ * already require that tier to play. Eligibility is permanent (solve history).
+ */
+async function geniusEligibility(userId: string): Promise<GeniusEligibility> {
+  const [solved, rows] = await Promise.all([
+    solvedCaseIdsFor(pool, userId),
+    registry.listPublished(),
+  ]);
+  const hardIds = new Set(
+    rows
+      .filter((r) => r.definition.meta.difficulty === "hard")
+      .map((r) => r.caseId)
+  );
+  const hardSolved = solved.filter((id) => hardIds.has(id)).length;
+  return {
+    hardSolved,
+    required: GENIUS_HARD_SOLVES_REQUIRED,
+    eligible: hardSolved >= GENIUS_HARD_SOLVES_REQUIRED,
+  };
 }
 
 const app = new Hono();
@@ -985,7 +1019,12 @@ app.get("/v1/auth/google/callback", async (c) => {
 
 app.get("/v1/me", async (c) => {
   const ident = await identity(c);
-  if (ident.user) return c.json({ user: publicUser(ident.user) });
+  if (ident.user) {
+    return c.json({
+      user: publicUser(ident.user),
+      genius: await geniusEligibility(ident.user.id),
+    });
+  }
   return c.json({
     anonymous: true,
     userId: ident.userId,
@@ -998,15 +1037,16 @@ app.get("/v1/me", async (c) => {
 app.get("/v1/billing/tiers", async (c) => {
   const stripe = stripeClient();
   const invite = c.req.query("invite");
+  const ident = await identity(c);
+  // Genius is whispered, not hidden (docs/TIER_STRATEGY.md §5): it always
+  // appears on the ladder, but is purchasable only once earned (3 Hard solves)
+  // or via a valid invite link.
+  const genius = ident.user
+    ? await geniusEligibility(ident.user.id)
+    : { hardSolved: 0, required: GENIUS_HARD_SOLVES_REQUIRED, eligible: false };
   const tiers: unknown[] = [];
   for (const tier of PAID_TIERS) {
     const card = TIER_CARDS[tier];
-    if (card.inviteOnly) {
-      const ok = invite
-        ? (await validateInvitation(pool, invite, tier)).valid
-        : false;
-      if (!ok) continue; // elite never shows without a valid invite link
-    }
     const priceId = priceForTier(tier);
     let price: unknown = null;
     if (stripe && priceId) {
@@ -1021,7 +1061,26 @@ app.get("/v1/billing/tiers", async (c) => {
         /* price fetch is cosmetic */
       }
     }
-    tiers.push({ tier, ...card, price, configured: Boolean(priceId) });
+    let purchasable = true;
+    let requirement: unknown;
+    if (card.inviteOnly) {
+      const inviteOk = invite
+        ? (await validateInvitation(pool, invite, tier)).valid
+        : false;
+      purchasable = genius.eligible || inviteOk;
+      requirement = {
+        hardSolved: genius.hardSolved,
+        required: genius.required,
+      };
+    }
+    tiers.push({
+      tier,
+      ...card,
+      price,
+      configured: Boolean(priceId),
+      purchasable,
+      ...(requirement ? { requirement } : {}),
+    });
   }
   return c.json({ tiers, billingConfigured: Boolean(stripe) });
 });
@@ -1040,10 +1099,14 @@ app.post("/v1/billing/checkout", async (c) => {
   const tier = body.tier;
 
   if (TIER_CARDS[tier].inviteOnly) {
-    const inv = body.inviteCode
-      ? await validateInvitation(pool, body.inviteCode, tier)
-      : { valid: false };
-    if (!inv.valid) return c.json({ error: "invitation_required" }, 403);
+    // Genius is earned (3 Hard solves) or invited — either opens checkout.
+    const elig = await geniusEligibility(ident.user.id);
+    const inviteOk = body.inviteCode
+      ? (await validateInvitation(pool, body.inviteCode, tier)).valid
+      : false;
+    if (!elig.eligible && !inviteOk) {
+      return c.json({ error: "not_eligible" }, 403);
+    }
   }
 
   const price = priceForTier(tier);

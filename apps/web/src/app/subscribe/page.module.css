@@ -189,6 +189,41 @@
   border-color: rgba(212, 181, 106, 0.55);
 }
 
+/* Genius, whispered but unearned: a locked, aspirational card. */
+.planLocked {
+  border-style: dashed;
+  border-color: rgba(212, 181, 106, 0.3);
+  background: rgba(10, 14, 20, 0.55);
+}
+
+.earnBlock {
+  margin-top: auto;
+  padding-top: 0.4rem;
+}
+
+.earnNote {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--candle);
+  opacity: 0.85;
+}
+
+.earnProgress {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--fog);
+}
+
+.earnCount {
+  font-family: var(--font-mono);
+  color: var(--paper);
+  white-space: nowrap;
+}
+
 .footer {
   margin-top: 2rem;
 }

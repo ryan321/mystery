@@ -2,6 +2,7 @@ import type {
   BillingTier,
   CaseDetail,
   CaseSummary,
+  GeniusEligibility,
   GetPlaythroughResponse,
   NoteResponse,
   PlaythroughSummary,
@@ -126,6 +127,8 @@ export type MeResponse = {
     tier: string;
     subscription?: Subscription;
   };
+  /** Present for signed-in users: progress toward the earned Genius tier. */
+  genius?: GeniusEligibility;
   anonymous?: boolean;
   tier?: string;
 };

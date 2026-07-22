@@ -41,7 +41,7 @@ export function lockLabel(
   const req = c.requirement ?? {};
   switch (c.lockReason) {
     case "tier":
-      return "Subscribers only";
+      return req.minTier ? tierLabel(req.minTier) : "Subscribers only";
     case "progression": {
       const remaining =
         typeof req.minSolved === "number" && typeof req.solved === "number"

@@ -106,6 +106,13 @@ export type TierPrice = {
   interval: string;
 };
 
+/** Progress toward earning the invitation-only Genius tier. */
+export type GeniusEligibility = {
+  hardSolved: number;
+  required: number;
+  eligible: boolean;
+};
+
 /** One paid tier card from GET /v1/billing/tiers. */
 export type BillingTier = {
   tier: "standard" | "premium" | "elite";
@@ -115,6 +122,10 @@ export type BillingTier = {
   /** A Stripe price is wired up for this tier (checkout will work). */
   configured: boolean;
   price: TierPrice | null;
+  /** May this viewer start checkout (Genius: earned or invited). */
+  purchasable?: boolean;
+  /** Genius only: the viewer's progress toward the earned invitation. */
+  requirement?: { hardSolved: number; required: number };
 };
 
 /** Subscription state carried on the signed-in user (GET /v1/me). */

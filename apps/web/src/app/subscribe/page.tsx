@@ -89,8 +89,9 @@ export default function SubscribePage() {
     }
   }
 
-  // Only tiers with a live Stripe price are purchasable.
-  const buyable = (data?.tiers ?? []).filter((t) => t.configured && t.price);
+  // The whole ladder is displayed; each card renders its own state
+  // (buyable, coming-soon, or earned-and-whispered for Genius).
+  const allTiers = data?.tiers ?? [];
 
   return (
     <>
@@ -103,10 +104,10 @@ export default function SubscribePage() {
 
           <header className={styles.header}>
             <p className={styles.eyebrow}>Membership</p>
-            <h1 className={styles.title}>Unlock the whole shelf</h1>
+            <h1 className={styles.title}>Unlock more mysteries</h1>
             <p className={styles.subtitle}>
-              The Blackwood Inheritance is always free. A subscription opens
-              every other mystery — new cases as they’re published.
+              The Blackwood Inheritance is free to all. Subscribe to open more
+              of the catalog — new cases as they’re published.
             </p>
             {signedIn ? (
               <p className={styles.current}>
@@ -130,15 +131,28 @@ export default function SubscribePage() {
             <p className={styles.muted}>
               Subscriptions aren’t open yet — check back soon.
             </p>
-          ) : buyable.length === 0 ? (
+          ) : allTiers.length === 0 ? (
             <p className={styles.muted}>New plans are coming soon.</p>
           ) : (
             <div className={styles.plans}>
-              {buyable.map((tier) => {
+              {allTiers.map((tier) => {
                 const owned = rank(currentTier) >= rank(tier.tier);
+                const hasPrice = Boolean(tier.configured && tier.price);
                 const busy = busyTier === tier.tier;
+                // Genius: whispered + earned. Locked until eligible or invited.
+                const earnedLock =
+                  Boolean(tier.inviteOnly) && !tier.purchasable && !owned;
+                const remaining = tier.requirement
+                  ? Math.max(
+                      0,
+                      tier.requirement.required - tier.requirement.hardSolved
+                    )
+                  : 0;
                 return (
-                  <article key={tier.tier} className={styles.plan}>
+                  <article
+                    key={tier.tier}
+                    className={`${styles.plan} ${earnedLock ? styles.planLocked : ""}`}
+                  >
                     <div className={styles.planHead}>
                       <h2 className={styles.planName}>{tier.name}</h2>
                       {tier.inviteOnly ? (
@@ -146,16 +160,42 @@ export default function SubscribePage() {
                       ) : null}
                     </div>
                     <p className={styles.price}>
-                      {formatPrice(tier.price) ?? "—"}
+                      {hasPrice
+                        ? formatPrice(tier.price)
+                        : tier.inviteOnly
+                          ? "Earned, not bought"
+                          : "Coming soon"}
                     </p>
                     <p className={styles.blurb}>{tier.blurb}</p>
-                    {owned ? (
-                      <Link
-                        href="/account/billing"
-                        className={styles.btnOwned}
-                      >
+
+                    {earnedLock ? (
+                      <div className={styles.earnBlock}>
+                        <p className={styles.earnNote}>
+                          There is a tier above this. It cannot be purchased.
+                        </p>
+                        <p className={styles.earnProgress}>
+                          {remaining > 0
+                            ? `Solve ${remaining} more Difficult ${remaining === 1 ? "mystery" : "mysteries"} to earn your invitation.`
+                            : "You’ve earned your place."}
+                          {tier.requirement ? (
+                            <span className={styles.earnCount}>
+                              {" "}
+                              ({tier.requirement.hardSolved}/
+                              {tier.requirement.required})
+                            </span>
+                          ) : null}
+                        </p>
+                      </div>
+                    ) : owned ? (
+                      <Link href="/account/billing" className={styles.btnOwned}>
                         Your current plan · Manage
                       </Link>
+                    ) : !hasPrice ? (
+                      <button type="button" className={styles.btnBuy} disabled>
+                        {tier.inviteOnly
+                          ? "You’ve earned it · coming soon"
+                          : "Coming soon"}
+                      </button>
                     ) : (
                       <button
                         type="button"
@@ -165,9 +205,11 @@ export default function SubscribePage() {
                       >
                         {busy
                           ? "Opening checkout…"
-                          : signedIn
-                            ? `Subscribe to ${tier.name}`
-                            : "Sign in to subscribe"}
+                          : tier.inviteOnly
+                            ? "Claim your place"
+                            : signedIn
+                              ? `Subscribe to ${tier.name}`
+                              : "Sign in to subscribe"}
                       </button>
                     )}
                   </article>
