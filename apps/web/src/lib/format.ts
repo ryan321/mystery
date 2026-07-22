@@ -74,14 +74,6 @@ export function themeTags(tags: string[] | undefined): string[] {
   return tags.filter((t) => !DIFFICULTY_TAG_RE.test(t.trim()));
 }
 
-export function difficultyClass(
-  difficulty?: CaseSummary["meta"]["difficulty"]
-): string {
-  if (difficulty === "hard") return "difficulty-hard";
-  if (difficulty === "medium") return "difficulty-medium";
-  return "difficulty-easy";
-}
-
 export function timeLabel(time?: TimeState): string {
   if (!time) return "";
   return time.slotId

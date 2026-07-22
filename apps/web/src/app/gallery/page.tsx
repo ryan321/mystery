@@ -4,10 +4,20 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Atmosphere from "../../components/Atmosphere";
 import { coverSrc, listCases } from "../../lib/api";
-import { difficultyClass, difficultyLabel, lockLabel, themeTags } from "../../lib/format";
+import { difficultyLabel, lockLabel, themeTags } from "../../lib/format";
 import { getAllPlayStates } from "../../lib/playState";
 import type { CaseSummary } from "../../lib/types";
 import styles from "./page.module.css";
+
+/** Badge tint per level — must reference the CSS module (hashed names),
+ *  so this lives here, not in lib/format. */
+function difficultyClass(
+  difficulty?: CaseSummary["meta"]["difficulty"]
+): string {
+  if (difficulty === "hard") return styles.difficultyHard;
+  if (difficulty === "medium") return styles.difficultyMedium;
+  return styles.difficultyEasy;
+}
 
 type StatusFilter = "all" | "being_played" | "completed" | "not_started";
 type DifficultyFilter = "all" | "easy" | "medium" | "hard";

@@ -382,19 +382,19 @@
   border: 1px solid;
 }
 
-.difficulty-easy {
+.difficultyEasy {
   color: #8fb98f;
   border-color: rgba(143, 185, 143, 0.45);
   background: rgba(143, 185, 143, 0.1);
 }
 
-.difficulty-medium {
+.difficultyMedium {
   color: #d4b56a;
   border-color: rgba(212, 181, 106, 0.45);
   background: rgba(212, 181, 106, 0.1);
 }
 
-.difficulty-hard {
+.difficultyHard {
   color: #e08a8a;
   border-color: rgba(224, 138, 138, 0.45);
   background: rgba(224, 138, 138, 0.1);
