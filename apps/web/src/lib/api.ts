@@ -3,6 +3,7 @@ import type {
   CaseSummary,
   GetPlaythroughResponse,
   NoteResponse,
+  PlaythroughSummary,
   SendTurnResponse,
   StartCaseResponse,
 } from "./types";
@@ -83,6 +84,14 @@ export async function startCase(caseId: string): Promise<StartCaseResponse> {
 
 export async function getPlaythrough(id: string): Promise<GetPlaythroughResponse> {
   return json<GetPlaythroughResponse>(await apiFetch(`/v1/playthroughs/${id}`));
+}
+
+/** Account-wide play history (My Mysteries) — works across devices. */
+export async function listMyPlaythroughs(): Promise<PlaythroughSummary[]> {
+  const data = await json<{ playthroughs: PlaythroughSummary[] }>(
+    await apiFetch("/v1/playthroughs")
+  );
+  return data.playthroughs;
 }
 
 export async function sendTurn(

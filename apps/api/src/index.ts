@@ -26,6 +26,7 @@ import {
   migrate,
   insertPlaythrough,
   getPlaythrough,
+  listPlaythroughsFor,
   commitTurn,
   countRecentTurns,
   listTurns,
@@ -431,6 +432,14 @@ app.delete("/v1/mysteries/:caseId/grants/:userId", async (c) => {
   if (!adminOk(c)) return c.json({ error: "forbidden" }, 403);
   await registry.revokeGrant(c.req.param("caseId"), c.req.param("userId"));
   return c.json({ revoked: true });
+});
+
+app.get("/v1/playthroughs", async (c) => {
+  // Account-wide play history — backs the web's My Mysteries page. Scoped
+  // to the caller's identity (signed-in user, or the anon cookie for
+  // legacy pre-account runs).
+  const ident = await identity(c);
+  return c.json({ playthroughs: await listPlaythroughsFor(pool, ident.userId) });
 });
 
 app.post("/v1/playthroughs", async (c) => {

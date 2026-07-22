@@ -25,6 +25,16 @@ export type CaseSummary = {
   coverUrl?: string;
 };
 
+/** One row of the account-wide play history (GET /v1/playthroughs). */
+export type PlaythroughSummary = {
+  id: string;
+  caseId: string;
+  /** Engine status: active | denouement | solved | failed */
+  status: string;
+  turnCount: number;
+  updatedAt: string;
+};
+
 export type CastMember = {
   id: string;
   name: string;

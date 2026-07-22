@@ -3,10 +3,21 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Atmosphere from "../../components/Atmosphere";
-import { coverSrc, listCases } from "../../lib/api";
-import { getAllPlayStates, type PlayStateEntry } from "../../lib/playState";
+import { coverSrc, listCases, listMyPlaythroughs } from "../../lib/api";
+import {
+  getAllPlayStates,
+  type PlayStateEntry,
+  type PlayStatus,
+} from "../../lib/playState";
 import type { CaseSummary } from "../../lib/types";
 import styles from "./page.module.css";
+
+/** Engine status → shelf status: open runs resume, closed runs replay. */
+function shelfStatus(engineStatus: string): PlayStatus {
+  return engineStatus === "solved" || engineStatus === "failed"
+    ? "completed"
+    : "being_played";
+}
 
 export default function MyMysteriesPage() {
   const [cases, setCases] = useState<CaseSummary[]>([]);
@@ -31,7 +42,40 @@ export default function MyMysteriesPage() {
   }, []);
 
   useEffect(() => {
-    setPlayStates(getAllPlayStates());
+    let cancelled = false;
+    (async () => {
+      // Server history is the cross-device source of truth; localStorage
+      // only knows this browser. Server wins on conflicts, local fills
+      // gaps (offline, or a pre-sign-in run that wasn't adopted).
+      const merged = getAllPlayStates();
+      try {
+        const server = await listMyPlaythroughs();
+        for (const p of server) {
+          const status = shelfStatus(p.status);
+          const existing = merged[p.caseId];
+          // An open run outranks a closed one for the same mystery;
+          // between equals, the more recently touched wins.
+          if (
+            !existing ||
+            (status === "being_played" && existing.status === "completed") ||
+            (status === existing.status && p.updatedAt > existing.updatedAt)
+          ) {
+            merged[p.caseId] = {
+              playthroughId: p.id,
+              caseId: p.caseId,
+              status,
+              updatedAt: p.updatedAt,
+            };
+          }
+        }
+      } catch {
+        /* API unreachable — the local shelf still renders */
+      }
+      if (!cancelled) setPlayStates(merged);
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const started = cases.filter((c) => playStates[c.id]?.status === "being_played");

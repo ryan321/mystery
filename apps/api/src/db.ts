@@ -246,6 +246,49 @@ export async function getPlaythrough(
   };
 }
 
+export type PlaythroughSummary = {
+  id: string;
+  caseId: string;
+  status: string;
+  turnCount: number;
+  updatedAt: string;
+};
+
+/**
+ * Every playthrough owned by this user (or anon id), newest first.
+ * Backs the account-wide "My mysteries" list — localStorage only tracks
+ * the current browser, the DB is the cross-device source of truth.
+ */
+export async function listPlaythroughsFor(
+  pool: Db,
+  userId: string
+): Promise<PlaythroughSummary[]> {
+  const res = await pool.query<{
+    id: string;
+    case_id: string;
+    status: string;
+    turn_count: number;
+    updated_at: Date;
+  }>(
+    `SELECT id, case_id, status, turn_count, updated_at
+     FROM playthroughs
+     WHERE user_id = $1
+     ORDER BY updated_at DESC
+     LIMIT 100`,
+    [userId]
+  );
+  return res.rows.map((r) => ({
+    id: r.id,
+    caseId: r.case_id,
+    status: r.status,
+    turnCount: r.turn_count,
+    updatedAt:
+      r.updated_at instanceof Date
+        ? r.updated_at.toISOString()
+        : String(r.updated_at),
+  }));
+}
+
 export type TurnWindowCounts = {
   last10s: number;
   last60s: number;
