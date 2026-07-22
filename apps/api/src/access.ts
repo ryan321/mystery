@@ -13,6 +13,16 @@ import type { Db } from "./db.js";
 export type Tier = "free" | "standard" | "premium" | "elite";
 export const TIER_ORDER: Tier[] = ["free", "standard", "premium", "elite"];
 
+/**
+ * Default subscription tier for a case, derived from its difficulty
+ * (docs/TIER_STRATEGY.md): Difficult → Master Detective (premium); Easy and
+ * Medium → Sleuth (standard). Used to auto-tier a case at publish time when
+ * no explicit tier override has been set.
+ */
+export function minTierForDifficulty(difficulty?: string): Tier {
+  return difficulty === "hard" ? "premium" : "standard";
+}
+
 export type AccessPolicy = {
   visibility: "public" | "unlisted" | "private";
   /** Minimum subscription tier to play. */

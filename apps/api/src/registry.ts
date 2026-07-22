@@ -26,7 +26,11 @@ import {
   type BundleAsset,
   BundleError,
 } from "./bundle.js";
-import { parseAccessPolicy, type AccessPolicy } from "./access.js";
+import {
+  parseAccessPolicy,
+  minTierForDifficulty,
+  type AccessPolicy,
+} from "./access.js";
 
 export type MysteryStatus = "draft" | "published" | "retired";
 
@@ -263,6 +267,7 @@ export class MysteryRegistry {
       client.release();
     }
 
+    await this.#ensureTier(caseId, args.definition.meta.difficulty);
     this.#invalidate(caseId, contentVersion);
     return { caseId, contentVersion, changed: true };
   }
@@ -353,6 +358,28 @@ export class MysteryRegistry {
        WHERE case_id = $1`,
       [caseId, JSON.stringify(access)]
     );
+  }
+
+  /**
+   * Auto-tier a case at import (docs/TIER_STRATEGY.md §9). Preserve any
+   * explicit minTier already set on the case (the free taster, or a manual
+   * override) by re-applying it across versions; otherwise derive the tier
+   * from difficulty so a new case gates itself instead of defaulting to free.
+   */
+  async #ensureTier(
+    caseId: string,
+    difficulty: string | undefined
+  ): Promise<void> {
+    const existing = await this.#pool.query<{ access: unknown }>(
+      `SELECT access FROM mysteries
+       WHERE case_id = $1 AND access->>'minTier' IS NOT NULL
+       ORDER BY updated_at DESC LIMIT 1`,
+      [caseId]
+    );
+    const access: AccessPolicy = existing.rows[0]
+      ? parseAccessPolicy(existing.rows[0].access)
+      : { visibility: "public", minTier: minTierForDifficulty(difficulty) };
+    await this.setAccess(caseId, access);
   }
 
   async grant(caseId: string, userId: string, kind: string): Promise<void> {
