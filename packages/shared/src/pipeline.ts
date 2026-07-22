@@ -152,9 +152,31 @@ export const PerformerOutputSchema = z.object({
 });
 export type PerformerOutput = z.infer<typeof PerformerOutputSchema>;
 
+/**
+ * Accusation extraction (LLM call on accuse turns): WHAT the accusation
+ * claims — never WHETHER it is true. The engine decides the verdict
+ * deterministically from these judgments, so the win/lose rule stays
+ * auditable and language-independent (no regex on player prose; see
+ * docs/I18N.md — "extract, don't match").
+ */
+export const AccusationFactJudgmentSchema = z.object({
+  factId: z.string(),
+  /** affirmed = the accusation asserts it; denied = explicitly rules it out. */
+  status: z.enum(["affirmed", "denied", "unmentioned"]),
+});
+export type AccusationFactJudgment = z.infer<
+  typeof AccusationFactJudgmentSchema
+>;
+
+export const AccusationExtractionSchema = z.object({
+  /** Character ids the accusation affirmatively names as the culprit. */
+  namedCulpritIds: z.array(z.string()).default([]),
+  facts: z.array(AccusationFactJudgmentSchema).default([]),
+});
+export type AccusationExtraction = z.infer<typeof AccusationExtractionSchema>;
+
 export const JustHappenedSchema = z.object({
   id: z.string(),
   summary: z.string(),
   narrationHints: z.string().optional(),
-});
-export type JustHappened = z.infer<typeof JustHappenedSchema>;
+});export type JustHappened = z.infer<typeof JustHappenedSchema>;

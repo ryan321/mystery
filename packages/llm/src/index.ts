@@ -6,6 +6,7 @@ export * from "./performer.js";
 export * from "./prompt-blocks.js";
 export * from "./heuristic-director.js";
 export * from "./classify-physical.js";
+export * from "./extract-accusation.js";
 export * from "./heuristic.js";
 // legacy single-call path (deprecated)
 export * from "./narrator.js";

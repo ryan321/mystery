@@ -1,4 +1,5 @@
 import type {
+  AccusationExtraction,
   MysteryDefinition,
   PlaythroughState,
   StatePatch,
@@ -6,6 +7,7 @@ import type {
 import { flagsMatch, mergeFlags } from "./flags.js";
 import { canRevealBeat } from "./knowledge.js";
 import {
+  accusableSuspectIds,
   accusedCharacterIds,
   scoreAccusationDetailed,
   type AccusationResult,
@@ -210,7 +212,8 @@ export function validateAndApplyPatch(
   def: MysteryDefinition,
   state: PlaythroughState,
   patch: StatePatch,
-  nowIso: string = new Date().toISOString()
+  nowIso: string = new Date().toISOString(),
+  opts: { accusationExtraction?: AccusationExtraction } = {}
 ): PatchValidation {
   const rejected: string[] = [];
   const applied: StatePatch = {};
@@ -499,7 +502,18 @@ export function validateAndApplyPatch(
     // Cases react via `accused_<id>` / `falsely_accused_<id>` game flags
     // (e.g. Blackwood's henshaw_shuts_down beat) — no engine hardcodes.
     const guiltySet = new Set(def.solution.guiltyPartyIds);
-    for (const cid of accusedCharacterIds(def, patch.accuse)) {
+    const accusedIds = new Set(accusedCharacterIds(def, patch.accuse));
+    // The LLM extraction (when present) also reports who was named —
+    // language-independent, unlike the regex fallback above.
+    if (opts.accusationExtraction) {
+      for (const id of accusableSuspectIds(
+        def,
+        opts.accusationExtraction.namedCulpritIds
+      )) {
+        accusedIds.add(id);
+      }
+    }
+    for (const cid of accusedIds) {
       flags = mergeFlags(flags, { [`accused_${cid}`]: true });
       if (!guiltySet.has(cid)) {
         flags = mergeFlags(flags, { [`falsely_accused_${cid}`]: true });
@@ -513,7 +527,12 @@ export function validateAndApplyPatch(
       presented,
       status,
     };
-    accusation = scoreAccusationDetailed(def, tempState, patch.accuse);
+    accusation = scoreAccusationDetailed(
+      def,
+      tempState,
+      patch.accuse,
+      opts.accusationExtraction
+    );
     const score = accusation.score;
 
     let outcome: "success" | "partial" | "failure";

@@ -1,4 +1,5 @@
 import type {
+  AccusationExtraction,
   MysteryDefinition,
   PlaythroughState,
   StatePatch,
@@ -137,11 +138,18 @@ export function accusedCharacterIds(
  *
  * **Never requires inventory / evidence discovery.** The player may
  * name the killer cold and still fully succeed if the words match.
+ *
+ * When `extraction` is provided (LLM call in the turn pipeline), the
+ * verdict reads its structured judgments — who the accusation names and
+ * which rubric facts it affirms — instead of regex-matching English
+ * prose. Without it (mock mode, extraction failure) the legacy
+ * negation-aware substring matcher runs.
  */
 export function scoreAccusationDetailed(
   def: MysteryDefinition,
   state: PlaythroughState,
-  accuse: NonNullable<StatePatch["accuse"]>
+  accuse: NonNullable<StatePatch["accuse"]>,
+  extraction?: AccusationExtraction
 ): AccusationResult {
   const text = accuseFreeText(accuse);
   const notes: string[] = [];
@@ -150,13 +158,21 @@ export function scoreAccusationDetailed(
   const partialCredit = def.solution.rubric.partialCredit !== false;
   const guilty = def.solution.guiltyPartyIds;
 
-  // Identity: structured suspectIds first; free text is negation-aware
-  // ("it wasn't Vale" must not count as naming Vale).
+  // Identity: structured suspectIds first; then the extraction's named
+  // culprits, else the negation-aware free-text matcher ("it wasn't Vale"
+  // must not count as naming Vale).
   let identityCorrect = false;
   for (const gid of guilty) {
     if ((accuse.suspectIds ?? []).includes(gid)) {
       identityCorrect = true;
       break;
+    }
+    if (extraction) {
+      if (extraction.namedCulpritIds.includes(gid)) {
+        identityCorrect = true;
+        break;
+      }
+      continue;
     }
     if (affirmativeMention(text, gid)) {
       identityCorrect = true;
@@ -213,18 +229,28 @@ export function scoreAccusationDetailed(
 
   for (const fact of facts) {
     const role = fact.role ?? inferRole(fact.id);
-    // For identity facts, also match guilty ids / names
-    const extra =
-      role === "identity"
-        ? [
-            ...guilty,
-            ...guilty.flatMap((gid) => {
-              const ch = def.characters.find((c) => c.id === gid);
-              return ch ? [ch.name, ch.name.split(/\s+/).pop() ?? ""] : [];
-            }),
-          ]
-        : [];
-    if (factMatches(text, fact.matchHints, extra)) {
+    let hit: boolean;
+    if (extraction) {
+      // Only explicit affirmation counts — a denied or unmentioned fact
+      // is no hit. Facts the extraction omitted are unmentioned.
+      hit =
+        extraction.facts.find((j) => j.factId === fact.id)?.status ===
+        "affirmed";
+    } else {
+      // For identity facts, also match guilty ids / names
+      const extra =
+        role === "identity"
+          ? [
+              ...guilty,
+              ...guilty.flatMap((gid) => {
+                const ch = def.characters.find((c) => c.id === gid);
+                return ch ? [ch.name, ch.name.split(/\s+/).pop() ?? ""] : [];
+              }),
+            ]
+          : [];
+      hit = factMatches(text, fact.matchHints, extra);
+    }
+    if (hit) {
       hitFactIds.push(fact.id);
       if (role === "identity") identityHits += 1;
       else supportingHits += 1;

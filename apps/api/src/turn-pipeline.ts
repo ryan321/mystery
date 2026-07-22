@@ -1,4 +1,5 @@
 import type {
+  AccusationExtraction,
   MysteryDefinition,
   PlaythroughState,
   JustHappened,
@@ -28,7 +29,7 @@ import {
   boundaryJustHappened,
   resolveWorldToPlayer,
 } from "@mystery/engine";
-import { runDirector, runPerformer, type LlmConfig } from "@mystery/llm";
+import { runDirector, runPerformer, extractAccusationJudgments, type LlmConfig } from "@mystery/llm";
 
 export type TurnPipelineResult = {
   narration: string;
@@ -177,8 +178,42 @@ export async function runTurnPipeline(args: {
   justHappened.push(...gate.justHappened);
   notes.push(...gate.notes);
 
+  // Accusation scoring: on an accuse turn, the LLM extracts WHAT the
+  // accusation claims (who it names, which rubric facts it affirms) and
+  // the engine decides the verdict from that structure — no regex on
+  // player prose. Extraction failure falls back to the legacy matcher.
+  let accusationExtraction: AccusationExtraction | undefined;
+  if (gate.patch.accuse && state.status === "active") {
+    const a = gate.patch.accuse;
+    accusationExtraction =
+      (await extractAccusationJudgments(llmConfig, {
+        accuse: {
+          summary: a.summary,
+          method: a.method,
+          motive: a.motive,
+          suspectNames: (a.suspectIds ?? []).map(
+            (id) => def.characters.find((c) => c.id === id)?.name ?? id
+          ),
+        },
+        characters: def.characters.map((c) => ({
+          id: c.id,
+          name: c.name,
+          introducedAs: c.introducedAs,
+        })),
+        facts: def.solution.rubric.requiredFacts.map((f) => ({
+          id: f.id,
+          description: f.description,
+          role: f.role,
+          matchHints: f.matchHints,
+        })),
+      })) ?? undefined;
+    notes.push(accusationExtraction ? "accuse:extract" : "accuse:regex");
+  }
+
   const { applied, rejected, nextState, evidenceAdded, accusation } =
-    validateAndApplyPatch(def, state, gate.patch);
+    validateAndApplyPatch(def, state, gate.patch, undefined, {
+      accusationExtraction,
+    });
 
   // --- Beat pass 2: player-caused unlocks ---
   const playerBeats = evaluateBeats(def, nextState, 3, {
