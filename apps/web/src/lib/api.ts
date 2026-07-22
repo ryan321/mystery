@@ -52,14 +52,19 @@ async function apiFetch(path: string, init: RequestInit = {}): Promise<Response>
 }
 
 async function json<T>(res: Response): Promise<T> {
-  const data = (await res.json()) as T & { error?: string; message?: string };
+  // Parse defensively: an upstream (proxy/CDN) failure or empty body isn't
+  // JSON, and res.json() would throw an opaque SyntaxError over the real
+  // status. null then falls through to the `API <status>` message below.
+  const data = (await res.json().catch(() => null)) as
+    | (T & { error?: string; message?: string })
+    | null;
   if (!res.ok) {
     // Prefer the human-readable message (rate limits, turn-in-flight) over
     // the machine code; callers that branch on a code (signin_required)
     // still get it — those responses carry no message field.
-    throw new Error(data.message ?? data.error ?? `API ${res.status}`);
+    throw new Error(data?.message ?? data?.error ?? `API ${res.status}`);
   }
-  return data;
+  return data as T;
 }
 
 const JSON_HEADERS = { "Content-Type": "application/json" };

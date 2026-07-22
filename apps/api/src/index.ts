@@ -53,6 +53,7 @@ import {
   createSession,
   destroySession,
   effectiveTier,
+  EmailSendError,
   newAnonId,
   publicUser,
   requestMagicLink,
@@ -187,6 +188,15 @@ app.use(
     credentials: true,
   })
 );
+
+// Any error escaping a handler: log it so it reaches the platform logs, and
+// answer with JSON. Hono's default is a text "Internal Server Error" body,
+// which the web client can't parse (every response is read as JSON) — so an
+// uncaught throw would otherwise double-fault into an opaque client error.
+app.onError((err, c) => {
+  console.error(`unhandled error: ${c.req.method} ${c.req.path}`, err);
+  return c.json({ error: "internal_error" }, 500);
+});
 
 app.get("/health", async (c) => {
   let dbOk = false;
@@ -843,13 +853,33 @@ app.post("/v1/auth/magic-link", async (c) => {
     email?: string;
     next?: string;
   };
-  const result = await requestMagicLink(
-    pool,
-    String(body.email ?? ""),
-    typeof body.next === "string" ? body.next : undefined
-  );
-  if ("error" in result) return c.json(result, 400);
-  return c.json(result);
+  try {
+    const result = await requestMagicLink(
+      pool,
+      String(body.email ?? ""),
+      typeof body.next === "string" ? body.next : undefined
+    );
+    if ("error" in result) return c.json(result, 400);
+    return c.json(result);
+  } catch (err) {
+    // A send failure is an upstream/config problem, not the caller's fault:
+    // surface it as a 502 with a retryable message, and log the real Resend
+    // cause (status + body) so the operator can see e.g. an unverified sender.
+    if (err instanceof EmailSendError) {
+      console.error("magic-link email send failed", {
+        status: err.status,
+        detail: err.detail,
+      });
+      return c.json(
+        {
+          error: "email_send_failed",
+          message: "Couldn't send the sign-in email. Please try again shortly.",
+        },
+        502
+      );
+    }
+    throw err; // anything else → global onError (500)
+  }
 });
 
 app.post("/v1/auth/verify", async (c) => {
@@ -921,19 +951,27 @@ app.get("/v1/auth/google/callback", async (c) => {
   const profile = await exchangeGoogleCode(code);
   if ("error" in profile) return fail(profile.error);
 
-  const user = await upsertGoogleUser(pool, profile);
-  const sessionToken = await createSession(pool, user.id);
-  setCookie(c, SESSION_COOKIE, sessionToken, {
-    httpOnly: true,
-    sameSite: "Lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 30,
-    secure: process.env.NODE_ENV === "production",
-  });
+  // Account upsert + session are DB work: on failure, keep the user in the
+  // OAuth flow (bounce to /signin?error=google) rather than dropping a raw
+  // 500 onto the callback URL mid-redirect.
+  try {
+    const user = await upsertGoogleUser(pool, profile);
+    const sessionToken = await createSession(pool, user.id);
+    setCookie(c, SESSION_COOKIE, sessionToken, {
+      httpOnly: true,
+      sameSite: "Lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+      secure: process.env.NODE_ENV === "production",
+    });
 
-  // Same progression merge as magic-link sign-in.
-  const anonId = getCookie(c, ANON_COOKIE);
-  if (anonId) await adoptAnonPlaythroughs(pool, user.id, anonId);
+    // Same progression merge as magic-link sign-in.
+    const anonId = getCookie(c, ANON_COOKIE);
+    if (anonId) await adoptAnonPlaythroughs(pool, user.id, anonId);
+  } catch (err) {
+    console.error("google sign-in: session creation failed", err);
+    return fail("session_error");
+  }
 
   return c.redirect(
     `${webOrigin}/signin/complete?next=${encodeURIComponent(next)}`

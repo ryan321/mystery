@@ -75,12 +75,29 @@ function normalizeEmail(raw: string): string | null {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : null;
 }
 
+/**
+ * Raised when the magic-link email can't be handed off to Resend — a missing
+ * key, or a non-2xx from the API (e.g. an unverified/misconfigured MAIL_FROM
+ * sender, which Resend rejects with 403). Carries the upstream status/body so
+ * the route can log the real cause instead of an opaque 500.
+ */
+export class EmailSendError extends Error {
+  constructor(
+    message: string,
+    public readonly status?: number,
+    public readonly detail?: string
+  ) {
+    super(message);
+    this.name = "EmailSendError";
+  }
+}
+
 async function sendViaResend(args: {
   to: string;
   link: string;
 }): Promise<void> {
   const key = process.env.RESEND_API_KEY;
-  if (!key) throw new Error("resend_not_configured");
+  if (!key) throw new EmailSendError("resend_not_configured");
   const from =
     process.env.MAIL_FROM ?? "Mystery <onboarding@resend.dev>";
   const res = await fetch("https://api.resend.com/emails", {
@@ -102,7 +119,11 @@ async function sendViaResend(args: {
   });
   if (!res.ok) {
     const body = await res.text().catch(() => "");
-    throw new Error(`resend_failed_${res.status}: ${body.slice(0, 200)}`);
+    throw new EmailSendError(
+      `resend_failed_${res.status}`,
+      res.status,
+      body.slice(0, 500)
+    );
   }
 }
 
