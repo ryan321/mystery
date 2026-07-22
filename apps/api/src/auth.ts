@@ -217,10 +217,7 @@ function magicLinkEmailHtml(link: string): string {
           </tr>
           <tr>
             <td align="center" style="padding:20px 48px 0;">
-              <p style="margin:0;font-family:Georgia, 'Times New Roman', serif;font-size:12px;line-height:1.6;color:#5a6a7c;">
-                If the button won't open, follow this path:<br />
-                <a href="${href}" style="color:${candle};word-break:break-all;">${href}</a>
-              </p>
+              <a href="${href}" style="font-family:Georgia, 'Times New Roman', serif;font-size:11px;line-height:1.6;color:#5a6a7c;word-break:break-all;">${href}</a>
             </td>
           </tr>
           <tr>
