@@ -1052,7 +1052,7 @@ app.get("/v1/billing/tiers", async (c) => {
   let coupons: Stripe.Coupon[] = [];
   if (stripe) {
     try {
-      coupons = (await stripe.coupons.list({ limit: 100 })).data;
+      coupons = (await stripe.coupons.list({ limit: 100, expand: ["data.applies_to"] })).data;
     } catch {
       /* sales are cosmetic */
     }
@@ -1165,7 +1165,7 @@ app.post("/v1/billing/checkout", async (c) => {
     const p = await stripe.prices.retrieve(price);
     const productId = typeof p.product === "string" ? p.product : p.product?.id;
     const coupon = activeCoupon(
-      (await stripe.coupons.list({ limit: 100 })).data,
+      (await stripe.coupons.list({ limit: 100, expand: ["data.applies_to"] })).data,
       productId
     );
     if (coupon) discounts = [{ coupon: coupon.id }];
