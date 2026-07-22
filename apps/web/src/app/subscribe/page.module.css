@@ -120,8 +120,8 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--ink);
-  background: linear-gradient(180deg, #e3c47e 0%, var(--candle) 55%, #b8985a 100%);
+  color: var(--paper);
+  background: linear-gradient(180deg, #d45050 0%, var(--blood) 55%, #8f2a2a 100%);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
@@ -174,7 +174,7 @@
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--candle);
+  color: var(--blood-bright);
 }
 
 .blurb {
