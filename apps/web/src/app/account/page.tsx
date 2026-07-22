@@ -1,8 +1,68 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import Atmosphere from "../../components/Atmosphere";
 import BackLink from "../../components/BackLink";
+import { fetchMe, type MeResponse } from "../../lib/api";
+import { tierLabel } from "../../lib/format";
 import styles from "./page.module.css";
 
+function statusLabel(status?: string | null): string {
+  switch (status) {
+    case "active":
+      return "Active";
+    case "trialing":
+      return "Trial";
+    case "past_due":
+      return "Payment overdue";
+    case "canceled":
+      return "Cancelled";
+    case "comp":
+      return "Complimentary";
+    default:
+      return status ? status : "Active";
+  }
+}
+
+function formatDate(iso?: string): string | null {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
 export default function AccountPage() {
+  const [me, setMe] = useState<MeResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let dead = false;
+    (async () => {
+      try {
+        const res = await fetchMe();
+        if (!dead) setMe(res);
+      } catch {
+        /* leave me null → signed-out view */
+      } finally {
+        if (!dead) setLoading(false);
+      }
+    })();
+    return () => {
+      dead = true;
+    };
+  }, []);
+
+  const user = me?.user;
+  const sub = user?.subscription;
+  const tier = user?.tier ?? "free";
+  const isPaid = tier !== "free";
+  const renews = formatDate(sub?.currentPeriodEnd);
+
   return (
     <>
       <Atmosphere />
@@ -11,53 +71,96 @@ export default function AccountPage() {
           <BackLink />
           <header className={styles.header}>
             <p className={styles.eyebrow}>Account</p>
-            <h1 className={styles.title}>Your investigations</h1>
+            <h1 className={styles.title}>Your account</h1>
           </header>
 
           <section className={styles.section}>
             <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>Profile</h2>
+              <h2 className={styles.sectionTitle}>Subscription</h2>
             </div>
             <div className={styles.sectionBody}>
-              <div className={styles.profile}>
-                <div className={styles.avatar}>I</div>
-                <div className={styles.profileInfo}>
-                  <div className={styles.name}>Inspector</div>
-                  <div className={styles.email}>inspector@mystery.local</div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>In progress</h2>
-            </div>
-            <div className={styles.sectionBody}>
-              <div className={styles.mysteryList}>
-                <div className={styles.mysteryItem}>
-                  <div>
-                    <div className={styles.mysteryTitle}>
-                      The Blackwood Inheritance
-                    </div>
-                    <div className={styles.mysteryMeta}>
-                      Blackwood Manor — the entrance hall · 2 turns
-                    </div>
+              {loading ? (
+                <p className={styles.empty}>Loading…</p>
+              ) : !user ? (
+                <>
+                  <p className={styles.hint} style={{ marginTop: 0 }}>
+                    Sign in to see your subscription.
+                  </p>
+                  <div className={styles.subActions}>
+                    <Link
+                      href="/signin?next=%2Faccount"
+                      className={styles.btnPrimary}
+                    >
+                      Sign in
+                    </Link>
                   </div>
-                  <span className={`${styles.status} ${styles.statusActive}`}>
-                    Active
-                  </span>
-                </div>
-              </div>
+                </>
+              ) : (
+                <>
+                  <div className={styles.subRow}>
+                    <span className={styles.subLabel}>Plan</span>
+                    <span className={styles.subPlan}>{tierLabel(tier)}</span>
+                  </div>
+                  {isPaid && sub?.status ? (
+                    <div className={styles.subRow}>
+                      <span className={styles.subLabel}>Status</span>
+                      <span className={styles.subValue}>
+                        {statusLabel(sub.status)}
+                      </span>
+                    </div>
+                  ) : null}
+                  {isPaid && renews ? (
+                    <div className={styles.subRow}>
+                      <span className={styles.subLabel}>
+                        {sub?.cancelAtPeriodEnd ? "Access until" : "Renews"}
+                      </span>
+                      <span className={styles.subValue}>{renews}</span>
+                    </div>
+                  ) : null}
+                  {sub?.cancelAtPeriodEnd ? (
+                    <p className={styles.cancelNote}>
+                      Your subscription is set to end. You keep access until the
+                      date above.
+                    </p>
+                  ) : null}
+                  {!isPaid ? (
+                    <p className={styles.hint}>
+                      You’re on the free plan. The Blackwood Inheritance is yours
+                      to play; subscribe to open more of the Gallery.
+                    </p>
+                  ) : null}
+                  <div className={styles.subActions}>
+                    {isPaid ? (
+                      <>
+                        <Link
+                          href="/account/billing"
+                          className={styles.btnPrimary}
+                        >
+                          Manage subscription
+                        </Link>
+                        <Link href="/subscribe" className={styles.btnGhost}>
+                          Change plan
+                        </Link>
+                      </>
+                    ) : (
+                      <Link href="/subscribe" className={styles.btnPrimary}>
+                        Browse plans
+                      </Link>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           </section>
 
           <section className={styles.section}>
             <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>Completed</h2>
+              <h2 className={styles.sectionTitle}>Your mysteries</h2>
             </div>
             <div className={styles.sectionBody}>
-              <p className={styles.empty}>No mysteries closed yet.</p>
+              <Link href="/my-mysteries" className={styles.link}>
+                View your investigations →
+              </Link>
             </div>
           </section>
         </div>

@@ -193,6 +193,9 @@ export default function TopNav() {
         <Link href="/account" onClick={closeMenu}>
           Account
         </Link>
+        <Link href="/account/billing" onClick={closeMenu}>
+          Subscription
+        </Link>
         <Link href="/settings" onClick={closeMenu}>
           Settings
         </Link>
