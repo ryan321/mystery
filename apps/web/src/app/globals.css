@@ -43,6 +43,9 @@ body {
 
 html {
   background: var(--night);
+  /* Any horizontal overflow expands the iOS layout viewport, dragging
+     fixed elements (TopNav) past the screen edge — clip it at the root. */
+  overflow-x: clip;
 }
 
 body {

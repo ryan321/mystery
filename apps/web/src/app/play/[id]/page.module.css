@@ -196,6 +196,22 @@
     vertical-align: middle;
   }
 
+  /* The full icon row must fit beside the ellipsized title on the
+     narrowest phones — the buttons never push past the screen edge. */
+  .chromeTop {
+    gap: 0.5rem;
+  }
+
+  .chromeActions {
+    flex-shrink: 0;
+    gap: 0.3rem;
+  }
+
+  .iconBtn {
+    width: 1.9rem;
+    height: 1.9rem;
+  }
+
   .logWrap {
     padding: 0.85rem 0.85rem 0.75rem;
   }
