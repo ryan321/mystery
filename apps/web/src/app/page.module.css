@@ -311,6 +311,47 @@
   font-style: italic;
 }
 
+/* The composer's spot becomes the invitation to play (a real link, not an input). */
+.demoCta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.9rem 1.1rem;
+  border-top: 1px solid rgba(200, 165, 110, 0.2);
+  background: rgba(8, 12, 18, 0.55);
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+.demoCta:hover {
+  background: rgba(212, 181, 106, 0.08);
+}
+
+.demoCtaLede {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--paper);
+}
+
+.demoCtaAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.15rem;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #e3c47e 0%, var(--candle) 55%, #b8985a 100%);
+  border: 1px solid #e8cd8a;
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  transition: filter 0.15s ease;
+}
+.demoCta:hover .demoCtaAction {
+  filter: brightness(1.08);
+}
+
 /* ── The detective's toolkit ───────────────────────────────────────── */
 
 .toolkit {

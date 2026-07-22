@@ -6,7 +6,6 @@ import Atmosphere from "../components/Atmosphere";
 import MessageBubble from "../components/MessageBubble";
 import StatusBar from "../components/StatusBar";
 import SystemCard from "../components/SystemCard";
-import composerStyles from "../components/Composer.module.css";
 import logStyles from "../components/Log.module.css";
 import { coverSrc, listCases, playerAssetUrl } from "../lib/api";
 import { difficultyLabel } from "../lib/format";
@@ -93,7 +92,7 @@ export default function LandingPage() {
                 Solve your first mystery free
               </Link>
               <a href="#sample" className={styles.ctaGhost}>
-                Watch a case unfold
+                See an example interaction
               </a>
             </div>
             <p className={styles.heroNote}>
@@ -146,8 +145,8 @@ export default function LandingPage() {
             <Ornament />
             <p className={styles.sectionLede}>
               Every mystery works like this: type what you would say or do in
-              plain language, and the case answers — whether you inspect a
-              clue, follow a lead, or press a suspect.
+              plain language, and the case answers, whether you inspect a clue,
+              question a suspect, or press for the truth.
             </p>
 
             <div className={styles.demo}>
@@ -173,93 +172,84 @@ export default function LandingPage() {
                         flags: {},
                         activePulses: [],
                       }}
-                      turnCount={4}
+                      turnCount={5}
                     />
                   </div>
                   <p className={logStyles.narration}>
-                    The manor looms against the storm. A crystal vase lies
-                    shattered on the marble. Rainwater pools near the east
-                    door, and the grandfather clock has stopped at eleven.
+                    The storm hasn’t let up. A crystal vase lies shattered
+                    across the marble, and the grandfather clock has stopped
+                    dead at eleven. Henshaw, the butler, hovers by the door, and
+                    Mr. Vale stands apart at the window.
                   </p>
                   <MessageBubble
                     variant="player"
                     name="You"
-                    text="Examine the broken vase and the floor around it."
+                    text="Kneel by the shattered vase and study how the pieces fell."
                   />
                   <p className={logStyles.narration}>
-                    The pieces scatter outward, as if struck from above. Among
-                    the shards, a single black thread. Near the east door, a
-                    wet boot-print points toward the library — a man&apos;s
-                    boot, not the polished shoes the staff wear.
+                    The shards scatter outward, struck from above, not simply
+                    knocked over. A black thread is caught among them, and a wet
+                    boot-print leads toward the library.
                   </p>
                   <SystemCard>
-                    Black thread and a muddy boot-print added to your
-                    evidence.
+                    Black thread and a muddy boot-print added to your evidence.
                   </SystemCard>
                   <MessageBubble
                     variant="player"
                     name="You"
-                    text="“Henshaw. What did you see tonight?”"
+                    text="Henshaw, you reached the hall first. Who else was near when it fell?"
                   />
                   <MessageBubble
                     variant="npc"
                     name="Butler Henshaw"
                     avatarUrl={HENSHAW_PORTRAIT}
-                    text="“I heard the crash just after the clock struck eleven, sir. When I arrived, the east door stood open and Mr. Blackwood was at the top of the stairs.”"
+                    text="“I heard the crash just after eleven, sir. The east door stood open, and Mr. Vale was already down the corridor toward the library.”"
                   />
                   <MessageBubble
                     variant="player"
                     name="You"
-                    text="Follow the footprint to the library."
+                    text="Examine the grandfather clock."
                   />
                   <p className={logStyles.narration}>
-                    A fire smolders in the hearth of the library. On the desk,
-                    a ledger lies open to tonight&apos;s date. A brass key
-                    glints in the ash.
+                    A tall case clock stands against the far wall. The pendulum
+                    hangs motionless behind the glass, and the hands have
+                    stopped at eleven.
                   </p>
                   <MessageBubble
                     variant="player"
                     name="You"
-                    text="Take the brass key and try it on the desk drawer."
+                    text="Henshaw, was this clock working last night?"
                   />
-                  <p className={logStyles.narration}>
-                    The key turns with a dry click. Inside: a letter signed by
-                    Mr. Vale, dated yesterday. “If you expose me, I will have
-                    no choice.”
-                  </p>
-                  <SystemCard>
-                    Vale&apos;s letter added to your evidence.
-                  </SystemCard>
+                  <MessageBubble
+                    variant="npc"
+                    name="Butler Henshaw"
+                    avatarUrl={HENSHAW_PORTRAIT}
+                    text="“Has it stopped? I hadn’t noticed, sir. It was keeping time last night, as far as I know.”"
+                  />
+                  <MessageBubble
+                    variant="player"
+                    name="You"
+                    text="Vale, you told me you spent the evening in the conservatory. But the boot-print runs to the library, and Henshaw puts you there himself. Which is the truth?"
+                  />
                   <MessageBubble
                     variant="npc"
                     name="Mr. Vale"
                     avatarUrl={VALE_PORTRAIT}
-                    text="He turns from the window. “Nothing. A business disagreement. I was in the conservatory all evening.”"
+                    text="He turns sharply from the window. “I stepped out for a moment. That is hardly a crime.”"
                   />
-                  <p className={logStyles.narration}>
-                    The conservatory is on the west side — far from the east
-                    door, the broken vase, and the footprint that points away
-                    from it.
-                  </p>
                 </div>
-                {/* Decorative replica of the real composer — inert on purpose. */}
-                <div className={composerStyles.composer} aria-hidden="true">
-                  <div className={composerStyles.frame}>
-                    <div className={composerStyles.input}>
-                      Ask Mrs. Blackwood where she was at eleven…
-                    </div>
-                    <button
-                      type="button"
-                      className={composerStyles.send}
-                      tabIndex={-1}
-                    >
-                      <span className={composerStyles.seal} aria-hidden="true">
-                        ✦
-                      </span>
-                      Send
-                    </button>
-                  </div>
-                </div>
+                {/* Where the composer sits in-game: here it invites you to play. */}
+                <Link
+                  href={`/mystery/${FREE_CASE_ID}`}
+                  className={styles.demoCta}
+                >
+                  <span className={styles.demoCtaLede}>
+                    Now it’s your move.
+                  </span>
+                  <span className={styles.demoCtaAction}>
+                    <span aria-hidden="true">✦</span> Solve this mystery free →
+                  </span>
+                </Link>
               </div>
               <p className={styles.demoCaption}>
                 You write in plain language. The mystery answers.
