@@ -94,3 +94,11 @@
   border: 1px solid rgba(154, 175, 196, 0.25);
   border-radius: 3px;
 }
+
+.link {
+  color: var(--candle);
+  text-decoration: none;
+}
+.link:hover {
+  text-decoration: underline;
+}
