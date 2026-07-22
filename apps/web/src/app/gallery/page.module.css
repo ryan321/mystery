@@ -304,23 +304,6 @@
   display: block;
 }
 
-/* Locked: dim + desaturate the cover so it reads as unavailable at a glance. */
-.caseImageLocked img {
-  filter: grayscale(0.5) brightness(0.6);
-}
-
-.caseImageLocked::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(8, 11, 16, 0.55),
-    rgba(8, 11, 16, 0.05) 55%
-  );
-  pointer-events: none;
-}
-
 .lockBadge {
   position: absolute;
   left: 0.6rem;

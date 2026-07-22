@@ -299,9 +299,7 @@ export default function GalleryPage() {
                           Completed
                         </span>
                       ) : null}
-                      <div
-                        className={`${styles.caseImage} ${c.locked ? styles.caseImageLocked : ""}`}
-                      >
+                      <div className={styles.caseImage}>
                         <img src={coverSrc(c)} alt="" />
                         {c.locked ? (
                           <span
