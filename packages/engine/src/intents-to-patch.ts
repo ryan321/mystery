@@ -6,6 +6,7 @@ import type {
   StatePatch,
 } from "@mystery/shared";
 import { flagsMatch } from "./flags.js";
+import { accusableSuspectIds } from "./accusation.js";
 
 function norm(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
@@ -522,7 +523,11 @@ export function directorIntentsToPatch(
       case "accuse": {
         patch.accuse = {
           summary: intent.summary ?? playerInput,
-          suspectIds: intent.suspectIds,
+          // The director may hedge with every surname match, victim
+          // included — a dead man cannot stand accused.
+          suspectIds: intent.suspectIds
+            ? accusableSuspectIds(def, intent.suspectIds)
+            : undefined,
           method: intent.method,
           motive: intent.motive,
         };

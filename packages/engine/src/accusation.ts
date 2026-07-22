@@ -84,6 +84,24 @@ function factMatches(
 }
 
 /**
+ * Filter suspect ids to characters who can actually stand accused: they
+ * must exist, and the victim is never a suspect — surname matching
+ * ("arrest Miss Clara Blackwood") must not register the dead man as
+ * accused. Exception: a victim who is in guiltyPartyIds (a staged death)
+ * must still count.
+ */
+export function accusableSuspectIds(
+  def: MysteryDefinition,
+  ids: string[]
+): string[] {
+  const guilty = new Set(def.solution.guiltyPartyIds);
+  return ids.filter((id) => {
+    const ch = def.characters.find((c) => c.id === id);
+    return !!ch && (ch.storyRole !== "victim" || guilty.has(id));
+  });
+}
+
+/**
  * Which characters an accusation actually names.
  * Structured suspectIds win; free text (negation-aware) is the fallback.
  * Used for generic `accused_<id>` / `falsely_accused_<id>` flags.
@@ -92,14 +110,15 @@ export function accusedCharacterIds(
   def: MysteryDefinition,
   accuse: NonNullable<StatePatch["accuse"]>
 ): string[] {
-  const ids = new Set<string>();
-  for (const id of accuse.suspectIds ?? []) {
-    if (def.characters.some((c) => c.id === id)) ids.add(id);
-  }
+  const ids = new Set<string>(
+    accusableSuspectIds(def, accuse.suspectIds ?? [])
+  );
   if (ids.size > 0) return [...ids];
 
   const text = accuseFreeText(accuse);
+  const guilty = new Set(def.solution.guiltyPartyIds);
   for (const c of def.characters) {
+    if (c.storyRole === "victim" && !guilty.has(c.id)) continue;
     const last = c.name.toLowerCase().split(/\s+/).pop() ?? "";
     if (
       affirmativeMention(text, c.id) ||

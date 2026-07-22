@@ -6,7 +6,13 @@ import { parseMysteryDefinition } from "@mystery/shared";
 import { createInitialPlaythrough } from "./create-playthrough.js";
 import { applyAccuseGate } from "./accuse-gate.js";
 import { validateAndApplyPatch } from "./validate-patch.js";
-import { affirmativeMention, scoreAccusation } from "./accusation.js";
+import {
+  accusableSuspectIds,
+  accusedCharacterIds,
+  affirmativeMention,
+  scoreAccusation,
+} from "./accusation.js";
+import { directorIntentsToPatch } from "./intents-to-patch.js";
 import { allowedKnowledgeForCharacter } from "./knowledge.js";
 import { evaluateBeats } from "./beats.js";
 
@@ -261,5 +267,72 @@ describe("pending accusation names the player's own gaps (leak-safe)", () => {
     expect(res.justHappened[0]?.narrationHints ?? "").not.toContain(
       "silent on"
     );
+  });
+});
+
+describe("victim cannot stand accused", () => {
+  it("filters the victim out of structured suspectIds", () => {
+    expect(
+      accusableSuspectIds(def, ["mr-blackwood", "mrs-blackwood", "clara"])
+    ).toEqual(["mrs-blackwood", "clara"]);
+    expect(accusableSuspectIds(def, ["ghost-id"])).toEqual([]);
+  });
+
+  it("keeps a victim who is actually guilty (staged death)", () => {
+    const twisted = {
+      ...def,
+      solution: { ...def.solution, guiltyPartyIds: ["mr-blackwood"] },
+    };
+    expect(accusableSuspectIds(twisted, ["mr-blackwood"])).toEqual([
+      "mr-blackwood",
+    ]);
+  });
+
+  it("does not register the victim from a surname match in free text", () => {
+    const ids = accusedCharacterIds(def, {
+      summary: "Miss Clara Blackwood pushed him down the stairs",
+    });
+    expect(ids).toContain("clara");
+    expect(ids).not.toContain("mr-blackwood");
+  });
+
+  it("gate never parks or flags the victim as a pending suspect", () => {
+    const state = createInitialPlaythrough(def, "t-victim-gate");
+    const gate = applyAccuseGate(
+      def,
+      state,
+      {
+        accuse: {
+          summary: "Arrest Miss Clara Blackwood",
+          suspectIds: ["mr-blackwood", "mrs-blackwood", "clara"],
+        },
+      },
+      "Arrest Miss Clara Blackwood"
+    );
+    expect(gate.state.pendingAccusation?.suspectIds).toEqual([
+      "mrs-blackwood",
+      "clara",
+    ]);
+    expect(gate.state.flags["accused_mr-blackwood"]).toBeUndefined();
+    expect(gate.state.flags["accused_clara"]).toBe(true);
+  });
+
+  it("director accuse intents are sanitized before entering the patch", () => {
+    const state = createInitialPlaythrough(def, "t-victim-intent");
+    const { patch } = directorIntentsToPatch(
+      def,
+      state,
+      {
+        intents: [
+          {
+            type: "accuse",
+            summary: "She confessed, that is enough",
+            suspectIds: ["mr-blackwood", "mrs-blackwood", "clara"],
+          },
+        ],
+      },
+      "She confessed that is enough"
+    );
+    expect(patch.accuse?.suspectIds).toEqual(["mrs-blackwood", "clara"]);
   });
 });
