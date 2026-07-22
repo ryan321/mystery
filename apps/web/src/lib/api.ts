@@ -1,4 +1,5 @@
 import type {
+  BillingTier,
   CaseDetail,
   CaseSummary,
   GetPlaythroughResponse,
@@ -6,6 +7,7 @@ import type {
   PlaythroughSummary,
   SendTurnResponse,
   StartCaseResponse,
+  Subscription,
 } from "./types";
 
 export const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
@@ -117,8 +119,15 @@ export async function sendTurn(
 // ── Auth (magic link + session; Google lives at /v1/auth/google) ────────
 
 export type MeResponse = {
-  user?: { id: string; email: string; displayName: string; tier: string };
+  user?: {
+    id: string;
+    email: string;
+    displayName: string;
+    tier: string;
+    subscription?: Subscription;
+  };
   anonymous?: boolean;
+  tier?: string;
 };
 
 export async function requestMagicLink(
@@ -149,6 +158,58 @@ export async function fetchMe(): Promise<MeResponse> {
 
 export async function apiSignOut(): Promise<void> {
   await apiFetch("/v1/auth/signout", { method: "POST" }).catch(() => {});
+}
+
+// ── Billing (Stripe checkout / portal; docs/SUBSCRIPTIONS.md §4) ──────────
+
+export type BillingTiersResponse = {
+  tiers: BillingTier[];
+  /** False when STRIPE_SECRET_KEY is unset — checkout is unavailable. */
+  billingConfigured: boolean;
+};
+
+export async function fetchBillingTiers(
+  invite?: string
+): Promise<BillingTiersResponse> {
+  const q = invite ? `?invite=${encodeURIComponent(invite)}` : "";
+  return json<BillingTiersResponse>(await apiFetch(`/v1/billing/tiers${q}`));
+}
+
+/**
+ * Start a Stripe Checkout session and return its hosted URL. Throws with
+ * the API's error code as the message ("sign_in_required",
+ * "invitation_required", "billing_not_configured", …) so callers can branch.
+ */
+async function billingRedirectUrl(
+  path: string,
+  body?: unknown
+): Promise<string> {
+  const res = await apiFetch(path, {
+    method: "POST",
+    headers: JSON_HEADERS,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = (await res.json().catch(() => null)) as
+    | { url?: string; error?: string }
+    | null;
+  if (!res.ok || !data?.url) {
+    throw new Error(data?.error ?? `request_failed_${res.status}`);
+  }
+  return data.url;
+}
+
+export function startCheckout(
+  tier: string,
+  inviteCode?: string
+): Promise<string> {
+  return billingRedirectUrl("/v1/billing/checkout", {
+    tier,
+    ...(inviteCode ? { inviteCode } : {}),
+  });
+}
+
+export function openBillingPortal(): Promise<string> {
+  return billingRedirectUrl("/v1/billing/portal");
 }
 
 // ── Player scratchpad notes (docs/PLAYER_SURFACES.md §5.6) ───────────────

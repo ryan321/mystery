@@ -92,6 +92,37 @@ export type CaseDetail = {
   coverUrl?: string;
   player?: MysteryPlayerInfo;
   cast?: CastMember[];
+  /** Not playable for this viewer (see CaseSummary for the fields). */
+  locked?: boolean;
+  lockReason?: LockReason;
+  requirement?: LockRequirement;
+  freeUntil?: string;
+};
+
+/** A recurring price as the billing API reports it (amount in minor units). */
+export type TierPrice = {
+  amount: number | null;
+  currency: string;
+  interval: string;
+};
+
+/** One paid tier card from GET /v1/billing/tiers. */
+export type BillingTier = {
+  tier: "standard" | "premium" | "elite";
+  name: string;
+  blurb: string;
+  inviteOnly?: boolean;
+  /** A Stripe price is wired up for this tier (checkout will work). */
+  configured: boolean;
+  price: TierPrice | null;
+};
+
+/** Subscription state carried on the signed-in user (GET /v1/me). */
+export type Subscription = {
+  tier: string;
+  status?: string | null;
+  currentPeriodEnd?: string;
+  cancelAtPeriodEnd?: boolean;
 };
 
 /** Opening dossier shown at the start of play. */

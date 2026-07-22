@@ -7,7 +7,7 @@ import Atmosphere from "../../../components/Atmosphere";
 import { useAmbience } from "../../../components/AmbienceProvider";
 import { assetUrl, coverSrc, getCase, startCase } from "../../../lib/api";
 import { getSession } from "../../../lib/auth";
-import { difficultyLabel, themeTags } from "../../../lib/format";
+import { difficultyLabel, lockLabel, themeTags } from "../../../lib/format";
 import { getPlayState, markBeingPlayed } from "../../../lib/playState";
 import { asTheme } from "../../../lib/themes";
 import type { CaseDetail } from "../../../lib/types";
@@ -162,6 +162,11 @@ export default function MysteryDetail() {
         ? styles.badgeMedium
         : styles.badgeEasy;
 
+  // An in-progress run is grandfathered even if the case is now locked, so
+  // only a *fresh* start is blocked.
+  const canContinue = playStateStatus === "being_played";
+  const lockedForStart = Boolean(detail.locked) && !canContinue;
+
   return (
     <>
       <Atmosphere theme={asTheme(detail.meta.theme)} />
@@ -242,50 +247,80 @@ export default function MysteryDetail() {
 
             <aside className={styles.sidebar}>
               <div className={styles.playCard}>
-                <h2 className={styles.playTitle}>Start investigating</h2>
-                <p className={styles.playMeta}>
-                  {FREE_CASE_IDS.has(detail.id)
-                    ? "Free mystery · Plays in your browser · No download"
-                    : "Plays in your browser · No download"}
-                </p>
-                {playStateStatus === "being_played" ? (
-                  <p className={styles.restartHint}>
-                    Investigation in progress.
-                  </p>
-                ) : playStateStatus === "completed" ? (
-                  <p className={styles.restartHint}>
-                    You’ve finished this mystery once.
-                  </p>
-                ) : null}
-                <button
-                  type="button"
-                  className={styles.btnPrimary}
-                  onClick={handleStart}
-                  disabled={busy}
-                >
-                  {starting
-                    ? playStateStatus === "being_played"
-                      ? "Opening…"
-                      : "Starting…"
-                    : buttonLabel}
-                </button>
-                {hasProgress ? (
+                <h2 className={styles.playTitle}>
+                  {lockedForStart ? "Locked" : "Start investigating"}
+                </h2>
+
+                {lockedForStart ? (
                   <>
+                    <p className={styles.lockReason}>{lockLabel(detail)}</p>
+                    {detail.lockReason === "tier" ? (
+                      <>
+                        <p className={styles.playMeta}>
+                          Unlock this mystery and the whole shelf with a
+                          subscription.
+                        </p>
+                        <button
+                          type="button"
+                          className={styles.btnPrimary}
+                          onClick={() => router.push("/subscribe")}
+                        >
+                          Subscribe to unlock
+                        </button>
+                      </>
+                    ) : (
+                      <p className={styles.playMeta}>
+                        Meet the requirement above to open this mystery.
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <p className={styles.playMeta}>
+                      {FREE_CASE_IDS.has(detail.id)
+                        ? "Free mystery · Plays in your browser · No download"
+                        : "Plays in your browser · No download"}
+                    </p>
+                    {playStateStatus === "being_played" ? (
+                      <p className={styles.restartHint}>
+                        Investigation in progress.
+                      </p>
+                    ) : playStateStatus === "completed" ? (
+                      <p className={styles.restartHint}>
+                        You’ve finished this mystery once.
+                      </p>
+                    ) : null}
                     <button
                       type="button"
-                      className={styles.btnGhost}
-                      onClick={handleRestart}
+                      className={styles.btnPrimary}
+                      onClick={handleStart}
                       disabled={busy}
                     >
-                      {restarting ? "Restarting…" : "Restart"}
+                      {starting
+                        ? playStateStatus === "being_played"
+                          ? "Opening…"
+                          : "Starting…"
+                        : buttonLabel}
                     </button>
-                    <p className={styles.restartHint}>
-                      Fresh start from the opening — progress on the current
-                      run is not carried over.
-                    </p>
+                    {hasProgress ? (
+                      <>
+                        <button
+                          type="button"
+                          className={styles.btnGhost}
+                          onClick={handleRestart}
+                          disabled={busy}
+                        >
+                          {restarting ? "Restarting…" : "Restart"}
+                        </button>
+                        <p className={styles.restartHint}>
+                          Fresh start from the opening — progress on the current
+                          run is not carried over.
+                        </p>
+                      </>
+                    ) : null}
+                    {error ? <p className={styles.playMeta}>{error}</p> : null}
                   </>
-                ) : null}
-                {error ? <p className={styles.playMeta}>{error}</p> : null}
+                )}
               </div>
 
               <div className={styles.section}>

@@ -1,4 +1,34 @@
-import type { CaseSummary, EnvironmentState, TimeState } from "./types";
+import type {
+  CaseSummary,
+  EnvironmentState,
+  TierPrice,
+  TimeState,
+} from "./types";
+
+/** "$13/month" from a Stripe price (amount in minor units), or null. */
+export function formatPrice(price?: TierPrice | null): string | null {
+  if (!price || price.amount == null) return null;
+  const money = (price.amount / 100).toLocaleString(undefined, {
+    style: "currency",
+    currency: price.currency.toUpperCase(),
+    minimumFractionDigits: price.amount % 100 === 0 ? 0 : 2,
+  });
+  return `${money}/${price.interval}`;
+}
+
+/** Display name for a tier id. */
+export function tierLabel(tier?: string): string {
+  switch (tier) {
+    case "standard":
+      return "Standard";
+    case "premium":
+      return "Premium";
+    case "elite":
+      return "Elite";
+    default:
+      return "Free";
+  }
+}
 
 /**
  * Short shelf label for why a case is locked. Reason-aware so it scales
