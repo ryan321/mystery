@@ -2,7 +2,7 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "hostile-takeover",
-  "contentVersion": "0.2.5",
+  "contentVersion": "0.2.6",
   "meta": {
     "title": "Hostile Takeover",
     "premise": "A tech CEO goes off her own boardroom terrace the night before a billion-dollar merger vote. Five people were still on the sealed floor, and the badge logs say nobody left. The board chair has one night and one investigator before the market opens on whatever story is standing at seven.",
@@ -2203,12 +2203,11 @@
           "description": "Pushed her from the terrace/over the rail at 10:47, during a private confrontation",
           "matchHints": [
             "push",
+            "pushed",
             "shove",
             "threw her",
-            "over the rail",
-            "terrace",
-            "balcony",
-            "10:47"
+            "forced her over",
+            "went over in a struggle"
           ]
         },
         {

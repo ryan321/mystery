@@ -2,7 +2,7 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "dead-air",
-  "contentVersion": "0.2.0",
+  "contentVersion": "0.2.1",
   "meta": {
     "title": "Dead Air",
     "premise": "Callisto-9 went silent over Jupiter eighteen hours ago. The relief crew found the commander dead in his EVA suit — and one scientist swearing he was murdered.",
@@ -40,7 +40,7 @@
     "clothing": "Company relief jumpsuit over civvies, temporary dock badge",
     "background": "Auditor, not crew. Sent to bring a name and a report back down when a station goes silent.",
     "publicPerception": "Company eyes. Sato has decided the audit is the last honest audience aboard; Quinn treats oversight like vacuum — something a good hull keeps out. Everyone knows undock is a clock.",
-    "performanceNotes": "NPCs address the player as 'Auditor' — title only. Never invent a name, face, age, or history for the player; narration is second person throughout. The persona carries company audit authority over logs, spaces, and interviews, but people cooperate — or don't — for their own reasons, and half the station wants the accident certified and the audit gone by undock.",
+    "performanceNotes": "NPCs address the player as 'Auditor' — title only. Never invent a name, face, age, or history for the player; narration is second person throughout. The persona carries company audit authority over logs, spaces, and interviews, but people cooperate — or don't — for their own reasons, and half the station wants the accident certified and the audit gone by undock. Movement is always honored: when the auditor heads for a door, they go through it — crew may talk at their back or fall in beside them, but nobody blocks, detains, straps, or injures the auditor except through this case's authored hazards and effects.",
     "startingLocationId": "docking-bay",
     "startingEvidenceIds": [],
     "startingKnowledge": "Callisto-9's external array stopped transmitting at 02:14 station time last night — mid-frame, no distress call. The relief shuttle was already inbound; you were added to the manifest. Aboard: Dr. Ren Sato (astrobiology, comms), Mara Quinn (lead engineer), Theo Strand (medic), Pix Harlan (systems). Commander Ilya Voss is dead — found suited in the boom antechamber, moved by his crew to medbay. The station calls it a night EVA gone wrong. Sato calls it murder. Undock geometry closes six hours after dock; after that, Jupiter decides for another nine days.",
@@ -99,7 +99,7 @@
   },
   "time": {
     "startSlotId": "relief_dock",
-    "minutesPerTurn": 8,
+    "minutesPerTurn": 6,
     "schedule": [
       {
         "id": "relief_dock",
@@ -1077,7 +1077,8 @@
       },
       "defenses": [
         "Will not speculate past telemetry; her testimony stops where her instruments stop",
-        "Her clock outranks everyone's feelings, including hers"
+        "Her clock outranks everyone's feelings, including hers",
+        "Never blocks the auditor's path or holds them at the dock — she briefs on the move; her post is the console, not the door"
       ]
     }
   ],

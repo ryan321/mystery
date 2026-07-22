@@ -2,7 +2,7 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "last-broadcast",
-  "contentVersion": "1.0.1",
+  "contentVersion": "1.0.2",
   "meta": {
     "title": "The Last Broadcast",
     "premise": "A true-crime host is dead an hour before her final episode airs, the master file is gone, and every recording in the building tells a slightly different story. One of them is lying.",
@@ -25,7 +25,7 @@
     "summary": "Midnight is the air window for Blood Signal’s final episode — the one host Lena Ortiz promised would name names. At nine she is dead at her own microphone in Studio B, and the session drive is empty. Locked down with the body: the producer who built her studio, an intern three months into a first job, the forensic audio expert booked as tonight’s guest, a rival host with no reason to be in the building, and the security chief who sealed the doors. Network counsel wants a private walkthrough before the police narrative sets at midnight. The studio is wired to record everything. Start by asking why, tonight, it recorded so little.",
     "theMystery": "Who killed Lena Ortiz in a studio where nobody heard a thing — and what was her final episode about to make true?",
     "playtest": {
-      "minTurns": 12,
+      "minTurns": 14,
       "maxTurns": 48,
       "minEvidenceCoverage": 0.55,
       "minFunMedian": 7
@@ -325,7 +325,7 @@
           "id": "playback-rig",
           "name": "the booth playback rig",
           "onInspect": {
-            "narrativeHints": "Patch the handheld into the board and the card plays the evening in order. 7:31 — the recorder wakes in the tote: humming, paper, the kettle. 7:39 — a voice arrives over the studio monitors, compressed and furious: Mercer, on the talkback, four minutes about ‘the leak segment,’ lawsuits, ruin — and Lena laughing him off: ‘See you in court, Blake. Bring your lawyer — we’ll mic him.’ Then thirteen minutes of a woman alone: pages, a mic check, ‘cold open, take three.’ 7:56 — the door seal breathes, and Lena, easy and cruel: ‘You’re early, Doctor. Sit. I want you to hear something before we tape.’ A chair. A clip plays tinny off a phone — a man’s recorded voice, numbers, dates. Lena: ‘Marrable ran your 2009 exhibits blind. Exclusion, Doctor. Sixteen years. You’ll get your chance to answer on the record at midnight.’ A silence with breathing in it. Then, at 8:01:47 — CARD FULL. Nothing after. Play it straight; conclude nothing; let the last word on the card be ‘Doctor.’",
+            "narrativeHints": "Patch the handheld into the board and the card plays the evening in order. 7:31 — the recorder wakes in the tote: humming, paper, the kettle. 7:39 — a voice arrives over the studio monitors, compressed and furious: Mercer, on the talkback, four minutes about ‘the leak segment,’ lawsuits, ruin — and Lena laughing him off: ‘See you in court, Blake. Bring your lawyer — we’ll mic him.’ Then thirteen minutes of a woman alone: pages, a mic check, ‘cold open, take three.’ 7:56 — the door seal breathes, and Lena, easy and cruel: ‘You’re early, Doctor. Sit. I want you to hear something before we tape.’ A chair. A clip plays off her phone, tinny, held to a mic that was never meant to catch it — a man’s recorded voice, the words indistinct, one number surfacing and sinking. Then Lena, no longer smiling: ‘You’ll get your chance to answer on the record at midnight.’ A silence with breathing in it. Then, at 8:01:47 — CARD FULL. Nothing after. Play it straight; conclude nothing. The card says who was in the room and when the world stopped listening — never what the clip contained. That answer lives across the hall, and the player must go get it.",
             "requiresEvidenceIds": [
               "backup-recorder"
             ],
@@ -988,7 +988,7 @@
     {
       "id": "backup-audio",
       "name": "The backup card’s audio",
-      "description": "The evening in order, from a tote bag under the desk: Mercer’s four minutes of talkback fury ending in Lena’s laugh at 7:43; thirteen minutes of a woman working alone; the door at 7:56 and ‘You’re early, Doctor’; a lab report played off a phone; and CARD FULL at 8:01:47, before whatever came next. Whoever else tells you tonight’s times, this card was in the room.",
+      "description": "The evening in order, from a tote bag under the desk: Mercer’s four minutes of talkback fury ending in Lena’s laugh at 7:43; thirteen minutes of a woman working alone; the door at 7:56 and ‘You’re early, Doctor’; something played off a phone, too muffled to survive the tote; a promise about answering on the record at midnight; and CARD FULL at 8:01:47, before whatever came next. Whoever else tells you tonight’s times, this card was in the room.",
       "discoverableAt": {
         "locationId": "control-booth",
         "inspectableId": "playback-rig"
@@ -1191,6 +1191,36 @@
       ]
     },
     {
+      "id": "kai_plays_card",
+      "title": "He patches it in himself",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "presented",
+        "evidenceId": "backup-recorder",
+        "toCharacterId": "kai-okonkwo"
+      },
+      "effects": [
+        {
+          "type": "grant_evidence",
+          "evidenceId": "backup-audio"
+        },
+        {
+          "type": "set_game_flag",
+          "id": "timeline_broken",
+          "value": true
+        }
+      ],
+      "narrationHints": "Show Kai the handheld and there is no argument to have: he recognizes her habit in your hand, goes quiet, and patches the line-out into the booth board with the care of a man handling a will. He plays the card start to finish and does not talk over it. Deliver the card’s contents exactly as the playback rig would — the 7:39 row, the laugh, ‘You’re early, Doctor,’ the muffled clip, midnight, CARD FULL — and then let Kai say only: ‘That’s her pre-interview rig. It never lies. It just quits early.’ Observations, not conclusions; what the clip contained is not on the card.",
+      "reactions": [
+        {
+          "characterId": "kai-okonkwo",
+          "lineHint": "‘Both doors were shut by eight. Whatever happened after 8:01, this floor is the only thing that heard it — and it doesn’t talk.’",
+          "stance": "grief_in_working_order"
+        }
+      ]
+    },
+    {
       "id": "card_full_nudge",
       "title": "CARD FULL",
       "once": true,
@@ -1248,7 +1278,7 @@
         "of": [
           {
             "type": "turn_at_least",
-            "n": 14
+            "n": 10
           },
           {
             "type": "not",
@@ -1674,7 +1704,7 @@
     "rubric": {
       "partialCredit": true,
       "allowWithoutEvidence": true,
-      "successPolicy": "identity_plus_one",
+      "successPolicy": "all_facts",
       "requiredFacts": [
         {
           "id": "killer-chen",
