@@ -115,7 +115,7 @@ export default function LandingPage() {
                 <p className={styles.stepText}>
                   Every mystery opens with your role, a dossier, and a place
                   in the story. You are not reading about a detective: you
-                  are the one they sent for.
+                  are the detective.
                 </p>
               </div>
               <div className={styles.step}>
