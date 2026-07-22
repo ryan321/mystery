@@ -19,11 +19,11 @@ const FEATURED_COUNT = 6;
 
 // The sample play renders the real gameplay components, so it stays in step
 // with the play screen — portraits included.
-const HENSHAW_PORTRAIT = playerAssetUrl(
+const BUTLER_PORTRAIT = playerAssetUrl(
   FREE_CASE_ID,
   "portraits/henshaw.jpg"
 );
-const VALE_PORTRAIT = playerAssetUrl(FREE_CASE_ID, "portraits/vale.jpg");
+const GUEST_PORTRAIT = playerAssetUrl(FREE_CASE_ID, "portraits/vale.jpg");
 
 function Ornament() {
   return (
@@ -154,7 +154,7 @@ export default function LandingPage() {
                 <header className={styles.terminalChrome}>
                   <span className={styles.caseBadge}>
                     <span className={styles.caseDot} aria-hidden="true" />
-                    The Blackwood Inheritance
+                    The Ravenscourt Inheritance
                   </span>
                   <span className={styles.chromeGlyphs} aria-hidden="true">
                     ▣&nbsp;&nbsp;⌖&nbsp;&nbsp;✎
@@ -163,7 +163,7 @@ export default function LandingPage() {
                 <div className={styles.demoBody}>
                   <div className={styles.demoStatus}>
                     <StatusBar
-                      locationName="Blackwood Manor — the entrance hall"
+                      locationName="Ravenscourt Manor — the entrance hall"
                       time={{ slotId: "just_after_eleven", minutesFromStart: 0 }}
                       environment={{
                         weather: "storm",
@@ -178,8 +178,8 @@ export default function LandingPage() {
                   <p className={logStyles.narration}>
                     The storm hasn’t let up. A crystal vase lies shattered
                     across the marble, and the grandfather clock has stopped
-                    dead at eleven. Henshaw, the butler, hovers by the door, and
-                    Mr. Vale stands apart at the window.
+                    dead at eleven. Merrow, the butler, hovers by the door, and
+                    Mr. Thorne stands apart at the window.
                   </p>
                   <MessageBubble
                     variant="player"
@@ -197,13 +197,13 @@ export default function LandingPage() {
                   <MessageBubble
                     variant="player"
                     name="You"
-                    text="Henshaw, you reached the hall first. Who else was near when it fell?"
+                    text="Merrow, you reached the hall first. Who else was near when it fell?"
                   />
                   <MessageBubble
                     variant="npc"
-                    name="Butler Henshaw"
-                    avatarUrl={HENSHAW_PORTRAIT}
-                    text="“I heard the crash just after eleven, sir. The east door stood open, and Mr. Vale was already down the corridor toward the library.”"
+                    name="Butler Merrow"
+                    avatarUrl={BUTLER_PORTRAIT}
+                    text="“I heard the crash just after eleven, sir. The east door stood open, and Mr. Thorne was already down the corridor toward the library.”"
                   />
                   <MessageBubble
                     variant="player"
@@ -218,23 +218,23 @@ export default function LandingPage() {
                   <MessageBubble
                     variant="player"
                     name="You"
-                    text="Henshaw, was this clock working last night?"
+                    text="Merrow, was this clock working last night?"
                   />
                   <MessageBubble
                     variant="npc"
-                    name="Butler Henshaw"
-                    avatarUrl={HENSHAW_PORTRAIT}
+                    name="Butler Merrow"
+                    avatarUrl={BUTLER_PORTRAIT}
                     text="“Has it stopped? I hadn’t noticed, sir. It was keeping time last night, as far as I know.”"
                   />
                   <MessageBubble
                     variant="player"
                     name="You"
-                    text="Vale, you told me you spent the evening in the conservatory. But the boot-print runs to the library, and Henshaw puts you there himself. Which is the truth?"
+                    text="Thorne, you told me you spent the evening in the conservatory. But the boot-print runs to the library, and Merrow puts you there himself. Which is the truth?"
                   />
                   <MessageBubble
                     variant="npc"
-                    name="Mr. Vale"
-                    avatarUrl={VALE_PORTRAIT}
+                    name="Mr. Thorne"
+                    avatarUrl={GUEST_PORTRAIT}
                     text="He turns sharply from the window. “I stepped out for a moment. That is hardly a crime.”"
                   />
                 </div>
@@ -244,10 +244,10 @@ export default function LandingPage() {
                   className={styles.demoCta}
                 >
                   <span className={styles.demoCtaLede}>
-                    Now it’s your move.
+                    You’ve seen how it plays.
                   </span>
                   <span className={styles.demoCtaAction}>
-                    <span aria-hidden="true">✦</span> Solve this mystery free →
+                    <span aria-hidden="true">✦</span> Ready to solve a mystery?
                   </span>
                 </Link>
               </div>
