@@ -24,7 +24,7 @@ export function tierLabel(tier?: string): string {
     case "premium":
       return "Master Detective";
     case "elite":
-      return "The Inner Circle";
+      return "Genius";
     default:
       return "Free";
   }

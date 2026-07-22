@@ -62,7 +62,7 @@ export const TIER_CARDS: Record<
       "Everything a Sleuth gets, plus the advanced cases — longer nights, harder truths.",
   },
   elite: {
-    name: "The Inner Circle",
+    name: "Genius",
     blurb:
       "By invitation only. Mysteries that appear on no shelf you’ve seen.",
     inviteOnly: true,
