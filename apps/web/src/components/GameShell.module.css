@@ -214,3 +214,35 @@
     flex: 1;
   }
 }
+
+/* Phones: the mahogany frame's margins cost real pixels — slim it down. */
+@media (max-width: 640px) {
+  .shellInner {
+    padding: 0.5rem;
+  }
+  .center::before {
+    inset: 6px;
+  }
+  .center::after {
+    inset: 9px;
+  }
+  .centerInner {
+    margin: 6px;
+  }
+  .cornerTl {
+    top: 9px;
+    left: 9px;
+  }
+  .cornerTr {
+    top: 9px;
+    right: 9px;
+  }
+  .cornerBl {
+    bottom: 9px;
+    left: 9px;
+  }
+  .cornerBr {
+    bottom: 9px;
+    right: 9px;
+  }
+}

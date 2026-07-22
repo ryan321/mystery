@@ -172,6 +172,35 @@
   }
 }
 
+/* Phones: compress the header stack so the log gets the screen. */
+@media (max-width: 640px) {
+  .chrome {
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+  }
+
+  /* Long case titles must shrink away instead of pushing the drawer
+     buttons off-screen — block layout so ellipsis works. */
+  .caseEyebrow {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 0.62rem;
+  }
+
+  .caseEyebrow::before {
+    display: inline-block;
+    margin-right: 0.4rem;
+    vertical-align: middle;
+  }
+
+  .logWrap {
+    padding: 0.85rem 0.85rem 0.75rem;
+  }
+}
+
 .roomDrawer {
   display: flex;
   flex-direction: column;

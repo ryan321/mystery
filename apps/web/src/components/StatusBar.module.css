@@ -129,3 +129,60 @@
   background: rgba(212, 181, 106, 0.08);
   white-space: nowrap;
 }
+
+/* Phones: one slim scrollable strip instead of stacked rows — the story
+   gets the screen. Nothing is removed; the strip scrolls sideways. */
+@media (max-width: 640px) {
+  .bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 0.75rem;
+    padding: 0.45rem 0.7rem;
+    scrollbar-width: none;
+    /* Faded right edge hints there's more past the fold. */
+    mask-image: linear-gradient(
+      to right,
+      black 0%,
+      black calc(100% - 1.5rem),
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      black 0%,
+      black calc(100% - 1.5rem),
+      transparent 100%
+    );
+  }
+
+  .bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .location,
+  .item,
+  .clockChip,
+  .progressChip,
+  .progress {
+    flex-shrink: 0;
+  }
+
+  /* Values stand alone — the micro labels cost the most vertical space. */
+  .label {
+    display: none;
+  }
+
+  .locationName {
+    overflow: visible;
+    text-overflow: unset;
+    font-size: 0.92rem;
+  }
+
+  .progress {
+    min-width: 9rem;
+    flex: 0 0 auto;
+  }
+
+  .turns {
+    margin-left: 0;
+  }
+}
