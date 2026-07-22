@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cinzel, Source_Sans_3, IBM_Plex_Mono } from "next/font/google";
 import TopNav from "../components/TopNav";
 import AmbienceProvider from "../components/AmbienceProvider";
+import AtmosphereThemeProvider from "../components/AtmosphereThemeProvider";
 import "./globals.css";
 
 const displayFont = Cinzel({
@@ -61,8 +62,10 @@ export default function RootLayout({
     >
       <body>
         <AmbienceProvider>
-          <TopNav />
-          {children}
+          <AtmosphereThemeProvider>
+            <TopNav />
+            {children}
+          </AtmosphereThemeProvider>
         </AmbienceProvider>
       </body>
     </html>

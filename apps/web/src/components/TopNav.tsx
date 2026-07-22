@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAmbience } from "./AmbienceProvider";
+import { useAtmosphereTheme } from "./AtmosphereThemeProvider";
 import { AMBIENCE_PACKS, MUSIC_AUTO, MUSIC_TRACKS } from "../lib/ambience";
+import type { ThemeSelection } from "../lib/themes";
 import {
   getSession,
   refreshSession,
@@ -57,8 +59,13 @@ function Toggle({
   );
 }
 
-const THEMES = [
-  { id: "manor-night", name: "Manor Night" },
+const UI_THEMES: { id: ThemeSelection; name: string }[] = [
+  { id: "auto", name: "Match the case" },
+  { id: "manor", name: "Manor Night" },
+  { id: "station", name: "Starlit Station" },
+  { id: "noir", name: "Noir" },
+  { id: "snowfall", name: "Snowfall" },
+  { id: "daylight", name: "Daylight" },
 ];
 
 export default function TopNav() {
@@ -73,7 +80,7 @@ export default function TopNav() {
   const themeRef = useRef<HTMLDivElement>(null);
   const mobileRef = useRef<HTMLDivElement>(null);
 
-  const [themeId, setThemeId] = useState("manor-night");
+  const { selection: themeId, setSelection: setThemeId } = useAtmosphereTheme();
 
   const {
     packId,
@@ -167,7 +174,7 @@ export default function TopNav() {
   // Shared by the desktop theme dropdown and the mobile hamburger menu.
   const themeSection = (
     <DropdownSection title="UI Theme">
-      {THEMES.map((t) => (
+      {UI_THEMES.map((t) => (
         <button
           key={t.id}
           type="button"

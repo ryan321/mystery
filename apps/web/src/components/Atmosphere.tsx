@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { AtmosphereTheme } from "../lib/themes";
+import { useAtmosphereTheme } from "./AtmosphereThemeProvider";
 import styles from "./Atmosphere.module.css";
 
 /**
@@ -263,14 +264,18 @@ function createEffect(
 export default function Atmosphere({
   intensity = 1,
   showManor = true,
-  theme = "manor",
+  theme: pageTheme = "manor",
 }: {
   intensity?: number;
   /** The manor silhouette. The landing frames the house in its hero
       instead, so it turns this off. Only used by the manor theme. */
   showManor?: boolean;
+  /** The page's own theme (cases pick theirs). A user's forced UI theme
+      from the ◐ menu overrides it; "auto" leaves the page in charge. */
   theme?: AtmosphereTheme;
 }) {
+  const { selection } = useAtmosphereTheme();
+  const theme = selection === "auto" ? pageTheme : selection;
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
