@@ -148,10 +148,15 @@ async function identity(c: Context): Promise<Identity> {
   return { userId: anonId, tier: "free", user: null, anonId };
 }
 
-/** Admin gate for upload/publish/grant routes. Open in local dev unless ADMIN_TOKEN is set. */
+/**
+ * Admin gate for upload/publish/grant/billing-admin routes. Fail closed:
+ * with no ADMIN_TOKEN configured, every admin route is denied — a missing
+ * token must never mean "wide open". Local dev sets ADMIN_TOKEN in .env
+ * (the publish-case script loads the same file); see .env.example.
+ */
 function adminOk(c: Context): boolean {
   const token = process.env.ADMIN_TOKEN;
-  if (!token) return true;
+  if (!token) return false;
   return c.req.header("x-admin-token") === token;
 }
 

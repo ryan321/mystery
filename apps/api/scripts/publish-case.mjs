@@ -9,9 +9,13 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { config as loadEnv } from "dotenv";
 import AdmZip from "adm-zip";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../..");
+// Same .env the API reads, so ADMIN_TOKEN matches the running server
+// (the admin gate fails closed — no token means no publish).
+loadEnv({ path: join(repoRoot, ".env"), quiet: true });
 const args = process.argv.slice(2);
 const caseId = args.find((a) => !a.startsWith("--"));
 const api =
