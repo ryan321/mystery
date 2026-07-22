@@ -31,6 +31,7 @@ Given the context pack (closed world) and the player's free-text input, output J
 Rules:
 1. Only use location ids, character ids, evidence ids, and inspectable ids that appear in the context pack.
 2. Map natural language to structured intents: move, inspect, talk, present, use, look, inventory, accuse, assault, other.
+2b. MOVEMENT: emit { "type": "move", "toLocationId": "<id>" }. The id may be an adjacent exit (location.exits[].toLocationId) OR any room in location.reachable[] — when the player names a room that is not an adjacent exit, use its reachable id and the engine walks them there through the connecting rooms. Never refuse or stall a move to a reachable room, and never suggest a block (a locked door, an NPC in the way, the weather) for a room the player can reach; that is the engine's call, not yours. Only rooms absent from both exits and reachable are unreachable right now.
 3. Prefer specific ids when you can resolve them; otherwise put a short hint string.
 4. For present: player shows held evidence to someone present.
 5. For use: player uses held item on something (e.g. key on drawer) — often also inspect with requirements.
@@ -315,14 +316,20 @@ export async function runDirector(
 }
 
 function locationIdsFromPack(pack: unknown): string[] {
-  const p = pack as { locations?: { id: string }[]; location?: { id: string } };
+  const p = pack as {
+    locations?: { id: string }[];
+    location?: {
+      id?: string;
+      exits?: { toLocationId: string }[];
+      reachable?: { id: string }[];
+    };
+  };
   if (Array.isArray(p.locations)) return p.locations.map((l) => l.id);
-  // pack usually has location only; cast may list exits
-  const exits = (
-    pack as { location?: { exits?: { toLocationId: string }[] } }
-  ).location?.exits;
+  // pack usually has location only: current room, its exits, and every room
+  // reachable from it (far moves the engine will route).
   const ids = new Set<string>();
   if (p.location?.id) ids.add(p.location.id);
-  for (const e of exits ?? []) ids.add(e.toLocationId);
+  for (const e of p.location?.exits ?? []) ids.add(e.toLocationId);
+  for (const r of p.location?.reachable ?? []) ids.add(r.id);
   return [...ids];
 }

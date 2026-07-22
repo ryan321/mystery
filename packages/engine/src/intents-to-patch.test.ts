@@ -62,6 +62,40 @@ describe("directorIntentsToPatch", () => {
     expect(applied.nextState.locationId).toBe("library");
   });
 
+  // A player may name a room that isn't an adjacent exit; the engine routes
+  // them there through connecting rooms instead of rejecting the move.
+  it("routes a far (non-adjacent) move through connecting rooms", () => {
+    const start = createInitialPlaythrough(def, "far1");
+    // Step into the library (adjacent to the entrance hall).
+    const lib = validateAndApplyPatch(
+      def,
+      start,
+      directorIntentsToPatch(
+        def,
+        start,
+        { intents: [{ type: "move", exitHint: "library" }] },
+        "go to the library"
+      ).patch
+    );
+    expect(lib.nextState.locationId).toBe("library");
+
+    // From the library the conservatory is NOT adjacent (library only exits
+    // back to the hall) — it must route library → entrance-hall → conservatory.
+    const far = validateAndApplyPatch(
+      def,
+      lib.nextState,
+      directorIntentsToPatch(
+        def,
+        lib.nextState,
+        { intents: [{ type: "move", exitHint: "conservatory" }] },
+        "now go to the conservatory"
+      ).patch
+    );
+    expect(far.nextState.locationId).toBe("conservatory");
+    expect(far.movedThrough).toEqual(["entrance-hall", "conservatory"]);
+    expect(far.rejected).toHaveLength(0);
+  });
+
   // Security: the director is LLM-driven and prompt-injectable. It must never
   // be able to set engine-owned flags — case_solved gates the confession, so
   // flipping it would leak the sealed solution to the performer.

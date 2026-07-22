@@ -28,6 +28,12 @@ export type PatchValidation = {
   nextState: PlaythroughState;
   evidenceAdded: string[];
   accusation?: AccusationResult;
+  /**
+   * When a move to a non-adjacent room routed through connecting rooms, the
+   * ordered ids walked through (excludes the origin; last entry is the
+   * destination). Lets the performer narrate the transit.
+   */
+  movedThrough?: string[];
 };
 
 function locationById(def: MysteryDefinition, id: string) {
@@ -74,6 +80,77 @@ function legalExit(
     return true;
   }
   return false;
+}
+
+/**
+ * Shortest legal path of location ids from `fromId` to `toId`, stepping only
+ * through exits that are passable right now (open, flag/evidence gates met,
+ * destination accessible). Returns the ids to walk in order — excludes
+ * `fromId`, ends with `toId` — or null when `toId` is unreachable this turn.
+ * BFS, so the first path found is shortest.
+ */
+export function shortestLegalPath(
+  def: MysteryDefinition,
+  state: PlaythroughState,
+  fromId: string,
+  toId: string
+): string[] | null {
+  if (fromId === toId) return [];
+  const prev = new Map<string, string>();
+  const seen = new Set<string>([fromId]);
+  const queue: string[] = [fromId];
+  while (queue.length) {
+    const cur = queue.shift()!;
+    const loc = locationById(def, cur);
+    if (!loc) continue;
+    for (const exit of loc.exits) {
+      const next = exit.toLocationId;
+      if (seen.has(next)) continue;
+      if (!legalExit(def, state, cur, next)) continue;
+      seen.add(next);
+      prev.set(next, cur);
+      if (next === toId) {
+        const path: string[] = [];
+        let step: string | undefined = toId;
+        while (step && step !== fromId) {
+          path.unshift(step);
+          step = prev.get(step);
+        }
+        return path;
+      }
+      queue.push(next);
+    }
+  }
+  return null;
+}
+
+/**
+ * Every location the player can currently walk to from `fromId` by a legal
+ * path (excludes `fromId`). Feeds the director/performer packs so a far-room
+ * move can be named — gated/undiscovered rooms are absent until reachable.
+ */
+export function reachableLocations(
+  def: MysteryDefinition,
+  state: PlaythroughState,
+  fromId: string
+): { id: string; name: string }[] {
+  const seen = new Set<string>([fromId]);
+  const queue: string[] = [fromId];
+  const out: { id: string; name: string }[] = [];
+  while (queue.length) {
+    const cur = queue.shift()!;
+    const loc = locationById(def, cur);
+    if (!loc) continue;
+    for (const exit of loc.exits) {
+      const next = exit.toLocationId;
+      if (seen.has(next)) continue;
+      if (!legalExit(def, state, cur, next)) continue;
+      seen.add(next);
+      out.push({ id: next, name: locationById(def, next)?.name ?? next });
+      queue.push(next);
+    }
+  }
+  return out;
 }
 
 function inspectRequirementsMet(
@@ -223,6 +300,7 @@ export function validateAndApplyPatch(
   let evidenceIds = [...state.evidenceIds];
   let flags = { ...state.flags };
   let visited = new Set(state.visitedLocationIds);
+  let movedThrough: string[] | undefined;
   let characterMemory = { ...state.characterMemory };
   let characterState = { ...state.characterState };
   let objectState = { ...state.objectState };
@@ -262,9 +340,25 @@ export function validateAndApplyPatch(
       applied.setLocationId = patch.setLocationId;
       visited.add(locationId);
     } else {
-      rejected.push(
-        `Illegal move to "${patch.setLocationId}" from "${state.locationId}"`
+      // Not an adjacent exit — the player named a far room. Route there through
+      // connecting rooms if a legal path exists. Walking the whole path in one
+      // turn skips no authored content (beats never trigger on location entry).
+      const path = shortestLegalPath(
+        def,
+        probe(),
+        locationId,
+        patch.setLocationId
       );
+      if (path && path.length) {
+        for (const id of path) visited.add(id);
+        locationId = patch.setLocationId;
+        applied.setLocationId = patch.setLocationId;
+        movedThrough = path;
+      } else {
+        rejected.push(
+          `Cannot reach "${patch.setLocationId}" from "${state.locationId}"`
+        );
+      }
     }
   }
 
@@ -582,5 +676,5 @@ export function validateAndApplyPatch(
     updatedAt: nowIso,
   };
 
-  return { applied, rejected, nextState, evidenceAdded, accusation };
+  return { applied, rejected, nextState, evidenceAdded, accusation, movedThrough };
 }

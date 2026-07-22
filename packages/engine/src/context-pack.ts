@@ -6,6 +6,7 @@ import {
   sceneSocialSurface,
 } from "./relationships.js";
 import { listInventory } from "./inventory.js";
+import { reachableLocations } from "./validate-patch.js";
 import { STATIC_POLICY } from "./static-pack.js";
 import { dressingLines } from "./dressing.js";
 import {
@@ -382,6 +383,12 @@ export function buildContextPack(
       description,
       visibleInspectables,
       exits,
+      /**
+       * Every room the player can currently walk to (through connecting
+       * rooms), beyond the adjacent exits. The director may move to any of
+       * these ids for a far destination; the engine routes the player there.
+       */
+      reachable: reachableLocations(def, state, location.id),
       /** Authoritative: who is physically here right now. */
       presentCharacters,
       /** Convenience: ids only, same as presentCharacters. */

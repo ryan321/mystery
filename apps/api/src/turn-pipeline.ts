@@ -210,7 +210,7 @@ export async function runTurnPipeline(args: {
     notes.push(accusationExtraction ? "accuse:extract" : "accuse:regex");
   }
 
-  const { applied, rejected, nextState, evidenceAdded, accusation } =
+  const { applied, rejected, nextState, evidenceAdded, accusation, movedThrough } =
     validateAndApplyPatch(def, state, gate.patch, undefined, {
       accusationExtraction,
     });
@@ -242,6 +242,23 @@ export async function runTurnPipeline(args: {
   });
   simState = worldToPlayer.state;
   justHappened.push(...worldToPlayer.justHappened);
+
+  // Far-room move: the player named a destination that wasn't an adjacent
+  // exit and the engine walked them there through connecting rooms. Tell the
+  // performer to narrate the transit and land the scene at the destination —
+  // never to stage a block (the old failure mode).
+  if (movedThrough && movedThrough.length > 1) {
+    const names = movedThrough.map(
+      (id) => def.locations.find((l) => l.id === id)?.name ?? id
+    );
+    const dest = names[names.length - 1];
+    const through = names.slice(0, -1).join(", ");
+    justHappened.push({
+      id: "traveled",
+      summary: `Traveled to ${dest}`,
+      narrationHints: `The player walks to ${dest}, passing through ${through} on the way. Narrate the journey briefly and land the scene in ${dest}. Do NOT block or refuse the move; they arrive.`,
+    });
+  }
 
   if (evidenceAdded.length) {
     const names = evidenceAdded

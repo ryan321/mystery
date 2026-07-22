@@ -50,7 +50,18 @@ function resolveLocationId(
       best = { id: exit.toLocationId, score };
     }
   }
-  return best && best.score >= 15 ? best.id : undefined;
+  if (best && best.score >= 15) return best.id;
+
+  // No adjacent exit matched — the player may have named a far room ("go to the
+  // conservatory" from the lodge). Match the hint against every location; the
+  // engine path-routes there (or rejects if it's gated/unreachable).
+  let far: { id: string; score: number } | undefined;
+  for (const l of def.locations) {
+    if (l.id === state.locationId) continue;
+    const score = Math.max(scoreMatch(l.id, hint), scoreMatch(l.name, hint));
+    if (!far || score > far.score) far = { id: l.id, score };
+  }
+  return far && far.score >= 15 ? far.id : undefined;
 }
 
 function resolveInspectable(
