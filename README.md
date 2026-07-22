@@ -20,6 +20,7 @@ Single-player, fair-play **text investigation** games. Structured mystery defini
 | [docs/STEAM.md](./docs/STEAM.md) | Steam launch plan: desktop wrapper, Steamworks auth, DLC pricing, revenue playbook |
 | [docs/MYSTERY_STUDIO.md](./docs/MYSTERY_STUDIO.md) | Mystery Studio: local-only authoring & review webapp |
 | [docs/DEPLOY.md](./docs/DEPLOY.md) | Fly.io deployment: two apps, secrets, custom domains |
+| [docs/SECURITY.md](./docs/SECURITY.md) | **Data classification & security:** the mystery solution is our most sensitive data (payment lives in Stripe); protections, boundaries, invariants |
 
 ## Landing page
 

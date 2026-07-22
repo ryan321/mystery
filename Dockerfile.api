@@ -26,4 +26,7 @@ COPY content content
 ENV NODE_ENV=production
 ENV PORT=8787
 EXPOSE 8787
+# Drop root: the runtime only reads dist/ + content/ and talks to Postgres.
+# node:22-slim ships a non-root `node` user; copied files are world-readable.
+USER node
 CMD ["node", "apps/api/dist/index.js"]

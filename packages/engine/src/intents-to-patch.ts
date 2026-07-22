@@ -5,7 +5,7 @@ import type {
   PlaythroughState,
   StatePatch,
 } from "@mystery/shared";
-import { flagsMatch } from "./flags.js";
+import { flagsMatch, stripReservedFlags } from "./flags.js";
 import { accusableSuspectIds } from "./accusation.js";
 
 function norm(s: string): string {
@@ -319,7 +319,13 @@ export function directorIntentsToPatch(
     for (const id of director.suggestedPatch.addEvidenceIds) addEvidence.add(id);
   }
   if (director.suggestedPatch?.setFlags) {
-    Object.assign(setFlags, director.suggestedPatch.setFlags);
+    // The director is LLM-driven and prompt-injectable: never let it write
+    // engine-owned flags (case_solved/case_failed would leak the solution).
+    const { flags: safeFlags, dropped } = stripReservedFlags(
+      director.suggestedPatch.setFlags
+    );
+    Object.assign(setFlags, safeFlags);
+    if (dropped.length) notes.push(`dropped reserved flags: ${dropped.join(", ")}`);
   }
   if (director.suggestedPatch?.accuse) {
     patch.accuse = director.suggestedPatch.accuse;

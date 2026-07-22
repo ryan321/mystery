@@ -123,7 +123,10 @@ function escapeHtml(s: string): string {
  */
 function magicLinkEmailHtml(link: string): string {
   const webOrigin = process.env.WEB_ORIGIN ?? "https://mysterytrove.com";
-  const logoUrl = `${webOrigin}/brand/logo.webp`;
+  // Email-safe logo: the transparent webp gets mangled by image proxies
+  // (Gmail rasterizes the alpha to a black box), so we serve a PNG with
+  // the panel color (#0b1018) baked in — it blends in by construction.
+  const logoUrl = `${webOrigin}/brand/logo-email.png`;
   const href = escapeHtml(link);
 
   const candle = "#d4b56a";
@@ -132,12 +135,14 @@ function magicLinkEmailHtml(link: string): string {
   const serif = `Cinzel, 'Playfair Display', Georgia, 'Times New Roman', serif`;
   const mono = `'Courier New', Courier, monospace`;
 
+  // Outlook enforces a minimum cell height, so a background-colored cell
+  // becomes a thick bar; a 1px bottom border stays a hairline everywhere.
   const divider = `
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="220" align="center" style="margin:0 auto;">
         <tr>
-          <td height="1" style="background-color:${candleDim};font-size:1px;line-height:1px;">&nbsp;</td>
+          <td style="font-size:1px;line-height:1px;border-bottom:1px solid ${candleDim};">&nbsp;</td>
           <td width="28" align="center" style="color:${candle};font-size:10px;line-height:1;">&#9670;</td>
-          <td height="1" style="background-color:${candleDim};font-size:1px;line-height:1px;">&nbsp;</td>
+          <td style="font-size:1px;line-height:1px;border-bottom:1px solid ${candleDim};">&nbsp;</td>
         </tr>
       </table>`;
 

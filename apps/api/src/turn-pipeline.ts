@@ -235,7 +235,10 @@ export async function runTurnPipeline(args: {
     firedBeatIds: playerBeats.fired,
     justHappenedSoFar: justHappened,
     rejected,
-    worldToPlayer: director.output.worldToPlayer,
+    // On a boundary turn (jailbreak / solution-fishing / abuse) the director's
+    // proposed world→player effects are untrusted — drop them so they can't
+    // bypass patch neutralization. Engine defaults still resolve normally.
+    worldToPlayer: boundary ? undefined : director.output.worldToPlayer,
   });
   simState = worldToPlayer.state;
   justHappened.push(...worldToPlayer.justHappened);

@@ -2,10 +2,11 @@ import { config as loadEnv } from "dotenv";
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { bodyLimit } from "hono/body-limit";
 import type { Context } from "hono";
 import { join, dirname, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
-import { randomUUID } from "node:crypto";
+import { randomUUID, timingSafeEqual } from "node:crypto";
 import type {
   MysteryDefinition,
   PlaythroughState,
@@ -85,6 +86,7 @@ import {
   mintInvitation,
   priceForTier,
   recordBillingEvent,
+  deleteBillingEvent,
   redeemInvitation,
   stripeClient,
   subscriptionUpdateFrom,
@@ -113,6 +115,17 @@ export type Identity = {
 };
 
 /**
+ * The dev identity override (x-user-id / x-user-tier) grants arbitrary
+ * identity + tier, so it must never be reachable in production. Require an
+ * explicit opt-in flag AND a non-production NODE_ENV — deriving the bypass
+ * from the absence of a string was one typo away from full impersonation.
+ * main() hard-fails startup if the flag is ever set under production.
+ */
+const DEV_AUTH_ENABLED =
+  process.env.ALLOW_DEV_AUTH === "1" &&
+  process.env.NODE_ENV !== "production";
+
+/**
  * Who is calling: session cookie (signed-in user) → dev header override
  * (never in production) → anonymous cookie (minted on first contact).
  * Anonymous visitors browse the gallery and case details; starting a
@@ -131,7 +144,7 @@ async function identity(c: Context): Promise<Identity> {
       };
     }
   }
-  if (process.env.NODE_ENV !== "production") {
+  if (DEV_AUTH_ENABLED) {
     const devId = c.req.header("x-user-id")?.trim();
     if (devId) {
       const raw =
@@ -163,7 +176,58 @@ async function identity(c: Context): Promise<Identity> {
 function adminOk(c: Context): boolean {
   const token = process.env.ADMIN_TOKEN;
   if (!token) return false;
-  return c.req.header("x-admin-token") === token;
+  const provided = c.req.header("x-admin-token") ?? "";
+  // Constant-time compare so the token can't be recovered byte-by-byte via
+  // response timing. Equalize length first (timingSafeEqual throws on a
+  // length mismatch, which would itself leak the length).
+  const a = Buffer.from(provided);
+  const b = Buffer.from(token);
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(a, b);
+}
+
+/**
+ * Object-level ownership: a playthrough belongs to the caller when its owner
+ * matches the caller's identity (session user id, dev id, or anon cookie id).
+ * Legacy rows predating the user_id column have no owner and stay open so old
+ * anonymous runs remain resumable. Callers return 404 on a mismatch so the
+ * route never confirms the existence of someone else's playthrough.
+ */
+function ownsPlaythrough(
+  row: { userId: string | null },
+  ident: Identity
+): boolean {
+  if (!row.userId) return true;
+  if (row.userId === ident.userId) return true;
+  if (ident.anonId && row.userId === ident.anonId) return true;
+  return false;
+}
+
+/**
+ * Minimal in-process sliding-window rate limiter for surfaces the DB turn
+ * limiter doesn't cover (magic-link sends, debrief LLM calls). Per-process
+ * only — a first layer against abuse/cost, not a distributed guarantee.
+ */
+const rateBuckets = new Map<string, number[]>();
+function rateLimited(key: string, limit: number, windowMs: number): boolean {
+  const now = Date.now();
+  const hits = (rateBuckets.get(key) ?? []).filter((t) => now - t < windowMs);
+  if (hits.length >= limit) {
+    rateBuckets.set(key, hits);
+    return true;
+  }
+  hits.push(now);
+  rateBuckets.set(key, hits);
+  return false;
+}
+
+/** Best-effort client IP for rate-limit keys (Fly sets these). */
+function clientIp(c: Context): string {
+  return (
+    c.req.header("fly-client-ip") ??
+    c.req.header("x-forwarded-for")?.split(",")[0]?.trim() ??
+    "unknown"
+  );
 }
 
 async function accessFor(c: Context, caseId: string) {
@@ -232,6 +296,27 @@ app.use(
     credentials: true,
   })
 );
+
+// Cap request bodies before they're read into memory. The length checks on
+// individual routes (turn input ≤500 chars, etc.) run only AFTER the body is
+// fully parsed, so without this a client could stream a multi-megabyte body to
+// any JSON route first. 1MB is comfortably above any legitimate JSON payload
+// here (including Stripe webhook events). The bundle-upload route overrides
+// this with its own larger cap inline.
+const tooLarge = (c: Context) => c.json({ error: "payload_too_large" }, 413);
+const jsonBodyLimit = bodyLimit({ maxSize: 1024 * 1024, onError: tooLarge });
+for (const path of [
+  "/v1/playthroughs", // POST create (bare path; /* below covers sub-routes)
+  "/v1/playthroughs/*", // turns, debrief, notes
+  "/v1/auth/*", // magic-link, verify, signout
+  "/v1/billing/*", // checkout, portal, webhook
+  "/v1/admin/*", // tier comps
+  "/v1/invitations", // mint
+  "/v1/invitations/*", // validate
+  "/v1/mysteries/*", // publish/access/grants (NOT the bare upload route)
+]) {
+  app.use(path, jsonBodyLimit);
+}
 
 // Any error escaping a handler: log it so it reaches the platform logs, and
 // answer with JSON. Hono's default is a text "Internal Server Error" body,
@@ -355,6 +440,10 @@ function sanitizeAssetPath(raw: string): string | null {
   if (!rel || rel.startsWith("/") || rel.split("/").includes("..")) {
     return null;
   }
+  // Assets are images only (mystery_assets never holds the definition). Reject
+  // any .json path outright so the raw case config/solution can't be requested
+  // as an "asset" even if one were ever mis-stored — defense in depth.
+  if (rel.toLowerCase().endsWith(".json")) return null;
   return rel;
 }
 
@@ -362,6 +451,8 @@ function assetResponse(asset: { mime: string; bytes: Buffer }, immutable: boolea
   return new Response(new Uint8Array(asset.bytes), {
     headers: {
       "Content-Type": asset.mime,
+      // Don't let a browser MIME-sniff a bundle asset into an executable type.
+      "X-Content-Type-Options": "nosniff",
       "Cache-Control": immutable
         ? "public, max-age=31536000, immutable"
         : "public, max-age=3600",
@@ -411,7 +502,12 @@ app.get("/v1/mysteries/:caseId/:version/assets/*", async (c) => {
  * Upload a mystery bundle (zip). Lands as draft unless ?publish=true.
  * Local dev is open; set ADMIN_TOKEN to require x-admin-token.
  */
-app.post("/v1/mysteries", async (c) => {
+app.post(
+  "/v1/mysteries",
+  // Bundles are zips up to ~50MB (bundle.ts enforces the exact caps); this is
+  // the hard ceiling so an oversized upload is refused before it's buffered.
+  bodyLimit({ maxSize: 52 * 1024 * 1024, onError: tooLarge }),
+  async (c) => {
   if (!adminOk(c)) return c.json({ error: "forbidden" }, 403);
 
   let zip: Buffer | undefined;
@@ -581,8 +677,11 @@ app.post("/v1/playthroughs", async (c) => {
 });
 
 app.get("/v1/playthroughs/:id", async (c) => {
+  const ident = await identity(c);
   const row = await getPlaythrough(pool, c.req.param("id"));
-  if (!row) return c.json({ error: "not_found" }, 404);
+  if (!row || !ownsPlaythrough(row, ident)) {
+    return c.json({ error: "not_found" }, 404);
+  }
   // Serve the content version this playthrough pinned at start.
   const def = await registry.getDefinition(
     row.state.caseId,
@@ -618,8 +717,17 @@ app.get("/v1/playthroughs/:id", async (c) => {
  * the world. Available only once the case has closed.
  */
 app.post("/v1/playthroughs/:id/debrief", async (c) => {
+  const ident = await identity(c);
   const row = await getPlaythrough(pool, c.req.param("id"));
-  if (!row) return c.json({ error: "not_found" }, 404);
+  if (!row || !ownsPlaythrough(row, ident)) {
+    return c.json({ error: "not_found" }, 404);
+  }
+  // Each debrief is a paid LLM call; bound it per caller (the DB turn limiter
+  // covers turns, not this route).
+  if (rateLimited(`debrief:${ident.userId}`, 10, 60_000)) {
+    c.header("Retry-After", "30");
+    return c.json({ error: "rate_limited" }, 429);
+  }
   const state = row.state;
   if (!["denouement", "solved", "failed"].includes(state.status)) {
     return c.json({ error: "case_still_open", status: state.status }, 400);
@@ -705,8 +813,11 @@ const TURN_RATE = {
 const turnsInFlight = new Set<string>();
 
 app.post("/v1/playthroughs/:id/turns", async (c) => {
+  const ident = await identity(c);
   const row = await getPlaythrough(pool, c.req.param("id"));
-  if (!row) return c.json({ error: "not_found" }, 404);
+  if (!row || !ownsPlaythrough(row, ident)) {
+    return c.json({ error: "not_found" }, 404);
+  }
 
   let state = row.state;
   if (state.status !== "active" && state.status !== "denouement") {
@@ -824,7 +935,9 @@ app.post("/v1/playthroughs/:id/turns", async (c) => {
     appliedPatch: result.appliedPatch,
     rejected: result.rejected,
     evidenceAdded: result.evidenceAdded,
-    justHappened: result.justHappened,
+    // narrationHints are internal stage directions (they can name mechanics /
+    // hint at hidden state); the client only reads id + summary. Strip them.
+    justHappened: result.justHappened.map(({ narrationHints: _hints, ...j }) => j),
     locationName: def.locations.find((l) => l.id === committed.locationId)
       ?.name,
     progress: computeMysteryProgress(def, committed, {
@@ -832,7 +945,9 @@ app.post("/v1/playthroughs/:id/turns", async (c) => {
       justHappened: result.justHappened,
       evidenceAdded: result.evidenceAdded,
     }),
-    _debug: result.debug,
+    // Debug internals (model names, beat ids, intent notes, focus target) are
+    // recon for weaponizing prompt injection — dev-only.
+    ...(process.env.NODE_ENV !== "production" ? { _debug: result.debug } : {}),
   });
 });
 
@@ -850,8 +965,11 @@ function noteError(c: Context, err: unknown) {
 }
 
 app.post("/v1/playthroughs/:id/notes", async (c) => {
+  const ident = await identity(c);
   const row = await getPlaythrough(pool, c.req.param("id"));
-  if (!row) return c.json({ error: "not_found" }, 404);
+  if (!row || !ownsPlaythrough(row, ident)) {
+    return c.json({ error: "not_found" }, 404);
+  }
   const body = (await c.req.json().catch(() => ({}))) as { text?: string };
   try {
     const { note, notebook } = addPlayerNote(row.state.notebook, String(body.text ?? ""), {
@@ -866,8 +984,11 @@ app.post("/v1/playthroughs/:id/notes", async (c) => {
 });
 
 app.patch("/v1/playthroughs/:id/notes/:noteId", async (c) => {
+  const ident = await identity(c);
   const row = await getPlaythrough(pool, c.req.param("id"));
-  if (!row) return c.json({ error: "not_found" }, 404);
+  if (!row || !ownsPlaythrough(row, ident)) {
+    return c.json({ error: "not_found" }, 404);
+  }
   const body = (await c.req.json().catch(() => ({}))) as { text?: string };
   try {
     const { note, notebook } = updatePlayerNote(
@@ -883,8 +1004,11 @@ app.patch("/v1/playthroughs/:id/notes/:noteId", async (c) => {
 });
 
 app.delete("/v1/playthroughs/:id/notes/:noteId", async (c) => {
+  const ident = await identity(c);
   const row = await getPlaythrough(pool, c.req.param("id"));
-  if (!row) return c.json({ error: "not_found" }, 404);
+  if (!row || !ownsPlaythrough(row, ident)) {
+    return c.json({ error: "not_found" }, 404);
+  }
   try {
     const { notebook } = deletePlayerNote(row.state.notebook, c.req.param("noteId"));
     await updateNotebook(pool, row.state.id, notebook);
@@ -901,6 +1025,17 @@ app.post("/v1/auth/magic-link", async (c) => {
     email?: string;
     next?: string;
   };
+  // Throttle by IP and by target email: unthrottled, this sends real emails
+  // and grows login_tokens for any address an attacker names (inbox-flood +
+  // Resend cost). A 429 reveals no account existence (same for any email).
+  const emailKey = String(body.email ?? "").trim().toLowerCase();
+  if (
+    rateLimited(`magic-ip:${clientIp(c)}`, 10, 60 * 60_000) ||
+    (emailKey && rateLimited(`magic-email:${emailKey}`, 5, 60 * 60_000))
+  ) {
+    c.header("Retry-After", "3600");
+    return c.json({ error: "rate_limited" }, 429);
+  }
   try {
     const result = await requestMagicLink(
       pool,
@@ -1236,31 +1371,40 @@ app.post("/v1/billing/webhook", async (c) => {
   const fresh = await recordBillingEvent(pool, event.id, event.type);
   if (!fresh) return c.json({ received: true, duplicate: true });
 
-  switch (event.type) {
-    case "checkout.session.completed": {
-      const session = event.data.object as Stripe.Checkout.Session;
-      const userId = session.metadata?.userId;
-      const customerId =
-        typeof session.customer === "string"
-          ? session.customer
-          : session.customer?.id;
-      if (userId && customerId) {
-        await bindStripeCustomer(pool, userId, customerId);
+  // The ledger row is claimed above so concurrent duplicates no-op. But if
+  // applying the event throws, release the claim (below) so Stripe's retry
+  // reprocesses it — otherwise a failed cancellation/downgrade is dropped and
+  // the user keeps a paid tier they no longer pay for.
+  try {
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        const userId = session.metadata?.userId;
+        const customerId =
+          typeof session.customer === "string"
+            ? session.customer
+            : session.customer?.id;
+        if (userId && customerId) {
+          await bindStripeCustomer(pool, userId, customerId);
+        }
+        if (session.metadata?.inviteCode) {
+          await redeemInvitation(pool, session.metadata.inviteCode);
+        }
+        break;
       }
-      if (session.metadata?.inviteCode) {
-        await redeemInvitation(pool, session.metadata.inviteCode);
+      case "customer.subscription.created":
+      case "customer.subscription.updated":
+      case "customer.subscription.deleted": {
+        const sub = event.data.object as Stripe.Subscription;
+        await applySubscriptionUpdate(pool, subscriptionUpdateFrom(sub));
+        break;
       }
-      break;
+      default:
+        break;
     }
-    case "customer.subscription.created":
-    case "customer.subscription.updated":
-    case "customer.subscription.deleted": {
-      const sub = event.data.object as Stripe.Subscription;
-      await applySubscriptionUpdate(pool, subscriptionUpdateFrom(sub));
-      break;
-    }
-    default:
-      break;
+  } catch (err) {
+    await deleteBillingEvent(pool, event.id).catch(() => {});
+    throw err;
   }
   return c.json({ received: true });
 });
@@ -1422,6 +1566,15 @@ function publicState(state: PlaythroughState, def?: MysteryDefinition) {
 }
 
 async function main() {
+  // The dev auth override must never be enabled in production. Refuse to boot
+  // rather than silently expose an impersonation bypass.
+  if (
+    process.env.ALLOW_DEV_AUTH === "1" &&
+    process.env.NODE_ENV === "production"
+  ) {
+    console.error("FATAL: ALLOW_DEV_AUTH must not be set when NODE_ENV=production");
+    process.exit(1);
+  }
   console.log(`Database: ${databaseUrl().replace(/:[^:@/]+@/, ":***@")}`);
   await migrate(pool);
   // Dev authoring workspace → DB registry (published). Uploads via

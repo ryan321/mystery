@@ -204,6 +204,19 @@ export async function recordBillingEvent(
   return (res.rowCount ?? 0) > 0;
 }
 
+/**
+ * Release the idempotency claim when applying an event failed, so Stripe's
+ * retry reprocesses it instead of seeing a duplicate and dropping it. Without
+ * this, a transient error while handling `subscription.deleted` would leave a
+ * user on a paid tier they no longer pay for.
+ */
+export async function deleteBillingEvent(
+  pool: Db,
+  eventId: string
+): Promise<void> {
+  await pool.query(`DELETE FROM billing_events WHERE event_id = $1`, [eventId]);
+}
+
 export async function bindStripeCustomer(
   pool: Db,
   userId: string,
