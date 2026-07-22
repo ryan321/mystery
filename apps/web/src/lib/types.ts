@@ -151,7 +151,6 @@ export type Ending = {
   when: "success" | "partial" | "failure" | "custom";
   kind?: string;
   title?: string;
-  templateNotes?: string;
 };
 
 export type Resolution = {

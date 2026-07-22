@@ -30,9 +30,6 @@ export default function EndingOverlay({
         </p>
         <h2 className={styles.title}>{title}</h2>
         {kind ? <p className={styles.kind}>{kind}</p> : null}
-        {ending?.templateNotes ? (
-          <p className={styles.notes}>{ending.templateNotes}</p>
-        ) : null}
         <Link href="/gallery" className={styles.newCase}>
           Start a new case
         </Link>

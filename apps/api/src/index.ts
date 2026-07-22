@@ -1149,11 +1149,12 @@ function publicState(state: PlaythroughState, def?: MysteryDefinition) {
     endingId: state.endingId,
     ending: ending
       ? {
+          // templateNotes are performer guidance and name the culprit —
+          // never shipped to the client (see player-view.ts).
           id: ending.id,
           when: ending.when,
           kind: ending.kind,
           title: ending.title,
-          templateNotes: ending.templateNotes,
         }
       : undefined,
     resolution: state.resolution,
