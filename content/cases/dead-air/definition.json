@@ -2,10 +2,10 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "dead-air",
-  "contentVersion": "0.1.4",
+  "contentVersion": "0.2.0",
   "meta": {
     "title": "Dead Air",
-    "premise": "A research station orbiting Jupiter goes silent. The one survivor swears the killer is still aboard.",
+    "premise": "Callisto-9 went silent over Jupiter eighteen hours ago. The relief crew found the commander dead in his EVA suit — and one scientist swearing he was murdered.",
     "theme": "station",
     "tone": "claustrophobic sci-fi noir, cold metal and radio silence, fair-play despite the vacuum",
     "tags": [
@@ -13,68 +13,93 @@
       "Sci-fi",
       "Isolated"
     ],
-    "difficulty": "hard",
+    "difficulty": "medium",
+    "progressUi": "full",
     "contentWarnings": [
       "murder",
       "isolation",
       "body horror light"
     ],
     "artStyle": "Hard sci-fi character portrait, head-and-shoulders, cold station palette (void blue, warning amber, gunmetal), soft painted illustration, same orbital lighting for every cast member, practical crew uniforms, mystery game NPC portrait, consistent artist hand",
-    "setting": "Research station Callisto-9 in Jupiter orbit. Emergency lighting. Comms dead. Six hours until undock geometry forces you home.",
-    "summary": "Callisto-9 lost telemetry eighteen hours ago. Your relief shuttle docks to find Commander Ilya Voss murdered and only one calm story waiting: Dr. Ren Sato swears the killer is still among the living crew — engineer Mara Quinn, medic Theo Strand, systems tech Pix Harlan. Life support holds. External comms do not. In the silence between Jupiter’s bands, corporate IP and human panic weigh the same. You are the security auditor sent up to bring a name back down.",
-    "theMystery": "Who killed Commander Voss aboard Callisto-9, how did they stage the death, and what was worth murder in a sealed station?"
+    "setting": "2093. Research station Callisto-9 in Jupiter orbit — a spin ring of steel compartments under emergency lighting. External comms dead. Six hours until undock geometry forces you home.",
+    "summary": "Eighteen hours ago, research station Callisto-9 stopped talking to the sky: external array dead, no distress call, telemetry gone mid-frame. Your relief shuttle docks to find Commander Ilya Voss laid out in medbay, suited as if he died repairing his own silence, and a crew of four specialists who cannot fit their stories into the same station. The official story is a night EVA gone wrong. Dr. Ren Sato's story is one word older than spaceflight: murder. Life support holds. Comms do not. In six hours, orbital geometry undocks your shuttle whether you carry a name home or not. You are the company's security auditor. The bodies, the records, the people — audit them all, and decide whose story survives.",
+    "theMystery": "Who killed Commander Voss, why did the station go silent first, and what was worth murder on a sealed station?",
+    "playtest": {
+      "minTurns": 18,
+      "maxTurns": 48,
+      "minEvidenceCoverage": 0.5,
+      "minFunMedian": 7
+    }
   },
   "player": {
-    "displayName": "Investigator Okada",
-    "fullName": "Okada",
-    "addressAs": "Okada",
-    "pronouns": "they/them",
+    "personaId": "company-auditor",
+    "displayName": "The Auditor",
+    "addressAs": "Auditor",
     "role": "Corporate security auditor sent up on the relief shuttle",
     "authority": "professional",
-    "age": "late thirties",
-    "appearance": "Slightly space-sick, short practical hair, calm under vacuum alarms",
     "clothing": "Company relief jumpsuit over civvies, temporary dock badge",
-    "background": "Auditor, not crew. Sent to bring a name and a report back when a station goes silent.",
-    "publicPerception": "Company eyes. Sato may cling; Quinn will hate the oversight; everyone knows undock is a clock.",
-    "voiceNotes": "Calm, procedural, slightly space-sick",
-    "performanceNotes": "Sci-fi professional register. No superpowers. Crew may say Okada or Auditor.",
-    "startingLocationId": "hub",
+    "background": "Auditor, not crew. Sent to bring a name and a report back down when a station goes silent.",
+    "publicPerception": "Company eyes. Sato has decided the audit is the last honest audience aboard; Quinn treats oversight like vacuum — something a good hull keeps out. Everyone knows undock is a clock.",
+    "performanceNotes": "NPCs address the player as 'Auditor' — title only. Never invent a name, face, age, or history for the player; narration is second person throughout. The persona carries company audit authority over logs, spaces, and interviews, but people cooperate — or don't — for their own reasons, and half the station wants the accident certified and the audit gone by undock.",
+    "startingLocationId": "docking-bay",
     "startingEvidenceIds": [],
-    "startingKnowledge": "Station Callisto-9 lost telemetry 18 hours ago. Relief docked to one living crew: Dr. Ren Sato (comms/astrobiology), who claims Commander Ilya Voss was murdered and that engineer Mara Quinn, medic Theo Strand, or systems tech Pix Harlan could be the killer. Life support is stable. Comms are still dead. You have six hours before orbital mechanics force undock.",
-    "objective": "Audit the station: body, logs, airlocks, and crew. Reconstruct the timeline while comms are dead, and accuse the killer before undock forces everyone off the board."
+    "startingKnowledge": "Callisto-9's external array stopped transmitting at 02:14 station time last night — mid-frame, no distress call. The relief shuttle was already inbound; you were added to the manifest. Aboard: Dr. Ren Sato (astrobiology, comms), Mara Quinn (lead engineer), Theo Strand (medic), Pix Harlan (systems). Commander Ilya Voss is dead — found suited in the boom antechamber, moved by his crew to medbay. The station calls it a night EVA gone wrong. Sato calls it murder. Undock geometry closes six hours after dock; after that, Jupiter decides for another nine days.",
+    "objective": "Audit the station — body, suit, logs, airlocks, and crew. Establish what actually happened to Commander Voss and why the station went silent, and accuse the killer before undock geometry forces everyone off the board.",
+    "briefing": {
+      "form": "dossier",
+      "title": "Relief audit brief — Callisto-9",
+      "sections": [
+        {
+          "heading": "The silence",
+          "text": "At 02:14 station time last night, Callisto-9's external array stopped transmitting mid-frame. No distress call, no fault report, no carrier. Relief was already inbound on the standard rotation; your audit was added to the manifest at the last dock. Life support and spin gravity read stable. Nothing else reads at all."
+        },
+        {
+          "heading": "The station",
+          "text": "Five crew. Commander Ilya Voss: station command, eleven years aboard, kept Callisto-9 off the decommission list twice. Dr. Ren Sato: astrobiology and comms — pulled sample JO-17, the station's one treasure, out of a plume sweep. Mara Quinn: lead engineer, fifteen years of ring time. Theo Strand: station medic. Pix Harlan: systems technician, youngest aboard. The JO-17 organics program is the only line item keeping the station alive, and it is two review cycles into decommission talk."
+        },
+        {
+          "heading": "Your task",
+          "text": "You hold company audit authority: logs, spaces, interviews. The crew found the commander suited and dead after the array went down and is calling it an EVA accident; one crew member disputes that loudly. Undock geometry closes six hours after dock. Whatever the truth is, it rides down with you — or it stays up here with them."
+        }
+      ]
+    }
   },
-  "openingNarration": "The airlock sighs. Callisto-9 smells like recycled coffee and hot plastic. Emergency strips paint the hub corridor blue-white. Dr. Ren Sato stands alone in a cracked helmet collar, eyes too wide. “I locked the labs,” they say. “I locked everything. Someone still got to Ilya.” On the bulkhead, a status board blinks DEAD AIR — external array offline. You are the corporate security auditor on the relief shuttle. Commander Voss is dead. Three other crew remain. Comms are still dark. You have a narrow orbital window to find who killed the commander aboard this station — and what they were trying to take with them into the silence.",
+  "openingNarration": "The airlock sighs, and Callisto-9 breathes back — recycled coffee, hot plastic, something colder underneath. Emergency strips light the docking bay blue-white. On the bulkhead a status board repeats one line: DEAD AIR — EXTERNAL ARRAY OFFLINE. Eighteen hours and counting. Dr. Ren Sato is waiting at the umbilical, eyes too wide, sleep nowhere in them. \"They will tell you the commander died fixing his station,\" they say. \"Ilya hated the outside. Eleven years, and he never once walked it alone.\" Behind you, Reyes locks the shuttle to the dock clamps and says, without looking up, that geometry closes in six hours. Commander Ilya Voss lies in medbay, suited for a walk the station says went wrong. Four crew are alive to tell you how. Their stories do not fit in the same station. You are the auditor. Start counting.",
   "phases": [
     {
       "id": "arrival",
-      "description": "Hub, body, first accounts"
+      "description": "Dock, body, first stories"
     },
     {
       "id": "deepening",
-      "description": "Logs, airlock, motive"
+      "description": "The suit refuses the story"
     },
     {
       "id": "crisis",
-      "description": "Systems turn on someone"
+      "description": "Engineering seals"
     },
     {
       "id": "confrontation",
-      "description": "Accusation"
+      "description": "The file lands"
     },
     {
       "id": "denouement",
-      "description": "Silence after the call"
+      "description": "Signal restored"
     }
   ],
   "wrapUp": {
     "enabled": true,
     "maxTurns": 8,
     "allowEarlyExit": true,
-    "performanceNotes": "Cold, metallic, quiet. RETURN TO NORMAL: culprit brigged, systems under survivor/company control, undock path restored. Confessions short. No magic tech."
+    "performanceNotes": "Cold, quiet, exact. RETURN TO NORMAL is diegetic, never a scoreboard: Reyes's dock restraints and her immovable clock; Pix patching their shameful bootleg splice into the array stub so the station's first outgoing word in a day is the truth; Sato unlocking the lab for company inventory; Strand rewriting his duty log in his own hand. Confessions stay short and in character — Quinn keeps checklist cadence even broken. Nobody develops omniscience; only Quinn may account for her own design, in her own voice. The whole story belongs to the revelation after the fiction ends."
+  },
+  "accusePolicy": {
+    "requireConfirmation": true,
+    "pendingTurns": 3
   },
   "time": {
     "startSlotId": "relief_dock",
-    "minutesPerTurn": 10,
+    "minutesPerTurn": 8,
     "schedule": [
       {
         "id": "relief_dock",
@@ -82,14 +107,29 @@
         "minutesFromStart": 0
       },
       {
+        "id": "first_hour",
+        "label": "One hour aboard",
+        "minutesFromStart": 60
+      },
+      {
         "id": "mid_window",
         "label": "Mid window",
-        "minutesFromStart": 90
+        "minutesFromStart": 150
+      },
+      {
+        "id": "boom_shadow",
+        "label": "Boom shadow",
+        "minutesFromStart": 240
       },
       {
         "id": "undock_soon",
         "label": "Undock approaching",
-        "minutesFromStart": 180
+        "minutesFromStart": 300
+      },
+      {
+        "id": "undock_geometry",
+        "label": "Undock geometry",
+        "minutesFromStart": 360
       }
     ]
   },
@@ -106,32 +146,142 @@
   "flags": [
     {
       "id": "examined_body",
+      "description": "Player examined Commander Voss's body",
       "aiVisible": true,
       "defaultValue": false
     },
     {
-      "id": "found_airlock_log",
+      "id": "staged_eva_broken",
+      "description": "The accident story is broken: the suit says its man never breathed in it",
       "aiVisible": true,
       "defaultValue": false
     },
     {
       "id": "found_sample_theft",
+      "description": "Player found the vault log: JO-17 is missing and the cage was forced",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "uplink_window_known",
+      "description": "Player knows Voss had a 02:30 confirmation window the silence destroyed",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "silence_was_the_point",
+      "description": "Player has connected the array cut to the 02:30 window: the silence was scheduled",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "splitter_known",
+      "description": "Pix admitted the bootleg splice and the shadow buffer in the ring crawlspace",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "scrap_gone",
+      "description": "The shadow-buffer fragment was destroyed before the player secured it",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "cert_known",
+      "description": "Strand admitted rounding Quinn's flight physicals up to passing",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "quinn_cornered",
+      "description": "Quinn has been cornered with the file; her procedure mask is gone",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "accused_mara-quinn",
+      "description": "Runtime: Quinn named in a pending or scored accusation (engine-set)",
       "aiVisible": true,
       "defaultValue": false
     },
     {
       "id": "falsely_accused_ren-sato",
+      "description": "Runtime: Sato was formally accused and is not guilty (engine-set)",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "falsely_accused_theo-strand",
+      "description": "Runtime: Strand was formally accused and is not guilty (engine-set)",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "falsely_accused_pix-harlan",
+      "description": "Runtime: Pix was formally accused and is not guilty (engine-set)",
       "aiVisible": true,
       "defaultValue": false
     }
   ],
   "locations": [
     {
+      "id": "docking-bay",
+      "name": "Docking bay",
+      "description": "The bay rides the station's despun docking mast; the transfer collar at the inner pressure door spins you up to ring gravity on the way through to the central hub. The relief shuttle hangs on the dock clamps beyond the umbilical, your one road home. Cargo pallets nobody has unloaded. Reyes keeps her post by the shuttle console, one eye always on the geometry countdown.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 2,
+        "y": 0,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "hub",
+          "label": "through the pressure door to the hub"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "shuttle-console",
+          "name": "shuttle console",
+          "onInspect": {
+            "narrativeHints": "The approach log kept listening long after the station stopped talking. Station carrier: normal, normal, normal — then gone at 02:14:07, one frame to the next. No noise floor rising, no degradation, no stutter. Reyes, if asked, says it plainly: lines fray. Breakers throw. This threw.",
+            "revealsEvidenceIds": [
+              "handshake-log"
+            ]
+          }
+        },
+        {
+          "id": "umbilical-panel",
+          "name": "umbilical panel",
+          "onInspect": {
+            "narrativeHints": "Dock clamp status, umbilical pressure, and the undock geometry countdown, ticking without opinion. A handwritten strip under the readout, in Reyes's block letters: GEOMETRY DOES NOT NEGOTIATE."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "dana-reyes"
+        }
+      ]
+    },
+    {
       "id": "hub",
       "name": "Central hub",
-      "description": "Spin-ring junction. Viewports show Jupiter's banded face. Status boards, suit lockers, a sealed lab hatch.",
+      "description": "The spin-ring junction. Viewports show Jupiter's banded face turning slow and enormous. Pressure doors lead out in every direction: the docking bay, ops, medbay, the bio lab, engineering, and the crew quarters. Suit lockers line one wall under the main status board; a ring maintenance panel sits low near the deck.",
       "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 0,
+        "y": 0,
+        "floor": 0
+      },
       "exits": [
+        {
+          "toLocationId": "docking-bay",
+          "label": "to the docking bay"
+        },
         {
           "toLocationId": "ops",
           "label": "into ops"
@@ -142,11 +292,15 @@
         },
         {
           "toLocationId": "lab",
-          "label": "into the sealed lab"
+          "label": "to the sealed bio lab"
         },
         {
           "toLocationId": "engineering",
-          "label": "into engineering"
+          "label": "into the engineering ring"
+        },
+        {
+          "toLocationId": "crew-quarters",
+          "label": "into the crew quarters"
         }
       ],
       "inspectables": [
@@ -154,14 +308,33 @@
           "id": "status-board",
           "name": "status board",
           "onInspect": {
-            "narrativeHints": "External array offline at 02:14 ship time — same minute as Voss's last badge ping. Internal cams wiped for a twelve-minute window. Manual wipe requires senior engineer code or physical console in engineering."
+            "narrativeHints": "Three lines hold the night. External array offline at 02:14. Internal cameras: a null window from 02:00 to 02:40 — wipe authority requires the engineering physical console or a command code. And a cold-vault inventory alert in the bio lab, pending since 02:07, still unacknowledged. The board states facts and offers no opinion about how they fit."
           }
         },
         {
           "id": "suit-locker",
           "name": "suit locker row",
           "onInspect": {
-            "narrativeHints": "Four EVA suits. Quinn's suit shows fresh microabrasion on the gauntlet — consistent with forced hatch work. Sato's suit is unused since last week."
+            "narrativeHints": "Four suits and one empty rack — the commander's suit is on the commander. Sato's suit wears a week of dust. Strand's and Harlan's read stowed-per-manual. The lead engineer's suit is the interesting one: fresh microabrasion across both gauntlets and a faint thermal bloom on the chest plate, the finish suits take from real cold, real recently.",
+            "revealsEvidenceIds": [
+              "quinn-suit-abrasion"
+            ]
+          }
+        },
+        {
+          "id": "maintenance-crawlspace",
+          "name": "ring maintenance crawlspace",
+          "hiddenUntilFlags": {
+            "splitter_known": true
+          },
+          "onInspect": {
+            "narrativeHints": "Behind the low panel, exactly where Pix said: an unlicensed splitter tapped into the array maintenance channel, and its shadow buffer, still warm. Most of the night's traffic is movies and letters home. Four seconds of it are not.",
+            "requiresFlags": {
+              "scrap_gone": false
+            },
+            "revealsEvidenceIds": [
+              "buffer-scrap"
+            ]
           }
         }
       ],
@@ -174,12 +347,60 @@
     {
       "id": "ops",
       "name": "Operations deck",
-      "description": "Comms chairs, dead mic lights, a frozen orbital map. Voss's body was moved here from the outer airlock antechamber.",
+      "description": "Comms chairs and dead mic lights. The orbital plot still runs on internal power, drawing undock geometry in patient amber arcs. One console is logged in and has been all night. The only door leads back to the hub.",
       "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 0,
+        "y": 2,
+        "floor": 0
+      },
       "exits": [
         {
           "toLocationId": "hub",
-          "label": "back to hub"
+          "label": "back to the hub"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "comms-console",
+          "name": "comms console",
+          "onInspect": {
+            "narrativeHints": "The login has been open since 21:00 — Sato's. In the outbound queue, a transmission stamped for 02:30: the full JO-17 dataset, addressed somewhere that is not the company. Under it, the retry ledger: CARRIER LOST, forty-one attempts, 02:20 to 03:10. Somebody sat here in the dark trying to send, over and over, into nothing.",
+            "revealsEvidenceIds": [
+              "sato-uplink-queue"
+            ]
+          }
+        },
+        {
+          "id": "orbital-plot",
+          "name": "orbital plot",
+          "onInspect": {
+            "narrativeHints": "Callisto-9's orbit, the relief shuttle's departure lane, and the closing undock window rendered in slow amber. The plot also keeps yesterday: a relay pass annotated in the commander's standing schedule, its uplink slot marked PROTECTED — the kind of flag a commander sets when a window matters more than sleep."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "pix-harlan"
+        }
+      ]
+    },
+    {
+      "id": "medbay",
+      "name": "Medbay",
+      "description": "White plastic and sealed cabinets. Commander Voss lies on the center table, still suited from the chest down, where his crew carried him. A duty terminal glows by the drug locker; his effects sit in a steel tray. The only door leads back to the hub.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": -2,
+        "y": 0,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "hub",
+          "label": "back to the hub"
         }
       ],
       "inspectables": [
@@ -187,10 +408,9 @@
           "id": "voss-body",
           "name": "Commander Voss",
           "onInspect": {
-            "narrativeHints": "Blunt trauma to the occiput; secondary asphyxia marks from a suit collar forced shut. Not a random vacuum death — staged after a blow. A tool imprint matches an engineering torque key, not a med instrument.",
+            "narrativeHints": "Let the geometry speak. At the back of the skull, an occipital depression — round-edged, tool-width, skin split clean. Below it, around the neck, the suit's collar seal ring sits seated and intact — and where the ring's rubber lip dragged across the wound's edge going on, it left a scrape. The scrape never bled. State what is there; do not say what it means.",
             "revealsEvidenceIds": [
-              "torque-imprint",
-              "collar-marks"
+              "wound-notes"
             ],
             "setsFlags": {
               "examined_body": true
@@ -198,39 +418,34 @@
           }
         },
         {
-          "id": "comms-panel",
-          "name": "comms panel",
+          "id": "voss-suit",
+          "name": "the commander's EVA suit",
           "onInspect": {
-            "narrativeHints": "Hard kill from ops and a secondary cut at the external junction — two-person job or one person with engineering access. Sato's login was open; last command is not Sato's cadence."
+            "narrativeHints": "The suit keeps its own diary. Rebreather cartridge: factory-sealed weight, loop bone-dry. Suit log: cold start, no pre-breathe cycle. Boots: clean. Exterior finish: no thermal bloom, none of the frost-burnish a hull walk leaves. Read the entries aloud and leave the arithmetic to the auditor.",
+            "revealsEvidenceIds": [
+              "suit-forensics"
+            ]
           }
-        }
-      ],
-      "charactersPresent": [
-        {
-          "characterId": "ren-sato"
         },
         {
-          "characterId": "theo-strand"
-        }
-      ]
-    },
-    {
-      "id": "medbay",
-      "name": "Medbay",
-      "description": "White plastic, sealed cabinets, a quiet heart monitor that has nothing to listen to.",
-      "startsAccessible": true,
-      "exits": [
+          "id": "effects-tray",
+          "name": "effects tray",
+          "onInspect": {
+            "narrativeHints": "A steel tray of what the commander carried: his door badge, a multitool, and his wristpad. The wristpad still holds the night's last notification — COLD VAULT OVERRIDE ALERT, 02:07, status READ. Whatever he was doing at 02:07, it was not sleeping.",
+            "revealsEvidenceIds": [
+              "voss-badge",
+              "wristpad-alert"
+            ]
+          }
+        },
         {
-          "toLocationId": "hub",
-          "label": "back to hub"
-        }
-      ],
-      "inspectables": [
-        {
-          "id": "med-log",
+          "id": "duty-log",
           "name": "med duty log",
           "onInspect": {
-            "narrativeHints": "Strand logged a sedative draw at 01:50 for 'Quinn anxiety' — Quinn denies receiving it. Vial count is short by two."
+            "narrativeHints": "A tidy log — very tidy. 01:50: sedative draw, one dose, notation 'Quinn — anxiety.' The locker count squares with the ledger to the vial, which is its own kind of remarkable on a station this tired. The entries are in Strand's neat hand, evenly spaced, the way handwriting gets when it is being careful.",
+            "revealsEvidenceIds": [
+              "med-log"
+            ]
           }
         }
       ],
@@ -243,51 +458,68 @@
     {
       "id": "lab",
       "name": "Bio lab",
-      "description": "Gloveboxes, sample carousels, a locked cold vault. Ice crystals on the outer seal.",
-      "startsAccessible": true,
+      "description": "Gloveboxes, sample carousels, and the cold vault with ice crystals on its outer seal. Sato's workstation still glows with plume spectra. The hatch to the hub is the only way in or out — and Sato sealed it the night the array died.",
+      "startsAccessible": false,
+      "knownAtStart": true,
+      "map": {
+        "x": -2,
+        "y": 2,
+        "floor": 0
+      },
       "exits": [
         {
           "toLocationId": "hub",
-          "label": "back to hub"
+          "label": "back to the hub"
         }
       ],
       "inspectables": [
         {
           "id": "sample-vault",
-          "name": "sample vault",
+          "name": "cold vault",
           "onInspect": {
-            "narrativeHints": "Vault inventory short one canister: Jovian organics sample JO-17, high-value IP. Access log shows Quinn's biometrics at 02:05 — and a forced override shadow using Voss's code two minutes later.",
+            "narrativeHints": "Inventory: one canister short — JO-17 itself. The access log holds two entries a hundred and twenty seconds apart: 02:05, engineering-chief biometrics, cryo-rotation clearance; 02:07, a command-code override forcing the inner cage. Note the plumbing of it: inner-cage overrides alert the commander's wristpad by design. State the log; let the auditor do the wiring.",
             "revealsEvidenceIds": [
-              "sample-theft-log"
-            ],
-            "setsFlags": {
-              "found_sample_theft": true
-            }
+              "vault-log"
+            ]
           }
         },
         {
           "id": "glovebox",
-          "name": "glovebox smear",
+          "name": "glovebox",
           "onInspect": {
-            "narrativeHints": "Trace blood mixed with coolant — someone cut a hand here after the vault."
+            "narrativeHints": "Inside the port ring, a smear of blood thinned with coolant, dried in a drag pattern. Someone worked this box with an open cut after the cage was forced — quickly, and without gloves."
+          }
+        },
+        {
+          "id": "sato-workstation",
+          "name": "Sato's workstation",
+          "onInspect": {
+            "narrativeHints": "Plume-sweep spectra, the original JO-17 naming note in Sato's precise hand, and a drafted transfer manifest — the full dataset, addressed to a university archive, marked UNSENT. Science prepared for a journey somebody scheduled and something cancelled."
           }
         }
       ],
-      "charactersPresent": [
-        {
-          "characterId": "pix-harlan"
-        }
-      ]
+      "charactersPresent": []
     },
     {
       "id": "engineering",
       "name": "Engineering ring",
-      "description": "Pumps, torque racks, airlock controls for the external array boom.",
+      "description": "Pumps, torque racks, shear kits, and the airlock controls for the external array boom. Coolant runs overhead in labeled dead-legs. A heavy pressure hatch at the far end leads out to the boom antechamber; the ring door leads back to the hub.",
       "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 0,
+        "y": -2,
+        "floor": 0
+      },
       "exits": [
         {
           "toLocationId": "hub",
-          "label": "back to hub"
+          "label": "back to the hub"
+        },
+        {
+          "toLocationId": "boom-antechamber",
+          "label": "through the pressure hatch to the boom antechamber",
+          "startsClosed": true
         }
       ],
       "inspectables": [
@@ -295,70 +527,278 @@
           "id": "airlock-console",
           "name": "airlock console",
           "onInspect": {
-            "narrativeHints": "Outer boom airlock cycled at 02:11 with Quinn's engineering token. Inner camera cut coincides. A bloody torque key is racked clean on the wrong peg.",
+            "narrativeHints": "The boom airlock's night, in three lines. 02:11, outbound cycle — systems secondary token. 02:23, inbound cycle — same token. 02:41, one cycle under the commander's badge. The walkline lights, which any by-the-book EVA switches on first, are logged dark for all three. Read the timestamps in order and stop talking.",
             "revealsEvidenceIds": [
-              "airlock-log",
+              "airlock-cycles"
+            ]
+          }
+        },
+        {
+          "id": "torque-rack",
+          "name": "torque rack",
+          "onInspect": {
+            "narrativeHints": "Keys racked in size order — except one. A three-quarter key sits in the five-eighths slot, wiped clean and gleaming. In the knurling of the grip, where a fast rinse does not reach, a dark crust has dried. Salt water and blood do not dry the same way; neither do coolant and blood.",
+            "revealsEvidenceIds": [
               "torque-key"
-            ],
-            "setsFlags": {
-              "found_airlock_log": true
-            }
+            ]
+          }
+        },
+        {
+          "id": "shear-kit",
+          "name": "shear kit",
+          "onInspect": {
+            "narrativeHints": "The powered shear sits in its foam like it never left. The blade says otherwise: fresh conductor filings caught in the guard, bright as new wire. The kit log shows no checkout — which is itself an entry, if you read logs for what is missing.",
+            "revealsEvidenceIds": [
+              "powered-shear"
+            ]
+          }
+        },
+        {
+          "id": "coolant-dead-leg",
+          "name": "coolant dead-leg",
+          "hiddenUntilFlags": {
+            "found_sample_theft": true
+          },
+          "onInspect": {
+            "narrativeHints": "In the dead-leg where only inspection crawls go, lashed with proper cable discipline: a cryo canister. The label is JO-17. Whoever stowed it meant to come back, and tied their knots like someone who ties them for a living.",
+            "revealsEvidenceIds": [
+              "jo-17-canister"
+            ]
           }
         }
       ],
       "charactersPresent": [
         {
           "characterId": "mara-quinn"
-        },
-        {
-          "characterId": "pix-harlan"
         }
       ]
+    },
+    {
+      "id": "boom-antechamber",
+      "name": "Boom antechamber",
+      "description": "The last pressurized space before the outside: suit clamps, a tether rack, the outer hatch with its scope viewport onto the array boom. The deck is scuffed alloy. The pressure hatch behind you leads back into the engineering ring.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 0,
+        "y": -4,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "engineering",
+          "label": "back through the pressure hatch to engineering"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "boom-viewport",
+          "name": "scope viewport",
+          "onInspect": {
+            "narrativeHints": "Through the scope, the array feed line where it meets the junction box: it ends square. One stroke, tool-width, no fray, no burn, no fatigue necking. Capture the image and describe the edge; a cut and a failure do not leave the same face.",
+            "revealsEvidenceIds": [
+              "junction-cut-survey"
+            ]
+          }
+        },
+        {
+          "id": "tether-rack",
+          "name": "tether rack",
+          "onInspect": {
+            "narrativeHints": "The commander's tether hangs racked and tagged, its clip dust-set into the cradle. The station's EVA log, every walk for eleven years, shows a clip-out beside his name. Say only what the rack shows.",
+            "revealsEvidenceIds": [
+              "stowed-tether"
+            ]
+          }
+        },
+        {
+          "id": "deck-scuffs",
+          "name": "deck scuffs",
+          "onInspect": {
+            "narrativeHints": "Two parallel heel-lines, drag-bright against the deck oxide, running from the intercom panel just inside the pressure hatch across to the suit clamp bay. Fresh over old scuffing. Whatever was moved, it was moved within this room. Describe the direction; do not name the cargo."
+          }
+        }
+      ],
+      "charactersPresent": [],
+      "hazards": [
+        {
+          "id": "pressure-differential",
+          "description": "Residual pressure differentials in the antechamber panels; forcing them without equalizing can slam a hatch cover hard enough to mark a careless hand",
+          "trigger": "on_act",
+          "condition": "shaken",
+          "severity": "scare",
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "crew-quarters",
+      "name": "Crew quarters",
+      "description": "Four bunk alcoves around the galley rail, a rota board, the wet cell and head behind the aft bulkhead, and the smell of a small crew's long rotation. The commander's cabin door stands at the far end, badge-locked. The ring door leads back to the hub.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 2,
+        "y": 2,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "hub",
+          "label": "back to the hub"
+        },
+        {
+          "toLocationId": "voss-quarters",
+          "label": "through the badge-locked door to the commander's cabin",
+          "requiresEvidenceIds": [
+            "voss-badge"
+          ]
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "quinn-bunk",
+          "name": "the engineer's bunk",
+          "onInspect": {
+            "narrativeHints": "Blanket squared to regulation. Under the mattress edge, tucked where inspection does not look: a wrist brace worn soft with use, a tube of liniment, and a printed crew fatigue table annotated in pencil — one column circled, the one with her own rotation count in it.",
+            "revealsEvidenceIds": [
+              "wrist-brace"
+            ]
+          }
+        },
+        {
+          "id": "galley-board",
+          "name": "galley rota board",
+          "onInspect": {
+            "narrativeHints": "Duty rota, ration notes, and in one corner a running tally in three different hands: 37 DAYS — the countdown to the decommission review. Someone has drawn a small ring around it every week for months. A station that knows it is being weighed."
+          }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "voss-quarters",
+      "name": "Commander's cabin",
+      "description": "A narrow cabin kept like a logbook: service plaque, squared blanket, a desk with everything at right angles. A photo of a young woman in a polytechnic jacket is fixed by the desk lamp. The badge-locked door leads back to the crew quarters.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 4,
+        "y": 2,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "crew-quarters",
+          "label": "back to the crew quarters"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "voss-desk",
+          "name": "the commander's desk",
+          "onInspect": {
+            "narrativeHints": "The JO-17 sale file, final terms, confirmation window stamped 02:30 last night. Clipped to the front page, an addendum in Voss's own hand, initialed by the buyer: crew discovery shares reinstated in full — funded against his own retention bonus. Under it, a sticky note, two words: TELL THEM AFTER.",
+            "revealsEvidenceIds": [
+              "sale-contract"
+            ]
+          }
+        },
+        {
+          "id": "berth-shelf",
+          "name": "berth shelf",
+          "onInspect": {
+            "narrativeHints": "A sedative vial, station-stamped 01:50 — seal intact, never opened. Beside it, a letter begun three times to someone named Amara: 'By the time you read this the station will have called down its good news—' Each draft stops at the same sentence.",
+            "revealsEvidenceIds": [
+              "unopened-vial"
+            ]
+          }
+        }
+      ],
+      "charactersPresent": []
     }
   ],
   "relationships": [
     {
-      "id": "quinn_ip",
+      "id": "quinn_voss_shares",
       "fromId": "mara-quinn",
-      "toId": "ren-sato",
+      "toId": "ilya-voss",
       "type": "rivalry",
-      "label": "fought Voss over sample rights and buyout",
+      "label": "fought the JO-17 sale that zeroed her discovery share",
       "strength": 3,
       "public": false,
-      "knownToPlayerByDefault": false
+      "knownToPlayerByDefault": false,
+      "notes": "The engine of the crime. Until the theft_motive beat reveals it, Quinn frames the sale strictly as a crew grievance — 'Voss was selling us all out' — never as her own loss."
     },
     {
-      "id": "sato_witness",
+      "id": "sato_science_voss",
+      "fromId": "ren-sato",
+      "toId": "ilya-voss",
+      "type": "loyalty",
+      "label": "kept faith with the man, fought the sale",
+      "strength": 2,
+      "public": true,
+      "knownToPlayerByDefault": true,
+      "notes": "They argued about JO-17 for months and respected each other completely. Sato's grief plays as certainty."
+    },
+    {
+      "id": "sato_strand_bond",
       "fromId": "ren-sato",
       "toId": "theo-strand",
       "type": "ally",
-      "label": "only confirmed survivor bond",
+      "label": "carried the commander to medbay together",
       "strength": 2,
       "public": true,
-      "knownToPlayerByDefault": true
+      "knownToPlayerByDefault": true,
+      "notes": "The night bound them. Each will defend the other against accusation before defending themselves."
     },
     {
-      "id": "harlan_access",
+      "id": "strand_keeps_quinn",
+      "fromId": "theo-strand",
+      "toId": "mara-quinn",
+      "type": "protects",
+      "label": "keeps her flying",
+      "strength": 2,
+      "public": false,
+      "knownToPlayerByDefault": false,
+      "notes": "Two years of flight physicals rounded up to passing — tremor, bone density. He believes it was kindness. Do not volunteer; this surfaces via the cert_surfaces beat or the wrist-brace gate."
+    },
+    {
+      "id": "quinn_fears_strand",
+      "fromId": "mara-quinn",
+      "toId": "theo-strand",
+      "type": "fears",
+      "label": "he knows what her hands are doing",
+      "strength": 2,
+      "public": false,
+      "knownToPlayerByDefault": false,
+      "notes": "The one secret Quinn is personally afraid of. She will sacrifice Strand's log to the auditor before she lets the cert file surface."
+    },
+    {
+      "id": "harlan_under_quinn",
       "fromId": "pix-harlan",
       "toId": "mara-quinn",
       "type": "employee",
-      "label": "systems under Quinn's engineering lead",
+      "label": "systems runs under the engineering lead",
       "strength": 2,
       "public": true,
-      "knownToPlayerByDefault": true
+      "knownToPlayerByDefault": true,
+      "notes": "Pix's tokens, Pix's consoles — but Quinn holds the master overrides and signs Pix's evaluations."
     }
   ],
   "characters": [
     {
       "id": "ilya-voss",
       "name": "Commander Ilya Voss",
-      "shortBio": "Station commander of Callisto-9 — murdered while the array went dark.",
+      "shortBio": "Commander of Callisto-9 for eleven years — the company's man aboard and the crew's shield against the company, and quietly worn out from being both; kept the station off the decommission list twice; died suited for a walk that every log aboard says he never took.",
+      "cardTitle": "The commander",
+      "cardBio": "Eleven years in the ring. He believed you could serve the company and the crew at once, and spent his last month finding out what proving it costs. The photo by his desk faces the door.",
       "portrait": "portraits/ilya-voss.jpg",
-      "defaultLocationId": "ops",
+      "defaultLocationId": "medbay",
       "storyRole": "victim",
       "voice": "Silent now",
       "knowledge": {
-        "public": "Deceased. Body recovered after the station lost telemetry.",
+        "public": "Deceased. Found suited in the boom antechamber after the array went dark; moved to medbay by his crew.",
         "private": [],
         "secrets": []
       },
@@ -367,49 +807,87 @@
     {
       "id": "ren-sato",
       "name": "Dr. Ren Sato",
-      "shortBio": "Comms and astrobiology; claims sole survivor status until you boarded.",
-      "voice": "Tight, scientific, fraying",
+      "shortBio": "Astrobiologist and comms officer who pulled JO-17 out of a plume sweep and named it; found the station silent, found the body, locked the lab, and has not stopped saying the word murder since.",
+      "cardTitle": "Astrobiologist, comms officer",
+      "cardBio": "The discoverer of JO-17 and the loudest voice aboard against selling it. First to the silence, first to the body, first to say murder.",
+      "voice": "Tight, precise, fraying at the edges",
       "portrait": "portraits/ren-sato.jpg",
       "defaultLocationId": "hub",
       "defaultWillingness": "open",
+      "defaultStance": "urgent_witness",
+      "storyRole": "suspect",
       "knowledge": {
-        "public": "They found Voss after the array went dead. They locked labs and waited. They did not kill anyone.",
+        "public": "They found the carrier dead in the small hours, went looking, and found Commander Voss suited in the boom antechamber at 04:10. They woke the crew; with Strand they moved him to medbay because leaving him in the cold was unthinkable. They locked the bio lab and have kept it locked. And it was no accident: Ilya hated the outside. Eleven years, and he never once walked it alone, never at night, never without the walkline lit.",
         "private": [
           {
             "id": "sato-heard-quinn",
-            "content": "They heard Quinn arguing with Voss over JO-17 rights on the open intercom before the cut — Quinn said 'you'll bury the patent with you.'",
+            "content": "Six weeks ago the intercom channel was left open during a stores check and half the ring heard Quinn and the commander over JO-17. Quinn's voice never rose. She said: 'You'll bury the patent with you.' Sato has not repeated it to anyone until now, because it is the kind of sentence that convicts a person twice.",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "sato-window",
+            "content": "The commander had a protected uplink window at 02:30 that night — his company call, guarded all week, though he wouldn't say what it carried. That is the whole reason Sato knows the accident story is wrong: at two in the morning Ilya Voss would have been at ops with coffee, not in a suit. He never missed a window in eleven years.",
             "requiresWillingnessIn": [
               "open",
               "guarded"
             ]
           }
         ],
-        "secrets": []
+        "secrets": [
+          {
+            "id": "sato-archive",
+            "content": "The queued 02:30 transmission is theirs: the complete JO-17 dataset, addressed to a university open archive. If the sale closed, the science would vanish into a corporate vault, so Sato was going to make it un-vanishable — a firing offense, timed for the same window as the commander's call so one carrier burst would hide the other. That is why the login was open all night, why the lab is locked, and why they have been terrified as well as grieving: 'I wasn't protecting the company's sample. I was protecting the science. Say it got Ilya killed and I will never sleep again.'",
+            "requiresEvidenceIds": [
+              "sato-uplink-queue"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ]
       },
       "defenses": [
-        "Trauma as fog",
-        "Easy false lead if you distrust the survivor"
-      ],
-      "storyRole": "suspect"
+        "Certainty reads as guilt and they know it; they say murder anyway",
+        "Will not volunteer the archive; the queue on the table breaks the dam",
+        "If accused, goes silent — the one who said murder first, blamed for it"
+      ]
     },
     {
       "id": "mara-quinn",
       "name": "Mara Quinn",
-      "shortBio": "Lead engineer; gauntlets scuffed; answers like a checklist.",
-      "voice": "Flat, technical, defensive",
+      "shortBio": "Lead engineer with fifteen years of ring time and a right hand that has started to argue back; calls the array kill junction fatigue, keeps her answers in maintenance language, and never wastes a word.",
+      "cardTitle": "Lead engineer",
+      "cardBio": "Fifteen years keeping Callisto-9 alive. Speaks in checklists. The kind of engineer who racks her tools before her feelings.",
+      "voice": "Flat, technical, a checklist that occasionally swallows",
       "portrait": "portraits/mara-quinn.jpg",
       "defaultLocationId": "engineering",
       "defaultWillingness": "guarded",
       "defaultStance": "procedural_mask",
+      "storyRole": "suspect",
       "knowledge": {
-        "public": "She was repairing a pump. Token logs can be spoofed. Voss was selling the sample out from under the crew.",
+        "public": "She was in her bunk from 01:30. The array kill reads as junction fatigue on a boom that is older than Pix — she will walk you through the fatigue tables unasked. Token logs prove nothing; anyone with the maintenance manual can spoof a secondary. And yes, the commander was selling JO-17 out from under the crew that found it, cut it, and froze it — ask anyone aboard what they thought of that.",
         "private": [
           {
-            "id": "quinn-admits-vault",
-            "content": "She admits she opened the vault to move JO-17 off-station before Voss sold it — then 'things went wrong' at the airlock when he caught her.",
+            "id": "quinn-cert",
+            "content": "Shown the med log or the brace, she goes very still and very precise: she has never taken a sedative on rotation in fifteen years, and the 'anxiety' notation is Strand keeping his own count square — check his vials, not her bloodstream. It is the truth, aimed like a tool: away from her, at him.",
             "requiresEvidenceIds": [
-              "sample-theft-log",
-              "airlock-log"
+              "med-log"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded",
+              "hostile"
+            ]
+          },
+          {
+            "id": "quinn-shares",
+            "content": "With the sale terms on the table she talks about the discovery share the only way she can — as arithmetic. 'A signing bonus is a number. A share is a life. Fifteen years of ring time is priced into my wrists, Auditor. That sample was the one thing this station ever produced that was going to outlive the people who produced it.' She does not say the share was hers to lose. She does not need to.",
+            "requiresEvidenceIds": [
+              "sale-contract"
             ],
             "requiresWillingnessIn": [
               "open",
@@ -418,31 +896,177 @@
             ]
           }
         ],
-        "secrets": []
+        "secrets": [
+          {
+            "id": "quinn-breaks",
+            "content": "The confession, in checklist cadence. The override ping she could not suppress; his boots in the antechamber at 02:09; the canister between them. 'He turned his back on me to badge the console. To call it in. I have replayed whether I would have done it if he had kept his eyes on me. I do not have a finding.' Then the list, because there is a checklist for everything: token, airlock, shear, suit, collar, badge, cameras, key. 'I rinsed the key and racked it. Wrong peg. Fifteen years and I racked it on the wrong peg.' She never read the addendum. Nobody should tell her about it gently.",
+            "requiresEvidenceIds": [
+              "vault-log",
+              "airlock-cycles"
+            ],
+            "requiresFlags": {
+              "quinn_cornered": true
+            },
+            "requiresWillingnessIn": [
+              "open",
+              "guarded",
+              "hostile"
+            ]
+          }
+        ]
       },
       "defenses": [
-        "Blames spoofed biometrics",
-        "Frames Strand's sedative log"
-      ],
-      "storyRole": "suspect"
+        "Maintenance language as armor: the vault entry was cryo-rotation access, the cycles a spoofed secondary, the suit abrasions old pump work",
+        "Aims the auditor at Sato's open ops login early, and at Strand's tidy log when pressed",
+        "Concedes nothing until the vault log, the airlock cycles, and the iron — or the frame of her on tape — are all on the table"
+      ]
     },
     {
       "id": "theo-strand",
       "name": "Theo Strand",
-      "shortBio": "Medic; too calm; counts vials when nervous.",
-      "voice": "Soft, clinical, slightly guilty",
+      "shortBio": "Station medic who has patched every hand aboard at least twice; moved the commander's body because leaving him in the cold felt like a second death; keeps a duty log that is neater than the truth.",
+      "cardTitle": "Station medic",
+      "cardBio": "Soft-spoken keeper of the crew's bodies and several of their secrets. Counts vials when he is nervous. His log is very tidy.",
+      "voice": "Soft, clinical, counts things when cornered",
       "portrait": "portraits/theo-strand.jpg",
       "defaultLocationId": "medbay",
       "defaultWillingness": "guarded",
+      "defaultStance": "careful_custodian",
+      "storyRole": "suspect",
       "knowledge": {
-        "public": "He treated stress cases. He did not go to the airlock. Sedative log is real — Quinn refused the dose after he drew it.",
+        "public": "He treated stress cases all rotation — a station under decommission review does not sleep well. He and Sato moved the commander to medbay; he will not apologize for that. The duty log is accurate: he drew a sedative for Quinn's anxiety at 01:50 and she refused the dose after. People refuse doses. It happens.",
         "private": [
           {
-            "id": "strand-saw-blood",
-            "content": "He cleaned a cut on Quinn's hand at 02:40 and was told it was a 'panel edge.' He did not report it.",
+            "id": "strand-cut",
+            "content": "At about 02:50 that night he cleaned and sealed a split across Quinn's palm — pressure-tool depth, clean edges. She said 'panel edge' and he wrote nothing down, because engineers' hands are always torn and because the alternative had not occurred to him yet. It has now. He has been carrying it since you docked.",
             "requiresEvidenceIds": [
               "torque-key"
             ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "strand-sleepless",
+            "content": "The commander had not slept a full shift in two weeks. Kept saying the same four words when Strand pushed a dose at him: 'After the window. After.' Whatever was in that window, Voss was holding his breath for it.",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ],
+        "secrets": [
+          {
+            "id": "strand-vial",
+            "content": "The 01:50 entry is the lie he is worst at carrying. The dose was drawn for the commander — unlogged, like every dose he had slipped a sleepless CO for a month. He backfilled the ledger under 'Quinn — anxiety' because her file already carried an anxiety flag in his own handwriting, and the count had to square before a relief shuttle brought company eyes. Voss waved the vial off at his cabin door: uplink night. 'I put it on his shelf and told him to take it after. He never got an after.'",
+            "requiresEvidenceIds": [
+              "unopened-vial"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "strand-cert",
+            "content": "For two years he has rounded Mara Quinn's flight physicals up to passing — the tremor, the bone-density curve, the fatigue-table column she circles in pencil. 'You send a body home after fifteen years in the ring, you send it home with something to show for it. I kept her flying. I thought I was being kind.' He says it like a man reporting his own malpractice, which he is.",
+            "requiresEvidenceIds": [
+              "wrist-brace"
+            ],
+            "requiresTrust": 1,
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ]
+      },
+      "defenses": [
+        "Confidentiality as reflex; will absorb suspicion himself rather than open a patient file",
+        "The tidy-log story holds until the unopened vial is on the table — then he stops lying all at once, with relief",
+        "If accused, goes quiet and lets Sato defend him; the med records slam shut"
+      ]
+    },
+    {
+      "id": "pix-harlan",
+      "name": "Pix Harlan",
+      "shortBio": "Youngest aboard; wired half the station's unofficial comforts and knows which logs the company never reads; has been quietly terrified since the array died that something of theirs finally bit.",
+      "cardTitle": "Systems tech",
+      "cardBio": "Fast-talking, backdoor-fluent, scared. Knows every log on the station, including the ones that officially do not exist.",
+      "voice": "Fast, slangy, scared, technical when it feels safe",
+      "portrait": "portraits/pix-harlan.jpg",
+      "defaultLocationId": "ops",
+      "defaultWillingness": "open",
+      "defaultStance": "nervous_helpful",
+      "storyRole": "suspect",
+      "knowledge": {
+        "public": "The camera wipe took the engineering physical console or a command code — their own console was locked all night and the session record proves it. And the array kill was not software: the diagnostics died mid-handshake, like the line itself went away. They will explain token architecture at any length to anyone who will listen, because explaining is easier than thinking about it.",
+        "private": [
+          {
+            "id": "pix-token",
+            "content": "Quinn borrowed Pix's secondary token at about 01:50 — 'for the boom joint,' she said, which is a real job on a real maintenance list. It was back on the rack by morning, after the commander was found. Pix has been telling themselves there is an innocent order of events and has not managed to build one.",
+            "requiresWillingnessIn": [
+              "open"
+            ]
+          },
+          {
+            "id": "pix-fear",
+            "content": "'When the array went dark my first thought wasn't the commander. It was — it's mine. Something I spliced finally bit.' They have been running that fear on a loop for eighteen hours, which anyone who looks at them can see, and which reads — they know exactly how it reads.",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ],
+        "secrets": [
+          {
+            "id": "pix-splitter",
+            "content": "There is an unlicensed splitter on the array maintenance channel, behind the low panel in the hub ring — movies, letters home, a little gray bandwidth. Everything that crossed the array crossed the splice, and the splice keeps a shadow buffer. 'Including the cameras, okay? Including the window everybody says is wiped. I didn't look. I was too scared to look. It's in the crawlspace — go before somebody smarter than me thinks of it.'",
+            "requiresEvidenceIds": [
+              "airlock-cycles"
+            ],
+            "requiresWillingnessIn": [
+              "open"
+            ]
+          }
+        ]
+      },
+      "defenses": [
+        "Overshares everything except the splice",
+        "Pressure works, but panic wipes things — accuse them and the buffer dies before the apology",
+        "Will not name Quinn first; she signs their evaluations and holds the master overrides"
+      ]
+    },
+    {
+      "id": "dana-reyes",
+      "name": "Dana Reyes",
+      "shortBio": "Relief shuttle pilot, eight years of search-and-rescue EVA before the company run; reads a suit's telemetry the way a coroner reads a body, and her undock clock is not negotiable for anyone.",
+      "cardTitle": "Relief pilot, EVA veteran",
+      "cardBio": "Flew rescue before she flew freight. Counts everything in delta-v and says only what the instruments will co-sign.",
+      "voice": "Unhurried, exact, done with drama",
+      "portrait": "portraits/dana-reyes.jpg",
+      "defaultLocationId": "docking-bay",
+      "defaultWillingness": "open",
+      "defaultStance": "flight_deck_calm",
+      "storyRole": "support",
+      "knowledge": {
+        "public": "Undock geometry closes six hours after dock — after that, Jupiter runs the schedule for nine days and she does not argue with Jupiter. On procedure she is a stone: nobody EVAs alone at night, nobody EVAs cold, and pre-breathe alone is forty minutes before the hatch so much as thinks about cycling.",
+        "private": [
+          {
+            "id": "reyes-suit-read",
+            "content": "Walked through the suit telemetry, she reads it like a register: cartridge at factory weight, loop dry, cold start, no pre-breathe, no thermal bloom on the shell. 'Suits keep minutes like a church keeps registers, Auditor. This one says its man never breathed in it. I pulled nine bodies off hulls in eight years and I never once saw a dry loop on a real walk.'",
+            "requiresEvidenceIds": [
+              "suit-forensics"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "reyes-handshake",
+            "content": "Her approach log kept listening the whole way in. 'Station carrier dropped at 02:14:07. One frame it's there, next frame it's not. Lines fray — you see the noise floor come up for hours first. Breakers throw. This threw.' She will sign her name to that and nothing an inch past it.",
             "requiresWillingnessIn": [
               "open",
               "guarded"
@@ -452,151 +1076,336 @@
         "secrets": []
       },
       "defenses": [
-        "Medical confidentiality habit",
-        "Fear of corporate blame"
-      ],
-      "storyRole": "suspect"
-    },
-    {
-      "id": "pix-harlan",
-      "name": "Pix Harlan",
-      "shortBio": "Systems tech; young; knows every backdoor and denies using them.",
-      "voice": "Fast, slangy, scared",
-      "portrait": "portraits/pix-harlan.jpg",
-      "defaultLocationId": "lab",
-      "defaultWillingness": "open",
-      "knowledge": {
-        "public": "Camera wipe needed engineering token or physical access. Pix can prove their console was locked — unless Quinn used the master.",
-        "private": [
-          {
-            "id": "pix-token",
-            "content": "Quinn borrowed Pix's secondary token 'for the boom joint' at 01:55 and never returned it until after the body was found.",
-            "requiresWillingnessIn": [
-              "open"
-            ]
-          }
-        ],
-        "secrets": []
-      },
-      "defenses": [
-        "Overshares tech details",
-        "Easy to pressure"
-      ],
-      "storyRole": "suspect"
+        "Will not speculate past telemetry; her testimony stops where her instruments stop",
+        "Her clock outranks everyone's feelings, including hers"
+      ]
     }
   ],
   "evidence": [
     {
-      "id": "torque-imprint",
-      "name": "Torque key imprint",
-      "description": "Weapon signature on Voss's skull matches engineering torque key.",
+      "id": "handshake-log",
+      "name": "Shuttle handshake log",
+      "description": "Relief-shuttle approach telemetry: the station's carrier vanished at 02:14:07 — one frame to the next, no rising noise floor, no degradation. A clean stop.",
       "discoverableAt": {
-        "locationId": "ops",
-        "inspectableId": "voss-body"
+        "locationId": "docking-bay",
+        "inspectableId": "shuttle-console"
       },
-      "canPresentTo": [
-        "mara-quinn",
-        "theo-strand",
-        "pix-harlan",
-        "ren-sato"
-      ]
+      "canPresentTo": "*"
     },
     {
-      "id": "collar-marks",
-      "name": "Suit collar asphyxia marks",
-      "description": "Staged vacuum death after blunt force.",
+      "id": "quinn-suit-abrasion",
+      "name": "EVA suit abrasions",
+      "description": "Fresh microabrasion across both gauntlets and a thermal bloom on the chest plate of the lead engineer's suit — the finish a shell takes from real cold, recently. Sato's suit wears a week of dust; the commander's suit is on the commander.",
       "discoverableAt": {
-        "locationId": "ops",
-        "inspectableId": "voss-body"
+        "locationId": "hub",
+        "inspectableId": "suit-locker"
       },
-      "canPresentTo": [
-        "theo-strand",
-        "ren-sato",
-        "mara-quinn"
-      ]
+      "canPresentTo": "*"
     },
     {
-      "id": "sample-theft-log",
-      "name": "JO-17 vault log",
-      "description": "Quinn biometrics + Voss code override around the murder window.",
+      "id": "buffer-scrap",
+      "name": "Shadow-buffer fragment",
+      "description": "Four seconds of ring camera, 02:26, preserved by an unlicensed splice the wipe never knew about: a suited figure dragging weight toward the boom antechamber. Engineering patch on the shoulder.",
+      "discoverableAt": {
+        "locationId": "hub",
+        "inspectableId": "maintenance-crawlspace"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "sato-uplink-queue",
+      "name": "Queued transmission",
+      "description": "Ops login open since 21:00. A transmission queued for 02:30 — the full JO-17 dataset, addressed off-company — and forty-one CARRIER LOST retries between 02:20 and 03:10.",
+      "discoverableAt": {
+        "locationId": "ops",
+        "inspectableId": "comms-console"
+      },
+      "canPresentTo": "*",
+      "redHerring": true
+    },
+    {
+      "id": "wound-notes",
+      "name": "Wound observations",
+      "description": "Occipital depression — round-edged, tool-width, clean split — above an intact, seated collar seal ring whose rubber lip dragged a scrape across the wound's edge going on. The scrape never bled.",
+      "discoverableAt": {
+        "locationId": "medbay",
+        "inspectableId": "voss-body"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "suit-forensics",
+      "name": "Rebreather readout",
+      "description": "The commander's suit diary: rebreather cartridge factory-sealed, helmet loop bone-dry, cold start with no pre-breathe cycle, boots clean, shell without thermal bloom. Suits keep minutes.",
+      "discoverableAt": {
+        "locationId": "medbay",
+        "inspectableId": "voss-suit"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "voss-badge",
+      "name": "Commander's badge",
+      "description": "Voss's door badge from the effects tray. Cabin-grade access, including his own quarters.",
+      "discoverableAt": {
+        "locationId": "medbay",
+        "inspectableId": "effects-tray"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "wristpad-alert",
+      "name": "Wristpad alert record",
+      "description": "The last notification on the commander's wristpad: COLD VAULT OVERRIDE ALERT, 02:07 — status READ. He was awake, and moving, seven minutes before the array died.",
+      "discoverableAt": {
+        "locationId": "medbay",
+        "inspectableId": "effects-tray"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "med-log",
+      "name": "Med duty log",
+      "description": "01:50 sedative draw logged 'Quinn — anxiety.' The locker count squares with the ledger to the vial — an unusually tidy book for a station this tired.",
+      "discoverableAt": {
+        "locationId": "medbay",
+        "inspectableId": "duty-log"
+      },
+      "canPresentTo": "*",
+      "redHerring": true
+    },
+    {
+      "id": "vault-log",
+      "name": "Cold-vault access log",
+      "description": "JO-17 missing from inventory. 02:05: engineering-chief biometrics, cryo-rotation clearance. 02:07: command-code override forcing the inner cage — the kind of override that alerts the commander's wristpad by design.",
       "discoverableAt": {
         "locationId": "lab",
         "inspectableId": "sample-vault"
       },
-      "canPresentTo": [
-        "mara-quinn",
-        "ren-sato",
-        "pix-harlan"
-      ]
+      "canPresentTo": "*"
     },
     {
-      "id": "airlock-log",
-      "name": "Airlock cycle log",
-      "description": "Quinn token cycled outer boom airlock at 02:11.",
+      "id": "airlock-cycles",
+      "name": "Boom airlock cycle log",
+      "description": "02:11 outbound and 02:23 inbound under the systems secondary token; 02:41, one cycle under the commander's badge. Walkline lights logged dark for all three.",
       "discoverableAt": {
         "locationId": "engineering",
         "inspectableId": "airlock-console"
       },
-      "canPresentTo": [
-        "mara-quinn",
-        "pix-harlan",
-        "ren-sato"
-      ]
+      "canPresentTo": "*"
     },
     {
       "id": "torque-key",
-      "name": "Bloody torque key",
-      "description": "Engineering key racked wrong; blood in the grip.",
+      "name": "Racked torque key",
+      "description": "A three-quarter key racked in the five-eighths slot, wiped clean — except for a dark crust dried deep in the knurling, where a fast rinse does not reach.",
       "discoverableAt": {
         "locationId": "engineering",
-        "inspectableId": "airlock-console"
+        "inspectableId": "torque-rack"
       },
-      "canPresentTo": [
-        "mara-quinn",
-        "theo-strand",
-        "pix-harlan"
-      ]
+      "canPresentTo": "*"
+    },
+    {
+      "id": "powered-shear",
+      "name": "Powered shear",
+      "description": "The engineering kit's powered shear, stowed as if never used — with fresh conductor filings bright in the blade guard, and no checkout in the kit log.",
+      "discoverableAt": {
+        "locationId": "engineering",
+        "inspectableId": "shear-kit"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "jo-17-canister",
+      "name": "JO-17 canister",
+      "description": "The missing cryo canister, lashed in an engineering coolant dead-leg with professional cable discipline — stowed by someone who meant to come back for it.",
+      "discoverableAt": {
+        "locationId": "engineering",
+        "inspectableId": "coolant-dead-leg"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "junction-cut-survey",
+      "name": "Junction survey image",
+      "description": "Scope capture of the array feed at the junction: the line ends square — one stroke, tool-width, no fray, no burn, no fatigue necking. Cuts and failures do not leave the same face.",
+      "discoverableAt": {
+        "locationId": "boom-antechamber",
+        "inspectableId": "boom-viewport"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "stowed-tether",
+      "name": "Commander's stowed tether",
+      "description": "Voss's EVA tether: racked, tagged, clip dust-set in its cradle. Eleven years of station EVA logs show a clip-out beside his name on every walk.",
+      "discoverableAt": {
+        "locationId": "boom-antechamber",
+        "inspectableId": "tether-rack"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "wrist-brace",
+      "name": "Wrist brace",
+      "description": "A medical wrist brace worn soft, tucked under the engineer's mattress edge with liniment and a crew fatigue table — one column circled in pencil, the one with her rotation count in it.",
+      "discoverableAt": {
+        "locationId": "crew-quarters",
+        "inspectableId": "quinn-bunk"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "sale-contract",
+      "name": "JO-17 sale terms",
+      "description": "Final terms with the confirmation window stamped 02:30 — and an addendum in the commander's hand, initialed by the buyer: crew discovery shares reinstated in full, funded from his own retention bonus. A note: TELL THEM AFTER.",
+      "discoverableAt": {
+        "locationId": "voss-quarters",
+        "inspectableId": "voss-desk"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "unopened-vial",
+      "name": "Unopened sedative vial",
+      "description": "A sedative vial station-stamped 01:50, seal intact, on the commander's berth shelf — drawn that night, delivered, and never taken.",
+      "discoverableAt": {
+        "locationId": "voss-quarters",
+        "inspectableId": "berth-shelf"
+      },
+      "canPresentTo": "*"
     }
   ],
   "beats": [
     {
       "id": "body_examined",
+      "title": "Tool-width",
       "once": true,
       "trigger": "on_discover",
       "when": {
         "type": "has_evidence",
-        "evidenceId": "torque-imprint"
+        "evidenceId": "wound-notes"
+      },
+      "effects": [
+        {
+          "type": "set_ambient",
+          "ambient": "colder"
+        }
+      ],
+      "narrationHints": "State the three observations — the round-edged depression, the intact collar ring seated beneath it, the scrape the ring's lip left across the wound that never bled — and let them sit. Do not say murder. Do not say staged. The room is colder; that is all."
+    },
+    {
+      "id": "reyes_walkline",
+      "title": "The walkline check",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "game_flag",
+            "id": "examined_body",
+            "equals": true
+          },
+          {
+            "type": "talked_to",
+            "characterId": "dana-reyes"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_exit_open",
+          "from": "engineering",
+          "to": "boom-antechamber",
+          "value": true
+        }
+      ],
+      "narrationHints": "Reyes offers what she offers no one lightly: a proper walkline check of the boom antechamber, by the book, her hand on the equalization valve. The pressure hatch in engineering releases with a sound like a held breath let go.",
+      "reactions": [
+        {
+          "characterId": "dana-reyes",
+          "lineHint": "If a man died out there, the antechamber kept minutes on it. Rooms are honest. Come on.",
+          "stance": "flight_deck_calm"
+        }
+      ]
+    },
+    {
+      "id": "not_an_accident",
+      "title": "The suit refuses the story",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "has_evidence",
+            "evidenceId": "suit-forensics"
+          },
+          {
+            "type": "game_flag",
+            "id": "examined_body",
+            "equals": true
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_phase",
+          "phaseId": "deepening"
+        },
+        {
+          "type": "set_game_flag",
+          "id": "staged_eva_broken",
+          "value": true
+        },
+        {
+          "type": "set_ambient",
+          "ambient": "taut"
+        }
+      ],
+      "narrationHints": "The pieces are all on the table now: a dry loop, a cold start, a wound under an intact collar. Let the player assemble the sentence themselves; if they say it aloud — he was dead before the suit went on — the station seems to lean in and agree. The accident story does not survive this beat, and everyone aboard will feel the temperature change."
+    },
+    {
+      "id": "sato_opens_lab",
+      "title": "Sato unseals the lab",
+      "once": true,
+      "trigger": "on_talk",
+      "when": {
+        "type": "talked_to",
+        "characterId": "ren-sato"
+      },
+      "effects": [
+        {
+          "type": "set_location_accessible",
+          "locationId": "lab",
+          "value": true
+        }
+      ],
+      "narrationHints": "Sato thumbs the lab hatch for the auditor without being asked twice. 'Everything in there is exactly as I sealed it at four in the morning. Count it. Please — count all of it.' The pride in the lock is real; so is something underneath the pride."
+    },
+    {
+      "id": "theft_motive",
+      "title": "The vault is short",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "vault-log"
       },
       "effects": [
         {
           "type": "set_game_flag",
-          "id": "examined_body",
+          "id": "found_sample_theft",
           "value": true
         },
         {
-          "type": "set_phase",
-          "phaseId": "deepening"
-        }
-      ],
-      "narrationHints": "Not the void. A hand with a tool."
-    },
-    {
-      "id": "theft_motive",
-      "once": true,
-      "trigger": "on_discover",
-      "when": {
-        "type": "has_evidence",
-        "evidenceId": "sample-theft-log"
-      },
-      "effects": [
-        {
           "type": "reveal_relationship",
-          "relationshipId": "quinn_ip"
+          "relationshipId": "quinn_voss_shares"
         },
         {
           "type": "add_pressure",
           "characterId": "mara-quinn",
-          "by": 2
+          "by": 1
         },
         {
           "type": "set_stance",
@@ -604,32 +1413,246 @@
           "value": "brittle_engineer"
         }
       ],
-      "narrationHints": "Intellectual property weighs more than air up here."
+      "narrationHints": "JO-17 is not in its vault, and the log keeps two entries a hundred and twenty seconds apart. Intellectual property weighs more than air up here — and somewhere in the ring, an engineer's answers get one notch shorter."
     },
     {
-      "id": "airlock_closes",
+      "id": "quinn_deflects",
+      "title": "Quinn aims the auditor",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "game_flag",
+        "id": "found_sample_theft",
+        "equals": true
+      },
+      "effects": [
+        {
+          "type": "add_pressure",
+          "characterId": "mara-quinn",
+          "by": 1
+        }
+      ],
+      "narrationHints": "Quinn finds a reason to cross the player's path and spend exactly one sentence on it. This is the villain moving: a true fact, aimed. Play it dry and let it work.",
+      "reactions": [
+        {
+          "characterId": "mara-quinn",
+          "lineHint": "Cryo rotation opens that vault every ten days, Auditor. If you want irregular, pull the ops console log — one login's been open since twenty-one hundred.",
+          "stance": "procedural_mask"
+        }
+      ]
+    },
+    {
+      "id": "window_named",
+      "title": "The protected window",
       "once": true,
       "trigger": "on_discover",
       "when": {
         "type": "has_evidence",
-        "evidenceId": "airlock-log"
+        "evidenceId": "sale-contract"
       },
       "effects": [
         {
           "type": "set_game_flag",
-          "id": "found_airlock_log",
+          "id": "uplink_window_known",
+          "value": true
+        }
+      ],
+      "narrationHints": "The sale terms, the 02:30 confirmation window, and an addendum nobody aboard has read: shares reinstated, funded from his own bonus. TELL THEM AFTER. Read the sticky note last and do not comment on it. The room does the commenting."
+    },
+    {
+      "id": "dead_air_scheduled",
+      "title": "The silence was scheduled",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "game_flag",
+            "id": "uplink_window_known",
+            "equals": true
+          },
+          {
+            "type": "or",
+            "of": [
+              {
+                "type": "has_evidence",
+                "evidenceId": "junction-cut-survey"
+              },
+              {
+                "type": "has_evidence",
+                "evidenceId": "handshake-log"
+              }
+            ]
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "silence_was_the_point",
           "value": true
         },
         {
           "type": "add_pressure",
           "characterId": "mara-quinn",
-          "by": 2
+          "by": 1
         }
       ],
-      "narrationHints": "Tokens do not lie as easily as people."
+      "narrationHints": "Hold the two timestamps up side by side and let them reorient the whole case: the array died at 02:14; the commander's window opened at 02:30. The question has been wrong all day. Not 'why did the killer silence the station to hide a murder' — the silence came first in the plan. The dead air was not the cover. It was the point."
+    },
+    {
+      "id": "cert_surfaces",
+      "title": "What the brace is for",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "or",
+        "of": [
+          {
+            "type": "presented",
+            "evidenceId": "wrist-brace",
+            "toCharacterId": "theo-strand"
+          },
+          {
+            "type": "presented",
+            "evidenceId": "med-log",
+            "toCharacterId": "theo-strand"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "reveal_knowledge",
+          "characterId": "theo-strand",
+          "knowledgeId": "strand-cert"
+        },
+        {
+          "type": "set_game_flag",
+          "id": "cert_known",
+          "value": true
+        },
+        {
+          "type": "add_trust",
+          "characterId": "theo-strand",
+          "by": 1
+        }
+      ],
+      "narrationHints": "Strand looks at what the auditor has brought him and stops protecting the wrong secret. The cert fraud comes out like a confession at last rites — and with it, the case's quiet center: what fifteen years of ring time cost Mara Quinn, and what the discovery share was going to buy her back."
+    },
+    {
+      "id": "splitter_surfaces",
+      "title": "Everything crossed the splice",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "presented",
+        "evidenceId": "airlock-cycles",
+        "toCharacterId": "pix-harlan"
+      },
+      "effects": [
+        {
+          "type": "reveal_knowledge",
+          "characterId": "pix-harlan",
+          "knowledgeId": "pix-splitter"
+        },
+        {
+          "type": "set_game_flag",
+          "id": "splitter_known",
+          "value": true
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "pix-harlan",
+          "by": 1
+        }
+      ],
+      "narrationHints": "Their own token, out and back while they slept. Pix does the arithmetic aloud, gets to the only place it goes, and trades their worst secret for their own alibi: the splice, the shadow buffer, the crawlspace. Urgency is real from this moment — say so in the room's body language, not in numbers.",
+      "reactions": [
+        {
+          "characterId": "pix-harlan",
+          "lineHint": "Low panel, hub ring, behind the conduit run. Go now, okay? Before shift-check. She walks the ring every shift-check.",
+          "stance": "nervous_helpful"
+        }
+      ]
+    },
+    {
+      "id": "scrap_burns",
+      "title": "The splice is found stripped",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "game_flag",
+            "id": "splitter_known",
+            "equals": true
+          },
+          {
+            "type": "not",
+            "of": {
+              "type": "has_evidence",
+              "evidenceId": "buffer-scrap"
+            }
+          },
+          {
+            "type": "time_at_least",
+            "slotId": "boom_shadow"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "scrap_gone",
+          "value": true
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "pix-harlan",
+          "by": 1
+        }
+      ],
+      "narrationHints": "Shift-check has come and gone, and someone walked the ring on schedule. The low panel hangs open; the splitter is stripped to bare conduit, buffer and all. Nobody saw anything, which on this station is a kind of signature. The tape is gone — the case must now be made another way."
+    },
+    {
+      "id": "file_complete",
+      "title": "The file is heavy enough",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "has_evidence",
+            "evidenceId": "vault-log"
+          },
+          {
+            "type": "has_evidence",
+            "evidenceId": "airlock-cycles"
+          },
+          {
+            "type": "has_evidence",
+            "evidenceId": "torque-key"
+          },
+          {
+            "type": "has_evidence",
+            "evidenceId": "suit-forensics"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_phase",
+          "phaseId": "confrontation"
+        }
+      ],
+      "narrationHints": "The auditor's file has stopped being a collection and become an argument: the vault, the cycles, the iron, the suit that never breathed. Let the narration weigh it once — a file heavy enough to land — and leave the landing to the player."
     },
     {
       "id": "quinn_cornered",
+      "title": "The checklist voice cracks",
       "once": true,
       "trigger": "on_present",
       "when": {
@@ -637,16 +1660,34 @@
         "of": [
           {
             "type": "presented",
-            "evidenceId": "sample-theft-log",
+            "evidenceId": "vault-log",
             "toCharacterId": "mara-quinn"
           },
           {
             "type": "has_evidence",
-            "evidenceId": "torque-key"
+            "evidenceId": "airlock-cycles"
+          },
+          {
+            "type": "or",
+            "of": [
+              {
+                "type": "has_evidence",
+                "evidenceId": "torque-key"
+              },
+              {
+                "type": "has_evidence",
+                "evidenceId": "buffer-scrap"
+              }
+            ]
           }
         ]
       },
       "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "quinn_cornered",
+          "value": true
+        },
         {
           "type": "set_willingness",
           "characterId": "mara-quinn",
@@ -662,15 +1703,85 @@
           "phaseId": "crisis"
         },
         {
-          "type": "reveal_knowledge",
+          "type": "move_character",
           "characterId": "mara-quinn",
-          "knowledgeId": "quinn-admits-vault"
+          "toLocationId": "engineering"
+        },
+        {
+          "type": "start_clock",
+          "clockId": "quinn_lockout",
+          "turns": 8
+        },
+        {
+          "type": "set_player_threat",
+          "threat": "watched"
         }
       ],
-      "narrationHints": "Quinn's checklist voice cracks. The station seems smaller."
+      "narrationHints": "The fatigue tables run out. Quinn's checklist voice cracks on one syllable, and then she is moving — back to her ring, where the master overrides live. Engineering's hatch seals from the inside with a sound the whole station hears. She is not fleeing; there is nowhere to flee. She is deciding how the ride home goes, and the auditor has a narrow window to decide it first. Make the accusation land before she finishes making the choice."
+    },
+    {
+      "id": "quinn_flees",
+      "title": "Engineering holds",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "clock_expired",
+        "clockId": "quinn_lockout"
+      },
+      "effects": [
+        {
+          "type": "end_case",
+          "outcome": "failure",
+          "endingId": "failure_escaped"
+        }
+      ],
+      "narrationHints": "The lockout holds until it does not matter anymore. By the time engineering opens, undock is a fact, the logs are tidier than they were, and the woman inside is a specialist with a maintenance answer for everything. The case dissolves toward arbitration."
+    },
+    {
+      "id": "undock_warning",
+      "title": "Geometry closes in one hour",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "time_at_least",
+        "slotId": "undock_soon"
+      },
+      "effects": [
+        {
+          "type": "set_ambient",
+          "ambient": "urgent"
+        }
+      ],
+      "narrationHints": "Reyes's voice on the ring channel, unhurried and absolute: geometry closes in one hour. Every conversation on the station gets shorter.",
+      "reactions": [
+        {
+          "characterId": "dana-reyes",
+          "lineHint": "One hour, Auditor. Bring me a name or bring me passengers. Either way we fly.",
+          "stance": "flight_deck_calm"
+        }
+      ]
+    },
+    {
+      "id": "undock_geometry",
+      "title": "Jupiter decides",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "time_at_least",
+        "slotId": "undock_geometry"
+      },
+      "effects": [
+        {
+          "type": "end_case",
+          "outcome": "failure",
+          "endingId": "failure_time"
+        }
+      ],
+      "narrationHints": "Geometry does not negotiate. The window closes with everyone aboard the shuttle who is coming, and no name in the file."
     },
     {
       "id": "wrong_sato",
+      "title": "Blame the one who said murder",
       "once": true,
       "trigger": "on_turn",
       "when": {
@@ -690,64 +1801,69 @@
           "value": "hostile"
         }
       ],
-      "narrationHints": "Blame the survivor and cooperation freezes like a bad seal."
+      "narrationHints": "Accuse the one voice that called it murder from the first hour, and the station's cooperation freezes like a bad seal. Sato stops talking entirely; Strand plants himself between the auditor and his friend and stays there."
     },
     {
-      "id": "wrap_success",
+      "id": "wrong_strand",
+      "title": "The medic closes",
       "once": true,
       "trigger": "on_turn",
       "when": {
-        "type": "and",
-        "of": [
-          {
-            "type": "in_denouement"
-          },
-          {
-            "type": "or",
-            "of": [
-              {
-                "type": "resolution_outcome",
-                "is": "success"
-              },
-              {
-                "type": "resolution_outcome",
-                "is": "partial"
-              }
-            ]
-          }
-        ]
+        "type": "game_flag",
+        "id": "falsely_accused_theo-strand",
+        "equals": true
       },
       "effects": [
         {
-          "type": "move_character",
-          "characterId": "mara-quinn",
-          "toLocationId": "hub"
-        },
-        {
-          "type": "set_stance",
-          "characterId": "mara-quinn",
-          "value": "broken"
+          "type": "set_willingness",
+          "characterId": "theo-strand",
+          "value": "silent"
         },
         {
           "type": "set_willingness",
-          "characterId": "mara-quinn",
-          "value": "open"
+          "characterId": "ren-sato",
+          "value": "hostile"
         }
       ],
-      "narrationHints": "Jupiter turns. The dead air on the board is only metal now."
+      "narrationHints": "Strand does not argue. He simply stops — mid-count, mid-sentence — and the med records close with him. Sato arrives with eighteen hours of grief converted into one cold sentence at a time, all aimed at the auditor."
+    },
+    {
+      "id": "wrong_pix",
+      "title": "Panic wipes things",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "game_flag",
+        "id": "falsely_accused_pix-harlan",
+        "equals": true
+      },
+      "effects": [
+        {
+          "type": "set_willingness",
+          "characterId": "pix-harlan",
+          "value": "silent"
+        },
+        {
+          "type": "set_game_flag",
+          "id": "scrap_gone",
+          "value": true
+        }
+      ],
+      "narrationHints": "Accused, Pix does exactly what fear has been begging them to do for eighteen hours: they wipe everything of theirs that ever touched the array — splice, buffer, letters home, all of it — and then they stop talking. Whatever the shadow buffer held, it held."
     }
   ],
   "solution": {
-    "summary": "Mara Quinn killed Commander Ilya Voss during a confrontation over sample JO-17. She struck him with a torque key near the boom airlock, staged suit-collar asphyxia, wiped cameras with engineering access, and tried to pin systems noise on others. Motive: stop Voss from selling exclusive sample rights and keep the IP (and her cut) off corporate books.",
+    "summary": "Mara Quinn killed Commander Ilya Voss in the boom antechamber at about 02:10, then manufactured the station's silence and dressed the death as a failed night EVA. She had planned only a theft: with her flight certification quietly failing and Voss's sale about to convert her JO-17 discovery share — fifteen years of ring time, her one way home with something to show — into a flat fee, she moved to steal the sample before the 02:30 confirmation window. The inner-cage override pinged Voss's wristpad; he met her in the antechamber, turned his back to badge the console and call it in, and she struck once with a torque key. Then the checklist: out the boom airlock on Pix's borrowed token, one stroke of a powered shear through the array feed at 02:14 — killing the confirmation window along with the station's voice — back inside, the body suited with the collar forced over the wound, his badge cycled once at 02:41 to write his walk into the log, cameras wiped from the engineering physical console, the key rinsed and racked on the wrong peg, the canister lashed in a coolant dead-leg. The staging held for eighteen hours because it was built from other people's silences: Sato's locked lab and secret archive queue, Strand's falsified duty log, Pix's terror of their own bootleg splice. Voss died not knowing she had never read the final terms — the addendum on his desk reinstates the crew's discovery shares, funded from his own bonus. She killed the man who had already given back what she was stealing.",
     "guiltyPartyIds": [
       "mara-quinn"
     ],
-    "method": "Blunt force with torque key; staged vacuum/collar death; camera wipe",
-    "motive": "Sample IP theft / stop Voss selling JO-17 out from under the crew",
+    "method": "A single torque-key blow to the back of the skull in the boom antechamber; the body suited post-mortem and staged as a failed night EVA; the array feed sheared from outside to schedule the silence; cameras wiped from the engineering console",
+    "motive": "The JO-17 sale was about to zero her discovery share — fifteen years of ring time, a failing body, and her one paid way home; she cut the array to kill the 02:30 confirmation window and stole the sample before it could be signed away",
     "criticalEvidenceIds": [
-      "sample-theft-log",
-      "torque-key",
-      "airlock-log"
+      "suit-forensics",
+      "vault-log",
+      "airlock-cycles",
+      "torque-key"
     ],
     "rubric": {
       "partialCredit": true,
@@ -765,31 +1881,62 @@
           ]
         },
         {
-          "id": "method-torque",
+          "id": "method-staged-eva",
           "role": "method",
-          "description": "Torque key / blow / airlock / staged vacuum",
+          "description": "Torque-key blow; body suited post-mortem and staged as a failed night EVA",
           "matchHints": [
             "torque",
             "key",
             "blow",
+            "struck",
+            "blunt",
+            "staged",
+            "suit",
+            "suited",
+            "eva",
             "airlock",
             "collar",
-            "vacuum",
-            "tool"
+            "antechamber",
+            "dressed"
           ]
         },
         {
-          "id": "motive-sample",
+          "id": "motive-share",
           "role": "motive",
-          "description": "Sample / IP / JO-17 / sell",
+          "description": "JO-17 — the sale that zeroed her discovery share",
           "matchHints": [
-            "sample",
             "jo-17",
-            "ip",
-            "patent",
+            "sample",
+            "share",
+            "shares",
+            "sale",
             "sell",
+            "sold",
+            "buyout",
+            "patent",
+            "rights",
+            "ip",
             "vault",
-            "rights"
+            "retirement"
+          ]
+        },
+        {
+          "id": "supporting-silence",
+          "role": "supporting",
+          "description": "The silence was scheduled: she cut the array to kill the 02:30 confirmation window",
+          "matchHints": [
+            "cut the array",
+            "junction",
+            "shear",
+            "sheared",
+            "02:30",
+            "window",
+            "uplink",
+            "dead air",
+            "silence",
+            "wiped",
+            "cameras",
+            "carrier"
           ]
         }
       ]
@@ -798,30 +1945,138 @@
   "canon": {
     "timeline": [
       {
-        "at": "01:55",
-        "event": "Quinn borrows Pix token; plans vault move.",
+        "id": "the-review",
+        "at": "Two years ago",
+        "event": "The company opens decommission review on Callisto-9. Voss lobbies the line item back to life twice; the crew starts a countdown tally on the galley board without being asked.",
+        "actorIds": [
+          "ilya-voss"
+        ]
+      },
+      {
+        "id": "the-sale",
+        "at": "Three months ago",
+        "event": "Voss opens negotiations to sell exclusive rights to JO-17 — the buyout that keeps the station manned and crewed. The draft terms convert crew discovery shares to a flat service fee.",
+        "actorIds": [
+          "ilya-voss"
+        ]
+      },
+      {
+        "id": "the-argument",
+        "at": "Six weeks ago",
+        "event": "The draft terms leak. Quinn and Voss argue over an intercom channel accidentally left open during a stores check; half the ring hears it. Quinn, flat as a checklist: 'You'll bury the patent with you.'",
+        "locationId": "engineering",
+        "actorIds": [
+          "mara-quinn",
+          "ilya-voss"
+        ]
+      },
+      {
+        "id": "the-kindness",
+        "at": "Nine days ago",
+        "event": "Strand rounds Quinn's flight physical up to passing again — tremor, bone-density curve — as he has for two years. Entry: fit for rotation. He believes this is kindness.",
+        "locationId": "medbay",
+        "actorIds": [
+          "theo-strand",
+          "mara-quinn"
+        ]
+      },
+      {
+        "id": "the-clause",
+        "at": "Two days ago",
+        "event": "Final terms arrive: Voss has traded his own retention bonus to reinstate the crew's discovery shares in full. He clips the addendum to the contract, writes TELL THEM AFTER, and schedules the confirmation uplink for the 02:30 relay window. He tells no one. On his berth shelf, a letter to his daughter Amara lies begun three times, each draft stopped at the same sentence about good news.",
+        "locationId": "voss-quarters",
+        "actorIds": [
+          "ilya-voss"
+        ]
+      },
+      {
+        "id": "the-borrow",
+        "at": "01:50",
+        "event": "Quinn borrows Pix's secondary token 'for the boom joint' — a real job on a real list. The theft is planned for tonight because the window is: after 02:30 the sale is signed and the sample is corporate property with corporate escorts.",
+        "locationId": "engineering",
+        "actorIds": [
+          "mara-quinn",
+          "pix-harlan"
+        ]
+      },
+      {
+        "id": "the-vial",
+        "at": "01:50",
+        "event": "Strand draws a sedative for the sleepless commander and backfills the ledger as 'Quinn — anxiety' to square his count before company eyes arrive with any relief. Voss waves the vial off at his cabin door: uplink night. It sits unopened on his shelf.",
+        "locationId": "voss-quarters",
+        "actorIds": [
+          "theo-strand",
+          "ilya-voss"
+        ]
+      },
+      {
+        "id": "the-vault",
+        "at": "02:05–02:07",
+        "event": "Quinn opens the cold vault under her own biometrics — cryo-rotation clearance, defensible — then forces the inner cage with a command override. The override alerts Voss's wristpad by design. READ, 02:07. He pulls on boots, not a suit.",
+        "locationId": "lab",
+        "actorIds": [
+          "mara-quinn"
+        ]
+      },
+      {
+        "id": "the-killing",
+        "at": "02:09–02:10",
+        "event": "Voss meets her in the boom antechamber, the canister between them. He says she is done, that she goes down on the relief shuttle. He turns his back to badge the intercom panel by the pressure hatch and call it in. One blow, torque key, occiput. He falls by the panel; she later drags him across to the suit clamp bay. Improvised — the theft was planned; this was not.",
+        "locationId": "boom-antechamber",
+        "actorIds": [
+          "mara-quinn",
+          "ilya-voss"
+        ]
+      },
+      {
+        "id": "the-silencing",
+        "at": "02:11–02:23",
+        "event": "On Pix's token she cycles the boom airlock, walks the boom in her own suit — no walkline lights, no tether discipline, no pre-breathe — and shears the array feed square at the junction. The carrier dies at 02:14:07. The 02:30 confirmation window dies with it: even caught, she reasons, the sale cannot close into dead air, and an accident investigation buys weeks.",
+        "locationId": "boom-antechamber",
+        "actorIds": [
+          "mara-quinn"
+        ]
+      },
+      {
+        "id": "the-staging",
+        "at": "02:25–02:45",
+        "event": "The checklist. The commander's suit forced over the wound, collar seated; his badge cycled once at 02:41 to write his walk into the log; the camera window wiped from the engineering physical console; the shear rinsed and stowed; the torque key rinsed and racked — wrong peg, in the dark; the canister lashed in a coolant dead-leg; a palm split on the cage worked bare-handed through the glovebox. Every item on the list leaves the trace the list was meant to erase.",
         "locationId": "engineering",
         "actorIds": [
           "mara-quinn"
         ]
       },
       {
-        "at": "02:05–02:11",
-        "event": "Vault access; confrontation; murder at airlock; array kill.",
-        "locationId": "engineering",
+        "id": "the-cut-hand",
+        "at": "02:50",
+        "event": "Strand cleans and seals a split across Quinn's palm. 'Panel edge,' she says. He writes nothing down, because engineers' hands are always torn, and because the alternative has not occurred to him yet.",
+        "locationId": "medbay",
         "actorIds": [
+          "theo-strand",
           "mara-quinn"
         ]
       },
       {
-        "at": "After",
-        "event": "Sato finds body; locks labs; waits for relief.",
-        "locationId": "ops",
+        "id": "the-discovery",
+        "at": "03:30–04:10",
+        "event": "Sato, waiting on a window that never opens, finds the carrier dead, retries forty-one times, then goes looking. At 04:10 they find the commander suited in the antechamber. They wake the crew; with Strand they carry him to medbay; they lock the lab over JO-17 and their own queued archive, and start saying the word murder.",
+        "locationId": "boom-antechamber",
         "actorIds": [
-          "ren-sato"
+          "ren-sato",
+          "theo-strand"
+        ]
+      },
+      {
+        "id": "the-relief",
+        "at": "Eighteen hours later",
+        "event": "The relief shuttle docks on schedule with a security auditor added to the manifest. Undock geometry closes six hours after hard dock. The auditor boards a station where everyone's story is true except one.",
+        "locationId": "docking-bay",
+        "actorIds": [
+          "dana-reyes"
         ]
       }
-    ]
+    ],
+    "notes": "THE TRICK, in one line: the player arrives inside the staged story (a night EVA gone wrong) and must first break it (Act One: the suit never breathed), then discover the deeper design — the silence was not concealment after a murder, it was the murder's purpose: the array was cut to kill the 02:30 sale-confirmation window (Act Two reversal: 'we have been asking the wrong question'). THE FOUR WHYS. Why did Quinn do it: the sale converted her JO-17 discovery share — fifteen years of ring time, a failing body Strand has been rounding up to passing, her one paid way home — into a service fee; the theft was planned, the killing improvised when Voss turned his back to call it in. Why this way: every choice is an engineer's choice — her own biometrics where they were defensible (cryo rotation), a borrowed token where they were not, a physical shear outside because a software kill is attributable and reversible and she needed the silence to outlast the window, an EVA-accident staging because a dead array makes a commander in a suit self-explanatory. Why isn't it obvious: the staging is competent, and it is wrapped in three honest silences — Sato locked the lab and kept an exfiltration secret (their open login and queued 02:30 transmission read as guilt and are innocent), Strand's duty log carries one false entry protecting a dead man's insomnia and his own kindness fraud, Pix is terrified their bootleg splice caused the blackout. Only Quinn deceives about the night; everyone else is suspectable by honest routes. Why not caught already: eighteen hours, no comms, a crew of four exhausted specialists each guarding a private shame, and the one person shouting murder (Sato) is the person whose console killed nothing but whose login was open all night. FAIR-PLAY SEAMS, each a cost of the staging: the dry rebreather loop and cold-start suit log (dead men don't breathe); no pre-breathe, dark walkline, stowed tether (nobody EVAs like that, least of all Voss); the collar lip's scrape across the wound edge that never bled (the suit went on after the heart stopped); the wristpad override alert READ at 02:07 (awake and moving before the array died — kills 'woken by the fault'); the carrier's clean drop at 02:14:07 (breakers throw, lines fray); the square tool-faced junction cut and the shear's conductor filings with no kit checkout; three airlock cycles where the accident story needs one; the torque key racked on the wrong peg with crust in the knurling (an engineer's hands keeping habits in the dark); Quinn's suit carrying the microabrasion and thermal bloom the commander's suit lacks; the canister lashed with professional cable discipline; the glovebox blood-and-coolant smear matching the palm Strand sealed at 02:50. HONESTY LEDGER: Sato's certainty is honest grief plus real knowledge (Voss never missed a window); their concealment is the archive, not the night. Strand's one lie is the ledger entry; the unopened vial on the commander's shelf resolves it. Pix hides only the splice; their terror is real and self-directed. Reyes hides nothing and testifies only to instruments. Quinn's public statements are each technically true and aimed. PERFORMANCE GUARDRAILS: before staged_eva_broken, narrate geometry and timestamps, never verdicts — the performer states what a surface shows and stops; the words 'murder' and 'staged' belong to characters, not narration, until the player earns them. Never connect the 02:14/02:30 timestamps for the player; dead_air_scheduled fires only after they hold both ends. Quinn's confession keeps checklist cadence and is gated on being cornered; she never read the addendum, and nobody should tell her about it gently — if the player does, play the silence long. PROBABLE VS PROVEN: the cert fraud and the vial story are provable only by their keepers' admissions; the murder file is physical. The player who never opens Voss's cabin can still convict on the physical chain — the addendum is the case's heart, not its lock."
   },
   "endings": [
     {
@@ -829,35 +2084,54 @@
       "when": "success",
       "kind": "solved",
       "title": "Signal restored",
-      "templateNotes": "Quinn is restrained for undock. Logs and the key close the loop. RETURN TO NORMAL: engineering is no longer hers alone; the station can call company authority and prepare the ride home. Jupiter does not care — but the living can leave with a true report."
+      "templateNotes": "The file lands — vault, cycles, iron, and a suit that never breathed — and Quinn stops performing procedure. Confession short, checklist cadence, hands flat on the bench. RETURN TO NORMAL, diegetically: Reyes takes custody with dock restraints and her own signature on the log; Pix, shaking, patches the bootleg splice into the array stub so the station's first outgoing word in a day is a true report; Sato unlocks the lab for company inventory and sends the archive with the company watching, past caring; Strand rewrites two log entries in his own hand and signs both. Undock on geometry with everyone aboard. If the player shows Quinn the addendum, play the silence long — do not rescue anyone from it. Do not invent telemetry the player never found."
     },
     {
       "id": "success_lucky",
       "when": "success",
       "kind": "lucky_solve",
       "title": "Cold call",
-      "templateNotes": "You name Quinn early; systems still fit. RETURN TO NORMAL: she is brigged or held; command of the critical systems returns to the investigation. Do not invent telemetry unfound."
+      "templateNotes": "The auditor names her early and the name happens to be true. Quinn tests the thin file with maintenance answers — spoofed tokens, cryo rotation, junction fatigue — and concedes only what the player actually holds. The win is real but narrow: custody on the auditor's authority, arbitration certain, the company's lawyers already drafting. RETURN TO NORMAL scaled to what was proven: restraints and a ride down, the array still dead until Pix volunteers the splice unprompted. Do not invent evidence unfound; let the player feel the difference between being right and being ready."
     },
     {
       "id": "partial",
       "when": "partial",
       "kind": "partial",
       "title": "Hold for counsel",
-      "templateNotes": "Enough to brig her; lawyers will argue vacuum and code. Thin RETURN TO NORMAL: immediate threat is contained; undock and company review will finish what the night started."
+      "requiresFlags": {
+        "accused_mara-quinn": true
+      },
+      "templateNotes": "Enough to restrain her for the ride, not enough to close the story: identity without the design, or design without the proof. Lawyers will argue spoofed tokens and junction fatigue for a year. Thin RETURN TO NORMAL: the immediate threat is contained, undock runs on time with everyone aboard, and the company review will finish — slowly, on the ground — what the night started. The dead air stays unexplained in the file, which everyone aboard will privately consider the real verdict."
     },
     {
       "id": "failure_wrong_accusation",
       "when": "failure",
       "kind": "wrong_accusation",
       "title": "Wrong crew",
-      "templateNotes": "Wrong name. The real engineer keeps the sample and the story."
+      "templateNotes": "The wrong name rides down in restraints beside their own grief — and the engineer helps the auditor pack the file, professionally, thoroughly. The sample rides down too, in her kit or in her story. Whoever was accused, land on the specific cost: Sato blamed for the murder they alone called; Strand's mercy read as method; Pix's splice as sabotage. The lie holds because the auditor signed it."
     },
     {
       "id": "failure_escaped",
       "when": "failure",
       "kind": "escaped",
-      "title": "Undock alone",
-      "templateNotes": "Quinn controls engineering long enough to muddy the ride home."
+      "title": "Engineering holds",
+      "templateNotes": "The lockout outlasts the window. When engineering opens, the logs are tidier than they were, the canister is wherever an engineer with a ring's worth of dead-legs wants it, and Mara Quinn is a specialist with a maintenance answer for everything, riding home to arbitration the company quietly expects to lose. The station keeps its dead air. Reyes flies; she always said she would."
+    },
+    {
+      "id": "failure_time",
+      "when": "failure",
+      "kind": "time_expired",
+      "title": "Geometry closes",
+      "templateNotes": "No name by undock. Jupiter runs the schedule; everyone who is leaving leaves together, suspects and auditor in the same cabin, the same recycled air. Callisto-9 keeps its silence nine more days, and the company keeps its doubts forever. Somewhere below, a review board will read a report with no last page. The killer's staging did not need to win — it only needed the clock, and it had the clock all along."
+    }
+  ],
+  "revelation": "Fifteen years of ring time is not a career, it is a mortgage the body pays. Mara Quinn's right hand had begun to argue back — a tremor Theo Strand had been rounding out of her flight physicals for two years, out of kindness, one signature at a time — and against that slow arithmetic stood a single asset: a discovery share in JO-17, the sample she had cut and frozen with her own failing hands. Then the sale. The commander who had twice saved the station from decommission would save it a third time by selling its one treasure, and the draft terms paid the crew's shares out as a service fee. A signing bonus is a number; a share is a life. She told him so once, over an open intercom, in the flattest voice the ring ever heard: you'll bury the patent with you.\n\nShe planned a theft, not a killing. The confirmation window was 02:30; after that the sample would be corporate property with corporate escorts. So: Pix's secondary token borrowed at 01:50 for a real job on a real list, the cold vault at 02:05 under her own defensible biometrics, the inner cage forced with a command override at 02:07. That override was the plan's one unclosable seam — it pinged the commander's wristpad by design, and Ilya Voss, guarding his window with coffee instead of the sedative sitting sealed on his shelf, read it and pulled on boots. He met her in the boom antechamber with the canister between them, told her she was done, and turned his back to badge the console and call it in. One blow, torque key, occiput. She has said she does not know what she would have done if he had kept his eyes on her. There is no checklist for that; for everything after, there was.\n\nOut the boom airlock on the borrowed token — no walkline, no pre-breathe, none of the discipline she preached — one stroke of a powered shear through the array feed at 02:14:07, and Callisto-9 went silent mid-frame. The silence was never the cover for the crime; it was the crime's second half. A dead array meant the 02:30 window died unsigned, and a commander found suited beside a broken antenna needs no murderer at all. Back inside: the suit forced over the wound, the collar seated, his badge cycled once at 02:41 to write his walk into the log, the camera window wiped from the physical console, the key rinsed and racked — wrong peg, in the dark, fifteen years of habit misfiring by five-eighths of an inch. The staging held for eighteen hours because it was built from other people's silences: Sato's locked lab and secret archive queue reading as guilt, Strand's one false ledger line protecting a dead man's insomnia and his own long kindness, Pix too frightened of their bootleg splice to look at what its shadow buffer had caught. Only one person aboard lied about the night, and she mostly told the truth: token logs can be spoofed, cryo rotation does open the vault, junctions do fatigue. Each fact true. Each fact aimed.\n\nWhat she never read was the addendum. Two days before he died, Ilya Voss traded his own retention bonus to reinstate the crew's discovery shares in full, clipped the page to the contract, and wrote TELL THEM AFTER — after the window, after the signature, when it could not be bargained away again. He was eleven minutes from sending the only version of the future in which everyone aboard got home whole, and the dead air she scheduled to stop him from selling her life is the thing that kept him from giving it back. What remains is what truth leaves behind: a letter to a daughter named Amara, begun three times and stopped at the same sentence; a crew flying home with an arrest report where their good news should have been; and a station whose first voice out of the silence was a bootleg splice a scared kid once hid in a crawlspace — letters home, movies, and at last, the truth, carried on the only honest channel Callisto-9 had left.",
+  "figures": [
+    {
+      "id": "amara-voss",
+      "name": "Amara Voss",
+      "relation": "the commander's daughter, groundside",
+      "description": "Nineteen, first year at a polytechnic her father's contract pays for — the photo by his desk lamp, the reason his retention bonus existed and the measure of what it meant when he signed it away. Every rotation he began letters to her he did not finish; three drafts sit on his berth shelf, each stopped at the same sentence about good news. The crew knows her as the face he angled toward the door, so she would be the first thing he saw coming in and the last thing going out."
     }
   ]
 }

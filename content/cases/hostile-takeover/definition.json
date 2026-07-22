@@ -2,12 +2,12 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "hostile-takeover",
-  "contentVersion": "0.1.3",
+  "contentVersion": "0.2.5",
   "meta": {
     "title": "Hostile Takeover",
-    "premise": "A tech CEO falls from a penthouse boardroom the night before a billion-dollar merger. Everyone inside had a reason to push.",
+    "premise": "A tech CEO goes off her own boardroom terrace the night before a billion-dollar merger vote. Five people were still on the sealed floor, and the badge logs say nobody left. The board chair has one night and one investigator before the market opens on whatever story is standing at seven.",
     "theme": "noir",
-    "tone": "corporate thriller, glass and steel, clipped ambition",
+    "tone": "corporate noir, glass and cold money, clipped ambition after midnight",
     "tags": [
       "Corporate",
       "Office",
@@ -15,80 +15,115 @@
       "Modern"
     ],
     "difficulty": "medium",
+    "progressUi": "subtle",
     "contentWarnings": [
       "murder",
       "suicide discussion"
     ],
     "artStyle": "Corporate noir portrait, head-and-shoulders, cool glass-tower blue and charcoal, executive fashion, same polished boardroom lighting for every cast member, mystery game NPC portrait",
-    "setting": "A glass penthouse boardroom, fifty floors up. Night before the merger vote. City lights like a circuit board.",
-    "summary": "CEO Ava Krane is dead on the terrace setback below — she went over the boardroom balcony during a late session. Present: CFO Marcus Bell, activist investor Cole Grant, general counsel Priya Shah, VP Product Jordan Lee, and exec assistant Noah Kim. Tomorrow’s merger is worth a fortune to the people who shorted it and a disaster to the people who didn’t. Someone in that room decided Ava would not live to ring the open bell.",
-    "theMystery": "Who pushed Ava Krane from the boardroom balcony — and what about the merger made murder cheaper than a vote?"
+    "setting": "The fifty-first floor of Krane Tower, present day — boardroom, terrace, and executive suite, the night before the merger vote. City lights like a circuit board.",
+    "summary": "The CEO of Krane Systems is dead on a ninth-floor setback, fifty floors below her own boardroom terrace, hours before the vote that would have sealed the biggest deal of her life. Still on the sealed floor: her co-founder and chief financial officer, on the phones since eleven; the activist investor who spent months campaigning against her merger; the general counsel locking down the building; the product chief whose future the deal was about to decide; and the assistant who found the terrace door standing open. The board chair has retained you for one night: read the floor, question the five, and be sure — because at seven the board call convenes, the market opens, and whatever story is standing becomes the truth.",
+    "theMystery": "Ava Krane went off her own terrace hours before her own merger vote, and everyone on the sealed floor has an answer ready. You have until the seven o'clock board call to find out which of them is true.",
+    "playtest": {
+      "minTurns": 14,
+      "maxTurns": 55,
+      "minEvidenceCoverage": 0.5,
+      "minFunMedian": 7
+    }
   },
   "player": {
-    "displayName": "Investigator",
+    "personaId": "corporate-investigator",
+    "displayName": "The Investigator",
     "addressAs": "Investigator",
-    "pronouns": "they/them",
-    "role": "Independent investigator retained by the board chair before counsel locks the floor",
+    "role": "Independent investigator retained by the board chair, on the floor before counsel can lock it",
     "authority": "professional",
-    "age": "forties",
-    "appearance": "Boardroom-appropriate; nothing flashy",
     "clothing": "Dark suit, soft-soled shoes, a notebook instead of a phone at the table",
-    "background": "Brought in the same night as the fall — paid to ask questions security and GC would rather control.",
-    "publicPerception": "An outside problem with access. Executives perform; juniors panic.",
-    "voiceNotes": "Measured, corporate-fluent, hard to charm",
-    "performanceNotes": "No badge. Authority is contractual and temporary. Cole will lawyer up; Marcus may cooperate.",
+    "publicPerception": "An outside problem with a badge that works. The executives perform for you; the narrative is already being drafted around you. Everyone on this floor knows your authority is a signature on a retainer — and that signatures can be withdrawn.",
+    "performanceNotes": "NPCs address the player as 'Investigator' — title only. Never invent a name, face, age, or history for the player; narration is second person throughout. No police powers: authority is contractual and temporary, and the cast knows it. Marcus cooperates smoothly and helpfully; Priya cooperates precisely and on the record; Cole negotiates; Jordan overshares nervously; Noah is loyal to a dead woman. THE PHYSICAL CLUE SET IS CLOSED: never invent additional physical evidence — no cufflinks, fibers, dropped items, extra cameras, or unlisted documents. Searches beyond the authored inspectables find plausible corporate emptiness. And never confirm a player's theory in narration: suspicion stays the player's own until the accusation is formally judged. NOBODY ON THIS FLOOR USES FORCE: no character ever physically restrains, seizes, or blocks the Investigator — obstruction on the fifty-first floor is social, procedural, and legal (privilege, the retainer's scope, counsel, the chair), and doors are barred by authorization, never by bodies. The Investigator moves freely among accessible rooms at all times.",
     "startingLocationId": "boardroom",
     "startingEvidenceIds": [],
-    "startingKnowledge": "CEO Ava Krane is dead on the terrace setback fifty floors down — fell from the boardroom balcony. Present for the late session: CFO Marcus Bell, GC Priya Shah, VP Product Jordan Lee, activist investor Cole Grant, exec assistant Noah Kim. Merger vote was tomorrow. Security says the balcony door was open.",
-    "objective": "Work the boardroom, balcony, and offices; follow the money and the threats; and accuse the killer with method and motive before counsel shuts the building down."
+    "startingKnowledge": "Ava Krane, CEO of Krane Systems, went off the boardroom terrace at some point before eleven and was found on the ninth-floor setback. The on-call detective did a walkthrough at half past eleven and logged it non-suspicious pending the medical examiner — an executive under crushing deal pressure, an open terrace door, no witnesses — and released the scene to the building until morning; a patrol uniform waits with the body. Five people were on the sealed fifty-first floor all evening: CFO Marcus Bell, general counsel Priya Shah, VP Product Jordan Lee, activist investor Cole Grant, and executive assistant Noah Kim. The badge system shows no one else came or went. The merger vote scheduled for tomorrow has become an emergency board call at 7:00 a.m. The board chair heard the word 'non-suspicious' and did not believe it. She retained you within the hour: be on that floor tonight, before the morning makes the official story permanent.",
+    "objective": "Read the fifty-first floor before the 7:00 a.m. board call — the terrace, the records, and the five people who never left — and establish what really happened to Ava Krane, with proof that survives the morning.",
+    "briefing": {
+      "form": "dossier",
+      "title": "Krane Tower — night retainer",
+      "sections": [
+        {
+          "heading": "The retainer",
+          "text": "The call came from the board chair personally, not through counsel — which tells you something about counsel. Terms: one night, full access under her authority and the tower's private-security clause, findings to her alone before the emergency board call at 7:00 a.m. The police have already come and gone: the on-call detective walked the scene at 11:30 and logged the death non-suspicious pending the medical examiner — a CEO under merger pressure, an open terrace door, no signs of struggle. A patrol uniform waits with the body; homicide comes back only if the examiner or the family makes noise. Tonight the chair is the family, and she is making her noise privately: you. The word she used for the official read was 'convenient.'"
+        },
+        {
+          "heading": "The floor",
+          "text": "The fifty-first floor is the executive floor: boardroom, terrace, Ava's office, the finance suite, an anteroom the assistants run, a security room nobody thinks about. Badge access only, one elevator bank, alarmed fire stairs. Priya Shah sealed the floor at 11:20 — nobody out, nobody up but you. For the confidential session the floor guard was pulled down to the tower's lobby desk, out of earshot and off the floor; his login is how the records get exported. Whatever happened up there happened among five people and a badge reader."
+        },
+        {
+          "heading": "The five",
+          "text": "Marcus Bell — CFO and co-founder, twenty-two years beside Ava Krane, the man on the phones since eleven. Priya Shah — general counsel, running the lockdown by the book. Cole Grant — activist investor, Grant Capital; campaigned publicly against the merger for months, invited tonight to make a last argument. Jordan Lee — VP Product; the Halcyon deal decides his org's future tomorrow. Noah Kim — Ava's executive assistant; found the terrace door standing open. All five were on the floor by nine. All five are still there."
+        },
+        {
+          "heading": "The clock",
+          "text": "The emergency board call is at 7:00 a.m. and the market opens on whatever story exists at that hour. Counsel will have the floor and the records by then; the chair's retainer is only as durable as the chair's position. You have one night in a building that badly wants this to be a tragedy with no third act. If you carry nothing better by seven, the narrative signs itself."
+        }
+      ]
+    }
   },
-  "openingNarration": "Floor-to-ceiling glass. The city is a circuit board of lights. In the boardroom, water glasses still sit at six places. One chair is empty — Ava’s. The balcony door is open to a cold wind. Fifty floors below, emergency lights paint the terrace setback where Ava Krane landed. The people who were in this room for the late session are still here: Marcus, Cole, Priya, Jordan, Noah — each with a story about where they stood when she “fell.” Tomorrow’s merger does not care about grief. You do. Find who pushed her, and why the deal was worth a body.",
+  "openingNarration": "Midnight, fifty-one floors up. The elevator reads your new badge — the board chair's retainer, signed an hour ago, got you here before counsel could lock the floor — thinks about it, and opens on silence: a boardroom of glass and long money, six water glasses still standing at their places. One chair is pushed back from the table and nobody will sit in it. The terrace door stands open, cold wind walking the room, and far below, on a ninth-floor setback, work lights burn around a shape under plastic. Ava Krane rang the opening bell for this company eleven times. She will not ring the twelfth. Five people were on this floor when she went off it, and all five are still here at midnight, wide awake, watching you arrive: a CFO making coffee, an investor making calls, a general counsel making rules, a product chief making notes, an assistant making nothing at all. On the table, her tablet is still awake. Screens sleep. Hers hasn't been allowed to. You have until the board call at seven.",
   "phases": [
     {
       "id": "arrival",
-      "description": "Boardroom scene"
+      "description": "The floor, the five, and the story the evidence wants to tell"
     },
     {
       "id": "deepening",
-      "description": "Emails, prints, motives"
+      "description": "The seams — the evidence is too good, and good evidence has a chronology"
     },
     {
       "id": "crisis",
-      "description": "Pressure on the killer"
+      "description": "The frame comes apart; the records start to matter and start to vanish"
     },
     {
       "id": "confrontation",
-      "description": "Accusation"
+      "description": "Accusation in play"
     },
     {
       "id": "denouement",
-      "description": "After the fall"
+      "description": "Aftermath on the fifty-first floor — still interactive"
     }
   ],
   "wrapUp": {
     "enabled": true,
     "maxTurns": 8,
     "allowEarlyExit": true,
-    "performanceNotes": "Glass, money, after-hours boardroom fallout. RETURN TO NORMAL: Cole held or detained, short exposed, board and regulators take the case. No invented documents."
+    "performanceNotes": "Glass, dawn light, the city waking under a building that hasn't slept. On success or partial, stage it in the boardroom: the board chair arrives at first light with two enforcement attorneys and building security — outside authority, retained by the player's findings, not by magic. Marcus quiet rather than loud; his composure is the last asset he manages. Cole is detained separately for the short — both crimes land, and he'll trade testimony on AUK all the way down. Priya runs the handover by the book because the book finally points the right way. Land on the people: Noah gets Ava's black book back from evidence, and someone finally tells him the promotion note was real; Jordan deletes a recruiter's number; the twelfth bell doesn't ring, but the company survives the morning. RETURN TO NORMAL: custody, an adjourned vote, a market that opens on the truth. Nobody celebrates on the fifty-first floor. Do not invent documents the player never found."
   },
   "time": {
-    "startSlotId": "night",
+    "startSlotId": "midnight",
     "minutesPerTurn": 10,
     "schedule": [
       {
-        "id": "night",
-        "label": "Late night",
+        "id": "midnight",
+        "label": "Midnight",
         "minutesFromStart": 0
       },
       {
-        "id": "pre_dawn",
-        "label": "Pre-dawn markets",
-        "minutesFromStart": 60
+        "id": "small_hours",
+        "label": "The small hours",
+        "minutesFromStart": 90
       },
       {
-        "id": "open_bell",
-        "label": "Near open bell",
-        "minutesFromStart": 120
+        "id": "pre_dawn",
+        "label": "Pre-dawn, futures markets open",
+        "minutesFromStart": 240
+      },
+      {
+        "id": "first_light",
+        "label": "First light",
+        "minutesFromStart": 330
+      },
+      {
+        "id": "board_call",
+        "label": "The 7:00 board call",
+        "minutesFromStart": 420
       }
     ]
   },
@@ -101,22 +136,98 @@
   },
   "flags": [
     {
-      "id": "examined_balcony",
+      "id": "examined_body",
+      "description": "Player went down to the setback and examined Ava's body",
       "aiVisible": true,
       "defaultValue": false
     },
     {
-      "id": "found_term_sheet",
+      "id": "suspects_staging",
+      "description": "Player holds both gloves' stories: the frame was assembled after the fall, from inside the floor",
       "aiVisible": true,
       "defaultValue": false
     },
     {
-      "id": "found_glove",
+      "id": "closed_circle",
+      "description": "Floor records confirm nobody entered or left between 9:12 p.m. and the player's arrival",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "priya_helping",
+      "description": "Priya has flipped from containment to cooperation: pull requests, access lists, her master authorization",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "security_access",
+      "description": "Player has authorized access to the security room",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "finance_unlocked",
+      "description": "The finance suite is open to the player",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "noah_helping",
+      "description": "Noah has decided the Investigator is on Ava's side; consoles and memories open up",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "noah_confided",
+      "description": "Noah has surrendered Ava's black book and admitted taking it",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "knows_auk",
+      "description": "Player knows the name Auk Holdings matters — the shell behind the short's tips",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "cole_traded",
+      "description": "Cole has traded the burner texts from AUK for consideration on the short",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "records_purged",
+      "description": "The retention rotation ran: unexported floor records and bridge logs are gone",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "purge_caught",
+      "description": "Player caught Marcus at the systems console with a retention job queued",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "marcus_cornered",
+      "description": "Marcus's alibi is broken on the record; the retainer clock is running",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "accused_marcus-bell",
+      "description": "Runtime: player formally accused Marcus Bell (engine-set)",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "falsely_accused_cole-grant",
+      "description": "Runtime: player wrongly accused Cole Grant (engine-set)",
       "aiVisible": true,
       "defaultValue": false
     },
     {
       "id": "falsely_accused_noah-kim",
+      "description": "Runtime: player wrongly accused Noah Kim (engine-set)",
       "aiVisible": true,
       "defaultValue": false
     }
@@ -124,44 +235,86 @@
   "locations": [
     {
       "id": "boardroom",
-      "name": "Penthouse boardroom",
-      "description": "Long table, skyline, open balcony. Crime scene tape in spirit if not in plastic.",
+      "name": "The boardroom",
+      "description": "A long table of black glass under a low constellation of designer light. Six places, six water glasses; one chair pushed back that nobody will touch. The terrace door stands open in the north wall of glass, and the wind has been coming through it for an hour because closing it feels like a verdict. Ava's tablet lies at the head place, face up, awake. Doors lead out to the terrace, into the anteroom, into Ava's office, and back to the elevator lobby. An assistant's alcove with a small desk holds the room's quiet corner.",
       "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 2,
+        "y": 2,
+        "floor": 0
+      },
       "exits": [
         {
-          "toLocationId": "balcony",
-          "label": "onto the balcony"
+          "toLocationId": "terrace",
+          "label": "through the open door onto the terrace"
         },
         {
           "toLocationId": "anteroom",
-          "label": "to the anteroom"
+          "label": "into the anteroom"
         },
         {
           "toLocationId": "ava-office",
           "label": "into Ava's office"
+        },
+        {
+          "toLocationId": "elevator-lobby",
+          "label": "out to the elevator lobby"
         }
       ],
       "inspectables": [
         {
-          "id": "ava-chair",
-          "name": "Ava's chair and glass",
+          "id": "avas-place",
+          "name": "Ava's place at the table",
           "onInspect": {
-            "narrativeHints": "No suicide note. Glass undisturbed. Struggle marks on the armrest — someone grabbed from behind toward the balcony.",
+            "narrativeHints": "Her chair sits square to the table — pushed back the width of a person standing up, not knocked aside. Water glass full, notes squared, pen capped. The tablet lies face up and awake beside her legal pad. On its screen, a message draft to Cole Grant, timestamped 10:41 p.m., never sent: 'Cole — if you short us before the vote I will expose the shell companies.' The screen glows steadily. Every other device on this floor went to sleep hours ago. State what is here; let it sit.",
             "revealsEvidenceIds": [
-              "struggle-marks"
-            ],
-            "setsFlags": {
-              "examined_balcony": true
-            }
+              "ava-threat-message"
+            ]
           }
         },
         {
-          "id": "tablet",
-          "name": "abandoned tablet",
+          "id": "tablet-settings",
+          "name": "the tablet itself",
+          "hiddenUntilFlags": {
+            "suspects_staging": true
+          },
           "onInspect": {
-            "narrativeHints": "Unlocked. Draft message from Ava: 'Cole — if you short us before the vote I will expose the shell companies.' Timestamp 10:41 p.m.",
+            "narrativeHints": "Not the message this time — the machine. The tablet wears a Krane Systems management profile, like every executive device, and the management portal keeps the diary the tablet itself never shows: Noah signs into the admin console at his alcove without being asked twice. Screen woken 10:41 p.m., six minutes of use while the draft was typed. Auto-lock, two minutes. Woken again 10:52 p.m. — passcode accepted on the first attempt, forty-one seconds of use, auto-lock policy disabled. The device has been awake ever since, displaying that draft to the room. Whoever woke it knew her code and wanted the screen to be the first thing anyone read.",
             "revealsEvidenceIds": [
-              "ava-threat-message"
+              "tablet-wake-log"
+            ]
+          }
+        },
+        {
+          "id": "assistant-alcove",
+          "name": "the assistant's alcove",
+          "onInspect": {
+            "narrativeHints": "Noah's corner: a small desk, a monitor, a cork strip of Ava's travel schedules. His messenger bag sits under the desk, zipped with a neatness that looks recent. When you glance at it, Noah is watching you glance at it.",
+            "requiresFlags": {},
+            "revealsEvidenceIds": []
+          }
+        },
+        {
+          "id": "noahs-bag",
+          "name": "Noah's messenger bag",
+          "hiddenUntilFlags": {
+            "noah_confided": true
+          },
+          "onInspect": {
+            "narrativeHints": "Noah unzips it himself and hands you a slim black notebook — Ava's, the one she carried into every meeting and let no one read. 'I took it off her desk at a quarter past eleven,' he says. 'Before the room could read her. That's all I took. I want it back when this is over.'",
+            "revealsEvidenceIds": [
+              "avas-blackbook"
+            ]
+          }
+        },
+        {
+          "id": "jordans-seat",
+          "name": "Jordan's end of the table",
+          "onInspect": {
+            "narrativeHints": "A laptop asleep beside a legal pad dense with product schedules and a wall of tiny timestamps — Jordan annotates his notes with the clock, apparently out of habit. A worn leather work bag leans against the chair leg, flap unbuckled, a corner of heavy bond paper showing — the kind of paper offers get printed on.",
+            "revealsEvidenceIds": [
+              "jordans-nda"
             ]
           }
         }
@@ -171,33 +324,132 @@
           "characterId": "marcus-bell"
         },
         {
+          "characterId": "jordan-lee"
+        },
+        {
           "characterId": "noah-kim"
         }
       ]
     },
     {
-      "id": "balcony",
-      "name": "Boardroom balcony",
-      "description": "Wind. Rail scuffed. The drop is absolute.",
+      "id": "terrace",
+      "name": "The terrace",
+      "description": "A narrow wraparound terrace behind chest-high glass and a steel rail, fifty-one floors above the street. The wind never entirely stops. Two doors open onto it: the boardroom's, standing open, and a second door from Ava's office at the far end. The city lies below like a circuit board; directly beneath, small and bright, the work lights of the ninth-floor setback.",
       "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 2,
+        "y": 1,
+        "floor": 0
+      },
       "exits": [
         {
           "toLocationId": "boardroom",
-          "label": "inside"
+          "label": "back into the boardroom"
+        },
+        {
+          "toLocationId": "ava-office",
+          "label": "along the terrace to Ava's office door"
         }
       ],
       "inspectables": [
         {
-          "id": "rail",
-          "name": "balcony rail",
+          "id": "rail-join",
+          "name": "the rail near the boardroom door",
           "onInspect": {
-            "narrativeHints": "Leather glove snagged in the join of the rail — left hand, expensive, monogram CB inside the cuff.",
+            "narrativeHints": "A leather glove is caught in the join where two rail sections meet — left hand, expensive, monogram CB inside the cuff. It sits deep in the slot of the join, pressed down into it; the leather is unscuffed and the stitching untorn. Caught fabric tears and drags. This glove looks laid to rest. Inside the cuff, a fine grey wool lint. Describe; do not conclude.",
             "revealsEvidenceIds": [
               "monogram-glove"
-            ],
-            "setsFlags": {
-              "found_glove": true
-            }
+            ]
+          }
+        },
+        {
+          "id": "rail-base",
+          "name": "the rail base at the far end",
+          "onInspect": {
+            "narrativeHints": "Near Ava's office door, at the foot of the glass: two short heel scuffs on the stone, side by side, toes toward the building. Above them, the top rail is clean — no sole marks, no smears, nothing that climbed. Whoever stood here last stood facing the city with their back to the room, close enough to the glass to touch it.",
+            "revealsEvidenceIds": [
+              "rail-scuffs"
+            ]
+          }
+        },
+        {
+          "id": "ash-corner",
+          "name": "the sheltered corner",
+          "onInspect": {
+            "narrativeHints": "Out of the wind, by the boardroom door: two cigarette butts, same imported brand, ground out with a heel. Long cold. Someone stood out here for a while earlier in the evening — the corner is the only place a lighter would survive the wind.",
+            "revealsEvidenceIds": [
+              "cigarette-butts"
+            ]
+          }
+        },
+        {
+          "id": "the-drop",
+          "name": "the view over the rail",
+          "onInspect": {
+            "narrativeHints": "Fifty floors of glass falling away in panels of other people's late nights. On the ninth-floor setback, plastic sheeting shivers under work lights around a shape the size of the whole company. The service elevator in the lobby goes down to it. The wind takes whatever you were about to feel and files it."
+          }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "ava-office",
+      "name": "Ava Krane's office",
+      "description": "A corner office that performs restraint: standing desk, two chairs, one wall of awards she never mentioned and one framed magazine cover she did. Two doors: one back into the boardroom, and one in the glass wall onto the terrace — shut but unlocked. Her phone sits on a charging stand on the desk. A low lateral file beside the desk has its top drawer standing ajar.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 3,
+        "y": 2,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "boardroom",
+          "label": "back to the boardroom"
+        },
+        {
+          "toLocationId": "terrace",
+          "label": "through the glass door onto the terrace"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "desk-phone",
+          "name": "Ava's phone on the charger",
+          "onInspect": {
+            "narrativeHints": "She left it charging — that is why she carried the tablet to the table. The lock screen holds one notification stack, synced over the tower's wifi, patient as a headstone: 'Watch: Hard fall detected — 10:47 p.m.' 'Emergency SOS unavailable — watch has no cellular.' The paired watch kept posting pulse data for a while. The graph needs no interpreting, so offer none.",
+            "revealsEvidenceIds": [
+              "fall-alert-phone"
+            ]
+          }
+        },
+        {
+          "id": "ajar-drawer",
+          "name": "the drawer standing ajar",
+          "onInspect": {
+            "narrativeHints": "Merger files, tabbed in her assistant's hand. On top, out of order, a term-sheet addendum: Grant Capital's short position, built through offshore vehicles — three Cayman shells, one styled 'Auk Holdings Ltd.' Ava's sticky note on the cover: 'Bring to board — kill the vote.' Behind it, an empty hanging folder, tab neatly typed: 'SURVEILLANCE — HALCYON (PRINTED 1 OF 1).' The folder holds air. Drawers left ajar get read as hurry; hurry belongs to somebody.",
+            "revealsEvidenceIds": [
+              "short-term-sheet"
+            ]
+          }
+        },
+        {
+          "id": "desktop-screen",
+          "name": "her desktop, still logged in",
+          "onInspect": {
+            "narrativeHints": "Mail is open. Top of the inbox, July 15, from Halcyon's bankers, subject 'Market surveillance — your eyes only': '…the short position was accumulated in three tranches, each within 48 hours of a confidential milestone. We consider it probable the counterparty is being advised from inside your process. Full report attached; per your request we have printed one copy for you.' The attached report itself: not on this desk, not in that drawer, not — apparently — on this floor.",
+            "revealsEvidenceIds": [
+              "report-cover-email"
+            ]
+          }
+        },
+        {
+          "id": "founder-wall",
+          "name": "the framed magazine cover",
+          "onInspect": {
+            "narrativeHints": "A ten-year-old business magazine under glass: Ava on the cover, arms folded, headline 'THE FOUNDER.' Singular. In the article's opening spread, visible in the frame, a photograph of two much younger people in a rented office, and a caption: 'Krane, then of Bellkrane Systems, with co-founder Marcus Bell, 2004.' Someone chose to frame the cover and not the photograph. Next to it, small and off-center, hangs the company's first cleared check, dated April 17, 2004 — the one piece of Bellkrane she kept on the wall."
           }
         }
       ],
@@ -205,21 +457,75 @@
     },
     {
       "id": "anteroom",
-      "name": "Anteroom / coffee station",
-      "description": "Espresso machine, coats, whispered deals.",
+      "name": "The anteroom",
+      "description": "The room the assistants run: espresso machine, coat rack, two workstations, a wall-mounted console for the room systems. Priya has colonized one workstation with merger binders; her seat faces the coat rack and the boardroom door. Cole's overcoat hangs on the rack, cashmere among the raincoats. A door leads back to the boardroom and another out to the elevator lobby.",
       "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 1,
+        "y": 2,
+        "floor": 0
+      },
       "exits": [
         {
           "toLocationId": "boardroom",
           "label": "into the boardroom"
+        },
+        {
+          "toLocationId": "elevator-lobby",
+          "label": "out to the elevator lobby"
         }
       ],
       "inspectables": [
         {
           "id": "coat-rack",
-          "name": "coat rack",
+          "name": "the coat rack",
           "onInspect": {
-            "narrativeHints": "Cole Grant's coat has one glove in the pocket. Its mate is missing."
+            "narrativeHints": "Cole Grant's overcoat: grey cashmere, cut to be noticed. In the right pocket, one leather glove — right hand, monogram CB. The left pocket is empty, but its lining sheds a fine grey wool lint that clings to your fingers. One glove at rest in a coat; its mate is not here. Note it plainly and move on.",
+            "revealsEvidenceIds": [
+              "coat-glove"
+            ]
+          }
+        },
+        {
+          "id": "priya-workstation",
+          "name": "Priya's commandeered workstation",
+          "onInspect": {
+            "narrativeHints": "Merger binders in exact stacks; a legal pad in draftsman's block letters; a laptop locked to a privilege screen the moment you look at it. If Priya has decided to help, she pulls two things up herself and turns the screen: Ava's 9:38 p.m. email asking for the access pulls, and the finished list Ava never got to see. If she hasn't decided yet, you get the privilege screen and her level voice.",
+            "requiresFlags": {
+              "priya_helping": true
+            },
+            "revealsEvidenceIds": [
+              "ava-request-email",
+              "access-intersection"
+            ]
+          }
+        },
+        {
+          "id": "av-console",
+          "name": "the room-systems console",
+          "onInspect": {
+            "narrativeHints": "Lighting, blinds, catering — and the executive conference-bridge admin panel, which Noah administers because nobody else ever learned it. With Noah beside you keying his credentials, the bridge history renders: one entry that matters, and he goes very still when he reads it.",
+            "requiresFlags": {
+              "noah_helping": true,
+              "records_purged": false
+            },
+            "revealsEvidenceIds": [
+              "bridge-call-log"
+            ]
+          }
+        },
+        {
+          "id": "coles-briefcase",
+          "name": "Cole's briefcase",
+          "hiddenUntilFlags": {
+            "cole_traded": true
+          },
+          "onInspect": {
+            "narrativeHints": "Cole thumbs the latches himself and hands over a cheap prepaid phone that has no business in a briefcase that cost more than a car. 'You get the phone, my counsel gets the terms in writing,' he says. 'I never had a name. I had a bird.'",
+            "revealsEvidenceIds": [
+              "burner-texts"
+            ]
           }
         }
       ],
@@ -229,35 +535,235 @@
         },
         {
           "characterId": "priya-shah"
-        },
-        {
-          "characterId": "jordan-lee"
         }
       ]
     },
     {
-      "id": "ava-office",
-      "name": "Ava Krane's office",
-      "description": "Standing desk, awards, a safe drawer ajar.",
+      "id": "elevator-lobby",
+      "name": "The elevator lobby",
+      "description": "Marble, a reception desk nobody staffs at night, and the floor's one way in or out: a bank of badge-controlled elevators, a service car at the end, and an alarmed fire-stair door with a contact strip. A copy and print nook occupies the corridor toward the boardroom. A discreet door marked FACILITIES — the security room — sits behind the reception desk; the finance suite opens off the far side.",
       "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 2,
+        "y": 3,
+        "floor": 0
+      },
       "exits": [
         {
           "toLocationId": "boardroom",
-          "label": "to the boardroom"
+          "label": "toward the boardroom"
+        },
+        {
+          "toLocationId": "anteroom",
+          "label": "into the anteroom"
+        },
+        {
+          "toLocationId": "security-room",
+          "label": "through the FACILITIES door",
+          "requiresFlags": {
+            "security_access": true
+          }
+        },
+        {
+          "toLocationId": "marcus-office",
+          "label": "into the finance suite",
+          "requiresFlags": {
+            "finance_unlocked": true
+          }
+        },
+        {
+          "toLocationId": "terrace-setback",
+          "label": "take the service elevator down to the ninth-floor setback"
+        },
+        {
+          "toLocationId": "washroom",
+          "label": "into the executive washroom"
         }
       ],
       "inspectables": [
         {
-          "id": "safe-drawer",
-          "name": "ajar drawer",
+          "id": "copy-nook",
+          "name": "the copy and print nook",
           "onInspect": {
-            "narrativeHints": "Term sheet addendum: Cole's fund is short the stock through offshore shells. Ava's sticky note: 'Bring to board — kill the vote.'",
+            "narrativeHints": "An enterprise printer with a job history it is proud of: 42 pages, submitted 10:43 p.m. from N. Kim, released at the panel 10:44, collected 10:51. Seven minutes of a man standing at a printer in full view of the lobby camera, the night his boss went over the rail.",
             "revealsEvidenceIds": [
-              "short-term-sheet"
+              "copier-log"
+            ]
+          }
+        },
+        {
+          "id": "stair-door",
+          "name": "the fire-stair door",
+          "onInspect": {
+            "narrativeHints": "Alarmed, contact strip intact, last opened — per the tag log on the panel — eleven days ago by a maintenance crew. Nobody left the fifty-first floor by the stairs last night. The building only has so many exits, and it keeps books on all of them."
+          }
+        },
+        {
+          "id": "elevator-bank",
+          "name": "the elevator bank",
+          "onInspect": {
+            "narrativeHints": "Badge-controlled, floor-locked since 11:20 on the general counsel's authority. The service car at the end runs to the setback levels for maintenance. Fifty floors below, the city is still awake; up here the doors open for almost no one, and the reader keeps a list."
+          }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "security-room",
+      "name": "The security room",
+      "description": "A closet with delusions: two monitors, a badge-system terminal, the camera archive, and the building-systems console with its change-ticket queue. The floor guard's chair is empty — he was pulled down to the tower's lobby desk at nine for the confidential session, and his login now lives wherever the records need it. The room smells of dust and warm electronics, and it knows more about last night than anyone still willing to talk.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 3,
+        "y": 3,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "elevator-lobby",
+          "label": "back to the elevator lobby"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "camera-wall",
+          "name": "the badge terminal and camera archive",
+          "onInspect": {
+            "narrativeHints": "The lobby camera and the badge reader agree on everything. Last entry to the floor before yours: Cole Grant, 9:12 p.m. No exits until the responders. The stair door: sealed all night. The camera's night reel: Noah crossing to the print nook 10:44, standing at the printer, recrossing 10:51. Marcus crossing the lobby's edge toward the anteroom 10:55, recrossing 11:01. Nobody else. The floor was a sealed room with five people and a body count.",
+            "requiresFlags": {
+              "records_purged": false
+            },
+            "revealsEvidenceIds": [
+              "floor-records"
+            ]
+          }
+        },
+        {
+          "id": "systems-console",
+          "name": "the building-systems console",
+          "onInspect": {
+            "narrativeHints": "The change-ticket queue for the building's records systems. If a retention job is pending, it sits here counting down, authorized by a name with every right to authorize it and every reason not to. If the player has caught it in time, the ticket itself — requester, timestamp, scope — prints like a confession that doesn't know it is one.",
+            "requiresFlags": {
+              "purge_caught": true
+            },
+            "revealsEvidenceIds": [
+              "purge-request"
+            ]
+          }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "marcus-office",
+      "name": "The finance suite — Marcus's office",
+      "description": "The corner opposite Ava's, furnished a decade less recently. Deal binders in ranks, two monitors, a rowing machine with dust on it. On the wall, the same 2004 photograph Ava kept out of her frame: two young founders in a rented office. The room of a man who kept every receipt, which is about to be the problem.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 1,
+        "y": 3,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "elevator-lobby",
+          "label": "back to the elevator lobby"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "plan-binder",
+          "name": "the integration plan binder",
+          "onInspect": {
+            "narrativeHints": "The Halcyon integration plan, signed July 9. One page is tabbed and soft at the corner from handling: page 40. 'Finance organization consolidates under Halcyon Group CFO within 90 days of close.' No box on the chart says Bell. The page has been read the way people reread a diagnosis.",
+            "revealsEvidenceIds": [
+              "integration-plan-p40"
+            ]
+          }
+        },
+        {
+          "id": "te-archive",
+          "name": "the expense archive",
+          "onInspect": {
+            "narrativeHints": "Two decades of travel-and-expense binders, kept personally, in order — a CFO's museum. You would need to know what you were looking for. If the player knows the name Auk, the 2019 binder gives it up: a registered-agent invoice, Georgetown, Grand Cayman, formation and standing fees for 'Auk Holdings Ltd.' — approved for payment in the margin: M. Bell. A shell's birth certificate, filed by the man who paid for it, because keeping every receipt was the whole of his religion.",
+            "requiresFlags": {
+              "knows_auk": true
+            },
+            "revealsEvidenceIds": [
+              "auk-invoice"
+            ]
+          }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "terrace-setback",
+      "name": "The ninth-floor setback",
+      "description": "A gravel roof nine floors up, walled by the tower's own glass rising another forty-two above it. Work lights on stands, plastic sheeting, the first responders' tape. The city noise arrives from below like weather. The building goes on being a building around what is here, which is Ava Krane.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 2,
+        "y": 4,
+        "floor": -1
+      },
+      "exits": [
+        {
+          "toLocationId": "elevator-lobby",
+          "label": "take the service elevator back up to fifty-one"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "avas-body",
+          "name": "Ava Krane",
+          "onInspect": {
+            "narrativeHints": "They have left her for the medical examiner, under plastic, a patrol uniform keeping the cold vigil by the tape. She is in the suit from the cover of the deck she was to present at seven. Her smartwatch face is cracked; its last screen is frozen mid-alert: 'Hard fall — 10:47 PM. Emergency SOS unavailable.' Her shoes are on her feet, laces done, soles gritted with terrace stone. Her hands are unmarked — no glass, no fibers, nothing gripped. State it plainly, all of it, and give the moment room. This is the person the fifty-first floor is negotiating over.",
+            "revealsEvidenceIds": [
+              "smartwatch-record"
             ],
             "setsFlags": {
-              "found_term_sheet": true
+              "examined_body": true
             }
+          }
+        },
+        {
+          "id": "setback-gravel",
+          "name": "the gravel around the tape",
+          "onInspect": {
+            "narrativeHints": "Responder bootprints, gravel scatter in a fan from the impact point, and the tower face sheer above — fifty-one floors of identical glass with one open door at the top of it, small as a missing tooth. Nothing walked away from here and nothing walked to it. Whatever happened, happened at the top."
+          }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "washroom",
+      "name": "The executive washroom",
+      "description": "Marble and mirror off the elevator lobby, lit like a jewelry case. Folded towels in a steel niche, a counter that has never held a toothbrush. The one room on the floor with no camera, no badge reader, and no memory.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 0,
+        "y": 3,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "elevator-lobby",
+          "label": "back to the elevator lobby"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "washroom-counter",
+          "name": "the counter and towel niche",
+          "onInspect": {
+            "narrativeHints": "One towel used and refolded wrong, a faint ghost of cigarette smoke rinsed away with expensive hand soap — someone came in here around half past ten to wash the terrace off himself before rejoining a room he was losing. It corroborates a timeline rather than changing one; note it and let the smallness of it be the point. The room's other testimony is what it cannot give: no camera, no reader — the one blind spot on the floor, and everyone who works here knows it."
           }
         }
       ],
@@ -266,22 +772,97 @@
   ],
   "relationships": [
     {
-      "id": "cole_short",
-      "fromId": "cole-grant",
-      "toId": "marcus-bell",
-      "type": "rivalry",
-      "label": "activist shorting the merger",
+      "id": "marcus_leak_cole",
+      "fromId": "marcus-bell",
+      "toId": "cole-grant",
+      "type": "conspiracy",
+      "label": "the anonymous tipper behind the short — Cole knows him only as AUK",
       "strength": 3,
       "public": false,
-      "knownToPlayerByDefault": false
+      "knownToPlayerByDefault": false,
+      "notes": "The engine of the crime. Marcus fed Grant Capital the deal milestones through a Cayman cutout and took a percentage into Auk Holdings. Cole has never known the name. Neither man may speak of it until the auk-invoice or burner-texts are on the table."
     },
     {
-      "id": "marcus_cfo",
+      "id": "marcus_resents_ava",
       "fromId": "marcus-bell",
-      "toId": "priya-shah",
-      "type": "business",
-      "label": "CFO under merger pressure",
+      "toId": "ava-krane",
+      "type": "resentment",
+      "label": "co-founder, erased from the name and now from the org chart",
+      "strength": 3,
+      "public": false,
+      "knownToPlayerByDefault": false,
+      "notes": "Twenty-two years of partnership with a wound down the middle: Bellkrane became Krane Systems, 'The Founder' became singular, and page 40 finishes the job. Publicly he performs devotion to her memory. Perform the devotion; let the wound show only in what he chooses to manage."
+    },
+    {
+      "id": "noah_devotion_ava",
+      "fromId": "noah-kim",
+      "toId": "ava-krane",
+      "type": "loyalty",
+      "label": "four years as her right hand; grief without a script",
+      "strength": 3,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "ava_protects_noah",
+      "fromId": "ava-krane",
+      "toId": "noah-kim",
+      "type": "protects",
+      "label": "was taking him with her — chief of staff after the close",
       "strength": 2,
+      "public": false,
+      "knownToPlayerByDefault": false,
+      "notes": "Real, written in her black book. Noah half-knows and cannot bear to say it out loud."
+    },
+    {
+      "id": "cole_campaign_ava",
+      "fromId": "cole-grant",
+      "toId": "ava-krane",
+      "type": "rivalry",
+      "label": "months of public campaign against her merger",
+      "strength": 2,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "priya_duty_company",
+      "fromId": "priya-shah",
+      "toId": "ava-krane",
+      "type": "loyalty",
+      "label": "guards the company — sometimes from its own executives",
+      "strength": 2,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "marcus_patron_jordan",
+      "fromId": "marcus-bell",
+      "toId": "jordan-lee",
+      "type": "mentor",
+      "label": "carried Jordan's org through two reorgs; Jordan defends him by reflex",
+      "strength": 2,
+      "public": true,
+      "knownToPlayerByDefault": true,
+      "notes": "The social shield. Jordan's instinct to vouch for Marcus is honest and is part of why nobody has looked at the CFO."
+    },
+    {
+      "id": "jordan_fears_deal",
+      "fromId": "jordan-lee",
+      "toId": "ava-krane",
+      "type": "fear",
+      "label": "the integration chart decides his future tomorrow",
+      "strength": 1,
+      "public": false,
+      "knownToPlayerByDefault": false,
+      "notes": "Revealed with the recruiter letter. The fear is real; the resolution of it — Ava told him to take the meeting and then beat the offer — is the humanizing turn."
+    },
+    {
+      "id": "priya_wary_cole",
+      "fromId": "priya-shah",
+      "toId": "cole-grant",
+      "type": "wary",
+      "label": "counsel's standing posture toward an activist with litigators",
+      "strength": 1,
       "public": true,
       "knownToPlayerByDefault": true
     }
@@ -290,13 +871,15 @@
     {
       "id": "ava-krane",
       "name": "Ava Krane",
-      "shortBio": "CEO — went over the boardroom balcony the night before the merger vote.",
-      "portrait": "portraits/ava-krane.jpg",
-      "defaultLocationId": "boardroom",
-      "storyRole": "victim",
+      "shortBio": "CEO of Krane Systems — dead on the ninth-floor setback the night before her merger vote. She co-founded the company in 2004 as Bellkrane Systems, renamed it in 2012 when the world decided it had one founder, and never corrected the world. Brilliant, exacting, more loyal than she let anyone see: she kept the company's first cleared check on her office wall, used its date as the passcode on everything, and had quietly written her assistant into the future she was building. What she wanted was to finish the Halcyon deal on her terms; what she found, on her last evening, was the name of the person selling it out from inside. She summoned him to the terrace instead of calling security, because twenty-two years buys one private conversation. It bought exactly one.",
+      "cardTitle": "The CEO",
+      "cardBio": "Co-founder and chief executive of Krane Systems — went over her own boardroom terrace hours before the merger vote.",
       "voice": "Silent now",
+      "portrait": "portraits/ava-krane.jpg",
+      "defaultLocationId": "terrace-setback",
+      "storyRole": "victim",
       "knowledge": {
-        "public": "Deceased. Fell from the boardroom balcony during a late session.",
+        "public": "Deceased. Found on the ninth-floor setback below the boardroom terrace.",
         "private": [],
         "secrets": []
       },
@@ -305,17 +888,21 @@
     {
       "id": "marcus-bell",
       "name": "Marcus Bell",
-      "shortBio": "CFO; already managing the narrative.",
-      "voice": "Smooth finance",
+      "shortBio": "CFO and co-founder — the other half of Bellkrane, twenty-two years at Ava's side and, since midnight, the calm center of the fifty-first floor. He has been on the phones since eleven: the chair, the bankers, comms. Helpful, composed, generous with theories. A man who kept every receipt of a shared life — the 2004 photograph on his wall, the founding stories at every offsite — and watched the name, the credit, and finally the org chart get filed under hers. His answers arrive pre-drafted. His grief may even be real; it is also, visibly, being managed.",
+      "cardTitle": "The co-founder",
+      "cardBio": "CFO and co-founder of Krane Systems; since the fall, the man managing the narrative.",
+      "voice": "Smooth finance; the audited version of warmth; never a beat of hesitation he didn't schedule",
       "portrait": "portraits/marcus-bell.jpg",
       "defaultLocationId": "boardroom",
-      "defaultWillingness": "guarded",
+      "defaultWillingness": "open",
+      "defaultStance": "steady_hand",
+      "storyRole": "suspect",
       "knowledge": {
-        "public": "He was in the anteroom on a call. He did not see the fall.",
+        "public": "He was out of the room from about a quarter to eleven — on the phone, he says, pacing the lobby end of the floor, dialed into a bridge for the West Coast bankers who never showed. At eleven he went looking for Ava through her office, found it empty and her tablet awake on her desk with that message to Grant on the screen, and carried it out to her place at the table — 'I wanted the room to see what Grant had driven her to,' he says, 'before the lawyers made it disappear.' Then the screaming started. He will tell you, helpfully and only if asked, that Cole Grant campaigned against this merger for months, and that activists play rough. He identifies grief as a luxury he'll schedule after the board call.",
         "private": [
           {
-            "id": "marcus-feared-cole",
-            "content": "He knew Cole was shorting. Ava planned to expose it at the vote.",
+            "id": "marcus-knew-short",
+            "content": "'Did I know Grant was short? I suspected — activists telegraph. If that addendum is what she wouldn't show me, then she found the proof this week and told no one, which was Ava all over: she confronted problems privately first. Twenty-two years, Investigator, and her last week was the first one she kept from me.' The regret in the last clause is genuine craftsmanship.",
             "requiresEvidenceIds": [
               "short-term-sheet"
             ],
@@ -323,32 +910,88 @@
               "open",
               "guarded"
             ]
+          },
+          {
+            "id": "marcus-bridge-story",
+            "content": "'That log is exactly what a bad night looks like. I dialed the bankers' bridge at 10:44 because the call was set for 10:45. Nobody joined — story of this deal. I stayed on hold and paced; you hold for bankers the way you hold for God. Seventeen minutes, one participant: me, waiting.' It is smooth, immediate, and completely unfalsifiable — and he knows the word 'unfalsifiable' is doing the work.",
+            "requiresEvidenceIds": [
+              "bridge-call-log"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded",
+              "hostile"
+            ]
+          },
+          {
+            "id": "marcus-page40",
+            "content": "'Page 40. You read it? Consolidation is the word they use. I'd have kept a title through the close and lost the building by spring — that's how it's done now; nobody is fired, everyone is integrated. I told Ava the plan buried me. She said we'd fix it after the vote.' A short pause, precisely one beat long. 'There was always going to be an after, with her.'",
+            "requiresEvidenceIds": [
+              "integration-plan-p40"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "marcus-founding",
+            "content": "He warms, and it is the one unmanaged thing he does. 'Bellkrane Systems. Rented office over a dry cleaner. The first customer check cleared April 17, 2004 — we framed it; she kept it when we rebranded. She used that date for everything, you know — every passcode, twenty years. I told her a thousand times it was a security hole.' He smiles at the memory. The smile is real. That is worth noticing.",
+            "requiresTrust": 1
           }
         ],
-        "secrets": []
+        "secrets": [
+          {
+            "id": "marcus-breaks",
+            "content": "The composure doesn't shatter; it is set down, the way a man puts down a heavy case he has carried up fifty-one floors. 'She had the surveillance report on the terrace. Three tranches, and the third followed a document two people on earth had copies of. She didn't shout. She gave me until the board call to resign from the company I named — resign, cooperate, and she'd let the lawyers decide what I was. Twenty-two years, and I was a compliance matter.' He looks at the glass, at the city he can see and she can't. 'I built the ledger she stood on. AUK was mine — the tips, the percentage; you've found all that, or you wouldn't be standing there. The rail was not a plan. She turned her back on me to look at her city, the way she turned her back on me in every room for twenty years, and I — ' The sentence ends. 'The glove, the tablet, the drawer: those were a plan. You can be two men in the same hour, Investigator. The market does it every day.'",
+            "requiresEvidenceIds": [
+              "bridge-call-log",
+              "access-intersection",
+              "auk-invoice"
+            ]
+          }
+        ]
       },
       "defenses": [
-        "Corporate speak"
-      ],
-      "storyRole": "suspect"
+        "Cooperates smoothly; volunteers theories that all face toward Cole Grant",
+        "Meets the bridge log with the bankers-never-joined story; meets the access list with 'custodianship isn't possession'",
+        "If the passcode is raised, notes gently that Noah set up every device Ava owned",
+        "Concedes nothing that is not already on the table in document form; confesses only when the bridge, the access intersection, and Auk's paper trail are all in hand",
+        "Never physical: he does not touch, grab, or bar the Investigator's way — his instruments are theories, procedure, the board chair's ear, and eventually the retainer itself; a man managing a narrative does not hand it an assault"
+      ]
     },
     {
       "id": "cole-grant",
       "name": "Cole Grant",
-      "shortBio": "Activist investor; smiles with teeth.",
-      "voice": "Charming, predatory",
+      "shortBio": "Founder of Grant Capital; the activist who spent months telling the market Ava Krane was selling the company cheap. Charming the way a margin call is charming. He arrived at 9:12 to make a last argument before the vote, took a call on the terrace that turned his evening grey, and has spent the hours since the fall calculating — visibly — which of tonight's facts can be survived. His campaign against the merger was real. So, somewhere under it, is a short position he believes nobody can trace, built on tips from a man he has never met.",
+      "cardTitle": "The activist",
+      "cardBio": "Activist investor, Grant Capital — campaigned against the merger in public; invited up for one last argument.",
+      "voice": "Charming, predatory, deal terms hiding in the hospitality",
       "portrait": "portraits/cole-grant.jpg",
       "defaultLocationId": "anteroom",
       "defaultWillingness": "guarded",
       "defaultStance": "dealmaker",
+      "storyRole": "suspect",
       "knowledge": {
-        "public": "He stepped onto the balcony for air. Ava was alive when he left the room — he says.",
+        "public": "He stepped onto the terrace around half past ten for a call and a cigarette, came back inside well before the hour, and was at the boardroom table 'boring a hole in the product roadmap' from then until the assistant screamed. He opposed the merger loudly and lawfully, he'll remind you, and dead CEOs are terrible for activists: 'chaos reprices everything, and I price carefully.' He says Ava was alive when he came in from the terrace, and offers, unprompted, that a woman with that much pressure on her might have chosen the rail — then watches to see if you'll buy it.",
         "private": [
           {
-            "id": "cole-admits-argument",
-            "content": "He argued with Ava about the short. He denies pushing her.",
+            "id": "cole-gloves",
+            "content": "'I wore them up — it's November fifty floors down. I took them off on the terrace to use the phone and stuffed them in my coat when I came in, half past ten, ask the product kid who watched me do it. If one of my gloves went back out to that rail, Investigator, it went in someone else's hand, and I'd think hard about whose hands were where after eleven — mine were on a boardroom table in front of witnesses.'",
             "requiresEvidenceIds": [
-              "ava-threat-message"
+              "coat-glove"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded",
+              "hostile"
+            ]
+          },
+          {
+            "id": "cole-margin",
+            "content": "The charm drops one floor. 'Fine. The call on the terrace was my prime broker. If that vote passed at the open, my fund had a very bad week — that's what you saw on my face, the product kid's right, I came in grey. You want to read that as motive, read it properly: I needed the vote delayed and the lady alive to lose the argument in public. Her dying is the best trade I never made. I don't expect you to like that sentence. It has the advantage of being true.'",
+            "requiresEvidenceIds": [
+              "short-term-sheet"
             ],
             "requiresWillingnessIn": [
               "open",
@@ -357,166 +1000,694 @@
             ]
           }
         ],
-        "secrets": []
+        "secrets": [
+          {
+            "id": "cole-trades-auk",
+            "content": "'My counsel will paper this as voluntary cooperation, timestamps tonight. Yes: the position was built on tips. No: I never had a name. The tips signed themselves AUK — a Cayman box, Auk Holdings; my payments went into it and the milestones came out. Whoever the bird is, he's inside your process, he's senior, and he knew documents I couldn't dream of. You find the man who owns that shell, you'll have your leak — and, I'd wager tonight, rather more than your leak. I short frauds, Investigator. I don't produce corpses. Producing corpses is what frauds do.'",
+            "requiresEvidenceIds": [
+              "short-term-sheet",
+              "monogram-glove"
+            ]
+          }
+        ]
       },
       "defenses": [
-        "Threatens lawsuits",
-        "Claims suicide"
-      ],
-      "storyRole": "suspect"
+        "Threatens litigation as a greeting; negotiates everything, including sympathy",
+        "Floats the suicide reading early and drops it the moment it stops selling",
+        "Admits the short only when the addendum is on the table, and monetizes the admission",
+        "Genuinely cannot name Marcus — he has never known — and his ignorance should read as one more locked door until the shell is traced"
+      ]
     },
     {
       "id": "priya-shah",
       "name": "Priya Shah",
-      "shortBio": "General counsel.",
-      "voice": "Precise, cautious",
+      "shortBio": "General counsel, eleven years. Precise, unhurried, constitutionally incapable of an unconsidered sentence. She sealed the floor at 11:20, invoked privilege by 11:40, and has been building the company's legal position ever since — which looks, from the outside, exactly like obstruction. It is not loyalty to any person; it is loyalty to the institution, and tonight the institution includes a killer, which is a problem she has not fully priced. She heard the shout at 10:46 and has not forgiven herself the twenty minutes it took to matter.",
+      "cardTitle": "The general counsel",
+      "cardBio": "General counsel of Krane Systems; sealed the floor and controls what leaves it.",
+      "voice": "Precise, level, every sentence pre-checked for privilege",
       "portrait": "portraits/priya-shah.jpg",
       "defaultLocationId": "anteroom",
-      "defaultWillingness": "open",
+      "defaultWillingness": "guarded",
+      "defaultStance": "counsel_calm",
+      "storyRole": "suspect",
       "knowledge": {
-        "public": "She was reviewing merger language in the anteroom. She heard a shout near 10:45.",
-        "private": [],
-        "secrets": []
+        "public": "She worked at her anteroom station from ten o'clock, on the closing rider. At about 10:46 she heard a raised voice — one syllable, cut off; she logged it mentally as boardroom weather. 'This floor shouts, Investigator. It is how they pray.' She stepped into the boardroom once, around 10:53, to query a rider clause with Jordan, and was back at her station minutes later. She will confirm the seal times, the badge policy, and nothing else without a reason.",
+        "private": [
+          {
+            "id": "priya-coat-rack",
+            "content": "'My station faces the coat rack; it is not a fact I chose, but it is a fact. When I stepped into the boardroom about the rider — 10:53, I looked at my watch, I always look at my watch — the anteroom was empty behind me. When I came back through, Marcus was at the espresso machine. He'd made a coffee.' A pause of counsel-grade length. 'It was still full when the screaming started. People make coffee to have been making coffee, Investigator. I've billed hours to that observation and never once liked where it pointed.'",
+            "requiresEvidenceIds": [
+              "coat-glove"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "priya-shout",
+            "content": "'You want the shout characterized. Very well: it was not fear. It was command — her board voice, one syllable, stopped short. It could have been a name.' She looks at her legal pad, not at you. 'I have spent eleven years turning that voice into signatures. I knew it through a wall. I chose to believe it was an argument, because on this floor it always is.'",
+            "requiresTrust": 1
+          }
+        ],
+        "secrets": [
+          {
+            "id": "priya-pull-request",
+            "content": "She turns her screen around: an email, Ava to her, 9:38 p.m. 'Pull access history for these three documents. Quietly. Tonight. Don't use IT.' 'I ran the pulls myself after the fall — before you arrived, before I decided what they were. Here is what she never got to see: the December board pack, forty-one people. The February fairness opinion, nine. The signed integration plan, July 9 — two custodians. Ava Krane and Marcus Bell.' She lets the arithmetic sit. 'I sealed this floor to control a narrative, Investigator. I appear instead to have sealed it around one. My authorization opens the security room and the finance suite. Use both. On the record.'",
+            "requiresEvidenceIds": [
+              "report-cover-email"
+            ]
+          }
+        ]
       },
-      "defenses": [],
-      "storyRole": "suspect"
+      "defenses": [
+        "Answers in scope, cites privilege at the boundary, never speculates",
+        "Her early containment reads as obstruction and partly is — protecting the company before she knows from what",
+        "Flips fully and formally the moment the bankers' email shows the leak was Ava's own live investigation; from then on she is the institution correcting itself"
+      ]
     },
     {
       "id": "jordan-lee",
       "name": "Jordan Lee",
-      "shortBio": "VP Product; wanted the merger.",
-      "voice": "Fast, anxious",
+      "shortBio": "VP Product, eight years, the last four spent building the platform the Halcyon deal will either crown or cannibalize. Fast, anxious, honest to a fault and then one fault past it. He annotates his life with timestamps out of habit and has, without knowing it, the best clock on the floor. In his bag is a piece of heavy bond paper he'd rather die than explain, which is unfortunate, because tonight everything gets explained.",
+      "cardTitle": "The product chief",
+      "cardBio": "VP Product; his org's future rides on tomorrow's vote. At the boardroom table all evening.",
+      "voice": "Fast, over-precise under stress, apologizes mid-sentence",
       "portrait": "portraits/jordan-lee.jpg",
-      "defaultLocationId": "anteroom",
+      "defaultLocationId": "boardroom",
       "defaultWillingness": "open",
+      "defaultStance": "wired_tight",
+      "storyRole": "suspect",
       "knowledge": {
-        "public": "Jordan saw Cole return from the balcony alone, pale, one glove off.",
-        "private": [],
-        "secrets": []
+        "public": "He was at the table from nine, building the morning's product narrative. He saw Cole go out to the terrace around 10:29 — 'he made a thing of the cigarettes' — and come back in at 10:34 looking grey, pulling his gloves off and stuffing them in his coat in the anteroom. After that, Cole sat across from him being poisonous about the roadmap until the screaming. He saw Ava tell Marcus something quietly around a quarter to eleven and both of them leave the room separately, which he thought nothing of, because you don't think things about the founders. And he saw Marcus come back through Ava's office door just after eleven with her tablet in his hands, set it down at her place, and ask if anyone had seen her.",
+        "private": [
+          {
+            "id": "jordan-timestamps",
+            "content": "'I timestamp my notes — it's a tic, my therapist has a theory. Look: 10:31, Cole's outside, I wrote roadmap v3 objections. 10:44, Noah's at the door with the print run. 10:58, Cole's telling me the platform is — his words — a feature wearing a company. He's across the table from me that whole stretch, Investigator. I hated every minute and I can prove all of them.' The notepad's margin clock is exactly as compulsive as advertised.",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ],
+        "secrets": [
+          {
+            "id": "jordan-nda-truth",
+            "content": "He goes scarlet before the letter is fully out of your hand. 'It's an offer. Vantage Labs. VP Platform, and a signing NDA I shouldn't have — look, page 40 of the integration plan has no box for Product either, okay? I took a meeting. I was scared.' The next part comes out quieter. 'Ava found out — of course she found out. Three days ago she called me in, and I thought I was dead, and she slid the letter back across the desk and said: take the meeting, learn your number, and then I'm going to beat it, because you're mine and Halcyon should know what mine costs. She was going to beat it, Investigator. I was staying. Whoever did this took that from me too.'",
+            "requiresEvidenceIds": [
+              "jordans-nda"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ]
       },
-      "defenses": [],
-      "storyRole": "suspect"
+      "defenses": [
+        "Overshares on everything except the bag, and lies badly the one time it comes up",
+        "Defends Marcus by reflex — two reorgs of loyalty — and is genuinely useless as a witness against him until the records say otherwise",
+        "His timestamps are honest and load-bearing: they alibi Cole and himself for 10:35 onward without his ever grasping what that implies about anyone else"
+      ]
     },
     {
       "id": "noah-kim",
       "name": "Noah Kim",
-      "shortBio": "Exec assistant; first to scream.",
-      "voice": "Shaken, loyal to Ava",
+      "shortBio": "Executive assistant to Ava Krane, four years — which on this floor means chief of staff without the title, keeper of the calendar, the devices, the passcodes, and the moods. Twenty-eight, ferociously competent, currently holding himself together with procedure. He was at the printer when it happened; he has counted the minutes of that errand a hundred times tonight. He knows one fact so heavy he has been carrying it around the room all night looking for someone safe to hand it to.",
+      "cardTitle": "The assistant",
+      "cardBio": "Ava's executive assistant — found the terrace door open; first to scream.",
+      "voice": "Quiet, exact, grief managed through logistics",
       "portrait": "portraits/noah-kim.jpg",
       "defaultLocationId": "boardroom",
       "defaultWillingness": "open",
+      "defaultStance": "held_together",
+      "storyRole": "suspect",
       "knowledge": {
-        "public": "Noah went for printouts. When Noah returned, the balcony door was open and Ava was gone.",
-        "private": [],
-        "secrets": []
+        "public": "Ava asked for the morning's board sets, so he sent the job at 10:43 and walked to the print nook in the lobby — the run took the better part of ten minutes; the printer is a committee. Back at 10:51, he spent the next stretch collating and laying out the sets, head down; her chair was empty and he assumed what he always assumed — that she'd stepped into her office, probably with Marcus, and would want the packets perfect when she came back. At 11:05 he finally registered what the room had been telling him: the wind, the terrace door standing open, nobody using it. He went to the door, then to the rail, and looked over because somebody had to. He has given the times to security twice and they don't change: left at 10:44, back at 10:51, screamed at 11:05.",
+        "private": [
+          {
+            "id": "noah-board-voice",
+            "content": "'There's a thing I keep not saying, because of who it's about.' He aligns the edge of a folder with the edge of the desk. '10:43, right before I left for the print run. She leaned over to Marcus and said: Terrace. Now. Two words. Her board voice — the one that ends meetings. I've replayed it all night and it doesn't soften.' He looks up. 'You've met him. He's been kind to me for four years. That's the problem with this floor, Investigator: everyone's been kind for years, and one of them wasn't.'",
+            "requiresFlags": {
+              "noah_helping": true
+            },
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "noah-passcode",
+            "content": "'Her passcode was 0417. Tablet, phone, everything — I set the devices up, so yes, I knew it, put me on your list. It's April 17, 2004 — the day the first Bellkrane check cleared. She kept the check on her wall.' A beat. 'It's not my date, Investigator. I learned it from the frame. It's theirs — hers and Marcus's. He tells the story at every offsite: the check, the dry cleaner, the date. If you're asking who else could open her tablet on the first try at midnight — it's a short list, and I'm only half of it.' And one more thing, since you're asking about that call of his: I keep the executive calendars. There was no bankers' call scheduled last night. Not at 10:45, not at any hour. I checked twice before I let myself be sure.",
+            "requiresFlags": {
+              "noah_helping": true
+            }
+          }
+        ],
+        "secrets": [
+          {
+            "id": "noah-blackbook",
+            "content": "'I took something. Off her desk, quarter past eleven, before Priya sealed the office.' He brings the bag up and unzips it. 'Her black book. She wrote people in it — really wrote them. I couldn't stand the idea of the room reading her while she was lying down there.' He hands it over without being asked twice. 'Last page is from this week. You should see it, and I should have given it to you an hour ago, and the reason I didn't is on the last page too.' The last page reads: 'M—?? 3 tranches: after 12/2, after 2/14, after 7/9. Doc 3 = two custodians. Ask P. for pulls tonight. 0417 — he'd still remember.' And beneath it, in a steadier hand: 'N: chief of staff after close. Tell him Thursday.'",
+            "requiresTrust": 1,
+            "requiresFlags": {
+              "noah_helping": true
+            }
+          }
+        ]
       },
       "defenses": [
-        "Easy false suspect as last 'alone' with schedule"
-      ],
-      "storyRole": "suspect"
+        "Answers everything about logistics instantly and accurately; his times check against every log on the floor",
+        "Protects Ava's privacy first, the company never — he decides by loyalty to her, not to the institution",
+        "Will not volunteer the 'Terrace. Now.' memory or the black book until he believes the Investigator is on Ava's side; accusing him, or letting Marcus's passcode insinuation stand unchallenged, closes him completely"
+      ]
     }
   ],
   "evidence": [
     {
-      "id": "struggle-marks",
-      "name": "Chair struggle marks",
-      "description": "Not a clean jump — struggle toward balcony.",
+      "id": "ava-threat-message",
+      "name": "The unsent draft on the tablet",
+      "description": "Ava's tablet, awake at her place, showing a message draft to Cole Grant timestamped 10:41 p.m., never sent: 'Cole — if you short us before the vote I will expose the shell companies.' The screen has stayed lit all night in a room where every other device sleeps.",
       "discoverableAt": {
         "locationId": "boardroom",
-        "inspectableId": "ava-chair"
+        "inspectableId": "avas-place"
       },
-      "canPresentTo": [
-        "*"
-      ]
+      "canPresentTo": "*"
     },
     {
-      "id": "ava-threat-message",
-      "name": "Ava's tablet message",
-      "description": "Threat to expose Cole's shell companies before the vote.",
+      "id": "tablet-wake-log",
+      "name": "The tablet's wake log",
+      "description": "The managed-device event log for Ava's tablet, pulled from the Krane Systems admin portal: woken 10:41 p.m. for six minutes while the draft was typed; auto-lock two minutes; woken again at 10:52 p.m. — passcode accepted on the first attempt, forty-one seconds of use, auto-lock policy disabled. Ava Krane's watch recorded her fall at 10:47. Someone opened her tablet five minutes after she died and arranged for it never to sleep.",
       "discoverableAt": {
         "locationId": "boardroom",
-        "inspectableId": "tablet"
+        "inspectableId": "tablet-settings"
       },
-      "canPresentTo": [
-        "cole-grant",
-        "marcus-bell",
-        "priya-shah"
-      ]
+      "canPresentTo": "*"
     },
     {
       "id": "monogram-glove",
-      "name": "Monogram glove CB",
-      "description": "Left glove snagged on rail; CB monogram.",
+      "name": "The glove on the rail",
+      "description": "A left-hand leather glove, monogram CB, found pressed deep into the join of two rail sections — laid in, not snagged: the leather unscuffed, the stitching untorn, and a fine grey wool lint inside the cuff that matches nothing worn on a terrace and everything about the lining of a coat pocket.",
       "discoverableAt": {
-        "locationId": "balcony",
-        "inspectableId": "rail"
+        "locationId": "terrace",
+        "inspectableId": "rail-join"
       },
-      "canPresentTo": [
-        "cole-grant",
-        "jordan-lee",
-        "noah-kim"
-      ]
+      "canPresentTo": "*"
+    },
+    {
+      "id": "rail-scuffs",
+      "name": "Heel scuffs at the rail base",
+      "description": "Two short heel scuffs at the base of the terrace glass near Ava's office door, toes toward the building — someone stood with their back to the room, facing the city. The top rail above them is clean: no sole marks, nothing climbed. Her shoes were on her feet, soles gritted with terrace stone.",
+      "discoverableAt": {
+        "locationId": "terrace",
+        "inspectableId": "rail-base"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "cigarette-butts",
+      "name": "Cigarette butts in the sheltered corner",
+      "description": "Two cigarette ends, an imported brand, ground out with a heel in the one wind-sheltered corner of the terrace, by the boardroom door. Long cold — an earlier visit, and a long one.",
+      "discoverableAt": {
+        "locationId": "terrace",
+        "inspectableId": "ash-corner"
+      },
+      "canPresentTo": "*",
+      "redHerring": true
+    },
+    {
+      "id": "fall-alert-phone",
+      "name": "Ava's phone: the fall alert",
+      "description": "Her phone, left on its office charger, holding one notification stack synced over the tower's wifi: 'Watch: Hard fall detected — 10:47 p.m.' 'Emergency SOS unavailable — watch has no cellular.' Her wifi-only watch fixed the minute of her death, tried to place a call it had no radio for, and posted the alert to a phone charging fifty floors above her.",
+      "discoverableAt": {
+        "locationId": "ava-office",
+        "inspectableId": "desk-phone"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "smartwatch-record",
+      "name": "The watch on her wrist",
+      "description": "Ava's smartwatch, face cracked by the impact, frozen mid-alert: 'Hard fall — 10:47 PM. Emergency SOS unavailable.' The same minute her phone logged over wifi, kept by the device that fell with her. Her hands are unmarked — nothing gripped, nothing fought.",
+      "discoverableAt": {
+        "locationId": "terrace-setback",
+        "inspectableId": "avas-body"
+      },
+      "canPresentTo": "*"
     },
     {
       "id": "short-term-sheet",
-      "name": "Short term sheet",
-      "description": "Cole's fund short via offshore shells; Ava meant to kill the vote.",
+      "name": "The short-position addendum",
+      "description": "A term-sheet addendum from the ajar drawer: Grant Capital is short Krane Systems through three Cayman vehicles — one styled 'Auk Holdings Ltd.' Ava's sticky note on the cover: 'Bring to board — kill the vote.' Found lying on top of a hanging folder labeled 'SURVEILLANCE — HALCYON (PRINTED 1 OF 1)' — which is empty.",
       "discoverableAt": {
         "locationId": "ava-office",
-        "inspectableId": "safe-drawer"
+        "inspectableId": "ajar-drawer"
       },
-      "canPresentTo": [
-        "cole-grant",
-        "marcus-bell",
-        "priya-shah"
-      ]
+      "canPresentTo": "*"
+    },
+    {
+      "id": "report-cover-email",
+      "name": "The bankers' surveillance email",
+      "description": "July 15, Halcyon's bankers to Ava, 'your eyes only': the short was accumulated in three tranches, each within 48 hours of a confidential milestone; the counterparty is probably being advised from inside the process. 'Per your request we have printed one copy for you.' The printed report is missing from its labeled folder — and from the floor.",
+      "discoverableAt": {
+        "locationId": "ava-office",
+        "inspectableId": "desktop-screen"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "coat-glove",
+      "name": "The glove still in Cole's coat",
+      "description": "In the right pocket of Cole Grant's overcoat on the anteroom rack: one right-hand glove, monogram CB. The left pocket is empty and sheds a fine grey wool lint — the same lint found inside the cuff of the glove on the rail. The rail glove lived in this pocket, in this room, until someone took it out.",
+      "discoverableAt": {
+        "locationId": "anteroom",
+        "inspectableId": "coat-rack"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "bridge-call-log",
+      "name": "The conference-bridge log",
+      "description": "The executive bridge's history for last night: bridge 4471 dialed at 10:44 p.m. from Marcus Bell's mobile, duration seventeen minutes, participants: one. No banker joined; no banker was invited — the bridge's calendar shows no 10:45 call was ever scheduled. A seventeen-minute alibi with one voice on it.",
+      "discoverableAt": {
+        "locationId": "anteroom",
+        "inspectableId": "av-console"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "floor-records",
+      "name": "Badge log and lobby camera",
+      "description": "The floor's own account of the night, exported with the downstairs night-desk officer's login: last entry Cole Grant 9:12 p.m., no exits until the responders, stair door sealed for eleven days. The lobby camera: Noah at the print nook 10:44–10:51; Marcus crossing toward the anteroom 10:55, recrossing 11:01. Nobody else moved through the lobby all night. Five people, one sealed floor.",
+      "discoverableAt": {
+        "locationId": "security-room",
+        "inspectableId": "camera-wall"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "copier-log",
+      "name": "The printer's job history",
+      "description": "42 pages, submitted 10:43 p.m. by N. Kim, released 10:44, collected 10:51 — seven minutes at a printer in full view of the lobby camera, spanning the minute of the fall.",
+      "discoverableAt": {
+        "locationId": "elevator-lobby",
+        "inspectableId": "copy-nook"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "ava-request-email",
+      "name": "Ava's 9:38 email to Priya",
+      "description": "Ava to Priya Shah, 9:38 p.m.: 'Pull access history for these three documents. Quietly. Tonight. Don't use IT.' The three: the December board pack, the February fairness opinion, the signed integration plan. She was running her own leak investigation on her last evening — and told no one why.",
+      "discoverableAt": {
+        "locationId": "anteroom",
+        "inspectableId": "priya-workstation"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "access-intersection",
+      "name": "The access intersection",
+      "description": "Priya's completed pulls, the list Ava never saw: December board pack — 41 people. February fairness opinion — 9. Signed integration plan, July 9 — two custodians: A. Krane, M. Bell. The short's third tranche followed the third document within two days. The tipper held documents only two people held.",
+      "discoverableAt": {
+        "locationId": "anteroom",
+        "inspectableId": "priya-workstation"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "avas-blackbook",
+      "name": "Ava's black book",
+      "description": "Her private notebook, taken from her desk by Noah after the fall. The last page, this week: 'M—?? 3 tranches: after 12/2, after 2/14, after 7/9. Doc 3 = two custodians. Ask P. for pulls tonight. 0417 — he'd still remember.' Beneath it, steadier: 'N: chief of staff after close. Tell him Thursday.' She got there first. She just ran out of Thursday.",
+      "discoverableAt": {
+        "locationId": "boardroom",
+        "inspectableId": "noahs-bag"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "integration-plan-p40",
+      "name": "Page 40 of the integration plan",
+      "description": "The signed Halcyon integration plan, one page tabbed and soft from handling: 'Finance organization consolidates under Halcyon Group CFO within 90 days of close.' No box on the new chart says Bell. A man read this page the way people reread a diagnosis, and then the deal it belongs to started leaking.",
+      "discoverableAt": {
+        "locationId": "marcus-office",
+        "inspectableId": "plan-binder"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "auk-invoice",
+      "name": "The Auk Holdings invoice",
+      "description": "From the finance suite's expense archive, 2019: a Cayman registered agent's invoice for the formation and standing fees of Auk Holdings Ltd. — approved for payment in the margin: M. Bell. The shell that received Cole's payments and sent the tips has a birth certificate, and the man who kept every receipt filed it himself.",
+      "discoverableAt": {
+        "locationId": "marcus-office",
+        "inspectableId": "te-archive"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "burner-texts",
+      "name": "The AUK burner",
+      "description": "Cole's prepaid phone, surrendered under terms: months of one-way tips signed 'AUK' — deal milestones, timing, and on the last night: 'Vote may not proceed. Hold position.' Sent at 11:58 p.m. — an hour after Ava Krane was dead, by someone who already knew what the morning would decide.",
+      "discoverableAt": {
+        "locationId": "anteroom",
+        "inspectableId": "coles-briefcase"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "jordans-nda",
+      "name": "The Vantage Labs offer",
+      "description": "Heavy bond paper from Jordan's bag: an offer letter — VP Platform, Vantage Labs — and a signing NDA. Dated last month. An executive quietly shopping himself while the merger decides his org's fate reads one way; the truth of it reads another.",
+      "discoverableAt": {
+        "locationId": "boardroom",
+        "inspectableId": "jordans-seat"
+      },
+      "canPresentTo": "*",
+      "redHerring": true
+    },
+    {
+      "id": "purge-request",
+      "name": "The retention change-ticket",
+      "description": "A change ticket in the building-systems queue: 'Records retention rotation — expedite to tonight, 2:00 a.m. Scope: telecom logs, camera archive, badge history.' Submitted under a founder-era super-admin account that predates the IT department and was never revoked — an account belonging to M. Bell, CFO. A man asking the building to forget the same night he keeps calling unforgettable.",
+      "discoverableAt": {
+        "locationId": "security-room",
+        "inspectableId": "systems-console"
+      },
+      "canPresentTo": "*"
     }
   ],
   "beats": [
     {
-      "id": "not_suicide",
+      "id": "the_minute",
+      "title": "10:47 becomes a fixed point",
       "once": true,
       "trigger": "on_discover",
       "when": {
-        "type": "has_evidence",
-        "evidenceId": "struggle-marks"
+        "type": "or",
+        "of": [
+          {
+            "type": "has_evidence",
+            "evidenceId": "fall-alert-phone"
+          },
+          {
+            "type": "has_evidence",
+            "evidenceId": "smartwatch-record"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_ambient",
+          "ambient": "grim_focus"
+        }
+      ],
+      "narrationHints": "10:47 is now a fixed point; everything on this floor has to hang from it. Do not conclude anything for the player — a fall at 10:47 fits every story still standing, for now."
+    },
+    {
+      "id": "body_seen",
+      "title": "The person under the plastic",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "game_flag",
+        "id": "examined_body",
+        "equals": true
+      },
+      "effects": [
+        {
+          "type": "set_ambient",
+          "ambient": "cold_resolve"
+        }
+      ],
+      "narrationHints": "The floor upstairs is negotiating; down here is what they're negotiating over. Let the visit change the register of the night without adding a single conclusion. Her unmarked hands and gritted soles are observations; leave them that way."
+    },
+    {
+      "id": "the_seam",
+      "title": "The glove has a chronology",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "has_evidence",
+            "evidenceId": "monogram-glove"
+          },
+          {
+            "type": "has_evidence",
+            "evidenceId": "coat-glove"
+          }
+        ]
       },
       "effects": [
         {
           "type": "set_game_flag",
-          "id": "examined_balcony",
+          "id": "suspects_staging",
           "value": true
         },
         {
           "type": "set_phase",
           "phaseId": "deepening"
+        },
+        {
+          "type": "set_ambient",
+          "ambient": "glass_and_suspicion"
         }
       ],
-      "narrationHints": "This was not a voluntary step into air."
+      "narrationHints": "The reorientation lands here, and it must land as the player's own arithmetic: the rail glove's cuff holds the coat pocket's lint, so it was in that pocket — in the anteroom — after Cole came inside at 10:34. Whoever put it on the rail took it from the coat afterward. State the chronology; never say 'planted' or 'frame' — let the word arrive in the player's mouth."
     },
     {
-      "id": "short_revealed",
+      "id": "closed_circle_beat",
+      "title": "One of five",
       "once": true,
       "trigger": "on_discover",
       "when": {
         "type": "has_evidence",
-        "evidenceId": "short-term-sheet"
+        "evidenceId": "floor-records"
       },
       "effects": [
         {
-          "type": "reveal_relationship",
-          "relationshipId": "cole_short"
-        },
-        {
-          "type": "add_pressure",
-          "characterId": "cole-grant",
-          "by": 2
+          "type": "set_game_flag",
+          "id": "closed_circle",
+          "value": true
         }
       ],
-      "narrationHints": "Billions on the wrong side of a trade."
+      "narrationHints": "The building closes the world: nobody in after 9:12, nobody out, stairs sealed. Whatever happened was authored by someone still on this floor. Say it with the badge log's flat voice, not the narrator's."
     },
     {
-      "id": "cole_cornered",
+      "id": "wake_after_death",
+      "title": "The tablet woke at 10:52",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "has_evidence",
+            "evidenceId": "tablet-wake-log"
+          },
+          {
+            "type": "or",
+            "of": [
+              {
+                "type": "has_evidence",
+                "evidenceId": "fall-alert-phone"
+              },
+              {
+                "type": "has_evidence",
+                "evidenceId": "smartwatch-record"
+              }
+            ]
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_phase",
+          "phaseId": "crisis"
+        },
+        {
+          "type": "set_ambient",
+          "ambient": "wire_tight"
+        }
+      ],
+      "narrationHints": "Five minutes after her heart stopped, someone picked up her tablet, entered her passcode on the first try, and arranged for her last unsent message to greet the room. The staged story now has an author and a timestamp. The question the whole case turns on becomes speakable: who knew her code? Do not answer it."
+    },
+    {
+      "id": "noah_helps",
+      "title": "Noah picks a side",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "game_flag",
+            "id": "suspects_staging",
+            "equals": true
+          },
+          {
+            "type": "talked_to",
+            "characterId": "noah-kim",
+            "minTimes": 2
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "noah_helping",
+          "value": true
+        },
+        {
+          "type": "add_trust",
+          "characterId": "noah-kim",
+          "by": 1
+        }
+      ],
+      "narrationHints": "Noah has been watching the Investigator work and has decided: this one is on Ava's side. The consoles he administers, the memories he's been holding — available now, if asked. He signals it the way an assistant signals everything: by suddenly being useful.",
+      "reactions": [
+        {
+          "characterId": "noah-kim",
+          "lineHint": "If you need the room systems — the bridge admin, her devices — I run all of that. Ask me. She'd want me to be asked.",
+          "stance": "resolved"
+        }
+      ]
+    },
+    {
+      "id": "noah_confides",
+      "title": "The black book changes hands",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "game_flag",
+            "id": "noah_helping",
+            "equals": true
+          },
+          {
+            "type": "character_trust_at_least",
+            "characterId": "noah-kim",
+            "value": 1
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "noah_confided",
+          "value": true
+        },
+        {
+          "type": "grant_evidence",
+          "evidenceId": "avas-blackbook"
+        },
+        {
+          "type": "reveal_relationship",
+          "relationshipId": "ava_protects_noah"
+        }
+      ],
+      "narrationHints": "He hands over the one thing he took and the one thing he's been not-saying. The book's last page is Ava solving the case herself — three tranches, two custodians, 0417 — and, under it, what she was going to tell him Thursday. Let both land; conclude neither.",
+      "reactions": [
+        {
+          "characterId": "noah-kim",
+          "lineHint": "She got there first, Investigator. She just ran out of Thursday.",
+          "stance": "grief_steadied"
+        }
+      ]
+    },
+    {
+      "id": "priya_flips",
+      "title": "Counsel changes clients",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "presented",
+        "evidenceId": "report-cover-email",
+        "toCharacterId": "priya-shah"
+      },
+      "effects": [
+        {
+          "type": "reveal_knowledge",
+          "characterId": "priya-shah",
+          "knowledgeId": "priya-pull-request"
+        },
+        {
+          "type": "grant_evidence",
+          "evidenceId": "ava-request-email"
+        },
+        {
+          "type": "grant_evidence",
+          "evidenceId": "access-intersection"
+        },
+        {
+          "type": "set_game_flag",
+          "id": "priya_helping",
+          "value": true
+        },
+        {
+          "type": "set_game_flag",
+          "id": "security_access",
+          "value": true
+        },
+        {
+          "type": "set_game_flag",
+          "id": "finance_unlocked",
+          "value": true
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "priya-shah",
+          "value": "open"
+        },
+        {
+          "type": "add_trust",
+          "characterId": "priya-shah",
+          "by": 1
+        }
+      ],
+      "narrationHints": "The bankers' email reframes her whole night: the leak was Ava's own live investigation, and Priya's containment has been protecting the thing Ava was hunting. She flips completely and formally — pulls on the screen, her master authorization opening the security room and the finance suite. The institution correcting itself is a cold, impressive thing to watch.",
+      "reactions": [
+        {
+          "characterId": "priya-shah",
+          "lineHint": "I sealed this floor to control a narrative. It appears I sealed it around one. My authorization, Investigator — the security room and the finance suite. On the record.",
+          "stance": "institutional_resolve"
+        }
+      ]
+    },
+    {
+      "id": "auk_thread",
+      "title": "The bird in the paper",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "has_evidence",
+            "evidenceId": "short-term-sheet"
+          },
+          {
+            "type": "game_flag",
+            "id": "suspects_staging",
+            "equals": true
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "knows_auk",
+          "value": true
+        }
+      ],
+      "narrationHints": "Three Cayman shells in the addendum, and one has a name that sounds like a bird: Auk Holdings Ltd. Shells get formed by agents, agents send invoices, and invoices get filed by someone. A thread the player can now pull — mention it exists; do not pull it for them."
+    },
+    {
+      "id": "cole_trades",
+      "title": "Cole makes his trade",
       "once": true,
       "trigger": "on_present",
       "when": {
@@ -524,40 +1695,371 @@
         "of": [
           {
             "type": "presented",
-            "evidenceId": "monogram-glove",
+            "evidenceId": "short-term-sheet",
             "toCharacterId": "cole-grant"
           },
           {
             "type": "has_evidence",
-            "evidenceId": "short-term-sheet"
+            "evidenceId": "monogram-glove"
           }
         ]
       },
       "effects": [
         {
-          "type": "set_willingness",
+          "type": "reveal_knowledge",
           "characterId": "cole-grant",
-          "value": "hostile"
+          "knowledgeId": "cole-trades-auk"
         },
         {
-          "type": "set_alibi_status",
+          "type": "set_game_flag",
+          "id": "cole_traded",
+          "value": true
+        },
+        {
+          "type": "set_game_flag",
+          "id": "knows_auk",
+          "value": true
+        },
+        {
+          "type": "grant_evidence",
+          "evidenceId": "burner-texts"
+        },
+        {
+          "type": "set_stance",
           "characterId": "cole-grant",
+          "value": "cornered_capital"
+        },
+        {
+          "type": "reveal_relationship",
+          "relationshipId": "marcus_leak_cole"
+        }
+      ],
+      "narrationHints": "Cornered on the short with his glove in an evidence bag, Cole does what Cole does: he trades. The burner comes out; the tips signed AUK; the last message sent an hour after her death by someone who already knew the vote would die. He cannot name Marcus — he has never known — and his genuine ignorance should be performed straight: the frame used a man who couldn't defend himself with the truth without confessing to a felony.",
+      "reactions": [
+        {
+          "characterId": "cole-grant",
+          "lineHint": "I short frauds, Investigator. I don't produce corpses. Producing corpses is what frauds do.",
+          "stance": "cornered_capital"
+        }
+      ]
+    },
+    {
+      "id": "marcus_points_at_noah",
+      "title": "The helpful thought about the passcode",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "game_flag",
+            "id": "suspects_staging",
+            "equals": true
+          },
+          {
+            "type": "talked_to",
+            "characterId": "marcus-bell",
+            "minTimes": 1
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_stance",
+          "characterId": "noah-kim",
+          "value": "under_suspicion"
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "noah-kim",
+          "by": 1
+        }
+      ],
+      "narrationHints": "Marcus, unprompted and gently, does the villain's live move: 'If someone opened her tablet — and I hate even asking this — who set up her devices? Who knew her codes? The boy worshipped her, of course. Grief does strange arithmetic.' It is aimed, it is deniable, and it is the first thing he has volunteered all night that faces away from Cole. A player paying attention should notice the change of target; the narration must not notice it for them.",
+      "reactions": [
+        {
+          "characterId": "marcus-bell",
+          "lineHint": "I hate even asking this — but who else knew her codes? Noah set up every device she owned.",
+          "stance": "steady_hand"
+        }
+      ]
+    },
+    {
+      "id": "records_purge_starts",
+      "title": "The building is asked to forget",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "case_active"
+          },
+          {
+            "type": "or",
+            "of": [
+              {
+                "type": "has_evidence",
+                "evidenceId": "bridge-call-log"
+              },
+              {
+                "type": "has_evidence",
+                "evidenceId": "floor-records"
+              }
+            ]
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "start_clock",
+          "clockId": "records_rotation",
+          "turns": 6
+        },
+        {
+          "type": "move_character",
+          "characterId": "marcus-bell",
+          "toLocationId": "security-room"
+        }
+      ],
+      "narrationHints": "The player has started reading the building's memory, and the building's memory has a custodian. Somewhere in the systems queue a retention job appears, scoped to exactly the records that matter, timed for 2:00 a.m. Marcus has quietly left the boardroom. The floor's records are now a resource with a countdown — surface the urgency diegetically (a systems chime, an IT confirmation email cc'd to counsel), never as a game timer."
+    },
+    {
+      "id": "caught_at_console",
+      "title": "Caught at the console",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "clock_running",
+            "clockId": "records_rotation"
+          },
+          {
+            "type": "player_at",
+            "locationId": "security-room"
+          },
+          {
+            "type": "character_at",
+            "characterId": "marcus-bell",
+            "locationId": "security-room"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "purge_caught",
+          "value": true
+        },
+        {
+          "type": "grant_evidence",
+          "evidenceId": "purge-request"
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "marcus-bell",
+          "by": 2
+        },
+        {
+          "type": "set_stance",
+          "characterId": "marcus-bell",
+          "value": "brittle_polish"
+        },
+        {
+          "type": "move_character",
+          "characterId": "marcus-bell",
+          "toLocationId": "boardroom"
+        }
+      ],
+      "narrationHints": "The single most satisfying moment this case can produce: the CFO at the security console at one in the morning, a retention ticket open on the screen, and the Investigator in the doorway. He does not panic — he explains. 'Records hygiene ahead of the legal hold. Counsel would want it.' The explanation is fluent, plausible, and the first thing tonight he has had to improvise. Let the player feel the mask move.",
+      "reactions": [
+        {
+          "characterId": "marcus-bell",
+          "lineHint": "Records hygiene, Investigator — policy ahead of a legal hold. You'd have to be quite tired to read it any other way.",
+          "stance": "brittle_polish"
+        }
+      ]
+    },
+    {
+      "id": "records_purged",
+      "title": "The rotation runs",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "clock_expired",
+            "clockId": "records_rotation"
+          },
+          {
+            "type": "game_flag",
+            "id": "purge_caught",
+            "equals": false
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "records_purged",
+          "value": true
+        }
+      ],
+      "narrationHints": "At 2:00 a.m. the building forgets: camera archive rotated, telecom logs gone. Whatever the player already exported, they keep; whatever they left in the machines is now a rumor. Narrate it as an absence discovered, not an alarm — a console that suddenly has less to say."
+    },
+    {
+      "id": "marcus_cornered_beat",
+      "title": "The alibi with one voice on it",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "presented",
+            "evidenceId": "bridge-call-log",
+            "toCharacterId": "marcus-bell"
+          },
+          {
+            "type": "or",
+            "of": [
+              {
+                "type": "has_evidence",
+                "evidenceId": "access-intersection"
+              },
+              {
+                "type": "has_evidence",
+                "evidenceId": "auk-invoice"
+              },
+              {
+                "type": "has_evidence",
+                "evidenceId": "purge-request"
+              }
+            ]
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_alibi_status",
+          "characterId": "marcus-bell",
           "value": "broken"
         },
         {
+          "type": "set_willingness",
+          "characterId": "marcus-bell",
+          "value": "hostile"
+        },
+        {
+          "type": "set_game_flag",
+          "id": "marcus_cornered",
+          "value": true
+        },
+        {
           "type": "set_phase",
-          "phaseId": "crisis"
+          "phaseId": "confrontation"
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "marcus-bell",
+          "by": 2
         },
         {
           "type": "start_clock",
-          "clockId": "cole_lawyers",
+          "clockId": "retainer_revoked",
           "turns": 8
         }
       ],
-      "narrationHints": "Cole's smile fails. Finish before the lawyers land."
+      "narrationHints": "The bridge log plus any second thread — the access list, the shell's invoice, the purge ticket — and the helpful co-founder is done helping. He goes cold, precise, and procedural, and he makes one phone call: to the board chair, about the scope, cost, and 'evident bias' of this retainer. A clock starts. The player's authority is a signature, and Marcus has begun unsigning it.",
+      "reactions": [
+        {
+          "characterId": "marcus-bell",
+          "lineHint": "Seventeen minutes on hold is not a crime, Investigator. Let me tell you what is: practicing without a license, on my floor, on the chair's dime. We'll see how long the dime lasts.",
+          "stance": "cold_precision"
+        }
+      ]
     },
     {
-      "id": "wrong_noah",
+      "id": "retainer_dies",
+      "title": "The retainer is revoked",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "case_active"
+          },
+          {
+            "type": "clock_expired",
+            "clockId": "retainer_revoked"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "end_case",
+          "outcome": "failure",
+          "endingId": "failure_revoked",
+          "endingKind": "escaped"
+        }
+      ],
+      "narrationHints": "The chair's own lawyer calls: the retainer is terminated 'pending a review of scope.' Building security — polite, apologetic — walks the Investigator to the elevator. Marcus does not gloat; he thanks you for your diligence, on the record, in front of everyone. Failure by escape: the narrative wins the room."
+    },
+    {
+      "id": "board_call_deadline",
+      "title": "Seven o'clock",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "case_active"
+          },
+          {
+            "type": "time_at_least",
+            "slotId": "board_call"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "end_case",
+          "outcome": "failure",
+          "endingId": "failure_time_expired",
+          "endingKind": "time_expired"
+        }
+      ],
+      "narrationHints": "Seven o'clock. The board call convenes with the Investigator holding nothing better than the story the floor was dressed to tell. Failure by time: the market opens on it."
+    },
+    {
+      "id": "first_light_beat",
+      "title": "First light",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "time_at_least",
+        "slotId": "first_light"
+      },
+      "effects": [
+        {
+          "type": "set_light",
+          "light": "dawn"
+        },
+        {
+          "type": "set_ambient",
+          "ambient": "dawn_deadline"
+        }
+      ],
+      "narrationHints": "Dawn arrives sideways through fifty-one floors of glass and makes everyone look like they've been up all night, which they have. The board call is one hour out. Urgency through light, not through announcement."
+    },
+    {
+      "id": "room_freezes_noah",
+      "title": "The room freezes around Noah",
       "once": true,
       "trigger": "on_turn",
       "when": {
@@ -575,38 +2077,42 @@
           "type": "set_willingness",
           "characterId": "jordan-lee",
           "value": "hostile"
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "priya-shah",
+          "value": "guarded"
         }
       ],
-      "narrationHints": "Blaming the assistant freezes the room."
+      "narrationHints": "Accusing the assistant closes the room. Noah goes silent — whatever he was still carrying stays carried. Jordan turns openly hostile; Priya reverts to counsel. And one detail for the attentive: Marcus, across the room, refills his coffee and finally drinks it. The narration states the coffee; nothing more."
     },
     {
-      "id": "cole_walks",
+      "id": "cole_lawyers_up",
+      "title": "Grant Capital lawyers up",
       "once": true,
       "trigger": "on_turn",
       "when": {
-        "type": "and",
-        "of": [
-          {
-            "type": "case_active"
-          },
-          {
-            "type": "clock_expired",
-            "clockId": "cole_lawyers"
-          }
-        ]
+        "type": "game_flag",
+        "id": "falsely_accused_cole-grant",
+        "equals": true
       },
       "effects": [
         {
-          "type": "end_case",
-          "outcome": "failure",
-          "endingId": "failure_escaped",
-          "endingKind": "escaped"
+          "type": "set_willingness",
+          "characterId": "cole-grant",
+          "value": "silent"
+        },
+        {
+          "type": "set_stance",
+          "characterId": "cole-grant",
+          "value": "litigation_wall"
         }
       ],
-      "narrationHints": "Cole leaves under counsel. Markets open on a lie."
+      "narrationHints": "Accused of murder, Cole stops trading and starts suing. Everything he might still have given — the burner, the AUK thread — goes behind a wall of counsel. The frame's intended victim is now defending himself with silence, which is exactly what the frame's author counted on."
     },
     {
       "id": "wrap_success",
+      "title": "The floor at dawn",
       "once": true,
       "trigger": "on_turn",
       "when": {
@@ -633,28 +2139,46 @@
       "effects": [
         {
           "type": "move_character",
-          "characterId": "cole-grant",
+          "characterId": "marcus-bell",
           "toLocationId": "boardroom"
         },
         {
+          "type": "set_willingness",
+          "characterId": "marcus-bell",
+          "value": "open"
+        },
+        {
           "type": "set_stance",
-          "characterId": "cole-grant",
-          "value": "cornered_capital"
+          "characterId": "marcus-bell",
+          "value": "mask_down"
+        },
+        {
+          "type": "set_ambient",
+          "ambient": "aftermath_glass"
+        },
+        {
+          "type": "set_light",
+          "light": "dawn"
         }
       ],
-      "narrationHints": "Glass and silence. The merger will not close as planned."
+      "narrationHints": "Stage the return to normal with causes attached: the chair arrives at first light with enforcement attorneys and building security because the Investigator's findings summoned them. Marcus, held in the boardroom he ran all night, is finally unmanaged — answer his own design in his own voice if asked, nothing more. Cole is walked out separately, trading to the end. Noah gets the black book back. The vote is adjourned; the market opens on the truth. Nobody rings a bell."
     }
   ],
   "solution": {
-    "summary": "Cole Grant pushed Ava Krane from the balcony after she threatened to expose his short positions through shell companies. His monogrammed glove caught on the rail. Struggle marks rule out clean suicide. Term sheet and tablet message establish motive.",
+    "summary": "Marcus Bell — CFO and erased co-founder — pushed Ava Krane from the terrace at 10:47 p.m. and then framed Cole Grant with the evidence the floor was found dressed in. For eight months Marcus had been AUK: selling confidential merger milestones to Grant Capital's short through Auk Holdings, a Cayman shell he formed in 2019, because the Halcyon integration plan (page 40) consolidated him out of the company that once carried his name. On July 15 Halcyon's bankers flagged the short's timing to Ava; the third tranche tracked a document only she and Marcus held. On her last evening she asked Priya for quiet access pulls at 9:38, drafted her threat to Cole at 10:41, and at 10:43 told Marcus 'Terrace. Now.' in her board voice. On the terrace she showed him the printed surveillance report and gave him until the 7:00 board call to resign and cooperate. She turned her back to look at her city; he pushed her. The staging followed, cold and improvised from true materials: her printed report pocketed, her drawer searched and left ajar with the short addendum on top; her tablet woken at 10:52 with the passcode 0417 (the Bellkrane founding date he tells at every offsite) and left displaying her unsent threat; Cole's left glove lifted from the anteroom coat rack at about 10:55 (Priya saw him back there; the lobby camera logs the crossing) and wedged into the rail join; his own absence laundered as a 17-minute banker call that the bridge log records as one participant on a call no calendar scheduled. The seams: the wake log postdating the fall-alert minute; the coat-pocket lint inside the rail glove's cuff plus witnesses holding Cole at the table from 10:34 on; the one-voice bridge; the empty surveillance folder; the access intersection naming two custodians; the shell's own 2019 invoice approved 'M. Bell'; and the AUK burner message sent at 11:58, an hour after her death.",
     "guiltyPartyIds": [
-      "cole-grant"
+      "marcus-bell"
     ],
-    "method": "Pushed from boardroom balcony after struggle",
-    "motive": "Stop exposure of illegal/short scheme before merger vote",
+    "method": "Pushed from the terrace at 10:47 during a private confrontation, then framed Cole Grant — the glove lifted from Cole's coat and wedged on the rail, Ava's tablet woken after her death to display her unsent threat, the short addendum left out in an opened drawer, and his own absence covered by a one-man conference bridge",
+    "motive": "Ava had traced the merger leak to him — he was AUK, selling deal milestones to Grant Capital's short through his own Cayman shell — and the Halcyon integration plan erased him from the company that used to carry his name; she gave him until the 7:00 board call to resign and cooperate, and he chose the rail instead",
     "criticalEvidenceIds": [
       "monogram-glove",
-      "short-term-sheet"
+      "coat-glove",
+      "tablet-wake-log",
+      "fall-alert-phone",
+      "bridge-call-log",
+      "access-intersection",
+      "auk-invoice"
     ],
     "rubric": {
       "partialCredit": true,
@@ -662,38 +2186,72 @@
       "successPolicy": "identity_plus_one",
       "requiredFacts": [
         {
-          "id": "killer-cole",
+          "id": "killer-marcus",
           "role": "identity",
-          "description": "Cole Grant",
+          "description": "Identifies Marcus Bell as the killer",
           "matchHints": [
-            "cole",
-            "grant"
+            "marcus",
+            "bell",
+            "cfo",
+            "co-founder",
+            "cofounder"
           ]
         },
         {
           "id": "method-push",
           "role": "method",
-          "description": "Push / balcony / struggle",
+          "description": "Pushed her from the terrace/over the rail at 10:47, during a private confrontation",
           "matchHints": [
             "push",
+            "shove",
+            "threw her",
+            "over the rail",
+            "terrace",
             "balcony",
-            "rail",
-            "struggle",
-            "fall",
-            "threw"
+            "10:47"
           ]
         },
         {
-          "id": "motive-short",
-          "role": "motive",
-          "description": "Short / merger / expose / shells",
+          "id": "staging-frame",
+          "role": "supporting",
+          "description": "Framed Cole Grant afterward — planted the glove from the coat, woke her tablet after death to display the threat, left the drawer and addendum out, faked the bridge-call alibi",
           "matchHints": [
-            "short",
-            "merger",
+            "frame",
+            "framed",
+            "planted",
+            "staged",
+            "glove",
+            "wedged",
+            "woke the tablet",
+            "10:52",
+            "after she died",
+            "after her death",
+            "fake alibi",
+            "bridge",
+            "one participant"
+          ]
+        },
+        {
+          "id": "motive-leak",
+          "role": "motive",
+          "description": "She had traced the leak to him — AUK, the shell, the short's tips — and page 40 erased him; she gave him until the board call to resign",
+          "matchHints": [
+            "leak",
+            "auk",
             "shell",
-            "expose",
-            "vote",
-            "fund"
+            "tips",
+            "tipper",
+            "short",
+            "insider",
+            "traced",
+            "surveillance report",
+            "access",
+            "two custodians",
+            "erased",
+            "page 40",
+            "integration plan",
+            "resign",
+            "expose"
           ]
         }
       ]
@@ -702,56 +2260,230 @@
   "canon": {
     "timeline": [
       {
-        "at": "10:41 p.m.",
-        "event": "Ava drafts threat to Cole on tablet.",
-        "locationId": "boardroom",
-        "actorIds": []
+        "id": "founding",
+        "at": "April 17, 2004",
+        "event": "The first customer check clears for Bellkrane Systems — Ava Krane and Marcus Bell, a rented office over a dry cleaner. The check gets framed. The date becomes Ava's passcode for everything, forever, because sentiment was the one bad security practice she allowed herself.",
+        "actorIds": [
+          "ava-krane",
+          "marcus-bell"
+        ]
       },
       {
-        "at": "10:45 p.m.",
-        "event": "Cole pushes Ava; glove snags.",
-        "locationId": "balcony",
+        "id": "the-rename",
+        "at": "2012",
+        "event": "Bellkrane Systems becomes Krane Systems. The magazine cover says THE FOUNDER, singular. Ava frames the cover; Marcus keeps the 2004 photograph on his own wall. The wound is quiet, structural, and never once discussed.",
+        "actorIds": [
+          "ava-krane",
+          "marcus-bell"
+        ]
+      },
+      {
+        "id": "the-shell",
+        "at": "2019",
+        "event": "Marcus forms Auk Holdings Ltd. through a Cayman registered agent — originally a vanity vehicle for private investments. The agent's invoice goes through the expense archive he keeps personally, approved 'M. Bell,' because keeping every receipt is his religion. The shell waits four years for a purpose.",
+        "actorIds": [
+          "marcus-bell"
+        ]
+      },
+      {
+        "id": "page-forty",
+        "at": "Ten months ago",
+        "event": "Halcyon Integrated opens merger talks. Marcus reads the draft integration plan: 'Finance organization consolidates under Halcyon Group CFO within 90 days of close.' No box on the chart says Bell. He raises it with Ava once; she says they'll fix it after the vote. He does not raise it again. He starts rereading page 40 the way people reread a diagnosis.",
+        "locationId": "marcus-office",
+        "actorIds": [
+          "marcus-bell",
+          "ava-krane"
+        ]
+      },
+      {
+        "id": "the-tips",
+        "at": "Eight months ago, then February, then July 9",
+        "event": "Marcus begins selling deal milestones to Grant Capital's short as 'AUK' — anonymous tips from a burner, payments into Auk Holdings. Three tranches of the short follow three confidential documents: the December 2 board pack (41 holders), the February 14 fairness opinion (9 holders), the signed integration plan of July 9 (two custodians: Krane, Bell). Cole never learns the name. If the deal dies, the short pays and page 40 dies with it; either way, Marcus stops being a line item.",
+        "actorIds": [
+          "marcus-bell",
+          "cole-grant"
+        ]
+      },
+      {
+        "id": "the-flag",
+        "at": "July 15",
+        "event": "Halcyon's bankers send Ava a market-surveillance report, eyes only: the short's tranches each follow a confidential milestone within 48 hours; the counterparty is probably advised from inside. One printed copy, per her request. She tells no one — not counsel, not her co-founder — and starts checking dates against the access system herself, in the black book.",
+        "locationId": "ava-office",
+        "actorIds": [
+          "ava-krane"
+        ]
+      },
+      {
+        "id": "cole-arrives",
+        "at": "9:12 p.m.",
+        "event": "Cole Grant badges up — the last entry of the night — gloves on against November, invited to make a final argument against the vote. His coat and gloves go to the anteroom rack. For the confidential session the floor guard has been pulled down to the tower's lobby desk: off the floor, out of earshot, and — it will matter — still holding the login that exports the building's records.",
+        "locationId": "elevator-lobby",
         "actorIds": [
           "cole-grant"
         ]
+      },
+      {
+        "id": "the-pull-request",
+        "at": "9:38 p.m.",
+        "event": "Ava emails Priya: pull access history for the three milestone documents — quietly, tonight, without IT. Priya, buried in the closing rider, queues it without asking why. Ava's black book already holds the arithmetic: 'Doc 3 = two custodians. 0417 — he'd still remember.'",
+        "locationId": "anteroom",
+        "actorIds": [
+          "ava-krane",
+          "priya-shah"
+        ]
+      },
+      {
+        "id": "coles-call",
+        "at": "10:29 to 10:34 p.m.",
+        "event": "Cole steps onto the terrace for a cigarette and a call from his prime broker: if the vote passes at the open, the fund bleeds. He comes back in grey, pulls off his gloves, and stuffs them into his coat pockets in the anteroom — Jordan, timestamping his notes at the table, watches all of it. From 10:34 until the scream, Cole is at the boardroom table being poisonous about the roadmap, in Jordan's constant view.",
+        "locationId": "terrace",
+        "actorIds": [
+          "cole-grant",
+          "jordan-lee"
+        ]
+      },
+      {
+        "id": "the-draft",
+        "at": "10:41 p.m.",
+        "event": "At her place, Ava drafts the message to Cole — 'if you short us before the vote I will expose the shell companies' — and does not send it. Cole is tomorrow's problem. Tonight's problem is the custodian of document three.",
+        "locationId": "boardroom",
+        "actorIds": [
+          "ava-krane"
+        ]
+      },
+      {
+        "id": "terrace-now",
+        "at": "10:43 p.m.",
+        "event": "Ava leans to Marcus: 'Terrace. Now.' — her board voice, two words, heard by Noah as he leaves to release the 10:43 print job. She picks up her tablet from the table, walks out through her office — setting the tablet on her office desk and picking up the printed surveillance report on the way — and steps onto the terrace. Marcus follows a minute behind, dialing bridge 4471 from his mobile as he goes, on reflex, building deniability for a conversation he already fears: seventeen minutes, one participant, a call no calendar scheduled.",
+        "locationId": "boardroom",
+        "actorIds": [
+          "ava-krane",
+          "marcus-bell",
+          "noah-kim"
+        ]
+      },
+      {
+        "id": "the-confrontation",
+        "at": "10:45 to 10:47 p.m.",
+        "event": "On the terrace outside her office, Ava shows Marcus the report and the arithmetic: three tranches, two custodians, one name. She does not shout until the end — one syllable, cut short, that Priya hears through the anteroom wall as boardroom weather. Her terms: resign at the 7:00 board call, cooperate with counsel, and the lawyers decide what he is. Then she turns her back on him to look at her city — heels at the rail base, toes toward the building. Twenty-two years, the rename, page 40, and the word 'compliance' — and Marcus pushes her over the rail. 10:47: her watch records the fall and tries to call for help; the setback's concrete canyon swallows the signal. The push is not premeditated. Everything after it is.",
+        "locationId": "terrace",
+        "actorIds": [
+          "marcus-bell",
+          "ava-krane"
+        ]
+      },
+      {
+        "id": "the-staging",
+        "at": "10:48 to 11:01 p.m.",
+        "event": "Marcus works cold and fast, phone still on the bridge in his pocket. He pockets the printed report; searches her office file drawer for copies and leaves it ajar with the short addendum on top — his hurry, soon to be read as hers. At 10:52, alone in her office, he wakes her tablet on the desk — passcode 0417, first try — reads her unsent draft to Cole, recognizes a gift, and switches off auto-lock. Around 10:55 he crosses to the anteroom — the lobby camera logs it — passing Priya as she steps into the boardroom about a rider clause. Alone with the coat rack, he makes a coffee he will never drink and lifts the left glove from Cole's coat. At 10:58 he walks it back through Ava's office to the terrace and wedges it into the rail join by the boardroom door. At 11:01 he re-enters the boardroom through her office door carrying her tablet, sets it down awake at her place — his one act of staging performed in full view, dressed as concern — and asks if anyone has seen Ava. In his model of the night it is safe: nobody can prove when she died, so nobody can prove the 10:52 wake wasn't hers. He does not know about the watch.",
+        "locationId": "anteroom",
+        "actorIds": [
+          "marcus-bell",
+          "priya-shah"
+        ]
+      },
+      {
+        "id": "the-scream",
+        "at": "11:05 p.m.",
+        "event": "Noah, back since 10:51, has been head-down collating board sets, assuming Ava stepped into her office with Marcus. At 11:05 the room finally reaches him — the wind, the terrace door standing open, her chair still empty. He goes to the door, then to the rail, and looks over because somebody has to. Then he screams.",
+        "locationId": "boardroom",
+        "actorIds": [
+          "noah-kim"
+        ]
+      },
+      {
+        "id": "the-management",
+        "at": "11:08 to 11:20 p.m.",
+        "event": "Marcus takes charge: building security, the board chair, comms — visibly indispensable, managing the narrative from the first minute. Priya seals the floor at 11:20 and invokes privilege. Noah, at a quarter past eleven, takes Ava's black book off her desk so the room cannot read her. Nobody notices the coffee going cold by the espresso machine.",
+        "locationId": "boardroom",
+        "actorIds": [
+          "marcus-bell",
+          "priya-shah",
+          "noah-kim"
+        ]
+      },
+      {
+        "id": "the-last-tip",
+        "at": "11:58 p.m.",
+        "event": "From a stairwell landing's dead spot in the camera's rotation, Marcus sends the burner one last AUK message: 'Vote may not proceed. Hold position.' — protecting the short, and the percentage, an hour after Ava's death. The frame needs Cole guilty of murder; the retirement fund needs Cole's short intact. He is managing both.",
+        "actorIds": [
+          "marcus-bell"
+        ]
+      },
+      {
+        "id": "the-retainer",
+        "at": "11:47 p.m.",
+        "event": "The on-call detective walks the setback and the boardroom at 11:30, reads the night the way it was dressed to be read — deal pressure, an open door, a threat on her own tablet, no signs of struggle — and logs the death non-suspicious pending the medical examiner. The scene goes back to the building until morning; a patrol uniform stays with the body. The staged story's first victory is procedural. The board chair — who heard 'non-suspicious' and did not believe it — retains an independent investigator under the tower's private-security clause, findings due before the 7:00 board call. The badge reader logs the Investigator up at 11:47: the floor's first new entry since 9:12, and the last.",
+        "locationId": "elevator-lobby",
+        "actorIds": []
       }
-    ]
+    ],
+    "notes": "THE STAGED STORY is Cole's guilt, built almost entirely from true materials: Cole really was on the terrace (10:29–10:34), really is short via shells, really was threatened in Ava's unsent draft. Only three things were fabricated — the glove's location, the tablet's wakefulness, the drawer's invitation — and each fabrication is a seam (lint and chronology; the 10:52 wake log against the 10:47 fall alert; the empty surveillance folder). ONLY MARCUS LIES about the night. Cole lies only about the short (and floats suicide as theory, not testimony); Jordan is honest including his shame; Priya's obstruction is institutional, not personal; Noah's concealment is grief. Keep them all suspectable by honest routes: Cole has motive and physical evidence aimed at him; Noah has the passcode and the last-alone window plus the taken book; Priya has proximity to the shout and the sealed floor; Jordan has the alone-at-the-table stretch and the letter he lies badly about. PERFORM RESTRAINT: state observations, never conclusions — 'wedged, unscuffed, lint in the cuff,' never 'planted'; 'woken at 10:52, first-try passcode,' never 'by the killer.' The words 'frame,' 'planted,' 'staged' belong to the player. MARCUS PERFORMS HELPFULNESS: his deflections are gifts of theory (all facing Cole, later Noah), never stonewalls; he concedes exactly what each document already proves and nothing more; his one unmanaged moment is the founding story (the check, the date) — perform it warm, because it is true, and it is also the confession's seed. NEVER volunteer 0417's significance; it must be assembled from Noah, the framed check, or the black book. THE PUSH WAS NOT PREMEDITATED — reject premeditation theories gently at judgment (the bridge call was dialed to launder a conversation, not a murder; the staging was improvised from what the floor offered). PROBABLE vs PROVEN: the confrontation's exact words are known only through Marcus's confession; until 'marcus-breaks' fires, no character may narrate the terrace conversation. Cole genuinely does not know AUK's identity — his ignorance is performed straight and is why the frame nearly worked: the one man who could have redirected suspicion could only do it by confessing to a felony. THE SHOUT (10:46, one syllable, command) stays uncharacterized beyond Priya's account. DUAL-MEANING CLUES to protect: the ajar drawer (his search, read as her hurry), the undrunk coffee (his pretext, read as anyone's late night), 'managing the narrative' (his character trait, and the crime's exact description). THE TABLET'S JOURNEY: drafted at her table seat (10:41), set on her office desk (10:43), woken there by Marcus (10:52), carried out by him at 11:01 and laid at her place in open view as performed concern — his cover story ('it was already awake on her desk') is technically consistent with everything except the watch's 10:47, which he does not know exists; that asymmetry is the case's deepest trap and must never be surrendered early. MARCUS'S PLAN HORIZON: he expected a fall or suicide certification within days, with the Cole frame as insurance and the 2:00 a.m. retention rotation erasing the loose ends; he never planned to survive a competent same-night investigator, and his improvisations under the player's pressure should feel like a man discovering that. WHY THE FLOOR IS YOURS: the on-call detective bought the staged story — deal pressure, open door, no struggle — and logged the death non-suspicious pending the medical examiner, releasing the scene to the building until morning; the frame's first victim was procedure itself. The tower's private-security protocol plus the chair's clause hold the 51st floor as a corporate matter overnight. If asked, characters treat this as normal for an address like Krane Tower and slightly shameful all the same. SYSTEMS ACCESS: Marcus's purge ticket rides a founder-era super-admin account that predates the IT org and was never revoked — the keeper of every system, betrayed by his own tenure."
   },
   "endings": [
     {
       "id": "success_earned",
       "when": "success",
       "kind": "solved",
-      "title": "Markets closed",
-      "templateNotes": "Cole is held. The short is public. RETURN TO NORMAL: the board and outside authority own the crisis; the skyline does not care, but the private war is over for you tonight."
+      "title": "The narrative closes",
+      "templateNotes": "Named with the chain that holds: the wake log against the fall alert, the lint in the glove's cuff and the coat-rack chronology, the one-voice bridge, the access intersection, and Auk's own invoice. Marcus does not shout; he sets his composure down like a heavy case and accounts for his design in his own voice — the rename, page 40, 'you can be two men in the same hour.' RETURN TO NORMAL, with causes: the board chair arrives at first light with enforcement attorneys and building security because the findings summoned them; the vote is adjourned; the market opens on the truth and takes it badly and honestly. Cole is walked out separately for the short, trading testimony on AUK all the way to the elevator. Land on the people: Noah gets the black book back and someone tells him the promotion note was real; Jordan deletes the recruiter's number; Priya files the retainer under 'money well spent' and means it as grief. The twelfth bell does not ring. The company survives the morning. Do not invent documents the player never found."
     },
     {
       "id": "success_lucky",
       "when": "success",
       "kind": "lucky_solve",
-      "title": "Call on the floor",
-      "templateNotes": "You name Cole early; evidence still fits. RETURN TO NORMAL: he is detained; the short can no longer hide behind your silence. Do not invent documents unfound."
+      "title": "Called before the open",
+      "templateNotes": "Marcus named early, on instinct and thin paper. The name lands because he cannot know how much the Investigator holds — the purge he ordered, the bridge he dialed, the book Noah took are all still live threats in his mind, and a man who has been managing the narrative all night cannot stop managing it now: he negotiates, and negotiation is its own confession. Do not invent proof the player never found; his half-collapse stands on his own nerve failing. The chair suspends him pending the enforcement referral; the slow case gets built by daylight people. Noah, watching, finally says the 'Terrace. Now.' out loud — to the room, not to you. It is enough."
     },
     {
-      "id": "partial",
+      "id": "partial_head",
       "when": "partial",
       "kind": "partial",
-      "title": "Material nonpublic",
-      "templateNotes": "Enough smoke for arrest; trial will be a war. Thin RETURN TO NORMAL: the immediate scheme is interrupted; lawyers replace the locked-floor night."
+      "title": "Enough to freeze the accounts",
+      "requiresFlags": {
+        "accused_marcus-bell": true
+      },
+      "templateNotes": "The right name and a file with holes in it. The board suspends Marcus and freezes what can be frozen; his lawyers call it grief-fueled scapegoating of a grieving co-founder, and some of the street believes them. Thin RETURN TO NORMAL: the vote is adjourned, the records preserved under legal hold, the enforcement referral filed — the machinery of proof passes to slower hands. On the floor it lands unevenly: Noah tells the daylight investigators everything in one unbroken hour; Priya's pulls become Exhibit A; Cole's counsel smells the frame and starts helping, which is its own kind of justice. Marcus goes home at dawn, unemployed and unarrested, to wait for a knock that will take months. The player should feel the gap between knowing and proving as the case's last lesson, not as a door slammed."
+    },
+    {
+      "id": "partial_glimpse",
+      "when": "partial",
+      "kind": "partial",
+      "title": "Material, nonpublic",
+      "templateNotes": "The staging is established — the wake log, the glove's chronology — so 'fall' and 'suicide' die as verdicts and the board call convenes on the word 'homicide.' But the name carried was wrong or absent, and the file passes upward unfinished. RETURN TO NORMAL, scaled: legal hold on everything, the vote adjourned, the floor unsealed by people with warrants. Marcus attends the board call as acting voice of the company and reads a statement of profound loss, beautifully. If an innocent was accused, the room remembers who accused them. The truth exists now in pieces on the record, waiting for someone with more mornings to assemble it."
+    },
+    {
+      "id": "failure_wrong_cole",
+      "when": "failure",
+      "kind": "wrong_accusation",
+      "title": "The short goes to jail; the killer signs the condolences",
+      "requiresFlags": {
+        "falsely_accused_cole-grant": true
+      },
+      "templateNotes": "The frame worked. Cole is taken at the open bell — and the securities case against him is real, so the arrest holds and everyone stops looking. Walk the cost honestly: a guilty man convicted of the wrong crime, a killer promoted to interim CEO by acclamation, the memorial statement drafted by its author's own hand. Cole's counsel will find the glove's lint in eighteen months and the appeal will be ugly, but that morning belongs to another story. Noah resigns rather than assist the transition; the black book goes with him, unread. The market opens green. It usually does."
     },
     {
       "id": "failure_wrong_accusation",
       "when": "failure",
       "kind": "wrong_accusation",
       "title": "Wrong ticker",
-      "templateNotes": "Wrong name. The real short seller walks."
+      "templateNotes": "The wrong name, and the room knows it even if the paperwork doesn't yet. If it was Noah: the cruelty is total — the person who loved her most, accused with her passcode as the noose, while Marcus watches with managed sorrow and the coffee finally tastes fine. The floor closes; counsel takes the building; the retainer dies of embarrassment. The real story survives in the records until the 2:00 a.m. rotation, and then it doesn't. The board call convenes on a tragedy with no third act, which is what the building wanted all along."
     },
     {
-      "id": "failure_escaped",
+      "id": "failure_revoked",
       "when": "failure",
       "kind": "escaped",
-      "title": "Counsel present",
-      "templateNotes": "Cole leaves. The open bell rings on a cover story."
+      "title": "Terminated for convenience",
+      "templateNotes": "The chair's lawyer calls at whatever hour Marcus finally bought: retainer terminated pending a review of scope. Security walks the Investigator to the elevator, apologizing sincerely. Marcus thanks you on the record for your diligence and runs the board call from Ava's chair, having spent the night proving he was the only adult on the floor. The purge runs at 2:00. Whatever the player exported before the end is a souvenir; whatever they left in the machines is a rumor. The narrative wins the room, then the market, then the year."
+    },
+    {
+      "id": "failure_time_expired",
+      "when": "failure",
+      "kind": "time_expired",
+      "title": "The market opens on a story",
+      "templateNotes": "Seven o'clock arrives holding the file half-made. The board call convenes; the statement — drafted at midnight by Marcus Bell — speaks of tragedy, resilience, and continuity of leadership. The vote is postponed indefinitely; the short pays out patiently through the spring; Auk Holdings receives its final percentage and dissolves. The frame never even needs to convict Cole — suspicion is cheaper than trial and just as final for a deal. Close on the floor at 7:01: sun full on the glass, water glasses cleared at last, and one chair pushed back from the table that everyone has finally agreed to stop seeing."
     }
-  ]
+  ],
+  "revelation": "The company was called Bellkrane once. Two people in a rented office over a dry cleaner, and a first customer check that cleared on April 17, 2004 — a date Ava Krane framed on her wall and used as the passcode on everything she owned for twenty years, which tells you what the partnership was to her, whatever the magazine covers later decided. The covers decided THE FOUNDER, singular. The rebrand made it official. Marcus Bell balanced twenty-two years of books for a company that stopped saying his name, and never once raised his voice about it, which everyone around him mistook for peace.\n\nThen came Halcyon, and page 40. 'Finance organization consolidates under Halcyon Group CFO within 90 days of close.' No box on the chart said Bell. He raised it once; Ava said they'd fix it after the vote. There was always going to be an after, with her. Marcus stopped believing in after, and became AUK: anonymous tips to Cole Grant's short — the December board pack, the February fairness opinion, the July integration plan — sold through Auk Holdings, a Cayman shell he'd formed years earlier and paid for through his own expense archive, because he was a man who kept every receipt, even of his own corruption. If the deal died, the short paid and page 40 died with it. Cole never knew his tipper's name. That mattered more than either man understood: it meant that when the night went wrong, the one person who could have pointed at Marcus could do it only by confessing to a felony.\n\nOn July 15, Halcyon's bankers handed Ava the pattern: three tranches, each within 48 hours of a confidential milestone. The third milestone had exactly two custodians. She told no one — not counsel, not her co-founder, least of all her co-founder — and did what she always did: checked the arithmetic herself, in the black book. 'Doc 3 = two custodians. 0417 — he'd still remember.' On her last evening she asked Priya for quiet access pulls at 9:38, drafted — and did not send — a threat to Cole at 10:41, because Cole was tomorrow's problem, and at 10:43 leaned over to Marcus with two words in her board voice: 'Terrace. Now.'\n\nHe dialed a conference bridge as he followed her — seventeen minutes, one participant, a call no calendar had scheduled — not to launder a murder, but to launder a conversation; he knew what she'd found, and reflex told him to have been somewhere else. On the terrace she showed him the printed report and her terms: resign at the 7:00 board call, cooperate, and the lawyers would decide what he was. Twenty-two years, and he was a compliance matter. She turned her back on him to look at her city — she was never afraid of him; that is the whole tragedy of the method — and Marcus pushed her over the rail. Her watch recorded 10:47 and tried to call for help, and the setback's concrete canyon swallowed the signal.\n\nThe push took a second. The other man — the one who manages — took over for the next fourteen minutes. The report went into his jacket; her drawer was searched for copies and left ajar, his hurry soon to be read as hers, with the short addendum conveniently on top. At 10:52 he woke her tablet — 0417, first try; he tells the founding story at every offsite — found her unsent draft to Cole waiting like a gift, switched off the auto-lock, and left her last message running as the room's explanation of itself. At 10:55 the lobby camera logged him crossing to the anteroom, where he made a coffee he never drank and lifted one glove from Cole's coat; at 10:58 he walked it through her office to the rail and pressed it into the join — laid to rest, not snagged, with the coat pocket's lint still in the cuff. At 11:01 he was back in the boardroom asking if anyone had seen Ava. At 11:58, from a camera dead spot, AUK sent its last tip: 'Vote may not proceed. Hold position.' He was managing both crimes at once. He had been managing everything for twenty-two years.\n\nWhat undid him was the cost of the management. The frame was built of true things — Cole's real terrace visit, Cole's real short, Ava's real threat — and only the three fabrications could betray it, and all three did: a glove whose cuff remembered the pocket it lived in, in a room witnesses put Cole nowhere near after 10:34; a tablet whose own diary recorded a first-try passcode five minutes after its owner's heart stopped; an alibi with one voice on it. Past the fabrications stood the paper he could never stop keeping: the access list with two names, the invoice that gave his shell a birth certificate, a retention ticket asking the building to forget the one night he kept calling unforgettable. And past the paper, the people: an assistant who knew her board voice through a wall, a counsel who looks at her watch on principle, a product chief who timestamps his fear, and a dead woman who had already solved the case in a black notebook — three tranches, two custodians, and a date he'd still remember — before any investigator reached the floor. She got there first. She only ran out of Thursday.",
+  "figures": []
 }

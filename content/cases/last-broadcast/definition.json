@@ -2,93 +2,130 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "last-broadcast",
-  "contentVersion": "0.1.3",
+  "contentVersion": "1.0.1",
   "meta": {
     "title": "The Last Broadcast",
-    "premise": "A true-crime podcaster is found dead hours before her final episode drops. The recording still holds the key.",
+    "premise": "A true-crime host is dead an hour before her final episode airs, the master file is gone, and every recording in the building tells a slightly different story. One of them is lying.",
     "theme": "noir",
-    "tone": "modern media thriller, neon-and-static, sharp dialogue",
+    "tone": "modern media noir — neon, static, and the hum of rooms built for silence",
     "tags": [
-      "Radio",
       "Studio",
       "Media",
-      "Modern"
+      "Modern",
+      "Podcast"
     ],
     "difficulty": "medium",
     "contentWarnings": [
       "murder",
       "violence"
     ],
+    "progressUi": "full",
     "artStyle": "Modern media noir portrait, head-and-shoulders, studio purple and LED blue palette, slight film grain, contemporary clothing, same cool podcast-studio lighting for every cast member, mystery game NPC portrait",
-    "setting": "A late-night podcast studio complex. Studio B, control booth, green room. ON AIR is dark.",
-    "summary": "Host Lena Ortiz is dead in Studio B hours before Blood Signal was supposed to air — headphones still on, the main session wiped, a backup waveform that does not match the official story. On site: producer Kai Okonkwo, engineer Amy Chen, rival host Blake Mercer, intern Riley Cho, and network exec Dana Ruiz. Someone turned a final episode into a crime scene. The feed will not wait forever for the truth.",
-    "theMystery": "Who killed Lena Ortiz in Studio B before her last episode — and what in that show was worth killing to bury?"
+    "setting": "Halcyon Studios, floor five — a late-night podcast complex in the present day. Studio B, control booth, green room. The ON AIR light is dark.",
+    "summary": "Midnight is the air window for Blood Signal’s final episode — the one host Lena Ortiz promised would name names. At nine she is dead at her own microphone in Studio B, and the session drive is empty. Locked down with the body: the producer who built her studio, an intern three months into a first job, the forensic audio expert booked as tonight’s guest, a rival host with no reason to be in the building, and the security chief who sealed the doors. Network counsel wants a private walkthrough before the police narrative sets at midnight. The studio is wired to record everything. Start by asking why, tonight, it recorded so little.",
+    "theMystery": "Who killed Lena Ortiz in a studio where nobody heard a thing — and what was her final episode about to make true?",
+    "playtest": {
+      "minTurns": 12,
+      "maxTurns": 48,
+      "minEvidenceCoverage": 0.55,
+      "minFunMedian": 7
+    }
   },
   "player": {
     "displayName": "Investigator",
     "addressAs": "Investigator",
     "pronouns": "they/them",
-    "role": "Independent investigator brought in before the network freezes the scene",
+    "role": "Independent investigator retained by the network’s counsel for a private walkthrough before the midnight police handoff",
     "authority": "professional",
-    "age": "thirties",
-    "appearance": "Unremarkable on purpose — someone who can stand in a green room without looking like press",
-    "clothing": "Dark jacket, soft shoes, badge lanyard that is not network security",
-    "background": "Hired quietly when a death hits a production floor and legal wants a clean private record before police narrative takes over.",
-    "publicPerception": "Not staff, not quite cops. People decide whether to help based on fear of the network.",
-    "voiceNotes": "Calm, probing, media-fluent",
-    "performanceNotes": "Studio people may call you 'Investigator' or avoid names. You do not run the feed.",
+    "age": "adult",
+    "clothing": "Dark jacket, soft shoes, a visitor lanyard that is not network security",
+    "background": "The name counsel calls when a death lands on a production floor and legal wants a clean private record before the public one is written.",
+    "publicPerception": "Not staff, not police. Everyone on this floor is deciding, minute by minute, how much the network’s investigator needs to know.",
+    "performanceNotes": "The player is ‘you’ plus a title. Never invent a name, face, history, or temperament for the Investigator. Staff address them as ‘Investigator.’ They do not control the feed, the doors, or the statement — Dana controls the locks, counsel controls the clock.",
     "startingLocationId": "studio-floor",
     "startingEvidenceIds": [],
-    "startingKnowledge": "Host Lena Ortiz is dead in Studio B. Final episode 'Blood Signal' was due tonight. On site: engineer Kai Okonkwo, guest researcher Dr. Amy Chen, rival host Blake Mercer, intern Riley Cho, building security Dana Ruiz. The raw session file is missing from the primary drive.",
-    "objective": "Search the studio, recover what the recording still holds, pressure the cast and crew, and accuse the murderer with method and motive."
+    "startingKnowledge": "Lena Ortiz, host of the true-crime podcast Blood Signal, is dead in Studio B. Her final episode was scheduled to publish at midnight; the police take the scene at the same hour. The building has been locked down since 8:47 p.m. On the floor: Kai Okonkwo, her producer and engineer; Riley Cho, the intern; Dr. Amy Chen, tonight’s guest expert; Blake Mercer, a rival host; Dana Ruiz, chief of building security. The session drive is empty. You have until midnight.",
+    "objective": "Learn what Lena’s final episode was going to say, establish who killed her and how, and put a name — with method and motive — on the record before midnight.",
+    "briefing": {
+      "form": "dossier",
+      "title": "Engagement memo — Halcyon Studios, floor five",
+      "sections": [
+        {
+          "heading": "The engagement",
+          "text": "Retained 9:02 p.m. by outside counsel for Vantage Audio, distributor of the podcast Blood Signal. A death on a leased production floor; 911 called at 8:43; patrol responded, confirmed, sealed the building exterior, and left on-site security holding the interior — the county homicide unit is committed to the refinery fire across the river and has given an ETA of midnight. Counsel has an agreement on record with the detectives’ liaison: their investigator may walk the floor and speak with the persons present, on conditions — document everything, move nothing you cannot justify, and the body stays as found. The arrangement ends at midnight, when the detectives take the scene and the network releases a public statement. Whatever is going to be known needs to be known before the statement writes it differently."
+        },
+        {
+          "heading": "The deceased and the show",
+          "text": "Lena Ortiz, 41. Host and effectively sole proprietor of Blood Signal — three seasons, one hundred eleven episodes, a true-crime audience in the millions. Tonight’s series finale, teased for weeks as the episode where she ‘names names,’ was to be taped at 8:30 and published at midnight. She was found at 8:41 p.m. at her own microphone in Studio B by her producer. The finale’s master session has been deleted from the recording workstation. No copy has surfaced."
+        },
+        {
+          "heading": "Persons on site",
+          "text": "Kai Okonkwo, Blood Signal’s producer and engineer, eleven years with Ortiz — found the body. Riley Cho, intern, three months. Dr. Amy Chen, forensic audio analyst, booked as the finale’s on-air guest expert. Blake Mercer, host of The Mercer File, a rival program — his business in the building tonight is not established. Dana Ruiz, chief of building security — ordered the lockdown, collected first statements. No other persons on the floor per badge records."
+        },
+        {
+          "heading": "The floor",
+          "text": "Floor five, hub corridor: Studio B (soundproofed, where the body lies), the control booth adjoining it behind glass, the green room, the server closet holding the badge system and the show’s tape archive, and Ortiz’s private edit bay, which is locked. A stairwell connects to the ground-floor lobby and security desk. Floor-five interior cameras have been offline since June; the lobby cameras run."
+        }
+      ]
+    }
   },
-  "openingNarration": "ON AIR light is dark. Studio B smells like coffee and ozone. Lena Ortiz is slumped over the boom arm, headphones still on. The waveform on the backup recorder is a jagged confession the main file no longer holds. Kai stands in the booth doorway like someone who has already aged a year. Down the hall: a rival host who should not have badge access, an engineer who knows every cable, an intern who saw too much, and a network executive already thinking about press. Lena’s final episode dies with her unless you find who killed her — and what story they were trying to kill with her.",
+  "openingNarration": "The ON AIR lamp over Studio B is dark. That is the first wrong thing: Blood Signal drops at midnight, and in one hundred eleven episodes Lena Ortiz never missed an air date. The second wrong thing is Lena, slumped at her own microphone with her headphones still on, as if the episode ended and she stayed to hear the silence after it. The session drive reads empty. The biggest show of her life airs in three hours and there is nothing left to air — somebody in this building pressed delete. Down the corridor, five people wait out the lockdown: her producer, her intern, her guest, her rival, and the security chief who sealed the doors. Network counsel bought you this floor until midnight; then the police take the scene and the statement writes itself. Studio B is soundproof. Whatever happened here, the only witness was the room.",
   "phases": [
     {
       "id": "arrival",
-      "description": "Body and studio"
+      "description": "The body and the empty drive"
     },
     {
       "id": "deepening",
-      "description": "Files, alibis, rivalry"
+      "description": "Two recordings, two stories"
     },
     {
       "id": "crisis",
-      "description": "Killer cornered"
+      "description": "The seam in the tape"
     },
     {
       "id": "confrontation",
-      "description": "Accusation"
+      "description": "Name it on the record"
     },
     {
       "id": "denouement",
-      "description": "After the show"
+      "description": "After the air window"
     }
   ],
   "wrapUp": {
     "enabled": true,
     "maxTurns": 8,
     "allowEarlyExit": true,
-    "performanceNotes": "Podcast-world aftermath — statements, deleted episodes, quiet studio. RETURN TO NORMAL: Blake held, story no longer brand-controlled, truth can air."
+    "performanceNotes": "Aftermath on a quiet studio floor — statements, custody at the midnight handoff, the rebuilt episode. RETURN TO NORMAL must be diegetic, staged by people: on a win, Dana walks Chen to the lobby and holds her for the detectives because the exhibits corner her — procedure, gladly applied — never because a score turned green; Kai patches the backup card into the booth board and starts rebuilding the finale from the card and the reels (the drop will be late and true); Riley sweeps up craft services because hands need something to do; Mercer, for once, checks a story before telling it. If the player asks what will air, the answer is: everything, including 8:01:47. Keep everyone in character — nobody develops omniscience, and only the villain may account for her own design, in her own testimony voice."
   },
   "time": {
-    "startSlotId": "evening",
-    "minutesPerTurn": 10,
+    "startSlotId": "nine_pm",
+    "minutesPerTurn": 5,
     "schedule": [
       {
-        "id": "evening",
-        "label": "Evening",
+        "id": "nine_pm",
+        "label": "Just past nine",
         "minutesFromStart": 0
       },
       {
-        "id": "prime_time",
-        "label": "Prime time approaching",
-        "minutesFromStart": 50
+        "id": "ten_pm",
+        "label": "Ten o’clock",
+        "minutesFromStart": 45
       },
       {
-        "id": "air_window",
-        "label": "Air window",
-        "minutesFromStart": 100
+        "id": "eleven_pm",
+        "label": "Eleven — the building hums",
+        "minutesFromStart": 105
+      },
+      {
+        "id": "quarter_to_midnight",
+        "label": "Quarter to midnight",
+        "minutesFromStart": 160
+      },
+      {
+        "id": "midnight_air",
+        "label": "Midnight — the air window",
+        "minutesFromStart": 175
       }
     ]
   },
@@ -101,22 +138,74 @@
   },
   "flags": [
     {
-      "id": "examined_body",
+      "id": "murder_known",
+      "description": "The ligature geometry has been examined; collapse story dead",
       "aiVisible": true,
       "defaultValue": false
     },
     {
-      "id": "found_backup",
+      "id": "timeline_broken",
+      "description": "Backup card heard: the row was 7:39 and the last voice said Doctor",
       "aiVisible": true,
       "defaultValue": false
     },
     {
-      "id": "found_email",
+      "id": "found_usb",
+      "description": "The planted USB recording is in play",
       "aiVisible": true,
       "defaultValue": false
     },
     {
-      "id": "falsely_accused_kai",
+      "id": "splice_suspected",
+      "description": "The USB has been identified as a manufactured recording",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "chen_claim_heard",
+      "description": "Chen has given the player her raised-voices-at-8:10 account",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "chen_slipped",
+      "description": "Chen was caught with her thumb on the FORMAT menu of the handheld",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "chen_authenticated",
+      "description": "Chen has formally vouched for the USB as continuous and unedited",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "leak_confessed",
+      "description": "Riley has admitted photographing page one for Mercer’s producer",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "dana_clean",
+      "description": "Dana has owned the G-14 override and unlocked the sign-in drawer",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "accused_blake-mercer",
+      "description": "Engine-set: Mercer named in a pending or scored accusation",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "falsely_accused_kai-okonkwo",
+      "description": "Engine-set: Kai wrongly named in a scored accusation",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "falsely_accused_riley-cho",
+      "description": "Engine-set: Riley wrongly named in a scored accusation",
       "aiVisible": true,
       "defaultValue": false
     }
@@ -124,104 +213,183 @@
   "locations": [
     {
       "id": "studio-floor",
-      "name": "Studio B floor",
-      "description": "Foam walls, mics, a body at the desk. Hall to booth, green room, and server closet.",
+      "name": "Studio B",
+      "description": "Lena’s room: foam wedges, a kettle, one good microphone, and a desk scarred by eleven years of coffee rings. The double isolation door closes with a bank-vault thunk — Kai floated this floor himself, and sound comes to Studio B to die. A glass wall looks into the control booth. The corridor door leads out past the green room and the server closet; Lena’s locked edit bay is across the hall; a stairwell drops to the lobby.",
       "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 1,
+        "y": 1,
+        "floor": 1
+      },
       "exits": [
         {
           "toLocationId": "control-booth",
-          "label": "into the control booth"
+          "label": "through the heavy door into the control booth"
         },
         {
           "toLocationId": "green-room",
-          "label": "to the green room"
+          "label": "down the corridor to the green room"
         },
         {
           "toLocationId": "server-closet",
-          "label": "to the server closet"
+          "label": "along the corridor to the server closet"
+        },
+        {
+          "toLocationId": "edit-bay",
+          "label": "across the hall to Lena’s edit bay",
+          "requiresEvidenceIds": [
+            "lena-keycard"
+          ]
+        },
+        {
+          "toLocationId": "lobby",
+          "label": "down the stairwell to the lobby"
         }
       ],
       "inspectables": [
         {
           "id": "lena-body",
-          "name": "Lena at the desk",
+          "name": "Lena at the microphone",
           "onInspect": {
-            "narrativeHints": "Strangled with her own headphone cable. Defensive marks. Backup handheld recorder still rolling in her bag — not the main DAW.",
+            "narrativeHints": "She is slumped over the boom arm, headphones seated over her ears, one hand still curled near the fader. At a glance: a collapse. Closer: a thin, cable-width line pressed high under the jaw, crossing at the nape — and the headphone cable lying slack and unkinked over her collar, riding on top of the mark it matches. On her lanyard, her all-access keycard. State the geometry and stop: the mark, the cable’s slack, the seated headphones — in that order. Do not say strangled; do not say staged.",
             "revealsEvidenceIds": [
-              "cable-marks",
+              "ligature-marks",
+              "lena-keycard"
+            ]
+          }
+        },
+        {
+          "id": "lena-tote",
+          "name": "Lena’s tote bag under the desk",
+          "onInspect": {
+            "narrativeHints": "Receipts, a phone charger, a fistful of dead batteries, and an old handheld field recorder — the kind reporters wore out a decade ago. Its screen is blinking one message: CARD FULL. The last file’s timestamp ends at 8:01 p.m. It has no speaker worth the name; it wants a board to play through.",
+            "revealsEvidenceIds": [
               "backup-recorder"
-            ],
-            "setsFlags": {
-              "examined_body": true
-            }
+            ]
           }
         },
         {
           "id": "main-daw",
-          "name": "main recording computer",
+          "name": "the main recording workstation",
           "onInspect": {
-            "narrativeHints": "Session file BloodSignal_FINAL deleted at 8:14 p.m. Deletion used Kai's login — or someone who had it."
+            "narrativeHints": "The session drive is clean. The log is not: BloodSignal_FINAL.ptx moved to unrecoverable at 8:09 p.m., workstation STUDIO-B, user kai.o — a session that has been unlocked since 7:19. The deletion took four clicks and someone’s nerve. Read the log as a log; whose hands is a different question.",
+            "revealsEvidenceIds": [
+              "daw-deletion-log"
+            ]
+          }
+        },
+        {
+          "id": "isolation-door",
+          "name": "the double isolation door",
+          "onInspect": {
+            "narrativeHints": "Two doors, a rubber airlock lip between them, a floated floor beneath — the room rides on springs. A taped card in an engineer’s handwriting: ‘CLOSE BOTH. THE ROOM ONLY WORKS IF YOU CLOSE BOTH.’ Standing inside with the doors shut, the building’s hum vanishes entirely, in both directions. Let the player notice what that means for anyone who claims to have heard this room; never notice it for them."
           }
         }
       ],
       "charactersPresent": [
         {
           "characterId": "kai-okonkwo"
-        },
-        {
-          "characterId": "dana-ruiz"
         }
       ]
     },
     {
       "id": "control-booth",
       "name": "Control booth",
-      "description": "Glass view into Studio B. Faders, talkback, coffee rings.",
+      "description": "Faders, a talkback mic on a gooseneck, two monitors, cold coffee. The glass wall frames Lena’s desk like a photograph. The talkback panel speaks into Studio B; with the doors shut it is the only voice that room will admit. A patch bay on the board takes card readers and line-outs.",
       "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 0,
+        "y": 1,
+        "floor": 1
+      },
       "exits": [
         {
           "toLocationId": "studio-floor",
-          "label": "into the studio"
+          "label": "back through the heavy door into Studio B"
         }
       ],
       "inspectables": [
         {
-          "id": "talkback-log",
-          "name": "talkback log",
+          "id": "talkback-console",
+          "name": "the talkback panel",
           "onInspect": {
-            "narrativeHints": "Talkback engaged at 8:09 from booth to studio — one-way. Someone spoke to Lena without entering. Badge log can show who was in the booth."
+            "narrativeHints": "The panel keeps a session log: engaged 7:39 p.m., released 7:43 p.m. Four minutes of somebody leaning on this gooseneck, talking into a sealed room — the only way to reach Lena without opening her door. The booth was supposed to be empty tonight.",
+            "revealsEvidenceIds": [
+              "talkback-record"
+            ]
+          }
+        },
+        {
+          "id": "playback-rig",
+          "name": "the booth playback rig",
+          "onInspect": {
+            "narrativeHints": "Patch the handheld into the board and the card plays the evening in order. 7:31 — the recorder wakes in the tote: humming, paper, the kettle. 7:39 — a voice arrives over the studio monitors, compressed and furious: Mercer, on the talkback, four minutes about ‘the leak segment,’ lawsuits, ruin — and Lena laughing him off: ‘See you in court, Blake. Bring your lawyer — we’ll mic him.’ Then thirteen minutes of a woman alone: pages, a mic check, ‘cold open, take three.’ 7:56 — the door seal breathes, and Lena, easy and cruel: ‘You’re early, Doctor. Sit. I want you to hear something before we tape.’ A chair. A clip plays tinny off a phone — a man’s recorded voice, numbers, dates. Lena: ‘Marrable ran your 2009 exhibits blind. Exclusion, Doctor. Sixteen years. You’ll get your chance to answer on the record at midnight.’ A silence with breathing in it. Then, at 8:01:47 — CARD FULL. Nothing after. Play it straight; conclude nothing; let the last word on the card be ‘Doctor.’",
+            "requiresEvidenceIds": [
+              "backup-recorder"
+            ],
+            "revealsEvidenceIds": [
+              "backup-audio"
+            ]
           }
         }
       ],
-      "charactersPresent": [
-        {
-          "characterId": "kai-okonkwo"
-        }
-      ]
+      "charactersPresent": []
     },
     {
       "id": "green-room",
       "name": "Green room",
-      "description": "Couch, craft services, nervous guests.",
+      "description": "A couch that has absorbed a thousand nervous guests, craft services picked to bones, and a refrigerator humming its one flat note under everything. In the corner, a cheap guest workstation logged into the studio’s shared asset server — house rule says log out, house habit says nobody ever has. The corridor door stands open toward the booth and Studio B.",
       "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 2,
+        "y": 1,
+        "floor": 1
+      },
       "exits": [
         {
           "toLocationId": "studio-floor",
-          "label": "to the studio floor"
+          "label": "up the corridor to Studio B"
         }
       ],
       "inspectables": [
         {
           "id": "blake-bag",
-          "name": "Blake's messenger bag",
+          "name": "Blake’s messenger bag",
           "onInspect": {
-            "narrativeHints": "Printout of Lena's unreleased outline: 'Mercer killed the story — and maybe more.' Blake's show logo in the corner as if he annotated it.",
+            "narrativeHints": "A printout rides the front pocket: page one of an episode outline, Blood Signal’s masthead, tonight’s date. Segment one: ‘THE LEAK — who burned a source to bury a story, and what it bought him.’ The margins are annotated in a fast, angry hand. There is no page two. Present the page and the anger; the page cannot say what the rest of the episode holds, and neither should you.",
             "revealsEvidenceIds": [
               "stolen-outline"
-            ],
-            "setsFlags": {
-              "found_email": true
-            }
+            ]
+          }
+        },
+        {
+          "id": "guest-workstation",
+          "name": "the guest workstation",
+          "onInspect": {
+            "narrativeHints": "Logged in as ‘guest,’ like always; the screen saver breaks to a desktop of other people’s half-finished sessions. Someone used this machine tonight — the chair is pulled close and the headphone jack is still warm-handed. The when and the what live in the file history, if a person had a reason to pull it."
+          }
+        },
+        {
+          "id": "workstation-audit",
+          "name": "the workstation’s file history",
+          "hiddenUntilFlags": {
+            "splice_suspected": true
+          },
+          "onInspect": {
+            "narrativeHints": "The recent-files history, pulled with intent: 8:16 to 8:31 p.m., guest login, a freeware audio editor. Files touched: a phone memo, IMG_4471.m4a; the show’s own asset library — chair_scuffle_ep61.wav, auditioned eleven times; a render titled final.wav; and at 8:33 p.m., one write to removable media. The history does not say whose hands. It says whose skills.",
+            "revealsEvidenceIds": [
+              "workstation-history"
+            ]
+          }
+        },
+        {
+          "id": "fridge-hum",
+          "name": "the refrigerator",
+          "onInspect": {
+            "narrativeHints": "An old unit with a compressor whine that never stops — one flat note under everything, the kind of sound a room stops hearing and a recording never does. Offer it as texture only. If the player has been listening closely to recordings tonight, say nothing; the note is either already in their ear or it is not yet theirs to have."
           }
         }
       ],
@@ -240,72 +408,259 @@
     {
       "id": "server-closet",
       "name": "Server closet",
-      "description": "Humming racks. Badge reader. A USB stick taped under a shelf.",
+      "description": "Racks, tape stock, the badge terminal, and the archive: shelf after shelf of evidence-copy reels in court boxes, half digitized, half waiting. A transfer console blinks through a long batch job. The under-shelf dark goes back further than the light does.",
       "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 2,
+        "y": 0,
+        "floor": 1
+      },
       "exits": [
         {
           "toLocationId": "studio-floor",
-          "label": "back to the studio"
+          "label": "back along the corridor to Studio B"
         }
       ],
       "inspectables": [
         {
-          "id": "hidden-usb",
-          "name": "USB under shelf",
+          "id": "badge-terminal",
+          "name": "the badge terminal",
           "onInspect": {
-            "narrativeHints": "Audio clip: Lena confronting someone off-mic — 'You leaked my source to bury the story. I air it tonight.' A man's voice: Blake's cadence. Then scuffle.",
+            "narrativeHints": "The door system keeps honest minutes. 7:12 p.m., visitor credential issued at the lobby desk. 7:31 p.m., guest pass G-14 through the lobby turnstile — authorization override logged under D. RUIZ. 8:47 p.m., lockdown, all doors sealed. The terminal mirrors a paper sign-in sheet kept at the front desk — which nobody has been quick to produce.",
             "revealsEvidenceIds": [
-              "usb-confrontation"
-            ],
-            "setsFlags": {
-              "found_backup": true
-            }
+              "badge-log"
+            ]
           }
         },
         {
-          "id": "badge-log",
-          "name": "badge access log",
+          "id": "transfer-console",
+          "name": "the transfer console",
           "onInspect": {
-            "narrativeHints": "Blake Mercer badge in control booth 8:08–8:16. Kai's badge still in studio. Riley in green room. Dana at desk."
+            "narrativeHints": "A batch job digitizing reel boxes: started 8:03 p.m. from this console, logged in as kai.o, keepalive pings every ninety seconds until 8:37, a two-minute gap, then resumption at 8:39. Set it beside the studio workstation’s 8:09 deletion under the same login and say nothing further: one login, two rooms, six minutes apart. Let it sit.",
+            "revealsEvidenceIds": [
+              "transfer-log"
+            ]
+          }
+        },
+        {
+          "id": "archive-shelves",
+          "name": "the archive shelves",
+          "onInspect": {
+            "narrativeHints": "Court boxes in evidence grey. The labels running the top shelf: STATE v. VEY — DUB COPIES, 2009, reels one through fourteen — sixteen-year-old tape, signed out of county storage to L. ORTIZ three weeks ago. Whatever the finale was, it was built out of these boxes. The name means nothing to the player yet. Leave it that way; just make sure they read it."
+          }
+        },
+        {
+          "id": "under-shelf",
+          "name": "the dark under the racks",
+          "onInspect": {
+            "narrativeHints": "Taped up under the lowest shelf, deliberate as a dead drop: a USB stick, unlabeled. It reads as somebody’s insurance — hidden well enough to feel real, badly enough to be found. Whose is the question the finder is meant not to ask.",
+            "revealsEvidenceIds": [
+              "usb-confrontation"
+            ]
           }
         }
       ],
       "charactersPresent": []
+    },
+    {
+      "id": "edit-bay",
+      "name": "Lena’s edit bay",
+      "description": "Lena’s other room, unlocked only by her own keycard: a corkboard that has become a wall, a desk buried in transcript, headphones worth more than the couch, and sixteen years of somebody else’s case pinned up in red string. The air smells of marker and cold coffee. This is where the finale was built.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 1,
+        "y": 0,
+        "floor": 1
+      },
+      "exits": [
+        {
+          "toLocationId": "studio-floor",
+          "label": "back across the hall to Studio B"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "corkboard",
+          "name": "the case wall",
+          "onInspect": {
+            "narrativeHints": "Photographs, court sketches, a spectrogram printed poster-size with two passages circled in red and a note: ‘SAME “CERTAINTY.” DIFFERENT SPEAKER?’ At the center, a man’s face twice — an intake photo from 2009, and the same face last year, folded by the years between. Beneath it, the full episode outline, two segments: one, ‘THE LEAK,’ five minutes; two, ‘BLOOD SIGNAL,’ fifty minutes — the voicemail, the trial, the expert, the exclusion. Let the proportions speak: the episode everyone upstairs thinks they are in is the cold open.",
+            "revealsEvidenceIds": [
+              "full-outline"
+            ]
+          }
+        },
+        {
+          "id": "desk-files",
+          "name": "the desk files",
+          "onInspect": {
+            "narrativeHints": "A bound report: Marrable Acoustic Laboratory, dated this June — blind re-analysis of the State v. Vey voice exhibits. The conclusion is underlined twice in Lena’s red: the 2009 identification is not reproducible from the submitted exemplars; the questioned speaker cannot be matched to M. Vey to any defensible standard. Stapled behind it, trial transcript pages where the State’s expert says ‘to a scientific certainty’ four times. Read the underlines, not a verdict.",
+            "revealsEvidenceIds": [
+              "marrable-report"
+            ]
+          }
+        },
+        {
+          "id": "letter-box",
+          "name": "a shoebox of prison mail",
+          "onInspect": {
+            "narrativeHints": "Years of envelopes in the same careful hand, Fenbrook Correctional return stamp. The last, postmarked May: ‘They tell me the new lab needs the original reels. Sixteen years, Ms. Ortiz, and you are the first person to send for the tapes instead of the transcript. The tapes stutter. The transcript is confident. I have learned everything there is to know about confidence in here.’ The next slot in the box is empty. There was no next letter.",
+            "revealsEvidenceIds": [
+              "vey-letters"
+            ]
+          }
+        },
+        {
+          "id": "desk-calendar",
+          "name": "the desk calendar",
+          "onInspect": {
+            "narrativeHints": "Tonight’s page, in Lena’s hand: ‘A.C. pre-int 7:55 — ALONE. Kai out for reels. Tape 8:30. DROP MIDNIGHT.’ And in the corner, small, the only soft thing on the desk: ‘M.V. — told you.’ Read it exactly; explain nothing."
+          }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "lobby",
+      "name": "Lobby and security desk",
+      "description": "Marble, a turnstile, a monitor bank with too many dark screens, and the front desk where every visitor becomes a line of handwriting. Dana Ruiz runs the room like a checkpoint. Behind the desk, a drawer with a lock worth respecting. The stairwell climbs to the studio floor.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 1,
+        "y": 1,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "studio-floor",
+          "label": "up the stairwell to the studio floor"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "monitor-bank",
+          "name": "the monitor bank",
+          "onInspect": {
+            "narrativeHints": "Sixteen screens, five live: lobby, garage, loading dock. The floor-five cameras have been dark since June — a renovation contract that never finished, escalated twice in writing by RUIZ, D. The one night the building needed eyes upstairs, it had a lobby’s worth. Nobody chose tonight; the blindness is four weeks old and boring — which is itself worth noticing."
+          }
+        },
+        {
+          "id": "statement-draft",
+          "name": "counsel’s draft statement",
+          "onInspect": {
+            "narrativeHints": "Rev 1, tracked changes: ‘Halcyon Studios confirms the death of…’ — then a paragraph blaming an intruder, struck through, with a margin note: ‘No forced entry per RUIZ. Need a name by 11:30 or we run “ongoing investigation.”’ The document is a clock wearing a suit. Let the player read the deadline in someone else’s handwriting."
+          }
+        },
+        {
+          "id": "front-desk",
+          "name": "the front desk drawer",
+          "onInspect": {
+            "narrativeHints": "Dana unlocks the drawer herself and lays the paper sign-in sheet on the marble. Tonight’s page: A. CHEN, 7:12 p.m., ‘guest — Blood Signal,’ in a neat clinical hand. Below it, no line for B. MERCER at all — just pass G-14 and a security chief’s initials where a signature should be. Paper does not perform. It just sits there, early.",
+            "requiresFlags": {
+              "dana_clean": true
+            },
+            "revealsEvidenceIds": [
+              "signin-sheet"
+            ]
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "dana-ruiz"
+        }
+      ]
     }
   ],
   "relationships": [
     {
-      "id": "blake_rival",
-      "fromId": "blake-mercer",
-      "toId": "kai-okonkwo",
-      "type": "rivalry",
-      "label": "rival host; hated Lena's scoop",
+      "id": "kai_lena",
+      "fromId": "kai-okonkwo",
+      "toId": "lena-ortiz",
+      "type": "loyalty",
+      "label": "her first and only engineer — eleven years on her board",
       "strength": 3,
       "public": true,
       "knownToPlayerByDefault": true
     },
     {
-      "id": "kai_loyalty",
+      "id": "blake_lena",
+      "fromId": "blake-mercer",
+      "toId": "lena-ortiz",
+      "type": "rivalry",
+      "label": "same newsroom once; he got the numbers, she got the respect",
+      "strength": 3,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "kai_riley",
       "fromId": "kai-okonkwo",
       "toId": "riley-cho",
-      "type": "loyalty",
-      "label": "loyal engineer; grief-stricken",
+      "type": "mentorship",
+      "label": "keeps the intern out of the blast radius",
       "strength": 2,
       "public": true,
       "knownToPlayerByDefault": true
+    },
+    {
+      "id": "chen_lena_surface",
+      "fromId": "amy-chen",
+      "toId": "lena-ortiz",
+      "type": "professional_respect",
+      "label": "cited on the show; cordial by email; honored to be the finale’s expert",
+      "strength": 1,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "riley_blake",
+      "fromId": "riley-cho",
+      "toId": "blake-mercer",
+      "type": "ambition",
+      "label": "one photographed page, one hinted job",
+      "strength": 2,
+      "public": false,
+      "knownToPlayerByDefault": false,
+      "notes": "Never volunteered. Riley steers conversation away from The Mercer File with visible effort. If the player notices the steering, that is the thread."
+    },
+    {
+      "id": "dana_blake",
+      "fromId": "dana-ruiz",
+      "toId": "blake-mercer",
+      "type": "old_colleagues",
+      "label": "network-building days; tonight’s favor",
+      "strength": 2,
+      "public": false,
+      "knownToPlayerByDefault": false,
+      "notes": "She is curt with him in public precisely because she badged him in. Do not play warmth; play debt."
+    },
+    {
+      "id": "lena_chen_target",
+      "fromId": "lena-ortiz",
+      "toId": "amy-chen",
+      "type": "target",
+      "label": "billed as guest, booked as reckoning",
+      "strength": 3,
+      "public": false,
+      "knownToPlayerByDefault": false,
+      "notes": "Only Kai knew what the guest chair was for. Reveal via Kai’s gated knowledge, the edit bay, or the backup card — never as gossip."
     }
   ],
   "characters": [
     {
       "id": "lena-ortiz",
       "name": "Lena Ortiz",
-      "shortBio": "True-crime host of Blood Signal — found dead in Studio B hours before air.",
+      "shortBio": "Host and last full-time employee of Blood Signal — forty-one, three seasons from local scandal beat to national obsession. She wanted the Vey story to matter more than the download numbers did; she feared becoming the kind of host who needs a body to open an episode; and she died planning to ambush a guest on tape in the name of the truth. Lena never met a line she wouldn’t cross for a correction.",
+      "cardTitle": "The host",
+      "voice": "Silent now",
       "portrait": "portraits/lena-ortiz.jpg",
       "defaultLocationId": "studio-floor",
       "storyRole": "victim",
-      "voice": "Silent now",
       "knowledge": {
-        "public": "Deceased. Found in Studio B with headphones still on.",
+        "public": "Found dead at her microphone at 8:41 p.m., headphones still on. Her finale was due at midnight. She had spent three weeks with sixteen-year-old evidence reels and told no one but her producer why.",
         "private": [],
         "secrets": []
       },
@@ -314,47 +669,101 @@
     {
       "id": "kai-okonkwo",
       "name": "Kai Okonkwo",
-      "shortBio": "Studio engineer; last login on the DAW.",
-      "voice": "Technical, shaken",
+      "shortBio": "Lena’s producer and engineer, eleven years on her board — he floated Studio B’s floor with his own hands so her tape would be clean. He wants her last episode protected; he fears the plan he helped her keep secret is what killed her; and the most careful engineer in the building has never once locked his screen.",
+      "cardTitle": "The producer",
+      "voice": "Low, precise, wrecked and holding",
       "portrait": "portraits/kai-okonkwo.jpg",
       "defaultLocationId": "studio-floor",
       "defaultWillingness": "open",
+      "defaultStance": "grief_in_working_order",
+      "storyRole": "suspect",
       "knowledge": {
-        "public": "Kai was balancing levels, stepped out for cables, came back to Lena dead. Login was unlocked — bad habit.",
+        "public": "He left Lena alone at 7:55 on her instruction and started the reel transfer in the server closet — headphones on until half past eight. He came back at 8:41 with a labeling question and found her. His workstation login was unlocked; it always is; he knows exactly how that looks and says so before you can.",
         "private": [
           {
-            "id": "kai-saw-blake-booth",
-            "content": "Kai saw Blake slip into the control booth alone near 8:10.",
+            "id": "kai-recorder-habit",
+            "content": "‘Every pre-interview, every prep session — she rolled that beat-up handheld in her tote. Habit from the lawsuit years: her word against nobody’s, ever again. If Lena talked to anyone tonight, that card heard it.’",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "kai-console-alibi",
+            "content": "‘Pull the transfer console log if you want my evening: batch started 8:03, I babysat it to 8:37, stepped out to the washroom, came back inside two minutes. I know what the studio log says about 8:09. Both of those sessions are my login. Only one of them was me — and I can’t prove which, so I’d rather you worked it out than took my word.’",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "kai-floated-floor",
+            "content": "‘You want to know what I built? A room the world can’t touch. Both doors shut, you could drop a rack shelf in there and the green room would hear nothing. Nothing.’ He lets that stand a moment. ‘So when somebody tells you what they heard through a wall tonight — ask them which wall. Then come ask me again.’",
+            "requiresFlags": {
+              "chen_claim_heard": true
+            },
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "kai-the-plan",
+            "content": "‘The finale wasn’t an interview. It was a reckoning. Lena pulled the Vey reels, had a blind lab rerun the 2009 exhibits, and booked the State’s own expert as her guest. Chen. She was going to play her the report on tape and let her answer live at midnight.’ A long breath. ‘I told her it was cruel. She said sixteen years was crueler. I helped anyway — I set the session, I left them the room. So you tell me what I found at 8:41, because I already know what I left at 7:55.’",
+            "requiresTrust": 1,
             "requiresWillingnessIn": [
               "open",
               "guarded"
             ]
           }
         ],
-        "secrets": []
+        "secrets": [
+          {
+            "id": "kai-foley-id",
+            "content": "He plays the USB’s last twenty seconds three times and goes very still. ‘That chair scrape. I made that sound. Season three, episode sixty-one — I dragged Riley’s chair across the parking garage at two in the morning because Lena wanted a stairwell to sound lonely. It lives in the show’s asset library. Investigator — somebody scored her murder with my own sounds.’",
+            "requiresEvidenceIds": [
+              "usb-confrontation"
+            ]
+          }
+        ]
       },
       "defenses": [
-        "Easy false suspect because of login"
-      ],
-      "storyRole": "suspect"
+        "Will not perform grief on request",
+        "If accused, goes silent rather than plead — he knows how the login looks and refuses to beg it away",
+        "Corrects technical sloppiness in anyone’s story, including yours; the corrections are always true"
+      ]
     },
     {
       "id": "blake-mercer",
       "name": "Blake Mercer",
-      "shortBio": "Rival true-crime host; smile like a brand.",
+      "shortBio": "Host of The Mercer File — the true-crime chart position Lena refused to want. He wants segment one dead before it kills his network deal; he fears the word ‘leak’ next to his name more than any subpoena; and a man who built an empire on other people’s sources has sworn to you he never left the couch. His first statement is his cage.",
+      "cardTitle": "The rival",
       "voice": "Smooth, performative, cold when pressed",
       "portrait": "portraits/blake-mercer.jpg",
       "defaultLocationId": "green-room",
       "defaultWillingness": "guarded",
       "defaultStance": "on_brand",
+      "storyRole": "suspect",
       "knowledge": {
-        "public": "Blake says he waited in the green room for a joint promo. He never entered Studio B.",
+        "public": "He came for a ‘joint promo conversation’ he cannot produce an email for. He was in the green room, then the lobby arguing about his pass from eight until nearly half past, then the green room again. He never entered any booth and never spoke to Lena tonight. The last sentence is a lie he committed to early, in front of witnesses, and his lawyer has since told him to sit inside it.",
         "private": [
           {
             "id": "blake-admits-booth",
-            "content": "He admits he used the booth to 'listen in' — not to kill. The USB will break that.",
+            "content": "‘Fine. Four minutes on the talkback — the booth was empty, the door was open, and I wanted her to hear me without her editor’s smile on. I told her I’d sue. You know what she did? Laughed. Said —’ he does the impression without meaning to, ‘— “bring your lawyer, we’ll mic him.” She was alive, Investigator. Alive and enjoying herself, quarter to eight. I never went through the studio door. It doesn’t open for people like me; she made sure I knew that once.’",
             "requiresEvidenceIds": [
-              "usb-confrontation"
+              "talkback-record"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded",
+              "hostile"
+            ]
+          },
+          {
+            "id": "blake-outline-source",
+            "content": "‘Page one arrived from a burner account, and no, I didn’t ask. But it photographed a desk I have never seen, and there is exactly one person in this building young enough to think a burner account is anonymous.’ He hands the printout back. ‘I came to kill a segment, not a host. You can print that.’",
+            "requiresEvidenceIds": [
+              "stolen-outline"
             ],
             "requiresWillingnessIn": [
               "open",
@@ -363,68 +772,199 @@
             ]
           }
         ],
-        "secrets": []
+        "secrets": [
+          {
+            "id": "blake-saw-chen",
+            "content": "‘You’re asking the wrong question about the green room. Ask who left it. The intercom buzzed at five to eight — “send in the Doctor” — and Chen went. And when I came back up at half past, she was at that guest rig with cans on, deep in something, and a person reviewing crossword-puzzle notes does not flinch when a door opens.’ A pause, and for once he is not performing. ‘I know what editing looks like, Investigator. I just didn’t know yet that it mattered.’",
+            "requiresFlags": {
+              "splice_suspected": true
+            },
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "blake-the-leak",
+            "content": "Quietly: ‘Segment one is true. Nine years ago I burned one of Lena’s sources to get a story to air first. A nurse. She lost her job, her deposition, eighteen months of her life, and Lena never forgave me — and the difference between us is that she was right not to. If the midnight statement needs a villain with a microphone, I have been one. Just not tonight.’",
+            "requiresEvidenceIds": [
+              "full-outline"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded",
+              "hostile"
+            ]
+          }
+        ]
       },
       "defenses": [
-        "Media training",
-        "Points at Kai's login"
-      ],
-      "storyRole": "suspect"
+        "Media training: answers the question he wishes you had asked",
+        "A deny-everything reflex set in concrete before he knew what the evidence would say",
+        "When his alibi breaks he gets more honest, not less — the brand pivots to cooperating witness"
+      ]
     },
     {
       "id": "amy-chen",
       "name": "Dr. Amy Chen",
-      "shortBio": "Guest researcher for the episode.",
-      "voice": "Academic, careful",
+      "shortBio": "Forensic audio analyst — the State’s voice-identification expert in a hundred courtrooms, and the making of her was State v. Vey, 2009. She wants tonight’s story to have a simple, well-supported answer; she fears exactly one document in this building; and her certainty is not a manner — it is the product she has sold her whole life. Watch the moment she offers to help. She always offers to help.",
+      "cardTitle": "The guest expert",
+      "voice": "Measured, warm, precise — a testimony voice",
       "portrait": "portraits/amy-chen.jpg",
       "defaultLocationId": "green-room",
       "defaultWillingness": "open",
+      "defaultStance": "expert_composure",
+      "storyRole": "suspect",
       "knowledge": {
-        "public": "She was reviewing notes in the green room. She heard raised voices through the wall around 8:10.",
-        "private": [],
-        "secrets": []
+        "public": "She arrived early to prepare — green rooms calm her, she says. She reviewed notes all evening, headphones on and off. Around ten past eight she heard raised voices and what she can only call a scuffle, muffled, through the wall, and assumed it was rehearsal drama; she regrets that assumption more than she can say. She has offered, repeatedly and graciously, to examine any recording that would help — it is, after all, her field. It was also she who suggested, gently, that people who fear for their work keep copies of it near the backups; perhaps the server room deserves a look.",
+        "private": [
+          {
+            "id": "chen-early",
+            "content": "‘Seven-twelve, yes. I said quarter to eight because a woman who arrives an hour early to a difficult interview sounds like whatever you are currently thinking. I arrive early everywhere, Investigator; preparation is the whole of my profession.’ It is a good answer. It arrives a little fast, like something prepared.",
+            "requiresEvidenceIds": [
+              "signin-sheet"
+            ]
+          },
+          {
+            "id": "chen-pre-interview",
+            "content": "The composure holds; only the vocabulary changes. ‘Yes — we spoke at about five to eight. She wanted to gloat, so I let her. Then I went back to the green room, and she was alive when I left her. You have the card, so you know it stops at 8:01. An absence of signal is not signal, Investigator, whatever Ms. Ortiz taught her listeners. Your recording does not say something happened. It says it stopped listening.’",
+            "requiresEvidenceIds": [
+              "backup-audio"
+            ]
+          },
+          {
+            "id": "chen-expert-shield",
+            "content": "‘A guest login, a freeware editor, and a file history — and who on this floor is qualified to tell you what any of it proves? I am. That is not arrogance; it is my curriculum vitae. Bring me the files and I will tell you what they are.’ For the first time tonight, she is asking to touch the evidence rather than look at it.",
+            "requiresEvidenceIds": [
+              "workstation-history"
+            ]
+          }
+        ],
+        "secrets": [
+          {
+            "id": "chen-breaks",
+            "content": "She looks at the three exhibits the way she has looked at a thousand: finding the weak one. There isn’t one. ‘Do you know what I matched in 2009? Not a voice. A room’s need for an answer. Juries don’t hear tape hiss, Investigator — they hear certainty, and I have perfect pitch for certainty.’ A breath. ‘Sixteen years, and nobody listened again. She listened. She sat me down in a soundproof room and played me my own exhibit running backwards. So I gave the room a new answer — the rival. It fit the need. It always fits the need.’ She squares the report’s corner against the table edge, tidy to the last. ‘He died in June, still writing letters. You may tell the detectives I said all of it.’",
+            "requiresEvidenceIds": [
+              "backup-audio",
+              "marrable-report",
+              "workstation-history"
+            ]
+          }
+        ]
       },
-      "defenses": [],
-      "storyRole": "suspect"
+      "defenses": [
+        "Offers expertise before it is asked — steering that reads as helping",
+        "Every new exhibit meets a prepared fallback: the gap in the card, the unqualified audience, the guest login anyone could use",
+        "Never raises her voice; the closer you get, the more precisely she speaks",
+        "She will never touch the player — her weapon was always testimony"
+      ]
     },
     {
       "id": "riley-cho",
       "name": "Riley Cho",
-      "shortBio": "Intern; first death on a job.",
-      "voice": "Nervous, eager to help",
+      "shortBio": "The intern — twenty-two, three months in, first job and first body. Riley wants a career that starts before the rent runs out; fears that the one page they sold is the reason there is a sheet over Lena; and tells the truth compulsively about everything except the thing that matters.",
+      "cardTitle": "The intern",
+      "voice": "Nervous, eager, over-precise",
       "portrait": "portraits/riley-cho.jpg",
       "defaultLocationId": "green-room",
       "defaultWillingness": "open",
+      "storyRole": "suspect",
       "knowledge": {
-        "public": "Riley fetched water, saw Blake leave the green room toward the booth hall.",
-        "private": [],
-        "secrets": []
+        "public": "Riley ran the 7:50 food order and got back at 8:38 to a building about to lock down — receipt and paper bag to prove it. Before leaving: Mercer arrived around half past seven and drifted toward the booth hall, and Dr. Chen was around the green room all evening, in and out of the doorway. Riley notices everything and volunteers most of it.",
+        "private": [
+          {
+            "id": "riley-doorway",
+            "content": "‘During the shouting — you heard about the shouting? — Dr. Chen was in the green-room doorway with her phone up in her hand. I figured she was texting; people text through everything.’ A shrug that doesn’t quite land. ‘She stood there the whole four minutes, though. Facing the corridor.’",
+            "requiresWillingnessIn": [
+              "open"
+            ]
+          },
+          {
+            "id": "riley-closet-glimpse",
+            "content": "‘When I came back up with the food — 8:38, the receipt says — someone was at the server-closet door. Going in or coming out, I only caught a back. I assumed Kai; it’s his closet. But Kai is a tower, and this was somebody my height.’ A pause. ‘I should have said that sooner. I keep doing that tonight.’",
+            "requiresTrust": 1,
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ],
+        "secrets": [
+          {
+            "id": "riley-leak",
+            "content": "It comes out in one breath. ‘I photographed page one. One page. A producer at The Mercer File said show initiative, and I have eleven hundred dollars of rent and a diploma, and it was the leak segment — it was about Mercer anyway — and I thought the worst it could cost was my reference.’ Riley looks at the studio door and does not finish the next sentence. It does not need finishing.",
+            "requiresEvidenceIds": [
+              "stolen-outline"
+            ],
+            "requiresTrust": 1,
+            "requiresWillingnessIn": [
+              "open"
+            ]
+          }
+        ]
       },
-      "defenses": [],
-      "storyRole": "suspect"
+      "defenses": [
+        "Over-helpful until the outline comes up, then suddenly over-precise about irrelevant details",
+        "If bullied, shuts down completely — kindness is the only key that fits",
+        "Protects Kai by instinct, facts optional"
+      ]
     },
     {
       "id": "dana-ruiz",
       "name": "Dana Ruiz",
-      "shortBio": "Building security.",
-      "voice": "Procedural, dry",
+      "shortBio": "Chief of building security — twenty years of turning locks behind other people’s mistakes, and tonight one of the mistakes is hers. She wants to hand the detectives a sealed building and a clean log; she fears the initials on pass G-14; and she runs the lockdown flawlessly while quietly deciding whether to burn her own career for the truth.",
+      "cardTitle": "The security chief",
+      "voice": "Procedural, dry, economical",
       "portrait": "portraits/dana-ruiz.jpg",
-      "defaultLocationId": "studio-floor",
-      "defaultWillingness": "open",
+      "defaultLocationId": "lobby",
+      "defaultWillingness": "guarded",
+      "storyRole": "suspect",
       "knowledge": {
-        "public": "Badge logs are in the server closet. No forced entry from outside.",
-        "private": [],
-        "secrets": []
+        "public": "Lockdown at 8:47, her call, by the book: nobody in or out since, elevator keyed off. Floor-five cameras have been dark since June — renovation contract, not her budget, escalated twice in writing. She collected first statements from everyone on the floor and will recite them verbatim on request. About the visitor log she is suddenly less fluent.",
+        "private": [
+          {
+            "id": "dana-blake-lobby",
+            "content": "‘Mercer was in my lobby from eight sharp to eight twenty-five — yelling about his pass, threatening me with his lawyer, then his network, then his podcast, in that order. I logged it at 8:25.’ She says it flat, like an alibi she wishes she did not have to give. ‘If your window is ten past eight, your window has him standing on marble calling me a rent-a-cop.’",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ],
+        "secrets": [
+          {
+            "id": "dana-pass",
+            "content": "‘G-14 is my override. Mercer worked this building four years back when it was the network’s; he called ahead, and I badged him up as a favor — off the book, because his business with Ortiz was the kind you don’t write down. That is a firing offense. The sheet in my drawer says worse: it says I let the evening in the door.’ She slides the drawer key across the marble. ‘If I’m burning my job tonight, take all of it. The sheet, the times, the works.’",
+            "requiresEvidenceIds": [
+              "badge-log"
+            ]
+          }
+        ]
       },
-      "defenses": [],
-      "storyRole": "suspect"
+      "defenses": [
+        "Answers exactly what is asked and nothing more",
+        "Cop-calm under accusation; produces documentation instead of emotion",
+        "Once the pass is out, she flips to full ally — procedure demands it"
+      ]
     }
   ],
   "evidence": [
     {
-      "id": "cable-marks",
-      "name": "Headphone cable marks",
-      "description": "Strangulation with Lena's own cable.",
+      "id": "ligature-marks",
+      "name": "Ligature geometry",
+      "description": "A thin, cable-width line pressed high under the jaw, crossing at the nape — and the headphone cable lying slack on top of the mark it matches, with the headphones seated neatly over her ears. Mark first, cable after, headphones last: the order is written on her skin, and nobody in the building has said it aloud yet.",
+      "discoverableAt": {
+        "locationId": "studio-floor",
+        "inspectableId": "lena-body"
+      },
+      "canPresentTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "lena-keycard",
+      "name": "Lena’s keycard",
+      "description": "Her all-access card, still on its lanyard. The edit bay across the hall answers to it.",
       "discoverableAt": {
         "locationId": "studio-floor",
         "inspectableId": "lena-body"
@@ -435,61 +975,177 @@
     },
     {
       "id": "backup-recorder",
-      "name": "Backup handheld recorder",
-      "description": "Waveform spike then silence at 00:41:12 into the episode clock.",
+      "name": "Lena’s handheld recorder",
+      "description": "A decade-old field recorder from her tote, screen blinking CARD FULL, last file ending at 8:01 p.m. No speaker worth the name — it needs a board to play through, and the booth has one.",
       "discoverableAt": {
         "locationId": "studio-floor",
-        "inspectableId": "lena-body"
+        "inspectableId": "lena-tote"
       },
       "canPresentTo": [
-        "kai-okonkwo",
-        "blake-mercer",
-        "amy-chen"
+        "*"
       ]
     },
     {
+      "id": "backup-audio",
+      "name": "The backup card’s audio",
+      "description": "The evening in order, from a tote bag under the desk: Mercer’s four minutes of talkback fury ending in Lena’s laugh at 7:43; thirteen minutes of a woman working alone; the door at 7:56 and ‘You’re early, Doctor’; a lab report played off a phone; and CARD FULL at 8:01:47, before whatever came next. Whoever else tells you tonight’s times, this card was in the room.",
+      "discoverableAt": {
+        "locationId": "control-booth",
+        "inspectableId": "playback-rig"
+      },
+      "canPresentTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "usb-confrontation",
+      "name": "The USB recording",
+      "description": "An unlabeled stick from under the server-closet racks. One file: Lena and a man whose cadence anyone in this business would clock as Mercer — the leak, the lawsuit, her refusal — escalating into a struggle and going silent. The metadata stamps it 8:10 p.m. It is exactly what an investigation hopes to find, which is one true thing about it.",
+      "discoverableAt": {
+        "locationId": "server-closet",
+        "inspectableId": "under-shelf"
+      },
+      "canPresentTo": [
+        "*"
+      ],
+      "redHerring": true
+    },
+    {
       "id": "stolen-outline",
-      "name": "Stolen episode outline",
-      "description": "Lena's outline accusing Mercer of killing a story; in Blake's bag.",
+      "name": "Page one of the outline",
+      "description": "Blood Signal finale outline, page one only: ‘THE LEAK — who burned a source to bury a story, and what it bought him.’ Annotated in Mercer’s hand, carried in Mercer’s bag. Page one of how many is the question the page cannot answer.",
       "discoverableAt": {
         "locationId": "green-room",
         "inspectableId": "blake-bag"
       },
       "canPresentTo": [
-        "blake-mercer",
-        "kai-okonkwo",
-        "riley-cho"
+        "*"
+      ],
+      "redHerring": true
+    },
+    {
+      "id": "full-outline",
+      "name": "The full episode outline",
+      "description": "Two segments. One: ‘THE LEAK,’ five minutes. Two: ‘BLOOD SIGNAL,’ fifty minutes — the 2009 voicemail, the trial, the State’s expert, the blind re-analysis, a dead man’s letters. The episode everyone upstairs thinks they are in is the cold open. The episode is Vey.",
+      "discoverableAt": {
+        "locationId": "edit-bay",
+        "inspectableId": "corkboard"
+      },
+      "canPresentTo": [
+        "*"
       ]
     },
     {
-      "id": "usb-confrontation",
-      "name": "USB confrontation audio",
-      "description": "Lena vs Blake off-mic; scuffle after threat to air the story.",
+      "id": "marrable-report",
+      "name": "The Marrable report",
+      "description": "Marrable Acoustic Laboratory, blind re-analysis, dated this June: the 2009 identification is not reproducible; the questioned speaker cannot be matched to Marcus Vey to any defensible standard. Behind it, stapled trial transcript pages where the State’s expert says ‘to a scientific certainty’ four times, each one initialed in red by a dead woman.",
       "discoverableAt": {
-        "locationId": "server-closet",
-        "inspectableId": "hidden-usb"
+        "locationId": "edit-bay",
+        "inspectableId": "desk-files"
       },
       "canPresentTo": [
-        "blake-mercer",
-        "kai-okonkwo",
-        "dana-ruiz",
-        "amy-chen"
+        "*"
+      ]
+    },
+    {
+      "id": "vey-letters",
+      "name": "Marcus Vey’s letters",
+      "description": "Sixteen years of prison mail in one careful hand. The last, postmarked May: ‘You are the first person to send for the tapes instead of the transcript. The tapes stutter. The transcript is confident.’ He died in June, four weeks before air.",
+      "discoverableAt": {
+        "locationId": "edit-bay",
+        "inspectableId": "letter-box"
+      },
+      "canPresentTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "talkback-record",
+      "name": "Talkback session log",
+      "description": "Booth talkback engaged 7:39 p.m., released 7:43 p.m. Four minutes of somebody’s voice let into a sealed room — the only way in without opening the door.",
+      "discoverableAt": {
+        "locationId": "control-booth",
+        "inspectableId": "talkback-console"
+      },
+      "canPresentTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "daw-deletion-log",
+      "name": "Workstation deletion log",
+      "description": "BloodSignal_FINAL.ptx, moved to unrecoverable at 8:09 p.m., workstation STUDIO-B, user kai.o — a session unlocked since 7:19. The log records hands on a keyboard. It does not record whose.",
+      "discoverableAt": {
+        "locationId": "studio-floor",
+        "inspectableId": "main-daw"
+      },
+      "canPresentTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "transfer-log",
+      "name": "Transfer console log",
+      "description": "Batch digitization started 8:03 p.m. from the server-closet console, user kai.o, keepalive every ninety seconds through 8:37. One login, two rooms, six minutes apart. Habits make terrible alibis and worse frames.",
+      "discoverableAt": {
+        "locationId": "server-closet",
+        "inspectableId": "transfer-console"
+      },
+      "canPresentTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "workstation-history",
+      "name": "Guest workstation history",
+      "description": "8:16 to 8:31 p.m., guest login, freeware audio editor: a phone memo, the show’s own chair_scuffle_ep61.wav auditioned eleven times, a render named final.wav, and one write to removable media at 8:33. A forgery’s worth of work, done in fifteen minutes, by somebody fluent.",
+      "discoverableAt": {
+        "locationId": "green-room",
+        "inspectableId": "workstation-audit"
+      },
+      "canPresentTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "badge-log",
+      "name": "Badge terminal log",
+      "description": "Visitor credential issued 7:12 p.m.; guest pass G-14 through the turnstile at 7:31 under a D. RUIZ override; lockdown 8:47. The terminal is honest. The paper sheet it mirrors is in a locked drawer downstairs.",
+      "discoverableAt": {
+        "locationId": "server-closet",
+        "inspectableId": "badge-terminal"
+      },
+      "canPresentTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "signin-sheet",
+      "name": "The paper sign-in sheet",
+      "description": "A. Chen, signed in at 7:12 p.m. — an hour and three minutes before her call time, and forty-odd minutes before the arrival she described in her statement. No entry for B. Mercer at all: just G-14 and a security chief’s initials. Paper does not perform. It just sits there, early.",
+      "discoverableAt": {
+        "locationId": "lobby",
+        "inspectableId": "front-desk"
+      },
+      "canPresentTo": [
+        "*"
       ]
     }
   ],
   "beats": [
     {
-      "id": "body_done",
+      "id": "body_read",
+      "title": "The order written on her skin",
       "once": true,
       "trigger": "on_discover",
       "when": {
         "type": "has_evidence",
-        "evidenceId": "cable-marks"
+        "evidenceId": "ligature-marks"
       },
       "effects": [
         {
           "type": "set_game_flag",
-          "id": "examined_body",
+          "id": "murder_known",
           "value": true
         },
         {
@@ -497,10 +1153,76 @@
           "phaseId": "deepening"
         }
       ],
-      "narrationHints": "Murder, not an accident with gear."
+      "narrationHints": "The geometry, not the word: mark first, cable after, headphones last. Let the order say ‘murder’ so nobody else has to. The room should feel like it got quieter, which is impossible, which is the point."
     },
     {
-      "id": "usb_crisis",
+      "id": "chen_reads_scene",
+      "title": "The helpful expert",
+      "once": true,
+      "trigger": "on_talk",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "game_flag",
+            "id": "murder_known",
+            "equals": true
+          },
+          {
+            "type": "talked_to",
+            "characterId": "amy-chen"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "chen_claim_heard",
+          "value": true
+        }
+      ],
+      "narrationHints": "Unprompted, gracious, useful: she read the marks before you arrived — ‘a ligature, drawn from behind’ — and mentions, apologetically, the raised voices and the scuffle ‘through the wall, about ten past eight.’ She is the most helpful person on this floor. Convey it warmly; conclude nothing.",
+      "reactions": [
+        {
+          "characterId": "amy-chen",
+          "lineHint": "‘Whoever held that cable stood behind her — I have testified to worse on less. And Investigator… the voices, just after eight. I should have knocked. I will be hearing that scuffle for years.’",
+          "stance": "expert_composure"
+        }
+      ]
+    },
+    {
+      "id": "card_full_nudge",
+      "title": "CARD FULL",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "backup-recorder"
+      },
+      "effects": [],
+      "narrationHints": "The screen blinks CARD FULL like a held breath. The handheld has no real speaker; the booth’s patch bay next door will take its line-out. Whatever Lena’s habit caught tonight is one door away from being heard."
+    },
+    {
+      "id": "two_rooms",
+      "title": "The evening, in order",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "backup-audio"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "timeline_broken",
+          "value": true
+        }
+      ],
+      "narrationHints": "The first reorientation. The fight everyone is whispering about happened at 7:39, over a talkback, and ended in her laugh — and at 7:56 the last voice on the card says ‘Doctor.’ Do not reconcile anything for the player. Put the card’s clock next to the story the floor believes and let the gap between 8:01 and 8:10 itch."
+    },
+    {
+      "id": "usb_trap",
+      "title": "The find of the night",
       "once": true,
       "trigger": "on_discover",
       "when": {
@@ -509,28 +1231,123 @@
       },
       "effects": [
         {
-          "type": "set_phase",
-          "phaseId": "crisis"
-        },
-        {
-          "type": "add_pressure",
-          "characterId": "blake-mercer",
-          "by": 2
-        },
-        {
-          "type": "set_player_threat",
-          "threat": "watched"
-        },
-        {
-          "type": "set_stance",
-          "characterId": "blake-mercer",
-          "value": "brittle"
+          "type": "set_game_flag",
+          "id": "found_usb",
+          "value": true
         }
       ],
-      "narrationHints": "The episode already recorded its own murder."
+      "narrationHints": "Play it absolutely straight: this is the case closing itself — a struggle, a timestamp, a rival’s cadence. If the player buys it whole, the night is over and wrong. If they have heard the backup card, the two clocks cannot both be true. Either way: somebody left this to be found, and finders rarely ask by whom."
     },
     {
-      "id": "blake_cornered",
+      "id": "dana_sweep",
+      "title": "The trap does not need you to find it",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "turn_at_least",
+            "n": 14
+          },
+          {
+            "type": "not",
+            "of": {
+              "type": "has_evidence",
+              "evidenceId": "usb-confrontation"
+            }
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "grant_evidence",
+          "evidenceId": "usb-confrontation"
+        },
+        {
+          "type": "set_game_flag",
+          "id": "found_usb",
+          "value": true
+        }
+      ],
+      "narrationHints": "Dana’s hourly sweep turns up the USB under the racks and she hands it over with both eyebrows raised. The plant was built to be found by anyone; the villain never depended on the player’s thoroughness."
+    },
+    {
+      "id": "chen_authenticates",
+      "title": "Her name on it",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "presented",
+        "evidenceId": "usb-confrontation",
+        "toCharacterId": "amy-chen"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "chen_authenticated",
+          "value": true
+        }
+      ],
+      "narrationHints": "She listens once, eyes closed, and certifies it: ‘Continuous. Unedited. Consistent with a struggle at approximately 8:10. I will put my name on that for the detectives.’ Her name has been worth a conviction before. Perform the certainty; sell it.",
+      "reactions": [
+        {
+          "characterId": "amy-chen",
+          "lineHint": "‘You should feel no doubt about this exhibit, Investigator. I don’t.’",
+          "stance": "expert_composure"
+        }
+      ]
+    },
+    {
+      "id": "foley_recognized",
+      "title": "That’s my chair",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "presented",
+        "evidenceId": "usb-confrontation",
+        "toCharacterId": "kai-okonkwo"
+      },
+      "effects": [
+        {
+          "type": "reveal_knowledge",
+          "characterId": "kai-okonkwo",
+          "knowledgeId": "kai-foley-id"
+        },
+        {
+          "type": "set_game_flag",
+          "id": "splice_suspected",
+          "value": true
+        },
+        {
+          "type": "set_phase",
+          "phaseId": "crisis"
+        }
+      ],
+      "narrationHints": "The second reorientation and the hinge of the case: Kai identifies his own foley inside the ‘live’ scuffle. The USB stops being evidence of a murder and becomes evidence of a manufacture. From here the question is no longer who was in the booth — it is who can build a lie out of sound."
+    },
+    {
+      "id": "chen_goes_cold",
+      "title": "She stops offering",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "game_flag",
+        "id": "splice_suspected",
+        "equals": true
+      },
+      "effects": [
+        {
+          "type": "set_stance",
+          "characterId": "amy-chen",
+          "value": "watchful"
+        }
+      ],
+      "narrationHints": "Somewhere in the last hour the most helpful person on the floor became a person watching your hands. Do not announce it; drop the temperature two degrees and let the player notice the help has stopped."
+    },
+    {
+      "id": "chen_wipe_attempt",
+      "title": "Her thumb on FORMAT",
       "once": true,
       "trigger": "on_present",
       "when": {
@@ -538,29 +1355,94 @@
         "of": [
           {
             "type": "presented",
-            "evidenceId": "usb-confrontation",
-            "toCharacterId": "blake-mercer"
+            "evidenceId": "backup-recorder",
+            "toCharacterId": "amy-chen"
           },
           {
-            "type": "has_evidence",
-            "evidenceId": "stolen-outline"
+            "type": "not",
+            "of": {
+              "type": "has_evidence",
+              "evidenceId": "backup-audio"
+            }
           }
         ]
       },
       "effects": [
         {
-          "type": "set_willingness",
-          "characterId": "blake-mercer",
-          "value": "hostile"
+          "type": "set_game_flag",
+          "id": "chen_slipped",
+          "value": true
         },
         {
+          "type": "add_pressure",
+          "characterId": "amy-chen",
+          "by": 1
+        },
+        {
+          "type": "set_player_threat",
+          "threat": "watched"
+        }
+      ],
+      "narrationHints": "She cradles the handheld like a colleague’s instrument — and her thumb finds MENU, then FORMAT, in under four seconds, before Riley’s voice from the doorway makes her hand it back with a smile about checking the codec. The player keeps the recorder. The player should also keep the memory of her thumb."
+    },
+    {
+      "id": "bay_wall",
+      "title": "The episode was never about the leak",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "full-outline"
+      },
+      "effects": [],
+      "narrationHints": "The third room of the night: fifty of the finale’s fifty-five minutes belong to a dead man’s appeal. Let the player stand in front of the wall and re-rank every fear on this floor. Do not rank it for them."
+    },
+    {
+      "id": "chen_cornered",
+      "title": "The clock becomes hers",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "presented",
+            "evidenceId": "backup-audio",
+            "toCharacterId": "amy-chen"
+          },
+          {
+            "type": "or",
+            "of": [
+              {
+                "type": "has_evidence",
+                "evidenceId": "marrable-report"
+              },
+              {
+                "type": "has_evidence",
+                "evidenceId": "workstation-history"
+              }
+            ]
+          }
+        ]
+      },
+      "effects": [
+        {
           "type": "set_alibi_status",
-          "characterId": "blake-mercer",
+          "characterId": "amy-chen",
           "value": "broken"
         },
         {
+          "type": "set_stance",
+          "characterId": "amy-chen",
+          "value": "cornered_precision"
+        },
+        {
+          "type": "set_phase",
+          "phaseId": "confrontation"
+        },
+        {
           "type": "start_clock",
-          "clockId": "blake_spin",
+          "clockId": "chen_files",
           "turns": 8
         },
         {
@@ -568,10 +1450,54 @@
           "threat": "threatened"
         }
       ],
-      "narrationHints": "Blake's brand cracks. Finish before he controls the narrative."
+      "narrationHints": "Cornered, she becomes more precise, not less. She asks for a phone — not for a lawyer, for the detectives’ liaison: she intends to file her expert read of the USB before midnight and let institutional gravity do the rest. The clock now belongs to her. Say so in the room’s terms: she has started tidying her papers."
     },
     {
-      "id": "wrong_kai",
+      "id": "blake_flips",
+      "title": "Roll on me",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "beat_fired",
+        "beatId": "chen_cornered"
+      },
+      "effects": [
+        {
+          "type": "move_character",
+          "characterId": "blake-mercer",
+          "toLocationId": "studio-floor"
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "blake-mercer",
+          "value": "open"
+        }
+      ],
+      "narrationHints": "Mercer arrives where the trouble is, on the record for once in his life. Whatever else he is, he knows what editing looks like — and he saw who was editing.",
+      "reactions": [
+        {
+          "characterId": "blake-mercer",
+          "lineHint": "‘I have buried people with a microphone, Investigator, so believe me: I know what it looks like. She was laughing when I left her. Roll tape on me saying so.’",
+          "stance": "cooperating_witness"
+        }
+      ]
+    },
+    {
+      "id": "narrative_current",
+      "title": "The easy answer",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "game_flag",
+        "id": "accused_blake-mercer",
+        "equals": true
+      },
+      "effects": [],
+      "narrationHints": "The building exhales around the easy answer: counsel’s draft grows a name, Dana grows quieter, and Chen — watch her — grows exactly one degree warmer. The player should feel the current helping them toward the falls. If the accusation stands at scoring, the night ends the way 2009 ended."
+    },
+    {
+      "id": "closes_ranks_kai",
+      "title": "The floor freezes",
       "once": true,
       "trigger": "on_turn",
       "when": {
@@ -591,21 +1517,115 @@
           "value": "hostile"
         }
       ],
-      "narrationHints": "Blaming the engineer freezes the crew."
+      "narrationHints": "Accuse the man who built her rooms and the floor closes like a door: Kai goes somewhere words don’t reach, and Riley discovers a spine. The cost of the bad accusation is information, not a game-over screen."
     },
     {
-      "id": "blake_escapes_narrative",
+      "id": "closes_ranks_riley",
+      "title": "Between you and the kid",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "game_flag",
+        "id": "falsely_accused_riley-cho",
+        "equals": true
+      },
+      "effects": [
+        {
+          "type": "set_willingness",
+          "characterId": "riley-cho",
+          "value": "silent"
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "kai-okonkwo",
+          "value": "hostile"
+        }
+      ],
+      "narrationHints": "Bully the intern into the frame and Kai puts himself between you and the kid for the rest of the night. You have lost the two most honest voices on the floor."
+    },
+    {
+      "id": "riley_confesses",
+      "title": "One page",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "presented",
+        "evidenceId": "stolen-outline",
+        "toCharacterId": "riley-cho"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "leak_confessed",
+          "value": true
+        },
+        {
+          "type": "reveal_knowledge",
+          "characterId": "riley-cho",
+          "knowledgeId": "riley-leak"
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "riley-cho",
+          "value": "open"
+        }
+      ],
+      "narrationHints": "A mini-solve: one suspicious shape resolved the honest way — ambition, not malice — and the page’s whole chain of custody explained: Riley to the burner inbox, the inbox to Mercer, Mercer to the booth. Every link human; every link short of murder.",
+      "reactions": [
+        {
+          "characterId": "riley-cho",
+          "lineHint": "‘If page one is why he came, and him coming is why— ’ The sentence doesn’t finish.",
+          "stance": "confessional"
+        }
+      ]
+    },
+    {
+      "id": "dana_comes_clean",
+      "title": "Take all of it",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "presented",
+        "evidenceId": "badge-log",
+        "toCharacterId": "dana-ruiz"
+      },
+      "effects": [
+        {
+          "type": "reveal_knowledge",
+          "characterId": "dana-ruiz",
+          "knowledgeId": "dana-pass"
+        },
+        {
+          "type": "set_game_flag",
+          "id": "dana_clean",
+          "value": true
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "dana-ruiz",
+          "value": "open"
+        }
+      ],
+      "narrationHints": "She slides the drawer key across the marble like a resignation letter. From here Dana is an ally with nothing left to protect — and the sheet in that drawer says who was early."
+    },
+    {
+      "id": "air_window",
+      "title": "Midnight",
       "once": true,
       "trigger": "on_turn",
       "when": {
         "type": "and",
         "of": [
           {
-            "type": "case_active"
+            "type": "time_at_least",
+            "slotId": "midnight_air"
           },
           {
-            "type": "clock_expired",
-            "clockId": "blake_spin"
+            "type": "not",
+            "of": {
+              "type": "clock_running",
+              "clockId": "chen_files"
+            }
           }
         ]
       },
@@ -613,62 +1633,43 @@
         {
           "type": "end_case",
           "outcome": "failure",
-          "endingId": "failure_escaped",
-          "endingKind": "escaped"
+          "endingId": "failure_air_window",
+          "endingKind": "time_expired"
         }
       ],
-      "narrationHints": "Blake walks with lawyers and a podcast denial. Failure."
+      "narrationHints": "Midnight arrives on schedule, which is the one thing tonight that does. The police take the scene; the statement takes the story."
     },
     {
-      "id": "wrap_success",
+      "id": "chen_files_out",
+      "title": "Filed",
       "once": true,
       "trigger": "on_turn",
       "when": {
-        "type": "and",
-        "of": [
-          {
-            "type": "in_denouement"
-          },
-          {
-            "type": "or",
-            "of": [
-              {
-                "type": "resolution_outcome",
-                "is": "success"
-              },
-              {
-                "type": "resolution_outcome",
-                "is": "partial"
-              }
-            ]
-          }
-        ]
+        "type": "clock_expired",
+        "clockId": "chen_files"
       },
       "effects": [
         {
-          "type": "move_character",
-          "characterId": "blake-mercer",
-          "toLocationId": "studio-floor"
-        },
-        {
-          "type": "set_stance",
-          "characterId": "blake-mercer",
-          "value": "broken_brand"
+          "type": "end_case",
+          "outcome": "failure",
+          "endingId": "failure_chen_files",
+          "endingKind": "escaped"
         }
       ],
-      "narrationHints": "Studio aftermath. The show will not air as planned — something truer will."
+      "narrationHints": "Eight turns was enough. Her analysis is with the liaison, her composure is intact, and the record — her instrument, always — now plays her tune."
     }
   ],
   "solution": {
-    "summary": "Blake Mercer entered the control booth, confronted Lena about her episode exposing him for leaking a source, then entered Studio B and strangled her with the headphone cable. He deleted the main session under Kai's open login and hid a USB of the confrontation. Badge logs and audio prove the timeline.",
+    "summary": "Dr. Amy Chen killed Lena Ortiz between 8:02 and 8:04 p.m., alone with her in Studio B, with the cable of the headphones Lena was wearing. Lena had booked Chen as the finale’s guest in order to ambush her on tape: the episode proves Chen’s career-making voice identification in State v. Vey (2009) was indefensible — Marrable Laboratory’s blind re-analysis excludes Marcus Vey, who died at Fenbrook in June, sixteen years into the sentence Chen’s ‘scientific certainty’ built. At the 7:55 pre-interview Lena played her the exclusion and promised her answer would air at midnight. When Lena seated her headphones to cue the cold open, Chen stood, took the slack of the cable, and used it. Then she staged in two layers. First a collapse: cable re-draped, headphones re-seated, and the master session deleted at 8:09 under Kai’s never-locked login. Then a culprit: at the green-room guest workstation, 8:16–8:31, she spliced her own doorway phone recording of Mercer’s genuine 7:39 talkback tirade to the show’s ep-61 chair-scuffle foley, stamped the render 8:10, wrote it to a USB at 8:33, and taped it under the server-closet racks at 8:37 while Kai was in the washroom — Riley glimpsed her back and filed it under Kai. Her witness statement seeded the same minute: raised voices ‘through the wall, about ten past eight.’ The seams: a floated room no wall can betray; a card that reads CARD FULL at 8:01:47 with ‘You’re early, Doctor’ on it; foley an engineer can name; a fifteen-minute guest-login file history ending in one removable-media write; a sign-in sheet reading 7:12 against her stated quarter to eight; and headphones seated over the mark their own cable made.",
     "guiltyPartyIds": [
-      "blake-mercer"
+      "amy-chen"
     ],
-    "method": "Strangulation with headphone cable after booth approach",
-    "motive": "Stop Lena airing evidence he killed a story / leaked a source",
+    "method": "Strangulation from behind with the victim’s own headphone cable while she monitored playback in a soundproof room — followed by a two-layer staging: a collapse for the first hour, a framed rival for the rest of the night.",
+    "motive": "Lena’s finale would prove Chen’s 2009 voice-identification testimony fraudulent — the conviction that made her career and buried Marcus Vey, who died in June still writing letters. Airing meant case reviews, perjury exposure, and the end of every certainty she ever sold.",
     "criticalEvidenceIds": [
-      "usb-confrontation",
-      "stolen-outline"
+      "backup-audio",
+      "marrable-report",
+      "workstation-history"
     ],
     "rubric": {
       "partialCredit": true,
@@ -676,38 +1677,72 @@
       "successPolicy": "identity_plus_one",
       "requiredFacts": [
         {
-          "id": "killer-blake",
+          "id": "killer-chen",
           "role": "identity",
-          "description": "Blake Mercer",
+          "description": "Names Dr. Amy Chen",
           "matchHints": [
-            "blake",
-            "mercer"
+            "chen",
+            "amy",
+            "doctor",
+            "analyst",
+            "guest expert",
+            "the expert"
           ]
         },
         {
           "id": "method-cable",
           "role": "method",
-          "description": "Cable / strangle / booth",
+          "description": "Headphone cable, from behind, during the 7:55 pre-interview in the soundproof studio",
           "matchHints": [
             "cable",
             "strangl",
-            "headphones",
-            "booth",
-            "studio"
+            "cord",
+            "headphone",
+            "from behind",
+            "pre-interview",
+            "garrote",
+            "before eight"
           ]
         },
         {
-          "id": "motive-story",
+          "id": "motive-vey",
           "role": "motive",
-          "description": "Episode / leak / rival / bury story",
+          "description": "The finale would expose her 2009 Vey testimony as fraud",
           "matchHints": [
-            "episode",
-            "leak",
-            "source",
-            "rival",
-            "bury",
-            "outline",
-            "air"
+            "vey",
+            "2009",
+            "voiceprint",
+            "voice identification",
+            "testimony",
+            "marrable",
+            "exclusion",
+            "fraud",
+            "junk science",
+            "conviction",
+            "perjury",
+            "expose her",
+            "career",
+            "reels"
+          ]
+        },
+        {
+          "id": "staging-splice",
+          "role": "supporting",
+          "description": "The USB is a forgery built to frame Mercer",
+          "matchHints": [
+            "splice",
+            "forg",
+            "fake",
+            "planted",
+            "staged",
+            "framed",
+            "frame",
+            "foley",
+            "doctored",
+            "edited",
+            "fabricat",
+            "manufactured",
+            "usb"
           ]
         }
       ]
@@ -716,58 +1751,229 @@
   "canon": {
     "timeline": [
       {
-        "at": "8:08 p.m.",
-        "event": "Blake badges into control booth.",
-        "locationId": "control-booth",
+        "id": "vey-conviction",
+        "at": "2009",
+        "event": "State v. Vey: Marcus Vey is convicted of the murder of his wife Corinne, largely on Dr. Amy Chen’s identification of his voice on the voicemail the message boards later named ‘the blood signal’ — ‘to a scientific certainty.’ The verdict makes her the State’s house expert for a generation.",
         "actorIds": [
+          "amy-chen"
+        ]
+      },
+      {
+        "id": "the-letters",
+        "at": "2010–2025",
+        "event": "Vey writes from Fenbrook to every journalist who covered the case, one careful letter at a time, asking each to send for the original tapes instead of the transcript. Lena Ortiz is the first to answer."
+      },
+      {
+        "id": "the-reels",
+        "at": "Three weeks ago",
+        "event": "Ortiz signs the State v. Vey dub reels out of county storage to the studio and commissions a blind re-analysis from Marrable Acoustic Laboratory. Only Kai knows what the finale has become.",
+        "actorIds": [
+          "lena-ortiz",
+          "kai-okonkwo"
+        ]
+      },
+      {
+        "id": "vey-dies",
+        "at": "June",
+        "event": "Marcus Vey dies in the Fenbrook infirmary, sixteen years in. The Marrable report lands the same month: exclusion. The story stops being an episode and becomes a reckoning; Lena retitles the finale ‘Blood Signal’ and books Chen as its on-air guest.",
+        "actorIds": [
+          "lena-ortiz"
+        ]
+      },
+      {
+        "id": "the-tip",
+        "at": "Ten days ago",
+        "event": "A courthouse contact mentions to Chen that a podcaster has pulled the Vey exhibits. Chen accepts the booking anyway. Knowing what a room is about to say has always been her business.",
+        "actorIds": [
+          "amy-chen"
+        ]
+      },
+      {
+        "id": "the-page",
+        "at": "Last week",
+        "event": "Riley photographs page one of the outline — the leak segment — and sends it to a Mercer File producer from a burner account, angling for a job. Mercer reads his own obituary in it and starts calling lawyers.",
+        "actorIds": [
+          "riley-cho",
           "blake-mercer"
         ]
       },
       {
-        "at": "8:10–8:14",
-        "event": "Confrontation; murder; file delete.",
+        "id": "load-in",
+        "at": "7:05 p.m.",
+        "event": "Lena and Kai load in. Lena preps the ambush clips; the tote recorder goes into the bag out of eleven years of habit.",
         "locationId": "studio-floor",
         "actorIds": [
+          "lena-ortiz",
+          "kai-okonkwo"
+        ]
+      },
+      {
+        "id": "chen-signs-in",
+        "at": "7:12 p.m.",
+        "event": "Chen signs the lobby sheet an hour and three minutes before her call time and takes the green room. She wants to know how much Lena has before there is a microphone between them.",
+        "locationId": "lobby",
+        "actorIds": [
+          "amy-chen"
+        ]
+      },
+      {
+        "id": "the-favor",
+        "at": "7:31 p.m.",
+        "event": "Dana overrides pass G-14 and badges Mercer up, off the book — old colleagues, old habits. His business with Ortiz is the kind you don’t write down.",
+        "locationId": "lobby",
+        "actorIds": [
+          "dana-ruiz",
           "blake-mercer"
         ]
+      },
+      {
+        "id": "the-talkback",
+        "at": "7:39–7:43 p.m.",
+        "event": "Mercer, alone in the empty booth, leans on the talkback: kill segment one or see me in court. Lena laughs him off — ‘bring your lawyer, we’ll mic him.’ Chen records the four minutes on her phone from the green-room doorway; Riley clocks her standing there. Lena’s tote recorder takes it all down through the studio monitors.",
+        "locationId": "control-booth",
+        "actorIds": [
+          "blake-mercer",
+          "lena-ortiz",
+          "amy-chen"
+        ]
+      },
+      {
+        "id": "kai-steps-out",
+        "at": "7:55 p.m.",
+        "event": "Lena sends Kai to start the reel transfer — she wants the room for the pre-interview, alone. The batch starts at 8:03; his headphones stay on until 8:37.",
+        "locationId": "server-closet",
+        "actorIds": [
+          "kai-okonkwo"
+        ]
+      },
+      {
+        "id": "the-pre-interview",
+        "at": "7:56 p.m.",
+        "event": "‘You’re early, Doctor.’ Lena sits Chen down and plays her the Marrable exclusion off her phone: her answer airs at midnight. The tote recorder catches every word until the card fills at 8:01:47.",
+        "locationId": "studio-floor",
+        "actorIds": [
+          "lena-ortiz",
+          "amy-chen"
+        ]
+      },
+      {
+        "id": "the-killing",
+        "at": "8:02–8:04 p.m.",
+        "event": "Lena seats her headphones to cue the cold open. Chen stands, takes the slack of the cable, and uses it. The floated room keeps its one promise: nothing in, nothing out.",
+        "locationId": "studio-floor",
+        "actorIds": [
+          "amy-chen"
+        ]
+      },
+      {
+        "id": "staging-one",
+        "at": "8:05–8:11 p.m.",
+        "event": "The collapse: cable re-draped, headphones re-seated over the mark, and BloodSignal_FINAL deleted at 8:09 under kai.o, unlocked since 7:19. She does not find the tote recorder because she does not know to look for one.",
+        "locationId": "studio-floor",
+        "actorIds": [
+          "amy-chen"
+        ]
+      },
+      {
+        "id": "staging-two",
+        "at": "8:12–8:33 p.m.",
+        "event": "At the guest workstation: her doorway phone memo of the talkback row, the show’s own chair_scuffle_ep61.wav, a render stamped 8:10 p.m., one write to removable media at 8:33. Mercer returns at 8:27 and sees a woman with headphones, deep in ‘notes.’ The green-room refrigerator hums its one flat note into every second of the forgery.",
+        "locationId": "green-room",
+        "actorIds": [
+          "amy-chen"
+        ]
+      },
+      {
+        "id": "the-plant",
+        "at": "8:37 p.m.",
+        "event": "Kai steps to the washroom; Chen tapes the USB under the closet racks and is back on the couch inside two minutes. Riley, returning at 8:38 with the food, glimpses a back at the closet door and files it under ‘Kai.’",
+        "locationId": "server-closet",
+        "actorIds": [
+          "amy-chen"
+        ]
+      },
+      {
+        "id": "discovery",
+        "at": "8:41 p.m.",
+        "event": "Kai comes back with a labeling question and finds her. Dana locks the building at 8:47 and starts taking statements. Chen’s is gracious, devastated, and contains the words ‘a scuffle, through the wall, about ten past eight.’",
+        "locationId": "studio-floor",
+        "actorIds": [
+          "kai-okonkwo",
+          "dana-ruiz",
+          "amy-chen"
+        ]
+      },
+      {
+        "id": "the-engagement",
+        "at": "9:15 p.m.",
+        "event": "Patrol has sealed the exterior and moved on; the county homicide unit, committed to the refinery fire, gives an ETA of midnight. Counsel’s agreement with the detectives’ liaison puts their investigator on the floor until the handoff — document everything, move nothing without cause, the body stays as found. The Investigator arrives to a dark ON AIR lamp.",
+        "locationId": "studio-floor"
       }
-    ]
+    ],
+    "notes": "WHY THE PLAN WAS RATIONAL (from inside Chen’s head, where every audit of it must start): she was improvising from 8:02 onward, and every risk she accepted was priced correctly by her own experience. The tote recorder: nobody outside the show knew Lena’s pre-interview habit — Chen searched the desk and the DAW, the visible instruments; a dead handheld in a tote of receipts was invisible precisely because it was habit, not equipment. The wall claim: Chen is a laboratory analyst who had never set foot in this studio; podcast rooms are drywall and foam in her experience, and a hand-floated broadcast-grade floor in a rented fifth-floor suite is a one-in-a-hundred eccentricity — Kai’s eccentricity. The hum and the foley: she expected the USB to be examined, if ever, by county techs weeks from now, AFTER her own signed authentication had set the narrative — institutional gravity, the exact mechanism that held 2009 together for sixteen years. Nobody re-runs the exhibit the expert has already certified; that is not her arrogance, that is her data. She needed the story to hold until midnight, not forever: once the statement shipped and the arrest was made, every later doubt becomes a defense lawyer’s problem, not hers. The plan’s holes are the cost of maintaining the deception under time pressure, and they are exactly where the player wins. THE STAGED STORY, LAYER ONE: a collapse at a desk — bought Chen the first hour and the right to be a bystander. LAYER TWO: the rival, convicted by his own recorded voice — built to survive scrutiny because everything in it is real except the clock, the room, and the scuffle. Mercer genuinely threatened her; the recording of it is genuine; only the timestamp, the acoustics, and the violence are manufactured. THE COST OF STAGING — every trace exists because the deception had to be maintained: a deletion under a borrowed login; fifteen minutes of guest-workstation history; foley pulled from the show’s own library because she had no violence of her own to record; a witness statement pinning 8:10 to a wall that cannot carry sound; a sign-in sheet reading 7:12 against a performed quarter-to-eight. HONEST-ERROR DOCTRINE: Riley’s closet glimpse is a true observation filed under the wrong name — never perform it as a lie. Mercer lies, but not as the villain: his first statement is his cage, and his exculpatory knowledge (Chen called in at 7:55; Chen editing at 8:27) stays locked inside it until his alibi breaks. Dana’s reticence is self-protection, not obstruction. Only Chen deceives about the crime. RESTRAINT: nobody says ‘Vey’ until the player reads the archive labels, enters the edit bay, or hears the backup card — the floor knows Lena had a big finale, not what it held (Kai excepted, and his knowledge is gated). Never say splice, forgery, staged, or framed until the player holds the workstation history or Kai’s foley identification; until then the USB is performed as the find of the night. State observations, never conclusions: the headphones-over-mark geometry, the CARD FULL screen, the one flat refrigerator note under the USB audio — texture, never ‘notice the room tone.’ THE PHYSICS ARE LAW: with both isolation doors shut, no sound from Studio B reaches any other room, ever; the 7:39 row was heard by other rooms honestly because it played over the studio monitors while doors stood open along the corridor. CHEN’S PERFORMANCE: certainty is her instrument; she never raises her voice, never touches the player (threat ceiling: watched/threatened), and meets each exhibit with its prepared fallback — the card’s gap, the audience’s qualifications, the guest login. Her confession, when it comes, is testimony: precise, complete, in order."
   },
   "endings": [
     {
       "id": "success_earned",
       "when": "success",
       "kind": "solved",
-      "title": "End of show",
-      "templateNotes": "Blake is held. The USB and outline close the loop. Kai grieves. RETURN TO NORMAL: counsel and platform process take the case; the feed will carry a different final episode — truth, not brand."
+      "title": "Listen Again",
+      "templateNotes": "Confronted with the card, the report, and the file history, Chen confesses the way she testified for twenty years: precisely, completely, in order. Dana holds her in the lobby for the midnight handoff — procedure, gladly applied. RETURN TO NORMAL: the air window is missed and it does not matter. Kai rebuilds the finale through the night from the backup card and the reels, and Blood Signal’s last episode drops late, longer, and true — the ambush now evidence, the Marrable exclusion read into the public record, a correction sixteen years past due. Land on the people: Kai finally allowed to grieve at a working board; Riley’s confession met with Kai’s hand on the shoulder, not a door; Mercer airing, for once, a story he checked; and Marcus Vey’s name cleared a month too late to be anything but the truth."
     },
     {
       "id": "success_lucky",
       "when": "success",
       "kind": "lucky_solve",
-      "title": "Cold open",
-      "templateNotes": "You name Blake before every file is checked. He still folds. RETURN TO NORMAL: he is detained; the narrative is no longer his alone. Do not invent unfound audio."
+      "title": "Cold Read",
+      "templateNotes": "Named without the full chain, Chen does not confess — she asks, evenly, ‘On what exhibit?’ But the accusation stands long enough for what does exist to hold her for the detectives: the sheet that says 7:12, the thumb on the FORMAT menu, the card whose last word is ‘Doctor.’ Do not invent unfound proof: no confession, custody on suspicion, the case now the county’s to finish. RETURN TO NORMAL is thinner — the statement runs ‘ongoing investigation,’ and the finale is delayed, not dead. Kai keeps the card. The card keeps everything."
     },
     {
-      "id": "partial",
+      "id": "partial_frame",
       "when": "partial",
       "kind": "partial",
-      "title": "Pending review",
-      "templateNotes": "Enough to detain; lawyers already circling. Thin RETURN TO NORMAL: the immediate cover story is broken; the full public cut is incomplete."
+      "title": "The Broken Frame",
+      "requiresFlags": {
+        "splice_suspected": true
+      },
+      "templateNotes": "The player proved the USB a forgery without pinning its author. The charge against Mercer collapses before it files — a real victory: an innocent cleared is the thing 2009 never managed. The building unseals around an open verdict; Chen leaves among the witnesses, gracious to the last; and the card, the history, and the sheet go to the county in a box with the Investigator’s notes on top. Some truths arrive in two installments. Name what was won and what walked out the door."
+    },
+    {
+      "id": "partial_head",
+      "when": "partial",
+      "kind": "partial",
+      "title": "Certainty Without Exhibits",
+      "templateNotes": "The right name with holes where method or motive should be. The detectives take it under advisement; Chen’s counsel arrives before their coffee does. The Mercer statement dies — that much sticks — but she leaves on bail’s timetable, composed. Kai locks the card and the reels in the bay: the episode will wait for the trial it now has to be part of. The player was right, and being right is not yet the same as it mattering — say so gently."
     },
     {
       "id": "failure_wrong_accusation",
       "when": "failure",
       "kind": "wrong_accusation",
-      "title": "Bad take",
-      "templateNotes": "Wrong name on the record. The real killer owns the narrative by morning."
+      "title": "History Repeats",
+      "templateNotes": "The wrong name, on the record, before midnight — and if the name is Mercer, say the quiet part: an expert’s certainty plus a room that needed an answer, twice in one lifetime. Chen files her authentication of the USB, counsel’s statement grows a villain, and by morning the story is load-bearing. Kai refuses to rebuild the episode for people who got it wrong; the backup card goes into an evidence bag, and the truth goes where exhibits wait. Deliver the mask-off in the revelation: the player must leave knowing exactly what they signed."
     },
     {
-      "id": "failure_escaped",
+      "id": "failure_air_window",
+      "when": "failure",
+      "kind": "time_expired",
+      "title": "The Midnight File",
+      "templateNotes": "Midnight. The police take the scene, and Chen hands the liaison her signed read of the USB in a folder she prepared before anyone asked. The network statement names ‘an on-site altercation with a rival broadcaster.’ Mercer’s lawyers will win eventually; eventually is not tonight. Lena’s finale never airs — the reels go back to county storage, and the last broadcast stays what it has been for sixteen years: a man asking someone to listen again. The revelation still runs; the mask still comes off; the player just wasn’t holding it when it did."
+    },
+    {
+      "id": "failure_chen_files",
       "when": "failure",
       "kind": "escaped",
-      "title": "He walked",
-      "templateNotes": "Blake leaves with counsel and a denial episode. Lena's last broadcast never airs clean."
+      "title": "Filed and Walked",
+      "templateNotes": "Cornered but not closed, Chen spent her final hour exactly as promised: liaison called, analysis filed, expertise re-established. She leaves the building among the witnesses, thanked for her assistance. Whatever the player knows, the record now knows otherwise — and the record was always her instrument. Let the last image be small and procedural: her signature, neat as testimony, on the receipt for her own exhibit."
+    }
+  ],
+  "revelation": "The truth, once, with the mask off. In 2009 a jury convicted Marcus Vey of his wife’s murder because a voicemail — the one the message boards named ‘the blood signal’ — was matched to his voice by the State’s expert, Dr. Amy Chen, to a scientific certainty. There was no certainty. There was a career being born. Chen matched what the room needed matched, and for sixteen years the match held: through appeals, through letters written in a careful hand to every journalist who never wrote back — until Lena Ortiz did. Lena sent for the tapes instead of the transcript. She signed the reels out of county storage, commissioned a blind re-analysis from Marrable Acoustic Laboratory, and got back one word: exclusion. Then Marcus Vey died in the Fenbrook infirmary in June, and the finale stopped being journalism and became a reckoning. She booked the woman who built the conviction as her guest expert, and told no one but Kai what the chair was really for. Chen knew the exhibits had moved before she ever arrived; knowing what a room is about to say was her profession. She signed the lobby sheet at 7:12 and waited. At 7:39 she stood in the green-room doorway with her phone raised while Blake Mercer — terrified of a five-minute segment about a source he burned nine years ago — spent four minutes on the booth talkback threatening a woman who laughed at him. Everything on that phone was real. That is what made it useful. At 7:56, Lena sat Chen down alone in a floated room and played her the exclusion. ‘You’ll get your chance to answer on the record at midnight.’ Then she seated her headphones to cue the cold open, and Chen — who had just heard sixteen years of her life end in a stranger’s laughing voice — took the slack of the cable and answered off the record. The room kept its promise: nothing in, nothing out. What Chen did not know was that the room had already broken it once. Lena’s old tote recorder, rolling on habit since 7:31, had caught the talkback row, the ‘You’re early, Doctor,’ and the exclusion — before its card filled at 8:01:47. The staging came in two layers, because she is a professional. A collapse first: cable re-draped, headphones re-seated over the mark their own cord had made, the master session deleted at 8:09 under Kai’s never-locked login. Then a culprit: fifteen minutes at the guest workstation — the phone memo, the show’s own chair-scuffle foley from episode sixty-one, a render stamped 8:10 — written to a USB at 8:33 and taped under the closet racks at 8:37, in the two minutes Kai was down the hall, glimpsed by Riley and filed under the wrong name. Her witness statement seeded the timestamp: raised voices, a scuffle, ‘through the wall’ — a wall Kai built specifically so that no wall could ever say such a thing. Every trace she left, she left because the lie needed maintenance: the borrowed login, the file history, the foley she had to steal because she had no violence of her own to record, the sheet that says 7:12 against the quarter-to-eight she performed. The frame fit Mercer because Mercer had genuinely come to threaten, genuinely lied about it, and genuinely fled to the lobby to shout at security — innocence arranged, by its own bad conscience, into the shape of guilt. The last broadcast was never tonight’s episode. It was sixteen years of one man saying listen again — and at 8:01:47 this evening, in a room built so no one could hear, somebody finally did.",
+  "figures": [
+    {
+      "id": "marcus-vey",
+      "name": "Marcus Vey",
+      "dates": "1968–2026",
+      "relation": "The subject of Blood Signal’s final episode — convicted in 2009 on Dr. Chen’s voice identification; Lena’s correspondent for the last year of his life",
+      "description": "Convicted of the 2008 murder of his wife Corinne on the strength of a voicemail the forums called ‘the blood signal’ and one expert’s certainty about whose voice it held. Sixteen years at Fenbrook Correctional; wrote letters in a careful hand to every journalist who covered the case, asking each one to send for the original tapes instead of the transcript. Lena Ortiz was the first to do it. He died in the infirmary in June, four weeks before the episode that would have cleared his name went to air. The player never meets him; the case happens in his shadow — archive labels, letters, reels, and the people who finally listened."
     }
   ]
 }

@@ -2,10 +2,10 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "snowbound-lodge",
-  "contentVersion": "0.1.3",
+  "contentVersion": "0.2.3",
   "meta": {
     "title": "The Snowbound Lodge",
-    "premise": "A luxury retreat cut off by avalanche. A guest dead in the study. No one came in, and no one left.",
+    "premise": "A luxury retreat cut off by avalanche. The host dead behind a locked study door. The house says his heart gave out. The snow says otherwise.",
     "theme": "snowfall",
     "tone": "cozy-threatening alpine locked-room, firelight and whiteout",
     "tags": [
@@ -15,64 +15,90 @@
       "Mountains"
     ],
     "difficulty": "easy",
+    "progressUi": "subtle",
     "contentWarnings": [
       "murder"
     ],
     "artStyle": "Alpine winter mystery portrait, head-and-shoulders, warm firelight against blue snow light, wool and evening dress, painted soft illustration, same cozy-gothic lodge palette for every cast member, mystery game NPC portrait",
-    "setting": "An alpine lodge sealed by avalanche. Morning after the whiteout. Firelight and locked doors.",
-    "summary": "Host Lucien Voss is found dead in his study after breakfast — the door locked from the inside, a brandy glass on its side, no wound that explains the look of him. An avalanche closed the mountain road last night. The only people on site are his business partner Iris Hale, ski guide Tomas Berg, heiress guest Petra Lang, and chef-manager Odette March. Someone in this snowbound house turned a locked room into a stage. You are the only guest who ever worked cases.",
-    "theMystery": "Who killed Lucien Voss in a study locked from the inside — and how did the killer leave without a trace?"
+    "setting": "An alpine lodge sealed by avalanche, winter 1939. The morning after the whiteout. Firelight, wood-smoke, and a splintered study door.",
+    "summary": "Lucien Voss — host, charmer, and the mountain's most generous friend — is found dead over his nightcap behind a door locked from the inside. His heart, says everyone: the whole valley knew his heart. The avalanche closed the pass at nightfall; the road crews will blast it open by dusk, and a sergeant will drive up expecting one signature under the word 'heart.' On the mountain until then: his business partner of twenty years, an heiress the season's photographs follow, the mountain guide who forced the door, and the chef-manager whose kitchen has never once been questioned. And you — the only guest who ever worked cases, in a house that would very much like the matter settled quietly.",
+    "theMystery": "Did Lucien Voss's heart fail — or was it failed? And if someone failed it, how did they leave a room that locked itself on a dead man?",
+    "playtest": {
+      "minTurns": 10,
+      "maxTurns": 40,
+      "minEvidenceCoverage": 0.6,
+      "minFunMedian": 7
+    }
   },
   "player": {
     "displayName": "Guest",
     "addressAs": "friend",
     "pronouns": "they/them",
-    "role": "Weekend guest at the lodge — and the only person here who used to work criminal cases",
+    "role": "Weekend guest at the lodge — and the only person on the mountain who used to work criminal cases",
     "authority": "guest",
-    "age": "thirties",
-    "appearance": "Travel-worn guest; not staff, not a local celebrity",
-    "clothing": "Wool layers and boots still dusted with snow from the arrival",
-    "background": "Invited for the alpine weekend; known vaguely as 'the one who used to investigate things.'",
-    "publicPerception": "A fellow guest who has been drafted into asking hard questions. No badge — only competence and proximity.",
-    "voiceNotes": "Warm, curious, slightly reluctant",
-    "performanceNotes": "Second person stays you. Cast treat you as a guest first, investigator second. They may not know your full name — Odette may lean on your old profession.",
+    "clothing": "Wool layers and good boots, dressed for a fireside weekend that has stopped being one",
+    "background": "Invited up for the alpine weekend; known to the household vaguely as 'the one who used to investigate things.' You met Lucien Voss twice in the valley and cannot say you knew him.",
+    "publicPerception": "The guest who used to work cases. Half the house hopes you will agree it was his heart and say so quickly; the other half is watching to see whom you watch.",
+    "performanceNotes": "Second person stays you. Never invent a name, face, age, or history for the player. The cast treat you as a guest first and a case-worker second: nobody is obliged to answer you, and being pressed by a fellow guest can be resented. Odette is the one who quietly asked you to look before the road opens — her word carries the house, so the study and the common rooms tolerate you; the private floor does not, until she opens it.",
     "startingLocationId": "great-room",
     "startingEvidenceIds": [],
-    "startingKnowledge": "Avalanche sealed the mountain road last night. At breakfast, host Lucien Voss is found dead in the study — door locked from inside. Guests: his business partner Iris Hale, ski guide Tomas Berg, heiress Petra Lang, and chef/manager Odette March. No one can leave until the pass opens.",
-    "objective": "Search the lodge, press the guests and staff, reconstruct the locked-room trick, and accuse the murderer with method and motive."
+    "startingKnowledge": "The avalanche closed the pass at nightfall; the telephone line went with it. At breakfast Lucien Voss did not answer his study door, and Tomas Berg forced the lock: the host dead at his desk over his nightcap, his own key in his pocket. The household says heart — his heart was famously bad. The road crews are blasting; the pass opens at dusk, and the sergeant will drive up with the valley doctor to take a statement and certify the death — nobody crosses a live slide for a man already dead. Odette March asked you, quietly, to look at the study before anyone signs anything.",
+    "objective": "Before the road opens at dusk: decide whether Lucien Voss died of his heart or of someone in this house — and if it is murder, name the hand, the method, and the reason, with enough behind it to stop the easy certificate.",
+    "briefing": {
+      "form": "dossier",
+      "title": "The Voss weekend — what you knew before the snow",
+      "sections": [
+        {
+          "heading": "The invitation",
+          "text": "It came on lodge stationery two weeks ago, in Lucien Voss's own hand: 'A last weekend of the season — old friends, old brandy, old accounts. Bring nothing; owe me nothing but your company.' You know him the way the valley knows him: the best table on the mountain, a laugh that arrives before he does, and a memory for exactly what everyone ordered. You assumed you were invited as ornament — a former case-worker gives a dinner party stories. This morning, Odette March made it a job."
+        },
+        {
+          "heading": "The household",
+          "text": "Iris Hale, his business partner of twenty years — the lodge's books, licenses, and quarrels all run through her. Odette March, chef and manager; the house runs on her the way a watch runs on its spring. Tomas Berg, the ski guide, mountain-born, a man of few words and fewer wasted ones. And Petra Lang, the heiress — glitter of the season, the sort of guest hotels photograph for their brochures. All of them have wintered with Voss before. You are the only stranger."
+        },
+        {
+          "heading": "The snow and the road",
+          "text": "The slide came down at nightfall and took the pass, the telephone line, and any question of leaving. The road crews were already blasting at first light; the word in the kitchen is that the pass opens at dusk, and a gendarmerie sergeant will drive up with the valley doctor for the formalities — nobody crosses a live slide path for a man already dead. Until dusk, the lodge answers to nobody but itself."
+        }
+      ]
+    }
   },
-  "openingNarration": "Snow presses the windows like white felt. The great room still smells of last night’s pine and brandy. Odette stands by the fire with a tray she is not offering. Beyond the hall, the study door is open now — forced by Tomas after no one answered. Lucien Voss sits slumped at his desk, a glass on its side, a book of guest accounts open. Outside, the world is a wall of white. No help is coming until the pass opens. You are the only one here who used to work cases — and the only one expected to answer a simple question: who killed the host, and how did they walk out of a locked room?",
+  "openingNarration": "Snow presses the windows like white felt. You came up on Friday like the rest of them — a weekend guest with a case-worker's past and no reason to use it, until an hour ago. The great room smells of pine, wood-smoke, and last night's brandy, and nobody has touched the breakfast laid along the sideboard. Past the hall, the study door stands splintered at the lock — Tomas forced it when the master did not answer — and Lucien Voss sits slumped at his desk, nightcap overturned, his own key in his pocket. His heart, everyone says; the whole mountain knew his heart. Iris is already drafting a statement for the sergeant. Petra has poured herself something and keeps not drinking it. Odette stands by the fire with a tray she is not offering, and Tomas watches the snow as if it owed him an answer. The avalanche shut the pass in the night. The crews will blast the road through by dusk, and a sergeant will drive up expecting one signature under the word 'heart.' The house is waiting to see what you do before dusk does it for them.",
   "phases": [
     {
       "id": "arrival",
-      "description": "Study and first interviews"
+      "description": "The study, the body, and the story everyone prefers"
     },
     {
       "id": "deepening",
-      "description": "Key, window, motive"
+      "description": "The dose that doesn't add up; the visitor nobody mentions"
     },
     {
       "id": "crisis",
-      "description": "Someone cracks"
+      "description": "The house stops pretending; someone starts destroying things"
     },
     {
       "id": "confrontation",
-      "description": "Accusation"
+      "description": "The charm comes off"
     },
     {
       "id": "denouement",
-      "description": "Aftermath by the fire"
+      "description": "Firelight, the road opening, the reckoning"
     }
   ],
   "wrapUp": {
     "enabled": true,
     "maxTurns": 8,
     "allowEarlyExit": true,
-    "performanceNotes": "Firelight, snow silence, confession or denial. RETURN TO NORMAL: Petra held inside the lodge; household no longer under her theater; justice waits for the pass but truth does not. Intimate, not supernatural."
+    "performanceNotes": "Firelight and snow-silence. On success or partial, stage it in the great room: Petra held not by force but by geography and witnesses — Tomas keeps the boot room and the skis are counted; Odette pours brandy nobody drinks; Iris redrafts her statement for the sergeant, this time the true one, her own transfer slips clipped to it. Petra's manner is the confession of a performer whose theatre closed: composed, precise, almost relieved. RETURN TO NORMAL: at dusk the charges stop and the road opens; the sergeant climbs to a house with its accounts finally in order; custody is a car door closing on the valley road. Justice waits for the pass; the truth did not. Intimate, not triumphant — nobody celebrates in a house where the host is still at his desk."
+  },
+  "accusePolicy": {
+    "requireConfirmation": true,
+    "pendingTurns": 3
   },
   "time": {
     "startSlotId": "morning",
-    "minutesPerTurn": 12,
+    "minutesPerTurn": 6,
     "schedule": [
       {
         "id": "morning",
@@ -81,42 +107,111 @@
       },
       {
         "id": "midday",
-        "label": "Midday whiteout",
-        "minutesFromStart": 50
+        "label": "Midday — charges down the valley",
+        "minutesFromStart": 70
       },
       {
         "id": "afternoon",
-        "label": "Late afternoon",
-        "minutesFromStart": 100
+        "label": "Late afternoon, light going blue",
+        "minutesFromStart": 140
+      },
+      {
+        "id": "dusk",
+        "label": "Dusk — the road opens",
+        "minutesFromStart": 210
       }
     ]
   },
   "environment": {
     "weather": "snow",
-    "weatherIntensity": "blizzard",
+    "weatherIntensity": "heavy",
     "light": "firelight",
-    "ambient": "claustrophobic",
+    "ambient": "hushed_house",
     "crowd": "none",
     "flags": {}
   },
   "flags": [
     {
-      "id": "examined_study",
+      "id": "murder_established",
+      "description": "The dose arithmetic has been done out loud: this was no heart attack",
       "aiVisible": true,
       "defaultValue": false
     },
     {
-      "id": "found_spare_key",
+      "id": "visitor_known",
+      "description": "The second glass has surfaced: Lucien drank with someone after the house went up",
       "aiVisible": true,
       "defaultValue": false
     },
     {
-      "id": "found_ledger",
+      "id": "examined_catch",
+      "description": "Player has examined the scraped window catch",
       "aiVisible": true,
       "defaultValue": false
     },
     {
-      "id": "falsely_accused_tomas",
+      "id": "seen_route",
+      "description": "Player has seen the eaves route from study window to boot-room door",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "window_route_seen",
+      "description": "Catch plus route: the player understands the room was left by the window",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "rooms_unlocked",
+      "description": "Odette has opened the private rooms with the master ring",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "page_burned",
+      "description": "Petra has burned her papers in the great-room fire",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "reckoning_known",
+      "description": "The reckoning list has been read: everyone here owed Lucien something",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "tomas_saw_figure",
+      "description": "Tomas has admitted the figure under the study window",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "petra_cornered",
+      "description": "Petra has been confronted with motive and the spare key; the mask is off",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "falsely_accused_odette-march",
+      "description": "Engine-set: Odette named in a false accusation",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "falsely_accused_tomas-berg",
+      "description": "Engine-set: Tomas named in a false accusation",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "falsely_accused_iris-hale",
+      "description": "Engine-set: Iris named in a false accusation",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "accused_petra-lang",
+      "description": "Engine-set: Petra named in a pending or scored accusation",
       "aiVisible": true,
       "defaultValue": false
     }
@@ -125,34 +220,54 @@
     {
       "id": "great-room",
       "name": "Lodge great room",
-      "description": "Stone fireplace, antlers, deep chairs. Snow seals every window. Hallway to the study and kitchen wing; stairs to guest rooms.",
+      "description": "Stone fireplace, antlers, deep chairs, the untouched breakfast along the sideboard. The splintered study door stands across the hall to the east; the service passage runs west to the kitchen; the timber stair climbs to the guest hall. Snow seals every window to a white square.",
       "startsAccessible": true,
+      "knownAtStart": true,
+      "map": { "x": 2, "y": 2, "floor": 0 },
       "exits": [
         {
           "toLocationId": "study",
-          "label": "into the study"
+          "label": "through the splintered study door"
         },
         {
           "toLocationId": "kitchen",
-          "label": "toward the kitchen"
+          "label": "down the service passage"
         },
         {
           "toLocationId": "upstairs-hall",
-          "label": "upstairs"
+          "label": "up the timber stair"
         }
       ],
       "inspectables": [
         {
           "id": "fireplace",
-          "name": "fireplace",
+          "name": "the great fireplace",
           "onInspect": {
-            "narrativeHints": "Fire well tended. A scrap of burned paper in the ash — numbers, half a name: 'Lang — transfer'."
+            "narrativeHints": "Banked embers, swept hearth — Odette's discipline. The ash is fine and even, this morning's grate cleaned before anyone was awake. Nothing in the ash but ash."
+          }
+        },
+        {
+          "id": "fresh-ash",
+          "name": "fresh ash in the grate",
+          "hiddenUntilFlags": { "page_burned": true },
+          "onInspect": {
+            "narrativeHints": "Curled black leaves of burned paper lie ON TOP of this morning's clean ash — burned within the hour, poked apart but not patiently. One curl kept its printing where the fold starved the flame: '…advanced against jewels of Mlle L—…' and, lower, '…final notice.' Convey the observation only; the player names whose papers burn in a house where nobody may leave.",
+            "revealsEvidenceIds": [
+              "burned-scrap"
+            ]
+          }
+        },
+        {
+          "id": "valley-window",
+          "name": "the valley window",
+          "onInspect": {
+            "narrativeHints": "Between snow-squalls the valley shows itself: the grey scar of the slide across the pass road, and far below, small dark figures of the road crew. Now and then a soft thud rolls up the mountain — blasting charges. The kitchen's word is the road opens at dusk. From this window you can also see the east wall of the lodge: the study window, the deep eaves above it, and the boot-room door at the corner."
           }
         }
       ],
       "charactersPresent": [
         {
-          "characterId": "odette-march"
+          "characterId": "petra-lang"
         },
         {
           "characterId": "iris-hale"
@@ -162,53 +277,83 @@
     {
       "id": "study",
       "name": "Lucien's study",
-      "description": "Locked-room crime scene. Desk, ledgers, a window that should not open in this cold — yet the catch is loose. Door lock shows a clean bolt, forced only from outside by Tomas after the fact.",
+      "description": "The scene everyone wants closed. Desk under the window, shelves of ledgers and atlases, a small spirits cabinet, the deep chair where the fire died overnight. The door back to the great room hangs splintered at the mortise where Tomas forced it — no bolt, just the lock, and the key was in the dead man's pocket.",
       "startsAccessible": true,
+      "knownAtStart": true,
+      "map": { "x": 3, "y": 2, "floor": 0 },
       "exits": [
         {
           "toLocationId": "great-room",
-          "label": "back to the great room"
+          "label": "back through the broken door"
         }
       ],
       "inspectables": [
         {
           "id": "body-desk",
-          "name": "Lucien at the desk",
+          "name": "Lucien at his desk",
           "onInspect": {
-            "narrativeHints": "No wound. Pupils and lips suggest poison in the brandy. Glass smells of bitter almonds under the alcohol. The door was locked from inside — but the spare key is missing from its usual hook.",
+            "narrativeHints": "No wound, no struggle. He is slumped forward as a man falls asleep over work; one glass overturned by his hand, a dried sticky ring where brandy pooled and a faint crust at the rim. His face is not peaceful — the mouth wrong, a bluish cast at the lips. State observations only. Never say poison, overdose, or murder; if pressed, note only that you have seen hearts fail, and this is and is not like that."
+          }
+        },
+        {
+          "id": "his-pockets",
+          "name": "Lucien's pockets",
+          "onInspect": {
+            "narrativeHints": "Going through a dead host's pockets is a line the house feels you cross — narrate the room's silence if anyone sees. Waistcoat: his watch, still going. Coat: the study key — the one that fits this door — and beside it on the same ring, a small brass key, drawer-sized. Whoever locked this room, the door's own key never left him.",
             "revealsEvidenceIds": [
-              "poisoned-glass"
+              "key-ring"
+            ]
+          }
+        },
+        {
+          "id": "tincture-shelf",
+          "name": "the tincture bottle",
+          "onInspect": {
+            "narrativeHints": "On the desk shelf, at reach of the nightcap: a chemist's bottle, 'Tincture of Digitalis — VOSS — three drops of an evening, NOT MORE. Filled the 14th.' The glass pipette lies beside it on the shelf. The bottle is all but empty — a finger of sediment, no more. Give the label and the level; do the sum for no one.",
+            "revealsEvidenceIds": [
+              "tincture-bottle"
+            ]
+          }
+        },
+        {
+          "id": "desk-drawer",
+          "name": "the locked desk drawer",
+          "onInspect": {
+            "narrativeHints": "The drawer lock is small, brass, and unscratched — opened only ever by its own key. Inside, squared and orderly: the loan ledger, and beneath it a single folded guarantee note kept apart from the rest. The drawer face carries fresh shallow scuffs around the keyhole — something thin was tried in it, recently, and failed. Observation only.",
+            "requiresEvidenceIds": [
+              "key-ring"
             ],
-            "setsFlags": {
-              "examined_study": true
-            }
+            "revealsEvidenceIds": [
+              "loan-ledger",
+              "forged-note"
+            ]
           }
         },
         {
           "id": "window-catch",
-          "name": "study window catch",
+          "name": "the study window catch",
           "onInspect": {
-            "narrativeHints": "Catch scraped recently. Outside ledge holds a boot scrape in crusted snow — someone left by the window after locking the door from inside with a key, then closed the catch poorly."
-          }
-        },
-        {
-          "id": "key-hook",
-          "name": "empty key hook",
-          "onInspect": {
-            "narrativeHints": "Hook labeled 'Study spare'. Empty. Dust ring says the key lived here until last night."
-          }
-        },
-        {
-          "id": "guest-ledger",
-          "name": "guest accounts ledger",
-          "onInspect": {
-            "narrativeHints": "Open to Petra Lang's page. Large withdrawals marked 'personal loan — Voss'. A second hand noted 'due — or public'.",
-            "revealsEvidenceIds": [
-              "debt-ledger"
-            ],
+            "narrativeHints": "A window nobody opens in winter — the frame is papered against draughts and the paper is torn along the sash. The catch is scraped bright and sits a quarter-turn short of home, as if pulled to from the wrong side. The sill sits deep under the eaves, out of the wind: beneath a dusting of drift, the compacted older snow keeps the blurred ghost of a heel — no tread, no size, only that weight stood there since the hard freeze. Observations only; never say who, never say when.",
             "setsFlags": {
-              "found_ledger": true
+              "examined_catch": true
             }
+          }
+        },
+        {
+          "id": "hobnail-cabinet",
+          "name": "the spirits cabinet",
+          "onInspect": {
+            "narrativeHints": "The decanter Odette carried in, stopper set. Beside it the master's pair of hobnail crystal glasses — a wedding of the lodge's better days. One stands in its place. Its twin is gone, and the shelf shows no dust ring: it left recently. The overturned glass at the desk is plain kitchen stock from the tray. So where is the second hobnail glass?"
+          }
+        },
+        {
+          "id": "shelf-file",
+          "name": "a partner's file on the shelf",
+          "onInspect": {
+            "narrativeHints": "Among Lucien's comfortable mess, one file is squared to the shelf edge with un-Lucien-like neatness: the partnership accounts, THE VOSS-HALE LODGE, current season. Tucked through the papers, several bank transfer slips in a small, upright hand that is not the dead man's. It has been taken away and put back — the shelf dust says so.",
+            "revealsEvidenceIds": [
+              "iris-file"
+            ]
           }
         }
       ],
@@ -217,27 +362,46 @@
     {
       "id": "kitchen",
       "name": "Kitchen and stores",
-      "description": "Copper pots, locked spice cabinet, Odette's domain. Back door buried in snowdrift.",
+      "description": "Copper pots, the long scrubbed table, Odette's domain and nobody else's. The key board hangs by the service passage; the glass rack stands over the sink in ranked order. Her own small room opens off the far end — nobody enters it and nobody needs to — and the boot passage leads out toward the side of the house.",
       "startsAccessible": true,
+      "knownAtStart": true,
+      "map": { "x": 1, "y": 2, "floor": 0 },
       "exits": [
         {
           "toLocationId": "great-room",
-          "label": "back to the great room"
+          "label": "up the service passage"
+        },
+        {
+          "toLocationId": "boot-room",
+          "label": "through the boot passage"
         }
       ],
       "inspectables": [
         {
-          "id": "spice-cabinet",
-          "name": "spice cabinet",
+          "id": "key-board",
+          "name": "the key board",
           "onInspect": {
-            "narrativeHints": "One small vial of almond extract is nearly empty — too empty for pastry. Odette says pastry was not on last night's menu."
+            "narrativeHints": "Every key on its labeled hook, hotel-neat: cellar, stores, linen, garage. One hook is bare — 'STUDY — SPARE' — and the clean shadow on the board says the key hung there until very recently. Odette's board; Odette's kitchen; anyone passing to the boot room walks by it."
           }
         },
         {
-          "id": "service-tray",
-          "name": "service tray",
+          "id": "glass-rack",
+          "name": "the glass rack",
           "onInspect": {
-            "narrativeHints": "Two brandy glasses were set last night. Only one returned to the kitchen. The other is still in the study."
+            "narrativeHints": "Rim-down, ranked by size, Odette's order absolute — except one. A hobnail crystal glass sits rim-UP between the plain tumblers, still holding a bead of damp at the base. Cut crystal among kitchen stock, racked by someone who does not know the rack. Observation only.",
+            "revealsEvidenceIds": [
+              "misplaced-glass"
+            ]
+          }
+        },
+        {
+          "id": "stores-cabinet",
+          "name": "the locked stores cabinet",
+          "onInspect": {
+            "narrativeHints": "Odette unlocks it herself and stands aside with her arms folded: spices, preserves, the medicine box for kitchen burns, the good spirits — every bottle present, every seal unbroken, her inventory card current to yesterday. Nothing in her stores is missing, and she wants that seen and said. Perform her as a woman submitting her kitchen to an audit she demanded.",
+            "requiresFlags": {
+              "murder_established": true
+            }
           }
         }
       ],
@@ -248,115 +412,268 @@
       ]
     },
     {
-      "id": "upstairs-hall",
-      "name": "Upstairs guest hall",
-      "description": "Four doors, runner carpet, cold draft from a linen closet.",
+      "id": "boot-room",
+      "name": "Boot room and side door",
+      "description": "The alpine mudroom: pegs of coats, the boot bench where every guest's boots winter, the ski rack, wax kit, and the heavy side door to the east corner of the house. It is the only door besides the front that opens to the outside.",
       "startsAccessible": true,
+      "knownAtStart": true,
+      "map": { "x": 1, "y": 3, "floor": 0 },
       "exits": [
         {
-          "toLocationId": "great-room",
-          "label": "downstairs"
-        },
-        {
-          "toLocationId": "petra-room",
-          "label": "into Petra's room"
+          "toLocationId": "kitchen",
+          "label": "back through the boot passage"
         }
       ],
       "inspectables": [
         {
-          "id": "linen-closet",
-          "name": "linen closet",
+          "id": "side-door",
+          "name": "the side door",
           "onInspect": {
-            "narrativeHints": "Tucked in a towel stack: the study spare key, still faintly smelling of brandy and cold metal.",
+            "narrativeHints": "The bar that should sleep across this door at night leans against the wall instead. On the flags inside, a broad dried tide-line of snowmelt — boots stood here wet in the night, more than once, and the puddle dried where it lay. Tomas's last round bars this door, he'll tell anyone; last night it never got barred."
+          }
+        },
+        {
+          "id": "boot-bench",
+          "name": "the boot bench",
+          "onInspect": {
+            "narrativeHints": "The geometry of the house in footwear. Tomas's mountain boots: soaked, greased, honestly used — his trade. Iris's town boots: bone dry, barely creased. Odette's kitchen clogs: never out of the house. And Petra's fine fur-topped boots: dried hard, with white tide-lines of deep snowmelt up past the ankle seam — not doorstep snow. She has said she hasn't been outside since she arrived. State the leather; let the player state the contradiction."
+          }
+        },
+        {
+          "id": "ski-rack",
+          "name": "the ski rack and wax kit",
+          "onInspect": {
+            "narrativeHints": "Skis racked and counted, Tomas's discipline. In the wax tin, folded soft with handling and age: a valley newspaper cutting, nine winters old. 'MISADVENTURE ABOVE THE VOSS LODGE — Anton Weiss, 17, lost on a guided descent…' Why does a man keep the worst day of his life in his wax kit?",
             "revealsEvidenceIds": [
-              "spare-key"
-            ],
-            "setsFlags": {
-              "found_spare_key": true
-            }
+              "weiss-clipping"
+            ]
           }
         }
       ],
       "charactersPresent": [
         {
           "characterId": "tomas-berg"
-        },
-        {
-          "characterId": "petra-lang"
         }
       ]
     },
     {
-      "id": "petra-room",
-      "name": "Petra's guest room",
-      "description": "Elegant mess. Open suitcase. A coat with damp cuffs hanging to dry.",
+      "id": "upstairs-hall",
+      "name": "Upstairs guest hall",
+      "description": "Four doors off a runner carpet: Petra's room and the master's room among them, both kept locked, hotel habit. A linen closet breathes cold into the corridor, the white-tiled bathroom ends it, and at the east end a small window looks down over the deep eaves.",
       "startsAccessible": true,
+      "knownAtStart": true,
+      "map": { "x": 2, "y": 1, "floor": 1 },
       "exits": [
         {
-          "toLocationId": "upstairs-hall",
-          "label": "back to the hall"
+          "toLocationId": "great-room",
+          "label": "down the timber stair"
+        },
+        {
+          "toLocationId": "petra-room",
+          "label": "Petra's door",
+          "requiresFlags": {
+            "rooms_unlocked": true
+          }
+        },
+        {
+          "toLocationId": "lucien-room",
+          "label": "the master's door",
+          "requiresFlags": {
+            "rooms_unlocked": true
+          }
         }
       ],
       "inspectables": [
         {
-          "id": "damp-coat",
-          "name": "Petra's coat",
+          "id": "linen-closet",
+          "name": "the linen closet",
           "onInspect": {
-            "narrativeHints": "Cuffs and hem damp with fresh snow melt — not from a morning walk that never happened. She was outside the study window line last night."
+            "narrativeHints": "Shelves of pressed linen, cold as a larder. Tucked into the third towel stack, where a hand could find it again in the dark: a door key, hotel tag stamped 'STUDY — SPARE.' It smells faintly of cold metal and brandy. The closet stands between the back stair and the guest doors.",
+            "revealsEvidenceIds": [
+              "spare-key"
+            ]
+          }
+        },
+        {
+          "id": "eaves-window",
+          "name": "the window over the eaves",
+          "onInspect": {
+            "narrativeHints": "From here the east wall explains itself: the study window directly below, the deep sheltering eaves over it, and a narrow drifted ledge of roofline running to the corner above the boot-room door. In a storm, under those eaves, a careful person could pass from the study window to the side door and never once be under open sky. Describe the geometry; draw no conclusion.",
+            "setsFlags": {
+              "seen_route": true
+            }
           }
         }
       ],
-      "charactersPresent": [
+      "charactersPresent": []
+    },
+    {
+      "id": "petra-room",
+      "name": "Petra's guest room",
+      "description": "Elegant disorder arranged to look effortless: silk over the chair back, the good luggage, scent in the cold air. The wardrobe stands shut; the traveling case sits half under the bed.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": { "x": 1, "y": 1, "floor": 1 },
+      "exits": [
         {
-          "characterId": "petra-lang"
+          "toLocationId": "upstairs-hall",
+          "label": "back to the guest hall"
         }
-      ]
+      ],
+      "inspectables": [
+        {
+          "id": "wardrobe",
+          "name": "the wardrobe",
+          "onInspect": {
+            "narrativeHints": "Among the evening things, one coat hung not with the others but behind them: pale wool, fur at the hood, beautiful and wrong. The cuffs and hem have dried stiff, with the white mineral tide-lines of deep snow, and a fine crust still rims the hood's fur. This coat was out in the storm, and someone dried it in a hurry where maids don't reach.",
+            "revealsEvidenceIds": [
+              "damp-coat"
+            ]
+          }
+        },
+        {
+          "id": "traveling-case",
+          "name": "the traveling case",
+          "hiddenUntilFlags": { "page_burned": false },
+          "onInspect": {
+            "narrativeHints": "Under the tray of silk: the lining of the case has been opened and re-sewn along one seam, an old repair made often. Inside the seam, papers. Pawn tickets — Geneva, Milan, Vienna — each against 'jewels of Mlle Lang,' each marked with the pawnbroker's quiet word: PASTE. And a bank letter, 'final notice.' The famous fortune, ticket by ticket. Observation only; the word for what she is belongs to the player.",
+            "revealsEvidenceIds": [
+              "pawn-tickets"
+            ]
+          }
+        },
+        {
+          "id": "case-emptied",
+          "name": "the traveling case, lining slit",
+          "hiddenUntilFlags": { "page_burned": true },
+          "onInspect": {
+            "narrativeHints": "The case lining hangs open along one seam — not unpicked this time but slit, threads fresh, in a hurry. Whatever lived in that seam for years left it this morning. An empty hiding place is still testimony: it says there was something worth burning."
+          }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "lucien-room",
+      "name": "The master's room",
+      "description": "Smaller than a guest would guess, and more honest: a narrow good bed, photographs, the ledger-keeper's lamp. The room of a man who performed largeness downstairs and lived carefully up here.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": { "x": 3, "y": 1, "floor": 1 },
+      "exits": [
+        {
+          "toLocationId": "upstairs-hall",
+          "label": "back to the guest hall"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "bedside-book",
+          "name": "the morocco notebook",
+          "onInspect": {
+            "narrativeHints": "By the bed, a morocco notebook in the dead man's hand — the weekend, planned like a menu. 'THE RECKONING. — P.L.: the note, signed by breakfast, or the valley learns what the Baron's signature is worth. — I.H.: the season's books explained, or her name comes off the door. — T.B.: the Weiss file stays mine; remind him gently.' Under it, a line in a lighter mood: 'A weekend of old friends. They will all hate me by Sunday, and pay by Monday.' Read it plainly; it re-prices every smile at last night's dinner.",
+            "revealsEvidenceIds": [
+              "reckoning-list"
+            ]
+          }
+        },
+        {
+          "id": "washstand",
+          "name": "the washstand",
+          "onInspect": {
+            "narrativeHints": "Razor, comb, liniment — and no medicine. No tincture lives up here: the digitalis kept downstairs in the study, at reach of the nightcap, against all sense. Odette fought him about it, the house knows — she wanted the drops locked in her stores where doses are counted. He refused. His medicine sat where any guest of the study could lift it."
+          }
+        },
+        {
+          "id": "photographs",
+          "name": "the photographs",
+          "onInspect": {
+            "narrativeHints": "The lodge in better years: opening night, a younger Lucien and a younger Iris laughing at the door under the new sign; Odette stern and proud behind a groaning table; Tomas, hardly twenty, brown as leather on the summer slope. In every frame Lucien stands at the center with his arms wide — a man who collected people, and kept the accounts of it."
+          }
+        }
+      ],
+      "charactersPresent": []
     }
   ],
   "relationships": [
     {
-      "id": "petra_debt_voss",
+      "id": "petra_owed_voss",
       "fromId": "petra-lang",
-      "toId": "iris-hale",
+      "toId": "lucien-voss",
       "type": "debt",
-      "label": "owed Lucien; feared exposure",
+      "label": "ruinously in his books; the guarantee note was not hers to sign",
       "strength": 3,
       "public": false,
       "knownToPlayerByDefault": false,
-      "notes": "Private motive edge; reveal with ledger."
+      "notes": "The case's engine. Never spoken casually; surfaces with the ledger or the note."
     },
     {
-      "id": "iris_partner",
+      "id": "iris_partner_voss",
       "fromId": "iris-hale",
-      "toId": "odette-march",
+      "toId": "lucien-voss",
       "type": "business",
-      "label": "business partner of the dead host",
+      "label": "partner of twenty years; the lodge is half hers, with a survivorship clause",
+      "strength": 3,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "odette_kept_voss",
+      "fromId": "odette-march",
+      "toId": "lucien-voss",
+      "type": "loyalty",
+      "label": "kept his house, his table, and his health, despite him",
       "strength": 2,
       "public": true,
       "knownToPlayerByDefault": true
     },
     {
-      "id": "tomas_employee",
+      "id": "tomas_bound_voss",
       "fromId": "tomas-berg",
-      "toId": "odette-march",
-      "type": "employee",
-      "label": "ski guide on staff",
-      "strength": 1,
-      "public": true,
-      "knownToPlayerByDefault": true
+      "toId": "lucien-voss",
+      "type": "debt",
+      "label": "owes him the silence of the Weiss winter",
+      "strength": 3,
+      "public": false,
+      "knownToPlayerByDefault": false,
+      "notes": "Nine winters of gratitude worn like a yoke. Private until the reckoning list or the clipping surfaces."
+    },
+    {
+      "id": "tomas_soft_petra",
+      "fromId": "tomas-berg",
+      "toId": "petra-lang",
+      "type": "devotion",
+      "label": "quiet, unreturned, and known to her",
+      "strength": 2,
+      "public": false,
+      "knownToPlayerByDefault": false,
+      "notes": "Why the honest man's account has one hole in it. Revealed when the coat breaks him."
+    },
+    {
+      "id": "petra_plays_tomas",
+      "fromId": "petra-lang",
+      "toId": "tomas-berg",
+      "type": "leverage",
+      "label": "she has warmed her hands at his attention all weekend, on purpose",
+      "strength": 2,
+      "public": false,
+      "knownToPlayerByDefault": false,
+      "notes": "Private AI behavior: she is kind to Tomas in company and counts on his silence. Never stated aloud."
     }
   ],
   "characters": [
     {
       "id": "lucien-voss",
       "name": "Lucien Voss",
-      "shortBio": "Host of the lodge — found dead in his locked study over breakfast brandy.",
+      "shortBio": "Host of the lodge, the mountain's most generous friend — found dead over his nightcap behind his own locked door.",
+      "cardTitle": "The host",
+      "cardBio": "Charm that arrived before he did, a table famous down the valley, and a memory for exactly what everyone owed him.",
       "portrait": "portraits/lucien-voss.jpg",
       "defaultLocationId": "study",
       "storyRole": "victim",
-      "voice": "Silent now",
+      "voice": "Silent now. In others' memory: velvet over a ledger.",
       "knowledge": {
-        "public": "Deceased. Found locked in the study with a poisoned glass.",
+        "public": "Deceased. Found at his desk over his nightcap, study locked, his own key in his pocket. The house says his heart, and his heart was truly bad.",
         "private": [],
         "secrets": []
       },
@@ -365,47 +682,120 @@
     {
       "id": "odette-march",
       "name": "Odette March",
-      "shortBio": "Chef and lodge manager; runs the house like a ship.",
-      "voice": "Crisp, practical, strained",
+      "shortBio": "Chef and lodge manager; the house runs on her the way a watch runs on its spring. It was Odette who asked you to look.",
+      "cardTitle": "Chef and manager",
+      "cardBio": "Twenty years of keys, inventories, and counted doses, in the manner of a valley patronne. Her kitchen has never once been questioned, and she means to keep it that way.",
+      "voice": "Crisp, precise, proud; grief kept behind the teeth",
       "portrait": "portraits/odette-march.jpg",
-      "defaultLocationId": "great-room",
+      "defaultLocationId": "kitchen",
       "defaultWillingness": "open",
+      "defaultStance": "contained_grief",
       "knowledge": {
-        "public": "She served brandy to Lucien alone in the study after the others retired. She left the bottle and one glass. She did not lock him in.",
+        "public": "She carried the nightcap tray to the study at midnight as always: the decanter and ONE plain glass — one, she will say it twice. Lucien locked the study door whenever the accounts were out; the whole house knew the click of it. His heart was bad and his habits worse — brandy against the doctor's word was the house joke. She found the door locked at breakfast, got no answer, and fetched Tomas. And her kitchen had no hand in whatever this is; she asked you to look precisely so that can be said by somebody the sergeant will believe.",
         "private": [
           {
-            "id": "odette-key-missing",
-            "content": "She noticed the spare study key missing when she brought breakfast tea. She thought Lucien had taken it himself.",
+            "id": "odette-key-gone",
+            "content": "'The spare study key was gone from my board when I lit the stoves — before six, before anyone was down. I said nothing. A missing key in a snowed-in house of paying guests is a scandal, and I meant to find it quietly. I have been through my kitchen and the great room twice. If it is still in this house, it is above stairs.' [SEALED: she suspects nothing specific yet; her shame at concealing it should read, briefly, like guilt.]",
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "odette-refill",
+            "content": "'I filled that bottle myself at the valley chemist on the 14th — ninety drops, a month's measure. He took three of an evening, never more; I counted his doses the way I count the silver. Seven evenings since the chemist, monsieur. Count what should be left.' [SEALED: give the numbers plainly and let the player do the arithmetic. She never says overdose.]",
+            "requiresEvidenceIds": [
+              "tincture-bottle"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "odette-reckoning",
+            "content": "'He called it the reckoning weekend. \"Set three places for the accounts, Odette,\" he said, and winked, and I thought it was one of his jokes that are half a joke. He gathered them, monsieur. Every guest under this roof was summoned, not invited — except you.'",
+            "requiresTrust": 1,
             "requiresWillingnessIn": [
               "open",
               "guarded"
             ]
           }
         ],
-        "secrets": []
+        "secrets": [
+          {
+            "id": "odette-midnight-voices",
+            "content": "'When I came back down for the banked fire — half past twelve, perhaps — there were two voices behind the study door. His, low. And a woman's laugh, quick and bright, the kind that is switched on. I told myself it was the wireless and went to bed, because what a guest does in this house was never mine to mind. There was one glass on my tray, monsieur. One.' [SEALED: she will not name the laugh; the player has heard Petra's laugh by now, or will.]",
+            "requiresEvidenceIds": [
+              "misplaced-glass"
+            ],
+            "requiresTrust": 1,
+            "requiresWillingnessIn": [
+              "open"
+            ]
+          }
+        ]
       },
       "defenses": [
-        "Protects the lodge's reputation",
-        "Will not invent witnesses"
+        "Her kitchen and her stores are in order and she will prove it to anyone, twice",
+        "Will not speculate beyond what she counted, carried, and heard",
+        "Protects the lodge's name by reflex, even now"
       ],
       "storyRole": "suspect"
     },
     {
       "id": "iris-hale",
       "name": "Iris Hale",
-      "shortBio": "Lucien's business partner; sharp suits even in the mountains.",
-      "voice": "Cool, legal, measured",
+      "shortBio": "Lucien's business partner of twenty years — the lodge's books, licenses, and quarrels all ran through her. Sharp suits even in the mountains, and the statement for the sergeant already drafted: cardiac, pending nothing.",
+      "cardTitle": "The partner",
+      "cardBio": "The lodge's books, licenses, and quarrels all run through her. Survivorship clause. She would like the word 'cardiac' written soon.",
+      "voice": "Cool, legal, measured; answers the question asked and none other",
       "portrait": "portraits/iris-hale.jpg",
       "defaultLocationId": "great-room",
       "defaultWillingness": "guarded",
+      "defaultStance": "administrative_calm",
       "knowledge": {
-        "public": "She went to bed early. She heard nothing. She and Lucien argued sometimes about money — 'normally'.",
+        "public": "She went up at eleven or a little after. She heard the storm and nothing else. The partnership was old and occasionally loud — 'show me a twenty-year partnership that isn't.' His heart was documented; his habits were documented; she sees no mystery, only a tragedy and a house full of people who should let the sergeant do the signing. Yes, there is a survivorship clause; there is also a mortgage, which people mention less.",
         "private": [
           {
-            "id": "iris-knew-petra-debt",
-            "content": "She knew Petra owed Lucien a fortune and that he planned to force repayment publicly if she refused.",
+            "id": "iris-saw-bottle",
+            "content": "'I was the last to see him — I said good night at the study door around eleven. He was charging his dropper as I left; three drops, the little ritual, the bottle all but full against the lamp. I remember thinking the chemist had filled it generously.' [SEALED: she does not realize what this timestamp does until the player does. Deliver it as pedantic precision, not as help.]",
             "requiresEvidenceIds": [
-              "debt-ledger"
+              "tincture-bottle"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "iris-11pm-visit",
+            "content": "'Very well. It was not good night at the door. I sat with him near an hour and we quarrelled about the season's books, and when I left I took the partnership file with me, because some accounts are the lodge's and not his estate's — and I returned it to his shelf this morning before breakfast, which I grant looks like exactly what it looks like. He was alive, angry, and pouring himself a nightcap when I left him. The door clicked locked behind me. It always did, when the accounts were out.'",
+            "requiresEvidenceIds": [
+              "iris-file"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded",
+              "hostile"
+            ]
+          },
+          {
+            "id": "iris-knew-debts",
+            "content": "'His lending was not a secret from me; the scale of it was. Lang owed him more than her name is worth — I told him in the autumn to call it in before I had to sign the season's books around the hole it made. \"Due, or public,\" he said. I did not ask what public meant. I have been not-asking things around Lucien for twenty years; it is how the partnership lasted.'",
+            "requiresEvidenceIds": [
+              "loan-ledger"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          },
+          {
+            "id": "iris-forgery",
+            "content": "She reads the guarantee note twice and goes very still. 'The countersignature is Baron von Adler's. The Baron died in March — I have his obituary in my files; we held a room for the funeral party. This note is dated June. You understand what this was: Lucien lent against the Baron's name, not her jewels — the name was the whole security. He wasn't holding a debt over her, he was holding a forgery. Debt is embarrassment. This is prison.' [SEALED: this is the moment the motive changes weight. Let her arrive at it as a lawyer, not an accuser.]",
+            "requiresEvidenceIds": [
+              "forged-note"
             ],
             "requiresWillingnessIn": [
               "open",
@@ -413,58 +803,113 @@
             ]
           }
         ],
-        "secrets": []
+        "secrets": [
+          {
+            "id": "iris-transfers",
+            "content": "'The transfer slips in that file are mine. I have been moving lodge money between accounts since October — covering the season's losses so the bank would renew, meaning to move it back by spring. It is the kind of thing that is a crime if you are caught mid-motion and bookkeeping if you are not. Lucien found it last week. That is what the quarrel was, if you want it exactly. Now every franc will be read in the worst light, which is, I suppose, what I get.'",
+            "requiresEvidenceIds": [
+              "iris-file"
+            ],
+            "requiresTrust": 1,
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ]
       },
       "defenses": [
-        "Lawyerly deflection",
-        "Denies personal motive"
+        "Denies nothing that paper can prove; volunteers nothing paper doesn't",
+        "Lawyerly deflection: reframes questions before answering the reframed version",
+        "Her first instinct is always the lodge's survival, and it shows"
       ],
       "storyRole": "suspect"
     },
     {
       "id": "tomas-berg",
       "name": "Tomas Berg",
-      "shortBio": "Ski guide; forced the study door this morning.",
-      "voice": "Blunt, outdoor, honest-sounding",
+      "shortBio": "Ski guide, mountain-born; forced the study door at breakfast. Out in the storm twice last night — his job, he'll say.",
+      "cardTitle": "The guide",
+      "cardBio": "A man of few words and fewer wasted ones. The slide path over the lodge is his responsibility; so, it turns out, are one or two silences.",
+      "voice": "Blunt, slow, honest-sounding — which makes his one lie sit crooked",
       "portrait": "portraits/tomas-berg.jpg",
-      "defaultLocationId": "upstairs-hall",
+      "defaultLocationId": "boot-room",
       "defaultWillingness": "open",
+      "defaultStance": "watchful_quiet",
       "knowledge": {
-        "public": "He broke the study door when Lucien did not answer. The bolt was locked from inside. He saw no one outside in the storm — visibility was nothing.",
+        "public": "He forced the door when Odette called him: the lock held, the frame gave, and he heard the study key clink in the dead man's pocket when they moved him — the door was locked from inside, no other way to read it. He was out twice in the night checking the slide path over the roofline; that is his job when the mountain has just moved. The storm was a wall; a man couldn't see his own gloves. He saw no one.",
         "private": [
           {
-            "id": "tomas-window-boot",
-            "content": "He saw a small boot scrape under the study window when he checked the walls for avalanche damage. He thought it was old until he looked again.",
+            "id": "tomas-out-at-two",
+            "content": "'Second round about two. The side door stays unbarred until my last round — always has, so I don't wake the house hammering. I came in stamping, went up by the back stair. Heard nothing but the mountain settling.' [SEALED: this is true, and it is also the hole every alibi in the house falls through: the side door stood open to the night, and he is the only one who thinks nothing of it.]",
             "requiresWillingnessIn": [
               "open"
             ]
+          },
+          {
+            "id": "tomas-figure",
+            "content": "He looks at the coat a long time, and the honesty finally costs him. 'Below the study window. Two o'clock round. A shape against the wall, under the eaves, pale coat, fur at the hood. Visibility was nothing — but I know that coat, it hangs on the warmest peg some evenings and I have been a fool about it all weekend. I told myself the storm invents things. I wanted it to.' [SEALED: he does not accuse Petra of murder even now; he reports what he saw and stops. The shame is that he wanted not to have seen it.]",
+            "requiresEvidenceIds": [
+              "damp-coat"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
           }
         ],
-        "secrets": []
+        "secrets": [
+          {
+            "id": "tomas-weiss",
+            "content": "'Anton Weiss. Nine winters. I said the north descent was safe and the mountain said otherwise, and a boy went home to the valley in the spring thaw. Voss paid the family. Kept my name out of the inquest, kept my papers clean, kept me. And never once let me forget whose silence I was wearing. You ask why I don't talk, monsieur. I learned it as a trade.' [SEALED: this is grief and servitude, not motive for this murder — but he knows how it looks, which is why the clipping stays in the wax tin.]",
+            "requiresEvidenceIds": [
+              "weiss-clipping"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded"
+            ]
+          }
+        ]
       },
       "defenses": [
-        "Straightforward",
-        "Easy to falsely suspect because he forced the door"
+        "Says only what he saw and touched; will not guess",
+        "Slow to name the coat until it is put in front of him",
+        "Forced the door, and knows how that reads; does not defend himself, which reads worse"
       ],
       "storyRole": "suspect"
     },
     {
       "id": "petra-lang",
       "name": "Petra Lang",
-      "shortBio": "Heiress guest; charming until cornered.",
-      "voice": "Bright, brittle, too quick to laugh",
+      "shortBio": "The heiress — glitter of the season, charming until cornered. Finds the heart-attack story obviously true and the questions in poor taste.",
+      "cardTitle": "The heiress",
+      "cardBio": "The sort of guest hotels photograph for their brochures. Eleven years of being magnificent, and the bills for it sewn where nobody looks.",
+      "voice": "Bright, quick, flattering; a laugh switched on like a lamp; brittle only at the edges",
       "portrait": "portraits/petra-lang.jpg",
-      "defaultLocationId": "upstairs-hall",
+      "defaultLocationId": "great-room",
       "defaultWillingness": "guarded",
       "defaultStance": "charm_mask",
       "knowledge": {
-        "public": "She slept badly. She never left her room. She liked Lucien 'as a host'.",
+        "public": "She slept badly — avalanche dreams, the mountain groaning. She never left her room after going up, 'where would one GO, darling, the world is shut.' She adored Lucien as one adores a view. Her maid is 'resting in Geneva' — the third winter running she has traveled without one, which the valley finds modern and Odette finds interesting. His heart was famous; the whole thing is terribly sad and rather obviously natural, and she thinks the kindest thing anyone can do is let the poor man rest — though of course she finds YOU fascinating, and asks better questions about your old cases than anyone here.",
         "private": [
           {
-            "id": "petra-admits-debt-talk",
-            "content": "She admits Lucien threatened to expose her debt at breakfast if she did not sign papers.",
+            "id": "petra-debt-shrug",
+            "content": "'Oh, the famous ledger. Darling, everyone borrows from Lucien — it's practically the house claret. Yes, I owe him a vulgar amount; so does half the valley. \"Due or public\" is Lucien being operatic. He wrote in that ledger the way other men write love letters — for the feeling of it.' [SEALED: prepared, smooth, and delivered even under hostility. It concedes exactly as much as the paper proves and not one franc more.]",
             "requiresEvidenceIds": [
-              "debt-ledger"
+              "loan-ledger"
+            ],
+            "requiresWillingnessIn": [
+              "open",
+              "guarded",
+              "hostile"
+            ]
+          },
+          {
+            "id": "petra-air-story",
+            "content": "'That coat — yes, all right, I stepped out for air. Onto the boot-room porch, near one o'clock, for two minutes; the storm slapped me straight back inside. I didn't mention it because saying \"I was outside\" in THIS house, today, is handing the room its verdict tied up in ribbon.' [SEALED: this contradicts her public 'I never left my room.' Never point the contradiction out for the player; let it stand in the record.]",
+            "requiresEvidenceIds": [
+              "damp-coat"
             ],
             "requiresWillingnessIn": [
               "open",
@@ -473,121 +918,252 @@
             ]
           }
         ],
-        "secrets": []
+        "secrets": [
+          {
+            "id": "petra-breaks",
+            "content": "When it finally comes, it comes level and precise, the performance dropped like a coat. 'The Baron was three months dead when I signed his name. Lucien knew to the franc what I am — he'd known for a year, and he liked knowing. Sign the new terms by breakfast, he said, or the note goes down the mountain to the gendarmes. Not the debt. The FORGERY. Prison, and everyone I have ever dined with reading about it. He stood at the safe being right about me, and his little bottle sat by the brandy where it always sits, and I poured it into his glass — all of it — and I have thought since that I decided it in less time than it takes to say. I went back at half past two for the note. The drawer was locked and the key was in a dead man's pocket, and I couldn't— my hands wouldn't. Then boots at the side door. I put out the lamp and went through the window, under the eaves, the way I'd seen Tomas walk it. I meant to hang the key back on her board at dawn. I have been becoming someone for eleven years, monsieur. Lucien was going to unbecome me by breakfast.' [SEALED: only when cornered — the gates enforce it. She accounts for her own design and nothing else; no apology, no tears. The nearest thing to feeling is when Tomas is named: 'Don't. He was the only person here being kind for free.']",
+            "requiresEvidenceIds": [
+              "tincture-bottle",
+              "spare-key"
+            ],
+            "requiresFlags": {
+              "petra_cornered": true
+            },
+            "requiresWillingnessIn": [
+              "open",
+              "guarded",
+              "hostile"
+            ]
+          }
+        ]
       },
       "defenses": [
-        "Denies leaving her room",
-        "Blames the locked-room impossibility"
+        "Charm first, wit second, umbrage third; collapse never — until the gates say so",
+        "Suggests — never insists — that kitchens control both the brandy and the medicine",
+        "Never volunteers; corrects. Each correction concedes only what the shown evidence proves",
+        "Keeps near the investigation all day: helpful, delightful, and always in the room"
       ],
       "storyRole": "suspect"
     }
   ],
   "evidence": [
     {
-      "id": "poisoned-glass",
-      "name": "Poisoned brandy glass",
-      "description": "Bitter almond note under brandy; poison delivery.",
+      "id": "tincture-bottle",
+      "name": "Lucien's digitalis bottle",
+      "description": "Chemist's bottle from the study shelf: 'Tincture of Digitalis — VOSS — three drops of an evening, NOT MORE. Filled the 14th.' All but empty, a finger of sediment left. A month's measure, gone in a week.",
       "discoverableAt": {
         "locationId": "study",
-        "inspectableId": "body-desk"
+        "inspectableId": "tincture-shelf"
       },
-      "canPresentTo": [
-        "odette-march",
-        "iris-hale",
-        "petra-lang",
-        "tomas-berg"
-      ]
+      "canPresentTo": "*"
     },
     {
-      "id": "debt-ledger",
-      "name": "Debt ledger page",
-      "description": "Petra Lang owes Voss; note 'due — or public'.",
+      "id": "key-ring",
+      "name": "Lucien's key ring",
+      "description": "From the dead man's coat pocket: the study door key — inside the locked room with him all night — and a small brass drawer key.",
       "discoverableAt": {
         "locationId": "study",
-        "inspectableId": "guest-ledger"
+        "inspectableId": "his-pockets"
       },
-      "canPresentTo": [
-        "petra-lang",
-        "iris-hale",
-        "odette-march"
-      ]
+      "canPresentTo": "*"
+    },
+    {
+      "id": "loan-ledger",
+      "name": "The loan ledger",
+      "description": "Lucien's private lending book, from the locked drawer. The Lang pages run long: sums advanced over three years, and against the last entry, in his hand — 'due, or public. B'fast.'",
+      "discoverableAt": {
+        "locationId": "study",
+        "inspectableId": "desk-drawer"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "forged-note",
+      "name": "The guarantee note",
+      "description": "A folded guarantee of repayment for the Lang debts, kept apart in the locked drawer. Countersigned, boldly, 'Baron von Adler' — and dated June.",
+      "discoverableAt": {
+        "locationId": "study",
+        "inspectableId": "desk-drawer"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "misplaced-glass",
+      "name": "The misplaced hobnail glass",
+      "description": "Cut crystal racked rim-up among the kitchen tumblers, damp at the base — the missing twin of the study's hobnail pair, returned to a rack by someone who does not know the rack.",
+      "discoverableAt": {
+        "locationId": "kitchen",
+        "inspectableId": "glass-rack"
+      },
+      "canPresentTo": "*"
     },
     {
       "id": "spare-key",
-      "name": "Study spare key",
-      "description": "Found in upstairs linen; explains locked-from-inside after exit via window.",
+      "name": "The spare study key",
+      "description": "Hotel-tagged 'STUDY — SPARE,' found tucked into the linen closet's towel stack between the back stair and the guest doors. Missing from Odette's board since before six. It smells faintly of brandy.",
       "discoverableAt": {
         "locationId": "upstairs-hall",
         "inspectableId": "linen-closet"
       },
-      "canPresentTo": [
-        "petra-lang",
-        "odette-march",
-        "tomas-berg",
-        "iris-hale"
-      ]
+      "canPresentTo": "*"
+    },
+    {
+      "id": "damp-coat",
+      "name": "Petra's storm-dried coat",
+      "description": "Pale wool, fur-hooded, hung behind her other things. Cuffs and hem dried stiff with the white tide-lines of deep snow. She has said she never left the house.",
+      "discoverableAt": {
+        "locationId": "petra-room",
+        "inspectableId": "wardrobe"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "pawn-tickets",
+      "name": "The pawn tickets",
+      "description": "Sewn into her case lining: tickets from Geneva, Milan, Vienna against 'jewels of Mlle Lang' — each marked PASTE — and a bank letter stamped 'final notice.' The famous fortune, ticket by ticket.",
+      "discoverableAt": {
+        "locationId": "petra-room",
+        "inspectableId": "traveling-case"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "burned-scrap",
+      "name": "Burned papers from the grate",
+      "description": "Fresh-burned paper curls lying on top of this morning's clean ash. One kept its printing: '…advanced against jewels of Mlle L—…' and '…final notice.' Somebody fed the fire this morning, in a house nobody can leave.",
+      "discoverableAt": {
+        "locationId": "great-room",
+        "inspectableId": "fresh-ash"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "reckoning-list",
+      "name": "The reckoning list",
+      "description": "Lucien's morocco notebook: the weekend planned like a menu. Petra's note by breakfast 'or the valley learns what the Baron's signature is worth'; Iris's books 'or her name comes off the door'; 'the Weiss file stays mine.' Every guest summoned, not invited.",
+      "discoverableAt": {
+        "locationId": "lucien-room",
+        "inspectableId": "bedside-book"
+      },
+      "canPresentTo": "*"
+    },
+    {
+      "id": "iris-file",
+      "name": "The partnership file",
+      "description": "The Voss-Hale season accounts, returned to Lucien's shelf with un-Lucien-like neatness — and threaded through them, bank transfer slips in a small upright hand that is not the dead man's.",
+      "discoverableAt": {
+        "locationId": "study",
+        "inspectableId": "shelf-file"
+      },
+      "canPresentTo": "*",
+      "redHerring": true
+    },
+    {
+      "id": "weiss-clipping",
+      "name": "The Weiss clipping",
+      "description": "A valley newspaper cutting, nine winters old, folded soft with handling: 'MISADVENTURE ABOVE THE VOSS LODGE — Anton Weiss, 17, lost on a guided descent.' Kept in Tomas's wax tin.",
+      "discoverableAt": {
+        "locationId": "boot-room",
+        "inspectableId": "ski-rack"
+      },
+      "canPresentTo": "*",
+      "redHerring": true
     }
   ],
   "beats": [
     {
-      "id": "study_examined",
+      "id": "not_his_heart_odette",
+      "title": "A month's measure",
       "once": true,
-      "trigger": "on_discover",
+      "trigger": "on_present",
       "when": {
-        "type": "has_evidence",
-        "evidenceId": "poisoned-glass"
+        "type": "presented",
+        "evidenceId": "tincture-bottle",
+        "toCharacterId": "odette-march"
       },
       "effects": [
         {
           "type": "set_game_flag",
-          "id": "examined_study",
+          "id": "murder_established",
           "value": true
         },
         {
           "type": "set_phase",
           "phaseId": "deepening"
-        }
-      ],
-      "narrationHints": "Poison, not avalanche chance. The locked door is a puzzle, not a miracle."
-    },
-    {
-      "id": "ledger_pressure",
-      "once": true,
-      "trigger": "on_discover",
-      "when": {
-        "type": "has_evidence",
-        "evidenceId": "debt-ledger"
-      },
-      "effects": [
-        {
-          "type": "reveal_relationship",
-          "relationshipId": "petra_debt_voss"
         },
         {
-          "type": "add_pressure",
-          "characterId": "petra-lang",
-          "by": 2
+          "type": "add_trust",
+          "characterId": "odette-march",
+          "by": 1
         },
         {
-          "type": "set_stance",
-          "characterId": "petra-lang",
-          "value": "brittle"
+          "type": "reveal_knowledge",
+          "characterId": "odette-march",
+          "knowledgeId": "odette-refill"
         }
       ],
-      "narrationHints": "Money and shame walk the same hall as murder."
+      "narrationHints": "The first reorientation. Odette gives the numbers — filled the 14th, ninety drops, three a night, seven nights since — and the player owns the arithmetic. Nobody says overdose; nobody says murder; the word 'heart' simply stops being said in this house from here on. The case's question changes from how a sick man died to who emptied the bottle.",
+      "reactions": [
+        {
+          "characterId": "odette-march",
+          "lineHint": "I counted his doses like the silver, monsieur. Count them yourself.",
+          "stance": "grim_vindication"
+        }
+      ]
     },
     {
-      "id": "key_explains_room",
+      "id": "not_his_heart_iris",
+      "title": "Full against the lamp",
       "once": true,
-      "trigger": "on_discover",
+      "trigger": "on_present",
       "when": {
-        "type": "has_evidence",
-        "evidenceId": "spare-key"
+        "type": "presented",
+        "evidenceId": "tincture-bottle",
+        "toCharacterId": "iris-hale"
       },
       "effects": [
         {
           "type": "set_game_flag",
-          "id": "found_spare_key",
+          "id": "murder_established",
+          "value": true
+        },
+        {
+          "type": "set_phase",
+          "phaseId": "deepening"
+        },
+        {
+          "type": "add_trust",
+          "characterId": "iris-hale",
+          "by": 1
+        },
+        {
+          "type": "reveal_knowledge",
+          "characterId": "iris-hale",
+          "knowledgeId": "iris-saw-bottle"
+        }
+      ],
+      "narrationHints": "Iris's pedantry becomes a timestamp: the bottle was all but full at eleven. Whatever emptied it happened after she said good night. She delivers this as precision, not help — and realizes one beat too late what she has just dated.",
+      "reactions": [
+        {
+          "characterId": "iris-hale",
+          "lineHint": "I remember thinking the chemist had filled it generously. That was at eleven.",
+          "stance": "administrative_calm"
+        }
+      ]
+    },
+    {
+      "id": "second_glass",
+      "title": "One glass on the tray",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "misplaced-glass"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "visitor_known",
           "value": true
         },
         {
@@ -596,19 +1172,436 @@
           "by": 1
         }
       ],
-      "narrationHints": "Locked inside is easy if you leave by the window with the spare key."
+      "narrationHints": "Odette carried one glass; the study's crystal pair is short its twin; the twin is damp in the wrong slot of her rack. Someone drank with Lucien after the house went up — and then tidied, badly. The staged story has its first seam: dead men don't rack glasses.",
+      "reactions": []
+    },
+    {
+      "id": "glass_named",
+      "title": "Not her racking",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "presented",
+        "evidenceId": "misplaced-glass",
+        "toCharacterId": "odette-march"
+      },
+      "effects": [
+        {
+          "type": "add_trust",
+          "characterId": "odette-march",
+          "by": 1
+        }
+      ],
+      "narrationHints": "Odette identifies the master's hobnail crystal at a glance and is quietly furious: someone used her kitchen to lie with. From here she is the investigation's ally in full — her board, her rack, and her counted doses are the case's honest instruments.",
+      "reactions": [
+        {
+          "characterId": "odette-march",
+          "lineHint": "Rim-up. In MY rack. Whoever it was, monsieur, they know crystal and they do not know kitchens.",
+          "stance": "cold_fury"
+        }
+      ]
+    },
+    {
+      "id": "key_home",
+      "title": "The key comes home",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "presented",
+        "evidenceId": "spare-key",
+        "toCharacterId": "odette-march"
+      },
+      "effects": [
+        {
+          "type": "add_trust",
+          "characterId": "odette-march",
+          "by": 1
+        },
+        {
+          "type": "reveal_knowledge",
+          "characterId": "odette-march",
+          "knowledgeId": "odette-key-gone"
+        }
+      ],
+      "narrationHints": "Relief and anger in the same breath: her missing key, found stuffed in her own linen. She confirms when it vanished — before six — and where she'd already searched. The key's hiding place, between the back stair and the guest doors, says 'upstairs' louder than she will.",
+      "reactions": [
+        {
+          "characterId": "odette-march",
+          "lineHint": "Gone before six, and I have kept that shame all morning. In the LINEN, monsieur. My linen.",
+          "stance": "shaken_relief"
+        }
+      ]
+    },
+    {
+      "id": "iris_night_visit",
+      "title": "Some accounts are ours",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "presented",
+        "evidenceId": "iris-file",
+        "toCharacterId": "iris-hale"
+      },
+      "effects": [
+        {
+          "type": "reveal_knowledge",
+          "characterId": "iris-hale",
+          "knowledgeId": "iris-11pm-visit"
+        },
+        {
+          "type": "add_trust",
+          "characterId": "iris-hale",
+          "by": 1
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "iris-hale",
+          "value": "open"
+        }
+      ],
+      "narrationHints": "The red herring resolves and pays: Iris admits the eleven-o'clock hour in the study, the quarrel, taking the file and returning it at dawn. The case gains its timeline anchor — Lucien alive and locking his own door behind her at midnight-less-a-quarter — and Iris's suspicious shape collapses into a smaller, human wrong.",
+      "reactions": [
+        {
+          "characterId": "iris-hale",
+          "lineHint": "He was alive, angry, and pouring a nightcap when I left. The lock clicked behind me. It always did.",
+          "stance": "cracked_formality"
+        }
+      ]
+    },
+    {
+      "id": "ledger_read",
+      "title": "Due, or public",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "loan-ledger"
+      },
+      "effects": [
+        {
+          "type": "reveal_relationship",
+          "relationshipId": "petra_owed_voss"
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "petra-lang",
+          "by": 1
+        }
+      ],
+      "narrationHints": "'Due, or public. B'fast.' in a dead man's hand, dated the night he died. Money and shame walk the same halls as murder — but note the drawer was locked and its key in his pocket: whoever wanted this page could not reach it. The evidence of motive survived because the killer failed to take it.",
+      "reactions": []
+    },
+    {
+      "id": "forgery_named",
+      "title": "Not debt. Prison.",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "presented",
+        "evidenceId": "forged-note",
+        "toCharacterId": "iris-hale"
+      },
+      "effects": [
+        {
+          "type": "reveal_knowledge",
+          "characterId": "iris-hale",
+          "knowledgeId": "iris-forgery"
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "petra-lang",
+          "by": 2
+        }
+      ],
+      "narrationHints": "The motive changes weight in one line: the Baron died in March, the signature is dated June. Lucien wasn't collecting money — he was holding prison. Deliver it through Iris's lawyer's stillness, and let the player feel the room get colder around Petra without one glance in her direction.",
+      "reactions": [
+        {
+          "characterId": "iris-hale",
+          "lineHint": "Debt is embarrassment, monsieur. This is prison.",
+          "stance": "administrative_calm"
+        }
+      ]
+    },
+    {
+      "id": "reckoning_widens",
+      "title": "The reckoning weekend",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "reckoning-list"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "reckoning_known",
+          "value": true
+        },
+        {
+          "type": "reveal_relationship",
+          "relationshipId": "tomas_bound_voss"
+        }
+      ],
+      "narrationHints": "The widening reorientation: you have been asking who owed him money; the notebook asks who owed him silence. Every guest was summoned, not invited — Petra's note, Iris's books, Tomas's Weiss file. The genial host re-prices as a collector of people, and for a turn the field is wide open again.",
+      "reactions": []
+    },
+    {
+      "id": "window_seam",
+      "title": "The room lied",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "game_flag",
+            "id": "examined_catch",
+            "equals": true
+          },
+          {
+            "type": "game_flag",
+            "id": "seen_route",
+            "equals": true
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "window_route_seen",
+          "value": true
+        }
+      ],
+      "narrationHints": "The scraped catch pulled to from the wrong side; the eaves route from study window to boot-room door. The locked room stops being a miracle and becomes a path — and leaves the better question standing: the door would have locked itself behind anyone who simply walked out of it. Who needs a WINDOW to leave a room they could have left by the door — unless they were in that room at an hour when the hall could not be risked?",
+      "reactions": []
+    },
+    {
+      "id": "odette_opens_house",
+      "title": "Every door in my house",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "game_flag",
+            "id": "murder_established",
+            "equals": true
+          },
+          {
+            "type": "or",
+            "of": [
+              {
+                "type": "beat_fired",
+                "beatId": "not_his_heart_odette"
+              },
+              {
+                "type": "beat_fired",
+                "beatId": "glass_named"
+              },
+              {
+                "type": "beat_fired",
+                "beatId": "key_home"
+              }
+            ]
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "rooms_unlocked",
+          "value": true
+        }
+      ],
+      "narrationHints": "Odette takes the master ring off her belt and holds it out: 'Then open every door in my house, and let it be a clean house again.' The guest rooms and the master's room are the reward — staged as her decision, earned by the player's work, not granted by the plot. Opening the private floor is a reorientation beat: spend it.",
+      "reactions": [
+        {
+          "characterId": "odette-march",
+          "lineHint": "Open every door in my house, monsieur. Let it be a clean house again.",
+          "stance": "resolved"
+        }
+      ]
+    },
+    {
+      "id": "petra_burns",
+      "title": "Somebody feeds the fire",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "game_flag",
+            "id": "murder_established",
+            "equals": true
+          },
+          {
+            "type": "or",
+            "of": [
+              {
+                "type": "game_flag",
+                "id": "visitor_known",
+                "equals": true
+              },
+              {
+                "type": "game_flag",
+                "id": "tomas_saw_figure",
+                "equals": true
+              }
+            ]
+          },
+          {
+            "type": "not",
+            "of": {
+              "type": "has_evidence",
+              "evidenceId": "pawn-tickets"
+            }
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "page_burned",
+          "value": true
+        },
+        {
+          "type": "move_character",
+          "characterId": "petra-lang",
+          "toLocationId": "great-room"
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "petra-lang",
+          "by": 1
+        },
+        {
+          "type": "set_phase",
+          "phaseId": "crisis"
+        }
+      ],
+      "narrationHints": "The villain moves. Petra is at the hearth with the poker when the player next passes — 'I was cold, darling; surely even a detective feels the cold' — and from this turn the fresh ash sits on top of the morning's clean grate. If the player already searched her case, this beat never fires; getting there first was worth something. If they catch her mid-burn, let them: it is the single best moment this case can produce.",
+      "reactions": [
+        {
+          "characterId": "petra-lang",
+          "lineHint": "I was cold. Surely even a detective feels the cold.",
+          "stance": "charm_mask"
+        }
+      ]
+    },
+    {
+      "id": "tomas_cracks",
+      "title": "He knows that coat",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "presented",
+        "evidenceId": "damp-coat",
+        "toCharacterId": "tomas-berg"
+      },
+      "effects": [
+        {
+          "type": "reveal_knowledge",
+          "characterId": "tomas-berg",
+          "knowledgeId": "tomas-figure"
+        },
+        {
+          "type": "set_game_flag",
+          "id": "tomas_saw_figure",
+          "value": true
+        },
+        {
+          "type": "reveal_relationship",
+          "relationshipId": "tomas_soft_petra"
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "tomas-berg",
+          "value": "open"
+        },
+        {
+          "type": "add_pressure",
+          "characterId": "petra-lang",
+          "by": 2
+        },
+        {
+          "type": "set_phase",
+          "phaseId": "crisis"
+        }
+      ],
+      "narrationHints": "The storm had an eye after all. Tomas's one lie breaks along its grain: the pale coat under the study window at two o'clock, and the reason he kept it to himself. Play the cost — an honest man discovering what his silence was protecting. The reorientation: the locked room now has a witness, and the witness has a broken heart nobody knew about.",
+      "reactions": [
+        {
+          "characterId": "tomas-berg",
+          "lineHint": "I know that coat. I have been a fool about it all weekend. Write that down too.",
+          "stance": "quiet_shame"
+        }
+      ]
+    },
+    {
+      "id": "weiss_named",
+      "title": "The wax tin's keeping",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "presented",
+        "evidenceId": "weiss-clipping",
+        "toCharacterId": "tomas-berg"
+      },
+      "effects": [
+        {
+          "type": "add_trust",
+          "characterId": "tomas-berg",
+          "by": 1
+        },
+        {
+          "type": "reveal_knowledge",
+          "characterId": "tomas-berg",
+          "knowledgeId": "tomas-weiss"
+        }
+      ],
+      "narrationHints": "The second red herring resolves and pays: not motive but biography — the boy, the hush money, nine winters of wearing Voss's silence. It explains the man's whole grammar, recasts the dead host again, and clears nothing except the player's picture of who these people are. Chasing it was not wasted play.",
+      "reactions": [
+        {
+          "characterId": "tomas-berg",
+          "lineHint": "You ask why I don't talk, monsieur. I learned it as a trade.",
+          "stance": "old_grief"
+        }
+      ]
     },
     {
       "id": "petra_cornered",
+      "title": "The mask comes off",
       "once": true,
       "trigger": "on_present",
       "when": {
         "type": "and",
         "of": [
           {
-            "type": "presented",
-            "evidenceId": "debt-ledger",
-            "toCharacterId": "petra-lang"
+            "type": "or",
+            "of": [
+              {
+                "type": "presented",
+                "evidenceId": "loan-ledger",
+                "toCharacterId": "petra-lang"
+              },
+              {
+                "type": "presented",
+                "evidenceId": "forged-note",
+                "toCharacterId": "petra-lang"
+              },
+              {
+                "type": "presented",
+                "evidenceId": "pawn-tickets",
+                "toCharacterId": "petra-lang"
+              },
+              {
+                "type": "presented",
+                "evidenceId": "burned-scrap",
+                "toCharacterId": "petra-lang"
+              }
+            ]
           },
           {
             "type": "has_evidence",
@@ -618,9 +1611,19 @@
       },
       "effects": [
         {
+          "type": "set_game_flag",
+          "id": "petra_cornered",
+          "value": true
+        },
+        {
           "type": "set_willingness",
           "characterId": "petra-lang",
           "value": "hostile"
+        },
+        {
+          "type": "set_stance",
+          "characterId": "petra-lang",
+          "value": "cracking"
         },
         {
           "type": "set_alibi_status",
@@ -629,18 +1632,88 @@
         },
         {
           "type": "set_phase",
-          "phaseId": "crisis"
+          "phaseId": "confrontation"
         },
         {
-          "type": "reveal_knowledge",
+          "type": "add_pressure",
           "characterId": "petra-lang",
-          "knowledgeId": "petra-admits-debt-talk"
+          "by": 2
         }
       ],
-      "narrationHints": "Petra's charm snaps. The locked room no longer protects her story."
+      "narrationHints": "Motive in one hand, the spare key in the other: the charm stops working and she knows it. She tries the kitchen deflection exactly once more — 'who measured his drops every night, darling?' — hears how it sounds in the new silence, and stops. From here her performance is economy: she concedes only what each shown thing proves, and waits to see if the player can finish it.",
+      "reactions": [
+        {
+          "characterId": "petra-lang",
+          "lineHint": "You've been in my room. And my linen closet, apparently. No — it's not MY linen closet, is it. Nothing here is mine.",
+          "stance": "cracking"
+        }
+      ]
+    },
+    {
+      "id": "wrong_odette",
+      "title": "The kitchen closes",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "game_flag",
+        "id": "falsely_accused_odette-march",
+        "equals": true
+      },
+      "effects": [
+        {
+          "type": "set_willingness",
+          "characterId": "odette-march",
+          "value": "hostile"
+        }
+      ],
+      "narrationHints": "Accuse the woman who asked you here and the house's spring breaks: the kitchen closes, the master ring stays on her belt, meals arrive without a word. The cost is real — her board, her rack, and her counted doses were the case's honest instruments. Petra, notably, is gentle about it: 'anyone could see the poor woman was under strain.' Let that kindness curdle.",
+      "reactions": [
+        {
+          "characterId": "odette-march",
+          "lineHint": "I asked you to look, monsieur. I did not ask to be looked AT.",
+          "stance": "cold_fury"
+        }
+      ]
+    },
+    {
+      "id": "odette_thaws",
+      "title": "Work over words",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "presented",
+            "evidenceId": "tincture-bottle",
+            "toCharacterId": "odette-march"
+          },
+          {
+            "type": "character_willingness",
+            "characterId": "odette-march",
+            "is": "hostile"
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_willingness",
+          "characterId": "odette-march",
+          "value": "guarded"
+        }
+      ],
+      "narrationHints": "No apology thaws Odette; work does. Put the bottle and the arithmetic in front of her and she chooses the case over the grudge — guarded, not warm, and she will remember. The repair path exists, and it costs turns.",
+      "reactions": [
+        {
+          "characterId": "odette-march",
+          "lineHint": "Ninety drops, and seven evenings. Very well, monsieur. We will finish this, and then we will not speak of the other thing.",
+          "stance": "grim_vindication"
+        }
+      ]
     },
     {
       "id": "wrong_tomas",
+      "title": "Blaming the door-breaker",
       "once": true,
       "trigger": "on_turn",
       "when": {
@@ -655,35 +1728,79 @@
           "value": "silent"
         },
         {
-          "type": "set_willingness",
-          "characterId": "odette-march",
-          "value": "hostile"
+          "type": "set_stance",
+          "characterId": "petra-lang",
+          "value": "solicitous"
         }
       ],
-      "narrationHints": "Blaming the man who forced the door freezes the staff."
+      "narrationHints": "Accuse the man who forced the door and he goes to stone — a lifetime of practiced silence has a groove for exactly this. And mark the tell: Petra warmly, sadly agrees the guide 'has always been a hard man to read.' The one person she should defend, thrown gracefully under the sledge. A sharp player files that.",
+      "reactions": [
+        {
+          "characterId": "tomas-berg",
+          "lineHint": "…",
+          "stance": "stone"
+        }
+      ]
     },
     {
-      "id": "wrap_success",
+      "id": "wrong_iris",
+      "title": "Counsel retained",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "game_flag",
+        "id": "falsely_accused_iris-hale",
+        "equals": true
+      },
+      "effects": [
+        {
+          "type": "set_willingness",
+          "characterId": "iris-hale",
+          "value": "silent"
+        }
+      ],
+      "narrationHints": "Iris does not rage; she incorporates. From the accusation onward she answers nothing without 'the sergeant present,' drafts in silence, and the case loses its best reader of paper. The freeze is survivable — the documents still speak — but every question now costs the long way around.",
+      "reactions": [
+        {
+          "characterId": "iris-hale",
+          "lineHint": "I think everything further can wait for the sergeant. He arrives at dusk. You have until then to be better at this.",
+          "stance": "administrative_calm"
+        }
+      ]
+    },
+    {
+      "id": "road_blasting",
+      "title": "Charges down the valley",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "time_at_least",
+        "slotId": "midday"
+      },
+      "effects": [
+        {
+          "type": "set_ambient",
+          "ambient": "charges_down_valley"
+        }
+      ],
+      "narrationHints": "The soft thud of blasting arrives with midday and keeps time from here on — the road crews eating through the slide. Every character hears the same clock: at dusk the pass opens, the sergeant climbs, and whatever story the house is agreed on becomes the official one. Use it to tighten scenes, not to nag.",
+      "reactions": []
+    },
+    {
+      "id": "petra_ski_try",
+      "title": "The rack, counted",
       "once": true,
       "trigger": "on_turn",
       "when": {
         "type": "and",
         "of": [
           {
-            "type": "in_denouement"
+            "type": "phase_is",
+            "phaseId": "confrontation"
           },
           {
-            "type": "or",
-            "of": [
-              {
-                "type": "resolution_outcome",
-                "is": "success"
-              },
-              {
-                "type": "resolution_outcome",
-                "is": "partial"
-              }
-            ]
+            "type": "time_at_least",
+            "slotId": "afternoon"
           }
         ]
       },
@@ -691,32 +1808,55 @@
         {
           "type": "move_character",
           "characterId": "petra-lang",
-          "toLocationId": "great-room"
+          "toLocationId": "boot-room"
         },
         {
-          "type": "set_stance",
+          "type": "add_pressure",
           "characterId": "petra-lang",
-          "value": "broken"
-        },
-        {
-          "type": "set_willingness",
-          "characterId": "petra-lang",
-          "value": "open"
+          "by": 1
         }
       ],
-      "narrationHints": "Firelight aftermath. Petra may confess. Snow still seals the world."
+      "narrationHints": "Cornered, she tests the last door: the player (or Tomas) finds her in the boot room in her fine coat, contemplating the ski rack like a woman reading a train timetable. Tomas lifts the skis down without a word and carries them into the kitchen. 'The snow keeps what it takes,' he says. Nobody has to say the word 'flight'; the geometry says it. Her theatre has run out of exits.",
+      "reactions": [
+        {
+          "characterId": "tomas-berg",
+          "lineHint": "The snow keeps what it takes, Fräulein. I would know.",
+          "stance": "quiet_shame"
+        }
+      ]
+    },
+    {
+      "id": "dusk_deadline",
+      "title": "The road opens",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "time_at_least",
+        "slotId": "dusk"
+      },
+      "effects": [
+        {
+          "type": "end_case",
+          "outcome": "failure",
+          "endingId": "failure_time_expired",
+          "endingKind": "time_expired"
+        }
+      ],
+      "narrationHints": "Headlights on the switchbacks; the sergeant's car. If no accusation stands, the house's preferred story files itself: cardiac, pending nothing. Do not moralize — let the mountain's indifference do it.",
+      "reactions": []
     }
   ],
   "solution": {
-    "summary": "Petra Lang poisoned Lucien Voss's brandy, locked the study from inside with the spare key, climbed out the window into the snow, and hid the key in the linen closet. Motive: Lucien threatened to expose her debt publicly. The locked room was staged; the window catch and damp coat give her away.",
+    "summary": "Petra Lang's fortune has been gone for years — pawned paste and final notices sewn into a case lining. Lucien Voss, who had lent her a ruinous sum against a guarantee note she countersigned with a dead man's name, summoned her for his 'reckoning weekend': sign new terms by breakfast, or the forged note goes to the gendarmes. Called to his study at midnight, she drank with him from the second hobnail glass — and when he stood at the safe being right about her, she emptied his own digitalis bottle into his nightcap. Three drops were his dose; she poured the rest of a month's bottle. She left; his habit locked the door behind her; his heart did the rest and looked, as she intended, like itself failing. At half past two she went back with the spare key from Odette's board to steal the note — but the drawer was locked, its key in the dead man's pocket, and her nerve failed at his coat. Interrupted by Tomas at the side door, she put out the lamp, went through the window and along the eaves route to the boot-room door, and could not risk rehanging the key — it went into the linen closet, and at dawn the badly-racked glass went back to a kitchen whose order she did not understand. The locked room was never a trick; it was his habit. Everything that betrays her is the cost of the visit she had to make afterward.",
     "guiltyPartyIds": [
       "petra-lang"
     ],
-    "method": "Poison in brandy; spare key + window to fake locked-room",
-    "motive": "Silence / stop public exposure of crushing debt to Voss",
+    "method": "Emptied Lucien's own digitalis tincture into his nightcap during a midnight audience; his habit of locking the study did the staging for her. Her return at half past two — spare key in, window and eaves route out — left the catch, the coat, the key, and the glass.",
+    "motive": "Lucien held her forged guarantee note — the Baron's signature, three months posthumous. Exposure meant prison and the end of the person she had spent eleven years becoming. He gave her until breakfast.",
     "criticalEvidenceIds": [
-      "debt-ledger",
-      "spare-key"
+      "tincture-bottle",
+      "spare-key",
+      "loan-ledger"
     ],
     "rubric": {
       "partialCredit": true,
@@ -734,29 +1874,48 @@
           ]
         },
         {
-          "id": "method-poison",
+          "id": "method-overdose",
           "role": "method",
-          "description": "Poison / brandy / key / window",
+          "description": "His own heart medicine, massively overdosed into the nightcap; the locked room was his own habit, the window and spare key her retreat",
           "matchHints": [
-            "poison",
-            "brandy",
-            "key",
-            "window",
-            "almond",
-            "locked"
+            "digitalis",
+            "tincture",
+            "medicine",
+            "drops",
+            "overdose",
+            "dosed",
+            "nightcap",
+            "his own bottle",
+            "spare key",
+            "window"
           ]
         },
         {
-          "id": "motive-debt",
+          "id": "motive-forgery",
           "role": "motive",
-          "description": "Debt / exposure",
+          "description": "The debt and the forged guarantee — exposure and prison by breakfast",
           "matchHints": [
             "debt",
-            "money",
+            "forg",
+            "note",
             "expose",
+            "prison",
+            "ruin",
             "loan",
-            "public",
-            "ledger"
+            "blackmail",
+            "reckoning",
+            "baron"
+          ]
+        },
+        {
+          "id": "staging-heart",
+          "role": "supporting",
+          "description": "It was meant to pass as his bad heart giving out",
+          "matchHints": [
+            "heart",
+            "natural",
+            "look like",
+            "meant to seem"
           ]
         }
       ]
@@ -765,59 +1924,165 @@
   "canon": {
     "timeline": [
       {
-        "at": "Last night after dinner",
-        "event": "Lucien threatens Petra over debt papers.",
-        "locationId": "study",
+        "id": "weiss-winter",
+        "at": "Nine winters ago",
+        "event": "Anton Weiss, 17, dies on a descent Tomas called safe. Voss pays the family, keeps Tomas's name from the inquest, and never lets him forget whose silence he wears.",
         "actorIds": [
+          "tomas-berg",
+          "lucien-voss"
+        ]
+      },
+      {
+        "id": "the-lending",
+        "at": "The last three years",
+        "event": "Voss lends generously and keeps a private ledger. Petra Lang borrows ruinously against a guarantee note she countersigns 'Baron von Adler' — in June, three months after the Baron's death. Voss discovers the forgery within the year and files it, delighted: better than interest.",
+        "actorIds": [
+          "lucien-voss",
           "petra-lang"
         ]
       },
       {
-        "at": "Late evening",
-        "event": "Petra poisons brandy, locks door, exits window, hides key upstairs.",
-        "locationId": "study",
+        "id": "iris-moves-money",
+        "at": "Since October",
+        "event": "Iris moves lodge money between accounts to cover the season's losses, meaning to restore it by spring. Voss finds the slips a week before the weekend.",
         "actorIds": [
+          "iris-hale"
+        ]
+      },
+      {
+        "id": "the-invitations",
+        "at": "Two weeks ago",
+        "event": "Voss plans 'the reckoning weekend' in his morocco notebook and sends warm invitations: Petra to sign new terms, Iris to explain the books, Tomas to be gently reminded. The case-worker guest is invited as ornament — and, perhaps, as audience.",
+        "actorIds": [
+          "lucien-voss"
+        ]
+      },
+      {
+        "id": "the-avalanche",
+        "at": "Nightfall, the last evening",
+        "event": "The slide takes the pass road and the telephone line. Voss is pleased: nobody leaves until the accounts are settled.",
+        "actorIds": [
+          "lucien-voss"
+        ]
+      },
+      {
+        "id": "the-ultimatum",
+        "at": "After dinner",
+        "event": "Voss tells Petra privately: the new terms signed by breakfast, or the note goes down the mountain to the gendarmes when the road opens. Not the debt — the forgery.",
+        "locationId": "great-room",
+        "actorIds": [
+          "lucien-voss",
           "petra-lang"
         ]
       },
       {
-        "at": "Morning",
-        "event": "Tomas forces door; body found.",
+        "id": "iris-visit",
+        "at": "Eleven o'clock",
+        "event": "Iris sits with Voss in the study near an hour, quarrelling over the books. She watches him charge his dropper — three drops, the bottle nearly full — and leaves with the partnership file. The lock clicks behind her: his habit when the accounts are out.",
         "locationId": "study",
         "actorIds": [
+          "iris-hale",
+          "lucien-voss"
+        ]
+      },
+      {
+        "id": "the-nightcap",
+        "at": "Midnight",
+        "event": "Odette carries the tray — decanter, one plain glass — and goes to bed. Voss admits Petra, takes down a hobnail glass for her from his own cabinet, and lays her signing papers out. Odette, returning for the banked fire at half past twelve, hears two voices and a woman's quick bright laugh through the door.",
+        "locationId": "study",
+        "actorIds": [
+          "odette-march",
+          "lucien-voss",
+          "petra-lang"
+        ]
+      },
+      {
+        "id": "the-dosing",
+        "at": "Half past twelve",
+        "event": "Voss turns to the safe for the forged note — to show her he still has it. Behind him, Petra empties the digitalis bottle into his nightcap: a month's measure less a week of doses, under brandy. She pleads a headache and goes up; the lock clicks behind her. He drinks, works, and dies at his desk within the hour, the glass tipping under his hand.",
+        "locationId": "study",
+        "actorIds": [
+          "petra-lang",
+          "lucien-voss"
+        ]
+      },
+      {
+        "id": "the-return",
+        "at": "Half past two",
+        "event": "Petra takes the spare key from the kitchen board and lets herself into the study to steal back the note. Her plan was sound as far as it went: on other late evenings his coat — and the key ring in it — hung over the chair-back while he worked in shirtsleeves. Tonight he died in the coat. The drawer is locked; she scuffs the keyhole with a hairpin; the drawer key is in the dead man's pocket and her hands will not go into a dead man's coat. Boots at the side door — Tomas, back from his slide-path round. She puts out the lamp, takes the hobnail glass she drank from, and goes out the window, pulling the catch to badly, along the sheltered eaves route to the boot-room door he leaves unbarred until his last round.",
+        "locationId": "study",
+        "actorIds": [
+          "petra-lang",
           "tomas-berg"
         ]
+      },
+      {
+        "id": "the-tidying",
+        "at": "Toward three, and at first light",
+        "event": "The spare key cannot be rehung without crossing the house; it goes into the linen closet's towel stack, to be returned at dawn. At first light, while Odette fetches wood, Petra rinses the hobnail glass and racks it — rim-up, wrong slot, damp. The coat dries hard behind her other things. Dawn comes too fast for the key.",
+        "locationId": "upstairs-hall",
+        "actorIds": [
+          "petra-lang"
+        ]
+      },
+      {
+        "id": "the-discovery",
+        "at": "Breakfast",
+        "event": "No answer at the study door. Odette fetches Tomas; the frame gives; they lift him only enough to be certain, and the key clinks in the dead man's pocket. Iris, correct as ever, orders everything left exactly as found for the valley doctor — which is why the scene keeps. The house assembles the story it prefers before the coffee cools: his heart, his habits, poor Lucien. Odette, who counted his doses, quietly asks the only guest who ever worked cases to look before dusk.",
+        "locationId": "study",
+        "actorIds": [
+          "tomas-berg",
+          "odette-march"
+        ]
       }
-    ]
+    ],
+    "notes": "PERFORMER CONTRACT. (1) The staged story is the heart. Never let narration or any character conclude 'murder,' 'poison,' 'overdose,' or 'staged' — the player assembles those words from the label, the level, and Odette's counting. Rule 9b absolute: observations, never conclusions. (2) The dose arithmetic belongs to the player: the label says filled the 14th and three drops of an evening; Odette says sixty drops and that she counted; Iris says nearly full at eleven. Nobody totals it aloud, ever. (3) The two visits must never be narrated as two visits. Place the observations — catch, coat, key, glass, scuffed keyhole — and let the player discover that the window trip happened HOURS after the death. The question 'why leave by a window when the door locks itself behind you' is the case's best riddle; characters may repeat it, never answer it. (4) Petra's charm is a performance with rules: warm, quick, flattering, always near the investigation, delightful to the player specifically. She suggests the kitchen 'controls both the brandy and the medicine' at most twice all game, lightly, never insisting. She never volunteers; she corrects, conceding only what shown evidence proves. (5) Tomas lies exactly once (saw no one) and it sits crooked in an otherwise honest manner; he never volunteers the figure until the coat is physically in front of him. (6) Iris answers what paper can prove and nothing else. (7) The dead man is performed only through others' memory — velvet over a ledger; the reckoning notebook is his true voice and should land like meeting him for the first time. (8) The Weiss affair is grief and servitude, NOT motive for this crime; never let Tomas become a serious suspect in the performer's tone — the boot bench and his round explain his night fully. (9) The pass opens at dusk and everyone knows it; use the blasting as a metronome, not a nag."
   },
   "endings": [
     {
       "id": "success_earned",
       "when": "success",
       "kind": "solved",
-      "title": "The key in the linen",
-      "templateNotes": "Petra's locked-room theater collapses. The spare key, the ledger, and the window tell the same story. RETURN TO NORMAL: she is held by the household until the pass opens; no one pretends this was a closed accident. Snow still seals the mountain — exception: you cannot leave yet — but the lodge is no longer her stage."
+      "title": "A month's measure",
+      "templateNotes": "The file is whole: the bottle and the counting, the key from the linen, the ledger or the note, the coat, the window. Petra hears it out and folds the performance like evening gloves — composed, precise, almost relieved; her confession (petra-breaks) is available and in character. RETURN TO NORMAL, diegetic: Tomas keeps the boot room and the skis stand counted in the kitchen; Odette's kitchen is publicly, formally cleared — say it in front of her; Iris tears up the cardiac draft and writes the true statement with her own transfer slips clipped to it. At dusk the blasting stops, headlights climb the switchbacks, and the sergeant walks into a house with its accounts in order. Custody is a car door closing. Land on the people: Tomas finally says the name Anton Weiss aloud by the fire, and it costs him less than he feared; Odette sets five places for dinner out of habit, then quietly takes one away."
     },
     {
       "id": "success_lucky",
       "when": "success",
       "kind": "lucky_solve",
-      "title": "A name by the fire",
-      "templateNotes": "You name Petra before every thread is tied. She still breaks. RETURN TO NORMAL: she is watched and held indoors; the fire pops; the pass will bring formal justice. Do not invent evidence unfound."
+      "title": "A name said by firelight",
+      "templateNotes": "The player names Petra with the shape of it right but the file thin. She breaks on nerve, not proof — the burned papers, the counted rack, the watching house have been closing on her all day, and being NAMED is the one performance she never rehearsed. Do not invent evidence the player never found; her confession may fill gaps in her own voice, as her choice. RETURN TO NORMAL scaled: the household holds her for the sergeant on the strength of her own collapse; Iris, ever precise, notes the file will need what the confession supplies. The fire pops. The road opens on time."
     },
     {
       "id": "partial",
       "when": "partial",
       "kind": "partial",
-      "title": "Thin ice",
-      "templateNotes": "You have enough to hold her, not enough for a clean file. Thin RETURN TO NORMAL: she is not free to rearrange the story; the mountain keeps remaining secrets a little longer."
+      "title": "Enough to hold the door",
+      "templateNotes": "Right name, ragged file — or the method without the why. There is enough to stop the cardiac certificate and hold Petra for the sergeant, not enough for a clean case; she concedes nothing and retains, of all people, Iris's professional respect. RETURN TO NORMAL, thin: the sergeant takes statements late into the night; the mountain keeps some of its secrets a while longer; nobody says 'heart' anymore, which is its own verdict. Land on people: Odette's kitchen is cleared but nobody said it formally, and she notices."
     },
     {
       "id": "failure_wrong_accusation",
       "when": "failure",
       "kind": "wrong_accusation",
-      "title": "Wrong guest",
-      "templateNotes": "The lodge freezes you out. When the pass opens, the real trail is colder than the snow."
+      "title": "The wrong guest",
+      "templateNotes": "The house freezes around the player's mistake — the accused's freeze-out plays per their beat, and the others close ranks out of embarrassment and fear. At dusk the sergeant takes the senior statement, which is Iris's morning draft: cardiac. Petra condoles beautifully with everyone, is first down the mountain when the road opens, and leaves a generous tip. The revelation will tell the player what they walked past; the ending itself lands on the person they wronged — the innocent accused stands at the window watching the tail-lights, carrying it."
+    },
+    {
+      "id": "failure_time_expired",
+      "when": "failure",
+      "kind": "time_expired",
+      "title": "The road opens",
+      "templateNotes": "Headlights on the switchbacks; the sergeant, polite and cold, takes the house's preferred story because nobody offers him a better one. Cardiac, pending nothing. The certificate is signed on the great-room table where the breakfast still sits. Petra's window seat on the first car down is booked with charming efficiency. Close on the small wrongness that outlives the verdict: Odette rehangs the spare key on its hook — she never found who took it — and stands looking at the board a long moment before she puts out the lamp."
+    }
+  ],
+  "revelation": "Begin with the bottle, because everything true in this case fits inside it. Tincture of digitalis, filled the 14th, ninety drops, three of an evening and NOT MORE — kept, against all sense and all of Odette's begging, on the study shelf at reach of the nightcap. Lucien Voss survived a bad heart for years because one woman counted his doses like silver. He did not survive being right about Petra Lang.\n\nThe famous fortune was paste and pawn tickets. Eleven years of being magnificent, financed ticket by ticket through Geneva, Milan, and Vienna — and, when the tickets ran out, through Lucien, who lent her a ruinous sum against a guarantee note countersigned by Baron von Adler three months after the Baron was buried. Lucien knew what he held. He was not a blackmailer in the vulgar sense; he simply collected people, and kept the accounts of it. The morocco notebook says what the weekend was: the reckoning. Iris's books, or her name off the door. Tomas's file, 'remind him gently.' And Petra: sign by breakfast, or the note goes down the mountain to the gendarmes. WHY she did it is all there: not the debt — the forgery. Debt is embarrassment; the forgery was prison, and the end of the person she had spent eleven years building.\n\nWHY this way: because the mountain handed her the method. His medicine sat beside his brandy; his bad heart was famous; the avalanche had already removed doctors, police, and telephones. When he turned to the safe to show her he still had the note, she emptied the bottle into his glass — a decision, she said, made in less time than it takes to say. She walked out; his own habit locked the door behind her; his heart did the rest and looked exactly like itself failing. The locked room was never a trick. It was the house's oldest habit, working for her.\n\nWHY it wasn't clear: because everyone wanted the heart story. Iris wanted a quiet certificate and had her own slips to bury; Odette's grief kept house; Tomas had spent nine winters learning silence as a trade and wanted not to have seen a pale coat under the study window at two o'clock. The staging cost Petra nothing — until she had to go back. The note was still in the drawer, and the drawer key in a dead man's pocket, and her hands would not go into his coat. Everything that convicts her comes from that second visit: the spare key that never got rehung, the catch pulled to from the wrong side, the coat dried hard behind her dresses, the hobnail glass racked rim-up in a kitchen whose order she never troubled to learn. The murder was nearly perfect. The retreat left a trail a valley constable could follow — because staging is extra work, and extra work leaves traces.\n\nWHY no one had caught her: nobody was looking. The house had agreed on 'heart' before the coffee cooled, and the only authority on the mountain was a sergeant due at dusk to collect a signature. Except that Odette March, who counted doses and knew her own key board, asked the one guest who ever worked cases to look at the study first. That is the whole of it: a woman who kept accounts of care against a woman who kept accounts of appearances — and a bottle that could only be emptied by somebody in the room.",
+  "figures": [
+    {
+      "id": "anton-weiss",
+      "name": "Anton Weiss",
+      "dates": "1913–1930",
+      "relation": "The boy lost above the lodge nine winters ago; the debt Lucien Voss held over Tomas Berg",
+      "description": "Seventeen, a valley baker's son, strong on skis and proud of it. He went up with a guided party on the north descent in the last good snow of 1930; Tomas Berg called the slope safe, and the mountain said otherwise. The inquest wrote 'misadventure.' Voss paid the family quietly, kept Tomas's name out of the valley's mouth and his papers clean — and kept the file. Tomas has carried the clipping in his wax tin ever since, the way other men carry a saint's medal: not to remember, which he cannot help, but to be caught with it, someday, by somebody who asks."
     }
   ]
 }
