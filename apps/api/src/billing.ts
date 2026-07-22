@@ -111,6 +111,57 @@ const DEAD_STATUSES = new Set([
  */
 export const LIVE_SUB_STATUSES = new Set(["active", "trialing", "past_due"]);
 
+// ── Sales (Stripe-driven) ────────────────────────────────────────────────
+// A sale is a Stripe Coupon restricted to a tier's Product (applies_to), with
+// an optional redeem_by that is the "limited time" end. The app auto-detects
+// it, auto-applies it at checkout (no code to type), and shows the banner.
+// See docs/SALES.md.
+
+export type TierSale = {
+  /** Whole-number percent off, for the "N% off" badge. */
+  percentOff: number;
+  /** Discounted price in minor units (what the customer actually pays). */
+  amount: number;
+  /** ISO instant the sale stops being redeemable (coupon.redeem_by). */
+  endsAt?: string;
+};
+
+/** The active, still-redeemable coupon (if any) restricted to this product. */
+export function activeCoupon(
+  coupons: Stripe.Coupon[],
+  productId: string | undefined
+): Stripe.Coupon | undefined {
+  if (!productId) return undefined;
+  return coupons.find(
+    (c) => c.valid && c.applies_to?.products?.includes(productId)
+  );
+}
+
+/** Sale display details for a base price, given an applicable coupon. */
+export function saleFrom(
+  unitAmount: number,
+  coupon: Stripe.Coupon
+): TierSale | null {
+  let amount: number;
+  let percentOff: number;
+  if (coupon.percent_off != null) {
+    percentOff = Math.round(coupon.percent_off);
+    amount = Math.round(unitAmount * (1 - coupon.percent_off / 100));
+  } else if (coupon.amount_off != null) {
+    amount = Math.max(0, unitAmount - coupon.amount_off);
+    percentOff = Math.round((coupon.amount_off / unitAmount) * 100);
+  } else {
+    return null;
+  }
+  return {
+    percentOff,
+    amount,
+    endsAt: coupon.redeem_by
+      ? new Date(coupon.redeem_by * 1000).toISOString()
+      : undefined,
+  };
+}
+
 export function tierForSubscription(u: SubscriptionUpdate): Tier {
   if (DEAD_STATUSES.has(u.status)) return "free";
   const tier = u.priceId ? tierForPrice(u.priceId) : undefined;

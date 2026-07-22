@@ -183,11 +183,25 @@ export default function SubscribePage() {
                       tier.requirement.required - tier.requirement.hardSolved
                     )
                   : 0;
+                // Stripe-driven sale: struck-through original + discounted price.
+                const salePrice =
+                  hasPrice && tier.price && tier.sale
+                    ? formatPrice({ ...tier.price, amount: tier.sale.amount })
+                    : null;
+                const saleEndsStr = tier.sale?.endsAt
+                  ? new Date(tier.sale.endsAt).toLocaleDateString(undefined, {
+                      month: "long",
+                      day: "numeric",
+                    })
+                  : null;
                 return (
                   <article
                     key={tier.tier}
                     className={`${styles.plan} ${earnedLock ? styles.planLocked : ""}`}
                   >
+                    {salePrice ? (
+                      <span className={styles.saleRibbon}>Sale</span>
+                    ) : null}
                     <div className={styles.planHead}>
                       <h2 className={styles.planName}>{tier.name}</h2>
                       {tier.inviteOnly ? (
@@ -195,12 +209,29 @@ export default function SubscribePage() {
                       ) : null}
                     </div>
                     <p className={styles.price}>
-                      {hasPrice
-                        ? formatPrice(tier.price)
-                        : tier.inviteOnly
-                          ? "Earn your invitation"
-                          : "Coming soon"}
+                      {hasPrice ? (
+                        salePrice ? (
+                          <>
+                            <span className={styles.priceWas}>
+                              {formatPrice(tier.price)}
+                            </span>{" "}
+                            {salePrice}
+                          </>
+                        ) : (
+                          formatPrice(tier.price)
+                        )
+                      ) : tier.inviteOnly ? (
+                        "Earn your invitation"
+                      ) : (
+                        "Coming soon"
+                      )}
                     </p>
+                    {salePrice ? (
+                      <p className={styles.saleNote}>
+                        {tier.sale?.percentOff}% off for a limited time
+                        {saleEndsStr ? `, through ${saleEndsStr}` : ""}.
+                      </p>
+                    ) : null}
                     <p className={styles.blurb}>{goldDifficult(tier.blurb)}</p>
 
                     {earnedLock ? (

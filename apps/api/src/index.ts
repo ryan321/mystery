@@ -78,6 +78,9 @@ import {
   bindStripeCustomer,
   isPaidTier,
   LIVE_SUB_STATUSES,
+  activeCoupon,
+  saleFrom,
+  type TierSale,
   mintInvitation,
   priceForTier,
   recordBillingEvent,
@@ -1045,11 +1048,21 @@ app.get("/v1/billing/tiers", async (c) => {
   const genius = ident.user
     ? await geniusEligibility(ident.user.id)
     : { hardSolved: 0, required: GENIUS_HARD_SOLVES_REQUIRED, eligible: false };
+  // Sales are Stripe-driven: a coupon restricted to a tier's product.
+  let coupons: Stripe.Coupon[] = [];
+  if (stripe) {
+    try {
+      coupons = (await stripe.coupons.list({ limit: 100 })).data;
+    } catch {
+      /* sales are cosmetic */
+    }
+  }
   const tiers: unknown[] = [];
   for (const tier of PAID_TIERS) {
     const card = TIER_CARDS[tier];
     const priceId = priceForTier(tier);
     let price: unknown = null;
+    let sale: TierSale | null = null;
     if (stripe && priceId) {
       try {
         const p = await stripe.prices.retrieve(priceId);
@@ -1058,6 +1071,12 @@ app.get("/v1/billing/tiers", async (c) => {
           currency: p.currency,
           interval: p.recurring?.interval ?? "month",
         };
+        const productId =
+          typeof p.product === "string" ? p.product : p.product?.id;
+        const coupon = activeCoupon(coupons, productId);
+        if (coupon && p.unit_amount != null) {
+          sale = saleFrom(p.unit_amount, coupon);
+        }
       } catch {
         /* price fetch is cosmetic */
       }
@@ -1074,15 +1093,16 @@ app.get("/v1/billing/tiers", async (c) => {
         required: genius.required,
       };
     }
-    // The price stays secret until you qualify for the tier — don't even
-    // leak it in the API to viewers who can't buy it.
-    const shownPrice = card.inviteOnly && !purchasable ? null : price;
+    // Price and its sale stay secret until you qualify for the tier — don't
+    // even leak them in the API to viewers who can't buy it.
+    const hidden = card.inviteOnly && !purchasable;
     tiers.push({
       tier,
       ...card,
-      price: shownPrice,
+      price: hidden ? null : price,
       configured: Boolean(priceId),
       purchasable,
+      ...(!hidden && sale ? { sale } : {}),
       ...(requirement ? { requirement } : {}),
     });
   }
@@ -1136,6 +1156,23 @@ app.post("/v1/billing/checkout", async (c) => {
     await bindStripeCustomer(pool, ident.user.id, customerId);
   }
 
+  // Auto-apply an active, product-restricted sale coupon (Stripe-driven) so
+  // the customer never types a code. Stripe forbids discounts +
+  // allow_promotion_codes together, so a live sale replaces manual promo entry;
+  // otherwise we keep promo codes on.
+  let discounts: Stripe.Checkout.SessionCreateParams.Discount[] | undefined;
+  try {
+    const p = await stripe.prices.retrieve(price);
+    const productId = typeof p.product === "string" ? p.product : p.product?.id;
+    const coupon = activeCoupon(
+      (await stripe.coupons.list({ limit: 100 })).data,
+      productId
+    );
+    if (coupon) discounts = [{ coupon: coupon.id }];
+  } catch {
+    /* sale is optional */
+  }
+
   const webOrigin = process.env.WEB_ORIGIN ?? "https://mysterytrove.com";
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
@@ -1143,7 +1180,7 @@ app.post("/v1/billing/checkout", async (c) => {
     line_items: [{ price, quantity: 1 }],
     success_url: `${webOrigin}/account?checkout=success`,
     cancel_url: `${webOrigin}/subscribe?checkout=cancelled`,
-    allow_promotion_codes: true,
+    ...(discounts ? { discounts } : { allow_promotion_codes: true }),
     metadata: {
       userId: ident.user.id,
       tier,

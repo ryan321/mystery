@@ -113,6 +113,16 @@ export type GeniusEligibility = {
   eligible: boolean;
 };
 
+/** An active, Stripe-driven sale on a tier (a coupon on its product). */
+export type TierSale = {
+  /** Whole-number percent off. */
+  percentOff: number;
+  /** Discounted price in minor units. */
+  amount: number;
+  /** ISO instant the sale ends (from the coupon's redeem_by), if set. */
+  endsAt?: string;
+};
+
 /** One paid tier card from GET /v1/billing/tiers. */
 export type BillingTier = {
   tier: "standard" | "premium" | "elite";
@@ -122,6 +132,8 @@ export type BillingTier = {
   /** A Stripe price is wired up for this tier (checkout will work). */
   configured: boolean;
   price: TierPrice | null;
+  /** Present while a sale is running on this tier. */
+  sale?: TierSale;
   /** May this viewer start checkout (Genius: earned or invited). */
   purchasable?: boolean;
   /** Genius only: the viewer's progress toward the earned invitation. */
