@@ -14,10 +14,26 @@ import { gradeOf, isRuntimeFlag, mentionsAny, proseSources, tokens } from "./sha
 function validateCondition(cond, path, problems) {
   if (!cond || typeof cond !== "object") return;
   const t = cond.type;
+  // Mirrors the full switch in packages/engine/src/conditions.ts — keep in sync.
   const KNOWN = new Set([
-    "and", "or", "not", "game_flag", "has_evidence", "presented", "talked_to",
-    "character_willingness", "phase_is", "turn_at_least", "time_at_least",
-    "beat_fired", "clock_expired", "clock_running", "clock_at_most",
+    "always", "never", "and", "or", "not",
+    "game_flag", "has_evidence", "presented", "talked_to", "visited", "inventory_has",
+    "character_willingness", "character_at", "character_known", "character_name_known",
+    "character_pressure_at_least", "character_trust_at_least",
+    "phase_is", "turn_at_least", "beat_fired",
+    "case_active", "case_interactive", "case_status", "in_denouement",
+    "resolution_outcome", "resolution_kind", "resolution_path",
+    "clock_expired", "clock_running", "clock_at_most",
+    "time_at_least", "time_minutes_at_least", "time_reached", "time_slot_is",
+    "player_at", "player_not_at", "player_has_tag", "player_status_flag",
+    "player_threat_is", "player_threat_at_least", "player_condition_is",
+    "player_condition_at_least", "player_control_is", "player_control_at_least",
+    "player_controlled_by", "player_not_free", "player_safe_haven_compromised",
+    "location_accessible", "location_known", "exit_open",
+    "object_stage", "object_unlocked", "item_condition", "item_flag", "item_has_tag",
+    "item_holder", "item_examined_at_least", "item_used_at_least",
+    "relationship", "relationship_known", "relationship_strength_at_least",
+    "weather_is", "crowd_is", "environment_flag",
   ]);
   if (!KNOWN.has(t)) problems.push(`${path}: unknown condition type "${t}"`);
   if ((t === "and" || t === "or") && !Array.isArray(cond.of))

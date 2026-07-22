@@ -563,6 +563,12 @@
           "shortBio": {
             "type": "string"
           },
+          "cardTitle": {
+            "type": "string"
+          },
+          "cardBio": {
+            "type": "string"
+          },
           "voice": {
             "type": "string"
           },
@@ -1103,6 +1109,42 @@
     "openingNarration": {
       "type": "string",
       "minLength": 1
+    },
+    "revelation": {
+      "type": "string"
+    },
+    "figures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "dates": {
+            "type": "string"
+          },
+          "relation": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description"
+        ],
+        "additionalProperties": false
+      },
+      "default": []
     },
     "wrapUp": {
       "type": "object",
