@@ -55,15 +55,18 @@ export function signIn(email: string, displayName?: string): AuthSession {
   return session;
 }
 
-export function signOut(): void {
+export function signOut(): Promise<void> {
   try {
     localStorage.removeItem(STORAGE_KEY);
   } catch {
     /* ignore */
   }
-  // Destroy the real API session too (fire and forget).
-  void apiSignOut();
   notify();
+  // Destroy the real API session too. Returned (not fire-and-forget) so
+  // callers can await it before a hard redirect — otherwise the navigation
+  // aborts the POST and the httpOnly cookie survives, silently re-signing
+  // the user in on their next visit. apiSignOut swallows its own errors.
+  return apiSignOut();
 }
 
 /**

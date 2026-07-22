@@ -206,9 +206,12 @@ export default function TopNav() {
         <hr />
         <button
           type="button"
-          onClick={() => {
-            signOut();
+          onClick={async () => {
             closeMenu();
+            await signOut();
+            // Hard nav to the landing page: redirects away from any
+            // signed-in-only view and refreshes all server state cookie-free.
+            window.location.href = "/";
           }}
         >
           Sign out
