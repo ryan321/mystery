@@ -43,6 +43,12 @@
   border: 1px solid rgba(90, 58, 46, 0.5);
   border-radius: 3px;
   box-shadow: inset 0 0 40px rgba(90, 58, 46, 0.18);
+  /* The sheet handles its own gestures (pan/pinch) — the page must not
+     scroll or zoom while the player fingers the map. */
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .room {

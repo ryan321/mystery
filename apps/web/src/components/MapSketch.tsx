@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { MapLocation, MapView } from "../lib/types";
 import styles from "./MapSketch.module.css";
 
@@ -15,15 +15,23 @@ import styles from "./MapSketch.module.css";
  * authored coordinates fall back to BFS-adjacency placement so connected
  * rooms still land next to each other.
  *
- * Room states: visited (solid ink) / known-unvisited (dashed — "heard of
- * it") / current (you-are-here mark). Clicking a room travels via the
- * normal composer path; the engine still validates the move.
+ * The sheet pans/zooms itself (drag, pinch, double-tap) — the page never
+ * zooms. Room states: visited (solid ink) / known-unvisited (dashed —
+ * "heard of it") / current (you-are-here mark). Tapping a room travels
+ * via the normal composer path; the engine still validates the move.
  */
 
 const UNIT = 100; // px per grid cell — one room per cell, walls shared
 const PAD = 28;
 const STUB_LEN = 14;
 const DOOR_GAP = 30;
+
+const MAX_ZOOM = 5;
+/** Tap-vs-drag threshold (viewBox units) and double-tap window (ms). */
+const MOVE_SLOP = 4;
+const DOUBLE_TAP_MS = 350;
+/** Travel clicks wait this long for a possible second tap (double-tap zoom). */
+const TRAVEL_DELAY_MS = 280;
 
 /** Deterministic per-room jitter for stub directions, stable. */
 function hashSeed(s: string): number {
@@ -198,6 +206,29 @@ function edgePoint(r: Rect, theta: number) {
   return { x: cx + t * cos, y: cy + t * sin };
 }
 
+// ── Pan/zoom gesture state ──────────────────────────────────────────
+
+type View = { k: number; tx: number; ty: number };
+const FIT_VIEW: View = { k: 1, tx: 0, ty: 0 };
+
+type Gesture = {
+  /** Active pointers, client coords. */
+  pointers: Map<number, { x: number; y: number }>;
+  /** Gesture anchor: view + midpoint + finger spread at (re)grab time. */
+  base: { k: number; tx: number; ty: number; midX: number; midY: number; dist: number } | null;
+  moved: boolean;
+};
+
+function clientMidpoint(pts: { x: number; y: number }[]) {
+  const sx = pts.reduce((a, p) => a + p.x, 0) / pts.length;
+  const sy = pts.reduce((a, p) => a + p.y, 0) / pts.length;
+  return { x: sx, y: sy };
+}
+
+function clientDistance(a: { x: number; y: number }, b: { x: number; y: number }) {
+  return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
 export default function MapSketch({
   map,
   disabled,
@@ -276,12 +307,8 @@ export default function MapSketch({
         const adjacent = Math.abs(ga.gx - gb.gx) + Math.abs(ga.gy - gb.gy) === 1;
         if (adjacent) {
           const sharedX = ga.gx !== gb.gx;
-          const mx = sharedX
-            ? Math.max(ra.x, rb.x)
-            : ra.x + ra.w / 2;
-          const my = sharedX
-            ? ra.y + ra.h / 2
-            : Math.max(ra.y, rb.y);
+          const mx = sharedX ? Math.max(ra.x, rb.x) : ra.x + ra.w / 2;
+          const my = sharedX ? ra.y + ra.h / 2 : Math.max(ra.y, rb.y);
           const existing = wall.get(pairKey);
           if (existing) {
             existing.open = existing.open && conn.open;
@@ -346,6 +373,162 @@ export default function MapSketch({
     };
   }, [map.connections, placed, gridOf, allCoords, shownFloor]);
 
+  // ── Pan/zoom ──────────────────────────────────────────────────────
+  // The SVG transforms its own content (translate + scale on one <g>);
+  // touch-action: none keeps the browser's page zoom out of the way.
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const [view, setView] = useState<View>(FIT_VIEW);
+  const viewRef = useRef(view);
+  const gestureRef = useRef<Gesture>({ pointers: new Map(), base: null, moved: false });
+  const suppressClick = useRef(false);
+  const lastTap = useRef(0);
+  const pendingTravel = useRef<{ timer: number } | null>(null);
+
+  const applyView = (v: View) => {
+    const k = Math.min(MAX_ZOOM, Math.max(1, v.k));
+    // Keep the sheet covering the viewport — no flinging it off-screen.
+    const c = {
+      k,
+      tx: Math.min(0, Math.max(placed.width * (1 - k), v.tx)),
+      ty: Math.min(0, Math.max(placed.height * (1 - k), v.ty)),
+    };
+    viewRef.current = c;
+    setView(c);
+  };
+
+  // Fit again when the floor (and with it the sheet's bounds) changes.
+  useEffect(() => {
+    viewRef.current = FIT_VIEW;
+    setView(FIT_VIEW);
+  }, [shownFloor]);
+
+  const toViewBox = (clientX: number, clientY: number) => {
+    const svg = svgRef.current;
+    const ctm = svg?.getScreenCTM();
+    if (!ctm) return { x: 0, y: 0 };
+    const p = new DOMPoint(clientX, clientY).matrixTransform(ctm.inverse());
+    return { x: p.x, y: p.y };
+  };
+
+  const reanchor = () => {
+    const g = gestureRef.current;
+    const pts = [...g.pointers.values()];
+    if (!pts.length) {
+      g.base = null;
+      return;
+    }
+    const mid = toViewBox(clientMidpoint(pts).x, clientMidpoint(pts).y);
+    g.base = {
+      ...viewRef.current,
+      midX: mid.x,
+      midY: mid.y,
+      dist: pts.length === 2 ? clientDistance(pts[0], pts[1]) : 0,
+    };
+  };
+
+  const cancelPendingTravel = () => {
+    if (pendingTravel.current) {
+      window.clearTimeout(pendingTravel.current.timer);
+      pendingTravel.current = null;
+    }
+  };
+
+  const onPointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
+    const g = gestureRef.current;
+    g.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    g.moved = false;
+    suppressClick.current = false;
+    // Pinch: capture both so tracking survives fingers leaving the sheet.
+    // (No capture for the first pointer — room taps must keep their
+    // normal click targeting.)
+    if (g.pointers.size === 2) {
+      try {
+        svgRef.current?.setPointerCapture(e.pointerId);
+      } catch {
+        /* older browsers */
+      }
+    }
+    reanchor();
+  };
+
+  const onPointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
+    const g = gestureRef.current;
+    if (!g.pointers.has(e.pointerId) || !g.base) return;
+    g.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    const pts = [...g.pointers.values()];
+    const base = g.base;
+
+    let k = base.k;
+    if (pts.length === 2 && base.dist > 0) {
+      k = base.k * (clientDistance(pts[0], pts[1]) / base.dist);
+      g.moved = true;
+    }
+    // The map point under the gesture's start midpoint stays under the
+    // current midpoint — that one rule gives pan and pinch-around-center.
+    const mid = toViewBox(clientMidpoint(pts).x, clientMidpoint(pts).y);
+    if (
+      Math.abs(mid.x - base.midX) + Math.abs(mid.y - base.midY) >
+      MOVE_SLOP
+    ) {
+      g.moved = true;
+    }
+    const ax = (base.midX - base.tx) / base.k;
+    const ay = (base.midY - base.ty) / base.k;
+    applyView({ k, tx: mid.x - k * ax, ty: mid.y - k * ay });
+  };
+
+  const onPointerEnd = (e: React.PointerEvent<SVGSVGElement>) => {
+    const g = gestureRef.current;
+    const wasMulti = g.pointers.size > 1;
+    g.pointers.delete(e.pointerId);
+
+    if (g.moved) {
+      suppressClick.current = true;
+    } else if (!wasMulti) {
+      // Double-tap toggles zoom (centered on the tap); also cancels the
+      // first tap's pending travel so a room isn't visited by accident.
+      const now = Date.now();
+      if (now - lastTap.current < DOUBLE_TAP_MS) {
+        lastTap.current = 0;
+        cancelPendingTravel();
+        suppressClick.current = true;
+        const cur = viewRef.current;
+        if (cur.k > 1) {
+          applyView(FIT_VIEW);
+        } else {
+          const tap = toViewBox(e.clientX, e.clientY);
+          const k = 2.5;
+          const ax = (tap.x - cur.tx) / cur.k;
+          const ay = (tap.y - cur.ty) / cur.k;
+          applyView({ k, tx: tap.x - k * ax, ty: tap.y - k * ay });
+        }
+      } else {
+        lastTap.current = now;
+      }
+    }
+    // Pan continues with the remaining finger after a pinch lifts one.
+    reanchor();
+  };
+
+  const scheduleTravel = (loc: MapLocation) => {
+    if (!onTravel) return;
+    cancelPendingTravel();
+    const timer = window.setTimeout(() => {
+      pendingTravel.current = null;
+      onTravel(loc);
+    }, TRAVEL_DELAY_MS);
+    pendingTravel.current = { timer };
+  };
+
+  const roomClick = (r: Placed) => {
+    if (suppressClick.current) {
+      suppressClick.current = false;
+      return;
+    }
+    if (r.id === map.currentLocationId || disabled || !onTravel) return;
+    scheduleTravel(r);
+  };
+
   if (map.locations.length === 0) {
     return <p className={styles.empty}>No map yet — explore first.</p>;
   }
@@ -372,215 +555,222 @@ export default function MapSketch({
       ) : null}
 
       <svg
+        ref={svgRef}
         className={styles.paper}
         viewBox={`0 0 ${placed.width} ${placed.height}`}
         role="img"
         aria-label="Sketch map of known locations"
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerEnd}
+        onPointerCancel={onPointerEnd}
+        onPointerLeave={onPointerEnd}
       >
-        {/* Dashed paths between non-adjacent rooms — under the buildings,
-            so they vanish at the walls instead of crossing the rooms. */}
-        {doors.paths.map((d) => {
-          const ra = placed.rects.get(d.a)!;
-          const rb = placed.rects.get(d.b)!;
-          const a = center(ra);
-          const b = center(rb);
-          const pa = edgePoint(ra, Math.atan2(b.cy - a.cy, b.cx - a.cx));
-          const pb = edgePoint(rb, Math.atan2(a.cy - b.cy, a.cx - b.cx));
-          // Straight run when the rooms line up; otherwise an L-bend.
-          const aligned = a.cx === b.cx || a.cy === b.cy;
-          const points = aligned
-            ? `${pa.x},${pa.y} ${pb.x},${pb.y}`
-            : `${pa.x},${pa.y} ${b.cx},${a.cy} ${pb.x},${pb.y}`;
-          return (
-            <polyline
-              key={`${d.a}-${d.b}`}
-              points={points}
-              className={d.open ? styles.pathLine : styles.pathLineLocked}
-            />
-          );
-        })}
-
-        {/* Rooms — shared edges draw as doubled ink = interior walls. */}
-        {placed.rooms.map((r) => {
-          const rect = placed.rects.get(r.id)!;
-          const isCurrent = r.id === map.currentLocationId;
-          const cls = isCurrent
-            ? styles.roomCurrent
-            : r.visited
-              ? styles.roomVisited
-              : styles.roomHeard;
-          return (
-            <rect
-              key={r.id}
-              x={rect.x}
-              y={rect.y}
-              width={rect.w}
-              height={rect.h}
-              className={`${styles.room} ${cls} ${
-                !isCurrent && !disabled && onTravel ? styles.roomClickable : ""
-              }`}
-              onClick={
-                !isCurrent && !disabled && onTravel
-                  ? () => onTravel(r)
-                  : undefined
-              }
-            >
-              <title>
-                {r.name}
-                {r.visited ? "" : " — heard of it, not yet seen"}
-              </title>
-            </rect>
-          );
-        })}
-
-        {/* Doorways cut into shared walls */}
-        {doors.wall.map((d) => {
-          const g = DOOR_GAP / 2;
-          // Hinge at the first gap end; leaf opens 90° into room a's side,
-          // swing arc sweeps from the far gap end to the leaf tip.
-          const hinge =
-            d.orient === "v"
-              ? { x: d.mx, y: d.my - g }
-              : { x: d.mx - g, y: d.my };
-          const far =
-            d.orient === "v"
-              ? { x: d.mx, y: d.my + g }
-              : { x: d.mx + g, y: d.my };
-          const leafTip =
-            d.orient === "v"
-              ? { x: d.mx - DOOR_GAP, y: d.my - g }
-              : { x: d.mx - g, y: d.my - DOOR_GAP };
-          return (
-            <g key={`${d.a}-${d.b}`}>
-              {d.open ? (
-                <>
-                  <rect
-                    x={d.orient === "v" ? d.mx - 4 : hinge.x}
-                    y={d.orient === "v" ? hinge.y : d.my - 4}
-                    width={d.orient === "v" ? 8 : DOOR_GAP}
-                    height={d.orient === "v" ? DOOR_GAP : 8}
-                    className={styles.doorGap}
-                  />
-                  <line
-                    x1={hinge.x}
-                    y1={hinge.y}
-                    x2={leafTip.x}
-                    y2={leafTip.y}
-                    className={styles.doorLeaf}
-                  />
-                  <path
-                    d={`M ${far.x} ${far.y} A ${DOOR_GAP} ${DOOR_GAP} 0 0 ${d.orient === "v" ? 1 : 0} ${leafTip.x} ${leafTip.y}`}
-                    className={styles.doorSwing}
-                  />
-                </>
-              ) : (
-                <rect
-                  x={d.mx - 4.5}
-                  y={d.my - 4.5}
-                  width={9}
-                  height={9}
-                  className={styles.lockGlyph}
-                />
-              )}
-            </g>
-          );
-        })}
-
-        {/* Staircases: stacked rooms on other floors */}
-        {doors.stairs.map((s) => {
-          const rect = placed.rects.get(s.from)!;
-          const sx = rect.x + 10;
-          const sy = rect.y + rect.h - 12;
-          return (
-            <g key={`stair-${s.from}-${s.to}`}>
-              {[0, 1, 2, 3].map((i) => (
-                <line
-                  key={i}
-                  x1={sx}
-                  y1={sy - i * 5}
-                  x2={sx + 22}
-                  y2={sy - i * 5}
-                  className={styles.stairSteps}
-                />
-              ))}
-              <text x={sx + 27} y={sy - 4} className={styles.stairLabel}>
-                {s.up ? "↑" : "↓"} {floorLabel(s.floor)}
-              </text>
-            </g>
-          );
-        })}
-
-        {/* Stubs: doors never taken (?), or ways to known rooms elsewhere */}
-        {doors.stubs.map((s, i) => {
-          const rect = placed.rects.get(s.from)!;
-          const p = edgePoint(rect, s.angle);
-          const ex = p.x + Math.cos(s.angle) * STUB_LEN;
-          const ey = p.y + Math.sin(s.angle) * STUB_LEN;
-          const label = s.known
-            ? shortName(
-                map.locations.find((l) => l.id === s.to)?.name ?? "?"
-              )
-            : "?";
-          return (
-            <g key={`stub-${i}`}>
-              <line
-                x1={p.x}
-                y1={p.y}
-                x2={ex}
-                y2={ey}
-                className={styles.stub}
+        <g transform={`translate(${view.tx} ${view.ty}) scale(${view.k})`}>
+          {/* Dashed paths between non-adjacent rooms — under the buildings,
+              so they vanish at the walls instead of crossing the rooms. */}
+          {doors.paths.map((d) => {
+            const ra = placed.rects.get(d.a)!;
+            const rb = placed.rects.get(d.b)!;
+            const a = center(ra);
+            const b = center(rb);
+            const pa = edgePoint(ra, Math.atan2(b.cy - a.cy, b.cx - a.cx));
+            const pb = edgePoint(rb, Math.atan2(a.cy - b.cy, a.cx - b.cx));
+            // Straight run when the rooms line up; otherwise an L-bend.
+            const aligned = a.cx === b.cx || a.cy === b.cy;
+            const points = aligned
+              ? `${pa.x},${pa.y} ${pb.x},${pb.y}`
+              : `${pa.x},${pa.y} ${b.cx},${a.cy} ${pb.x},${pb.y}`;
+            return (
+              <polyline
+                key={`${d.a}-${d.b}`}
+                points={points}
+                className={d.open ? styles.pathLine : styles.pathLineLocked}
               />
-              <text x={ex} y={ey - 3} className={styles.stubLabel}>
-                {label}
+            );
+          })}
+
+          {/* Rooms — shared edges draw as doubled ink = interior walls. */}
+          {placed.rooms.map((r) => {
+            const rect = placed.rects.get(r.id)!;
+            const isCurrent = r.id === map.currentLocationId;
+            const cls = isCurrent
+              ? styles.roomCurrent
+              : r.visited
+                ? styles.roomVisited
+                : styles.roomHeard;
+            return (
+              <rect
+                key={r.id}
+                x={rect.x}
+                y={rect.y}
+                width={rect.w}
+                height={rect.h}
+                className={`${styles.room} ${cls} ${
+                  !isCurrent && !disabled && onTravel
+                    ? styles.roomClickable
+                    : ""
+                }`}
+                onClick={() => roomClick(r)}
+              >
+                <title>
+                  {r.name}
+                  {r.visited ? "" : " — heard of it, not yet seen"}
+                </title>
+              </rect>
+            );
+          })}
+
+          {/* Doorways cut into shared walls */}
+          {doors.wall.map((d) => {
+            const g = DOOR_GAP / 2;
+            // Hinge at the first gap end; leaf opens 90° into room a's
+            // side, swing arc sweeps from the far gap end to the leaf tip.
+            const hinge =
+              d.orient === "v"
+                ? { x: d.mx, y: d.my - g }
+                : { x: d.mx - g, y: d.my };
+            const far =
+              d.orient === "v"
+                ? { x: d.mx, y: d.my + g }
+                : { x: d.mx + g, y: d.my };
+            const leafTip =
+              d.orient === "v"
+                ? { x: d.mx - DOOR_GAP, y: d.my - g }
+                : { x: d.mx - g, y: d.my - DOOR_GAP };
+            return (
+              <g key={`${d.a}-${d.b}`}>
+                {d.open ? (
+                  <>
+                    <rect
+                      x={d.orient === "v" ? d.mx - 4 : hinge.x}
+                      y={d.orient === "v" ? hinge.y : d.my - 4}
+                      width={d.orient === "v" ? 8 : DOOR_GAP}
+                      height={d.orient === "v" ? DOOR_GAP : 8}
+                      className={styles.doorGap}
+                    />
+                    <line
+                      x1={hinge.x}
+                      y1={hinge.y}
+                      x2={leafTip.x}
+                      y2={leafTip.y}
+                      className={styles.doorLeaf}
+                    />
+                    <path
+                      d={`M ${far.x} ${far.y} A ${DOOR_GAP} ${DOOR_GAP} 0 0 ${d.orient === "v" ? 1 : 0} ${leafTip.x} ${leafTip.y}`}
+                      className={styles.doorSwing}
+                    />
+                  </>
+                ) : (
+                  <rect
+                    x={d.mx - 4.5}
+                    y={d.my - 4.5}
+                    width={9}
+                    height={9}
+                    className={styles.lockGlyph}
+                  />
+                )}
+              </g>
+            );
+          })}
+
+          {/* Staircases: stacked rooms on other floors */}
+          {doors.stairs.map((s) => {
+            const rect = placed.rects.get(s.from)!;
+            const sx = rect.x + 10;
+            const sy = rect.y + rect.h - 12;
+            return (
+              <g key={`stair-${s.from}-${s.to}`}>
+                {[0, 1, 2, 3].map((i) => (
+                  <line
+                    key={i}
+                    x1={sx}
+                    y1={sy - i * 5}
+                    x2={sx + 22}
+                    y2={sy - i * 5}
+                    className={styles.stairSteps}
+                  />
+                ))}
+                <text x={sx + 27} y={sy - 4} className={styles.stairLabel}>
+                  {s.up ? "↑" : "↓"} {floorLabel(s.floor)}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Stubs: doors never taken (?), or known rooms elsewhere */}
+          {doors.stubs.map((s, i) => {
+            const rect = placed.rects.get(s.from)!;
+            const p = edgePoint(rect, s.angle);
+            const ex = p.x + Math.cos(s.angle) * STUB_LEN;
+            const ey = p.y + Math.sin(s.angle) * STUB_LEN;
+            const label = s.known
+              ? shortName(
+                  map.locations.find((l) => l.id === s.to)?.name ?? "?"
+                )
+              : "?";
+            return (
+              <g key={`stub-${i}`}>
+                <line
+                  x1={p.x}
+                  y1={p.y}
+                  x2={ex}
+                  y2={ey}
+                  className={styles.stub}
+                />
+                <text x={ex} y={ey - 3} className={styles.stubLabel}>
+                  {label}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Labels on top of everything room-shaped */}
+          {placed.rooms.map((r) => {
+            const rect = placed.rects.get(r.id)!;
+            const { cx, cy } = center(rect);
+            const lines = labelLines(r.name);
+            const ys = lines.length === 1 ? [cy + 3.5] : [cy - 2, cy + 9];
+            return (
+              <text key={`label-${r.id}`} className={styles.roomLabel}>
+                {lines.map((ln, i) => (
+                  <tspan key={i} x={cx} y={ys[i]}>
+                    {ln}
+                  </tspan>
+                ))}
               </text>
+            );
+          })}
+
+          {/* You-are-here mark, tucked into the room's corner */}
+          {here ? (
+            <g className={styles.youAreHere}>
+              {(() => {
+                const rect = placed.rects.get(here.id)!;
+                const mx = rect.x + rect.w - 13;
+                const my = rect.y + 13;
+                return (
+                  <>
+                    <circle cx={mx} cy={my} r={4} />
+                    <text x={mx} y={my + 13}>
+                      you
+                    </text>
+                  </>
+                );
+              })()}
             </g>
-          );
-        })}
-
-        {/* Labels on top of everything room-shaped */}
-        {placed.rooms.map((r) => {
-          const rect = placed.rects.get(r.id)!;
-          const { cx, cy } = center(rect);
-          const lines = labelLines(r.name);
-          const ys = lines.length === 1 ? [cy + 3.5] : [cy - 2, cy + 9];
-          return (
-            <text key={`label-${r.id}`} className={styles.roomLabel}>
-              {lines.map((ln, i) => (
-                <tspan key={i} x={cx} y={ys[i]}>
-                  {ln}
-                </tspan>
-              ))}
+          ) : (
+            <text x={PAD} y={placed.height - 12} className={styles.elsewhere}>
+              You are on another floor.
             </text>
-          );
-        })}
-
-        {/* You-are-here mark, tucked into the room's corner */}
-        {here ? (
-          <g className={styles.youAreHere}>
-            {(() => {
-              const rect = placed.rects.get(here.id)!;
-              const mx = rect.x + rect.w - 13;
-              const my = rect.y + 13;
-              return (
-                <>
-                  <circle cx={mx} cy={my} r={4} />
-                  <text x={mx} y={my + 13}>
-                    you
-                  </text>
-                </>
-              );
-            })()}
-          </g>
-        ) : (
-          <text x={PAD} y={placed.height - 12} className={styles.elsewhere}>
-            You are on another floor.
-          </text>
-        )}
+          )}
+        </g>
       </svg>
 
       <p className={styles.legend}>
         solid ink — visited · dashed — heard of it · wall gap — open door ·
-        red square — locked · ? — door never taken
+        red square — locked · ? — door never taken · pinch or double-tap —
+        zoom
       </p>
     </div>
   );
