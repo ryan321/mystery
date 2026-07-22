@@ -1,4 +1,5 @@
 import Atmosphere from "../../components/Atmosphere";
+import BackLink from "../../components/BackLink";
 import styles from "./page.module.css";
 
 export default function HelpPage() {
@@ -7,6 +8,7 @@ export default function HelpPage() {
       <Atmosphere />
       <main className={styles.help}>
         <div className={styles.inner}>
+          <BackLink />
           <header className={styles.header}>
             <p className={styles.eyebrow}>Help</p>
             <h1 className={styles.title}>How to play</h1>

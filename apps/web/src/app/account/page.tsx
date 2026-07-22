@@ -1,4 +1,5 @@
 import Atmosphere from "../../components/Atmosphere";
+import BackLink from "../../components/BackLink";
 import styles from "./page.module.css";
 
 export default function AccountPage() {
@@ -7,6 +8,7 @@ export default function AccountPage() {
       <Atmosphere />
       <main className={styles.account}>
         <div className={styles.inner}>
+          <BackLink />
           <header className={styles.header}>
             <p className={styles.eyebrow}>Account</p>
             <h1 className={styles.title}>Your investigations</h1>

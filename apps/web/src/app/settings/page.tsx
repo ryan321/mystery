@@ -1,9 +1,11 @@
+import BackLink from "../../components/BackLink";
 import GameTextSizeSettings from "./GameTextSizeSettings";
 import styles from "./page.module.css";
 
 export default function SettingsPage() {
   return (
     <main className={styles.page}>
+      <BackLink />
       <h1 className={styles.title}>Settings</h1>
       <p className={styles.lead}>Preferences are stored on this device.</p>
 

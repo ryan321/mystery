@@ -1,0 +1,21 @@
+/* Matches the mystery detail page's back link. */
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 1.25rem;
+  padding: 0;
+  color: var(--fog);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.back:hover {
+  color: var(--candle);
+}
