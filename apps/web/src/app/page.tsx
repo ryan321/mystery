@@ -77,11 +77,13 @@ export default function LandingPage() {
             alt="MysteryTrove"
           />
           <div className={styles.heroMessage}>
-            <p className={styles.heroEyebrow}>Interactive whodunits</p>
+            <p className={styles.heroEyebrow}>Interactive AI whodunits</p>
             <h1 className={styles.heroTitle}>Can you solve a murder?</h1>
             <p className={styles.tagline}>
-              Handcrafted whodunits with real, sealed solutions. Question a
-              living cast, search the scene, and accuse when you are ready.
+              A growing library of handcrafted mysteries, each with a real,
+              sealed solution. Explore and interact in natural language:
+              question a living, AI-driven cast, search the scene, and accuse
+              when you are ready.
             </p>
             <div className={styles.ctaRow}>
               <Link
