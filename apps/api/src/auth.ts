@@ -141,7 +141,7 @@ export async function requestMagicLink(
     [t, email, new Date(Date.now() + MAGIC_LINK_TTL_MS)]
   );
 
-  const webOrigin = process.env.WEB_ORIGIN ?? "http://localhost:3000";
+  const webOrigin = process.env.WEB_ORIGIN ?? "https://mysterytrove.com";
   const link = `${webOrigin}/signin/verify?token=${t}&next=${encodeURIComponent(
     safeNextPath(next)
   )}`;

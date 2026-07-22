@@ -936,7 +936,7 @@ app.get("/v1/auth/google", (c) => {
 });
 
 app.get("/v1/auth/google/callback", async (c) => {
-  const webOrigin = process.env.WEB_ORIGIN ?? "http://localhost:3000";
+  const webOrigin = process.env.WEB_ORIGIN ?? "https://mysterytrove.com";
   const fail = (reason: string) => {
     console.warn(`[auth] google sign-in failed: ${reason}`);
     return c.redirect(`${webOrigin}/signin?error=google`);
@@ -1059,7 +1059,7 @@ app.post("/v1/billing/checkout", async (c) => {
     await bindStripeCustomer(pool, ident.user.id, customerId);
   }
 
-  const webOrigin = process.env.WEB_ORIGIN ?? "http://localhost:3000";
+  const webOrigin = process.env.WEB_ORIGIN ?? "https://mysterytrove.com";
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     customer: customerId,
@@ -1085,7 +1085,7 @@ app.post("/v1/billing/portal", async (c) => {
   if (!ident.user.stripe_customer_id) {
     return c.json({ error: "no_subscription" }, 400);
   }
-  const webOrigin = process.env.WEB_ORIGIN ?? "http://localhost:3000";
+  const webOrigin = process.env.WEB_ORIGIN ?? "https://mysterytrove.com";
   const session = await stripe.billingPortal.sessions.create({
     customer: ident.user.stripe_customer_id,
     return_url: `${webOrigin}/account/billing`,
