@@ -69,7 +69,7 @@ export default function GalleryPage() {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return cases.filter((c) => {
+    const matched = cases.filter((c) => {
       const matchesSearch =
         c.meta.title.toLowerCase().includes(q) ||
         c.meta.premise.toLowerCase().includes(q) ||
@@ -92,6 +92,13 @@ export default function GalleryPage() {
 
       return matchesSearch && matchesTags && matchesStatus && matchesDifficulty;
     });
+    // Difficult mysteries sort to the end of the shelf; Easy/Medium keep their
+    // relative order (Array.sort is stable).
+    return matched.sort(
+      (a, b) =>
+        (a.meta.difficulty === "hard" ? 1 : 0) -
+        (b.meta.difficulty === "hard" ? 1 : 0)
+    );
   }, [cases, search, selectedTags, statusFilter, difficultyFilter, playStates]);
 
   function toggleTag(tag: string) {
