@@ -32,6 +32,13 @@ export default function HelpPage() {
               “Examine the broken vase.” · “Henshaw, what did you see tonight?” ·
               “Follow the footprint to the library.”
             </p>
+            <p>
+              Press <span className={styles.kbd}>Enter</span> to send, or{" "}
+              <span className={styles.kbd}>Shift + Enter</span> for a new line.
+              The <span className={styles.kbd}>♪</span> and{" "}
+              <span className={styles.kbd}>◐</span> buttons in the top nav
+              control ambience and theme.
+            </p>
           </section>
 
           <section className={styles.section}>
@@ -87,19 +94,6 @@ export default function HelpPage() {
                 person, or letting the killer act.
               </li>
             </ul>
-          </section>
-
-          <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>Controls</h2>
-            <p>
-              <span className={styles.kbd}>Enter</span> to send ·{" "}
-              <span className={styles.kbd}>Shift + Enter</span> for a new line.
-            </p>
-            <p>
-              Use the <span className={styles.kbd}>♪</span> button in the top nav
-              for ambience controls, and <span className={styles.kbd}>◐</span>{" "}
-              for theme.
-            </p>
           </section>
 
           <section className={styles.section}>
