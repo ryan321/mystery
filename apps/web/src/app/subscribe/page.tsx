@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Atmosphere from "../../components/Atmosphere";
@@ -17,6 +17,19 @@ import styles from "./page.module.css";
 
 const TIER_ORDER = ["free", "standard", "premium", "elite"];
 const rank = (t?: string) => Math.max(0, TIER_ORDER.indexOf(t ?? "free"));
+
+/** Render text with the word "Difficult" in the gold accent color. */
+function goldDifficult(text: string) {
+  return text.split(/(Difficult)/g).map((part, i) =>
+    part === "Difficult" ? (
+      <span key={i} className={styles.gold}>
+        Difficult
+      </span>
+    ) : (
+      <Fragment key={i}>{part}</Fragment>
+    )
+  );
+}
 
 export default function SubscribePage() {
   const router = useRouter();
@@ -163,17 +176,24 @@ export default function SubscribePage() {
                       {hasPrice
                         ? formatPrice(tier.price)
                         : tier.inviteOnly
-                          ? "Earned, not bought"
+                          ? "Earn your invitation"
                           : "Coming soon"}
                     </p>
-                    <p className={styles.blurb}>{tier.blurb}</p>
+                    <p className={styles.blurb}>{goldDifficult(tier.blurb)}</p>
 
                     {earnedLock ? (
                       <div className={styles.earnBlock}>
                         <p className={styles.earnProgress}>
-                          {remaining > 0
-                            ? `Solve ${remaining} more Difficult ${remaining === 1 ? "mystery" : "mysteries"} to earn your invitation.`
-                            : "You’ve earned your place."}
+                          {remaining > 0 ? (
+                            <>
+                              Solve {remaining} more{" "}
+                              <span className={styles.gold}>Difficult</span>{" "}
+                              {remaining === 1 ? "mystery" : "mysteries"} to
+                              earn your invitation.
+                            </>
+                          ) : (
+                            "You’ve earned your place."
+                          )}
                           {tier.requirement ? (
                             <span className={styles.earnCount}>
                               {" "}

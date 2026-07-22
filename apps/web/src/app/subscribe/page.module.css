@@ -147,6 +147,11 @@
   flex-grow: 1;
 }
 
+.gold {
+  color: var(--candle);
+  font-weight: 600;
+}
+
 .btnBuy {
   display: inline-flex;
   align-items: center;
