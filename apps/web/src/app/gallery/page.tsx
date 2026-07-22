@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Atmosphere from "../../components/Atmosphere";
 import { coverSrc, listCases } from "../../lib/api";
-import { difficultyClass, difficultyLabel, themeTags } from "../../lib/format";
+import { difficultyClass, difficultyLabel, lockLabel, themeTags } from "../../lib/format";
 import { getAllPlayStates } from "../../lib/playState";
 import type { CaseSummary } from "../../lib/types";
 import styles from "./page.module.css";
@@ -282,8 +282,30 @@ export default function GalleryPage() {
                           Completed
                         </span>
                       ) : null}
-                      <div className={styles.caseImage}>
+                      <div
+                        className={`${styles.caseImage} ${c.locked ? styles.caseImageLocked : ""}`}
+                      >
                         <img src={coverSrc(c)} alt="" />
+                        {c.locked ? (
+                          <span
+                            className={styles.lockBadge}
+                            title={lockLabel(c)}
+                          >
+                            <svg
+                              viewBox="0 0 24 24"
+                              aria-hidden
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <rect x="4" y="11" width="16" height="9" rx="2" />
+                              <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+                            </svg>
+                            {lockLabel(c)}
+                          </span>
+                        ) : null}
                       </div>
                       <div className={styles.caseBody}>
                         <div className={styles.caseTitleRow}>

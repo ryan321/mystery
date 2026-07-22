@@ -17,12 +17,33 @@ export type CaseMeta = {
 
 };
 
+/** Why a case can't be started, when it's visible-but-locked. */
+export type LockReason = "tier" | "progression" | "series" | "grant" | "private";
+
+/** Shape of the catalog's `requirement` hint (fields vary by lockReason). */
+export type LockRequirement = {
+  /** lockReason "tier" — minimum subscription tier. */
+  minTier?: string;
+  /** lockReason "progression" — total distinct solves needed / already have. */
+  minSolved?: number;
+  solved?: number;
+  /** lockReason "series" — specific cases still to be solved first. */
+  requiresSolvedCaseIds?: string[];
+  grantOnly?: boolean;
+};
+
 export type CaseSummary = {
   id: string;
   contentVersion: string;
   meta: CaseMeta;
   /** Bundle cover art (API-relative, e.g. "/v1/cases/<id>/assets/cover.jpg"). */
   coverUrl?: string;
+  /** Visible-but-not-playable for this viewer (subscription, progression, …). */
+  locked?: boolean;
+  lockReason?: LockReason;
+  requirement?: LockRequirement;
+  /** ISO instant a seasonal free window ends ("Free until …" badge). */
+  freeUntil?: string;
 };
 
 /** One row of the account-wide play history (GET /v1/playthroughs). */

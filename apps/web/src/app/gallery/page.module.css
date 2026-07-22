@@ -291,6 +291,7 @@
 }
 
 .caseImage {
+  position: relative;
   aspect-ratio: 16 / 9;
   overflow: hidden;
   background: var(--night-2);
@@ -301,6 +302,52 @@
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+/* Locked: dim + desaturate the cover so it reads as unavailable at a glance. */
+.caseImageLocked img {
+  filter: grayscale(0.5) brightness(0.6);
+}
+
+.caseImageLocked::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(8, 11, 16, 0.55),
+    rgba(8, 11, 16, 0.05) 55%
+  );
+  pointer-events: none;
+}
+
+.lockBadge {
+  position: absolute;
+  left: 0.6rem;
+  bottom: 0.6rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(10, 14, 20, 0.82);
+  border: 1px solid rgba(154, 175, 196, 0.32);
+  backdrop-filter: blur(4px);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.lockBadge svg {
+  width: 0.8rem;
+  height: 0.8rem;
+  flex-shrink: 0;
+  opacity: 0.85;
 }
 
 .caseBody {

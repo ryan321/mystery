@@ -1,5 +1,35 @@
 import type { CaseSummary, EnvironmentState, TimeState } from "./types";
 
+/**
+ * Short shelf label for why a case is locked. Reason-aware so it scales
+ * past subscriptions: a subscription gate reads differently from a
+ * progression or series gate.
+ */
+export function lockLabel(
+  c: Pick<CaseSummary, "lockReason" | "requirement">
+): string {
+  const req = c.requirement ?? {};
+  switch (c.lockReason) {
+    case "tier":
+      return "Subscribers only";
+    case "progression": {
+      const remaining =
+        typeof req.minSolved === "number" && typeof req.solved === "number"
+          ? Math.max(1, req.minSolved - req.solved)
+          : undefined;
+      return remaining
+        ? `Solve ${remaining} more to unlock`
+        : "Keep solving to unlock";
+    }
+    case "series":
+      return "Finish the earlier case first";
+    case "grant":
+      return "By invitation";
+    default:
+      return "Locked";
+  }
+}
+
 export function difficultyLabel(difficulty?: CaseSummary["meta"]["difficulty"]): string {
   if (difficulty === "hard") return "Difficult";
   if (difficulty === "medium") return "Medium";
