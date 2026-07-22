@@ -6,6 +6,7 @@ import type { LlmConfig } from "./config.js";
 import {
   createOpenRouterClient,
   completeJsonValidated,
+  openRouterExtraBody,
   type ValidateResult,
 } from "./client.js";
 import type { AttemptLog } from "./retry.js";
@@ -216,6 +217,23 @@ export async function runDirector(
   const client = createOpenRouterClient(config);
   const model = config.directorModel ?? config.narratorModel;
 
+  // World→player classifier, started concurrently with the director call.
+  // It only needs the pack + player input, and on most turns the director
+  // returns no worldToPlayer effects and this result is consumed — running
+  // it in parallel turns director+classifier from two serial round-trips
+  // into one. When the director does supply effects, the (small, temp-0)
+  // result is discarded. classifyPhysicalAction never rejects; the catch is
+  // a belt-and-braces empty result.
+  const classifierPromise = classifyPhysicalAction(config, {
+    playerInput: args.playerInput,
+    present: presentFromPack(args.contextPack),
+    locationIds: locationIdsFromPack(args.contextPack),
+    playerRole: packPlayer?.role,
+  }).catch(() => ({
+    physical: { kind: "none" as const },
+    worldToPlayer: { active: false, effects: [] },
+  }));
+
   // Cache-friendly layout: stable case block first (byte-identical every
   // turn), volatile turn state after, player input last.
   const promptPack = args.staticCaseJson
@@ -252,21 +270,17 @@ export async function runDirector(
       user,
       temperature: 0.2,
       maxTransportRetries: 2,
+      extraBody: openRouterExtraBody(config),
       validate: (parsed) => validateDirector(parsed, args.playerInput),
     });
 
-    // If worldToPlayer is empty, ask specialist to compose effects (open-ended).
+    // If worldToPlayer is empty, use the specialist's effects (open-ended).
     let output = value;
     const hasW2p =
       output.worldToPlayer?.active &&
       (output.worldToPlayer.effects?.length ?? 0) > 0;
     if (!hasW2p) {
-      const classified = await classifyPhysicalAction(config, {
-        playerInput: args.playerInput,
-        present: presentFromPack(args.contextPack),
-        locationIds: locationIdsFromPack(args.contextPack),
-        playerRole: packPlayer?.role,
-      });
+      const classified = await classifierPromise;
       if (
         classified.worldToPlayer?.active ||
         (classified.worldToPlayer?.effects?.length ?? 0) > 0 ||
@@ -286,20 +300,7 @@ export async function runDirector(
     };
   } catch (err) {
     console.error("director failed after retries, heuristic + world→player AI", err);
-    let classified: Awaited<ReturnType<typeof classifyPhysicalAction>> = {
-      physical: { kind: "none" },
-      worldToPlayer: { active: false, effects: [] },
-    };
-    try {
-      classified = await classifyPhysicalAction(config, {
-        playerInput: args.playerInput,
-        present: presentFromPack(args.contextPack),
-        locationIds: locationIdsFromPack(args.contextPack),
-        playerRole: packPlayer?.role,
-      });
-    } catch {
-      /* keep empty */
-    }
+    const classified = await classifierPromise;
     const base = heuristicDirector(args);
     const merged = applyPhysicalToDirectorOutput(base, classified);
     const output = DirectorOutputSchema.parse(normalizeDirectorRaw(merged));

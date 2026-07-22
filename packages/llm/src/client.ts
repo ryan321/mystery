@@ -12,15 +12,38 @@ import {
   ClassifiedError,
 } from "./retry.js";
 
+/**
+ * Memoized per apiKey+baseURL: the SDK keeps its keep-alive agent on the
+ * client instance, so a fresh client per call pays a new TLS handshake on
+ * every one of the turn's LLM round-trips.
+ */
+const clientCache = new Map<string, OpenAI>();
+
 export function createOpenRouterClient(config: LlmConfig): OpenAI {
-  return new OpenAI({
+  const baseURL = config.baseURL ?? "https://openrouter.ai/api/v1";
+  const key = `${baseURL}|${config.apiKey}`;
+  const cached = clientCache.get(key);
+  if (cached) return cached;
+  const client = new OpenAI({
     apiKey: config.apiKey,
-    baseURL: config.baseURL ?? "https://openrouter.ai/api/v1",
+    baseURL,
     defaultHeaders: {
       "HTTP-Referer": "https://mystery.local",
       "X-Title": "Mystery Game",
     },
   });
+  clientCache.set(key, client);
+  return client;
+}
+
+/**
+ * OpenRouter-specific request body fields (provider routing) for a config.
+ * Spread into chat.completions.create params; undefined when not configured.
+ */
+export function openRouterExtraBody(
+  config: LlmConfig
+): Record<string, unknown> | undefined {
+  return config.provider ? { provider: config.provider } : undefined;
 }
 
 /**
@@ -45,6 +68,8 @@ export type CompleteJsonOptions = {
   maxTransportRetries?: number;
   /** One JSON-parse repair pass after a non-JSON reply. Default true. */
   jsonRepair?: boolean;
+  /** Extra OpenRouter body fields (see openRouterExtraBody). */
+  extraBody?: Record<string, unknown>;
 };
 
 export type CompleteJsonResult = {
@@ -59,14 +84,18 @@ async function onceChatJson(args: {
   messages: OpenAI.Chat.ChatCompletionMessageParam[];
   temperature: number;
   maxTokens?: number;
+  extraBody?: Record<string, unknown>;
 }): Promise<string> {
+  // extraBody carries OpenRouter fields (provider routing) the OpenAI SDK
+  // does not type; the SDK serializes unknown params into the request body.
   const completion = await args.client.chat.completions.create({
     model: args.model,
     temperature: args.temperature,
     max_tokens: args.maxTokens ?? DEFAULT_MAX_OUTPUT_TOKENS,
     response_format: { type: "json_object" },
     messages: args.messages,
-  });
+    ...(args.extraBody ?? {}),
+  } as OpenAI.Chat.ChatCompletionCreateParamsNonStreaming);
   return completion.choices[0]?.message?.content ?? "";
 }
 
@@ -139,6 +168,7 @@ export async function completeJson(
         messages: baseMessages,
         temperature,
         maxTokens: args.maxTokens,
+        extraBody: args.extraBody,
       });
 
       try {
@@ -175,6 +205,7 @@ export async function completeJson(
             model: args.model,
             temperature: 0,
             maxTokens: args.maxTokens,
+            extraBody: args.extraBody,
             messages: [
               ...baseMessages,
               { role: "assistant", content: raw || "(empty)" },
@@ -306,6 +337,7 @@ export async function completeJsonValidated<T>(
         maxTokens: args.maxTokens,
         maxTransportRetries: args.maxTransportRetries,
         jsonRepair: args.jsonRepair,
+        extraBody: args.extraBody,
       });
       allAttempts.push(...res.attempts);
       const v = args.validate(res.parsed);
@@ -326,6 +358,7 @@ export async function completeJsonValidated<T>(
           model: args.model,
           temperature: temperature ?? 0,
           maxTokens: args.maxTokens,
+          extraBody: args.extraBody,
           messages: [
             { role: "system", content: args.system },
             { role: "user", content: args.user },
@@ -429,6 +462,7 @@ export async function completeJsonValidated<T>(
       temperature: Math.min(args.temperature ?? 0.3, 0.4),
       maxTransportRetries: args.maxTransportRetries,
       jsonRepair: args.jsonRepair,
+      extraBody: args.extraBody,
     });
     // tag attempts
     for (const a of softRes.attempts) {

@@ -1,7 +1,9 @@
+import type OpenAI from "openai";
 import type { LlmConfig } from "./config.js";
 import {
   createOpenRouterClient,
   completeJsonValidated,
+  openRouterExtraBody,
   parseModelJson,
 } from "./client.js";
 import type {
@@ -107,6 +109,7 @@ export async function classifyPhysicalAction(
       user,
       temperature: 0,
       maxTransportRetries: 1,
+      extraBody: openRouterExtraBody(config),
       validate: (parsed) => {
         try {
           return { ok: true as const, value: parseClassify(parsed) };
@@ -131,7 +134,8 @@ export async function classifyPhysicalAction(
           { role: "system", content: SYSTEM },
           { role: "user", content: user },
         ],
-      });
+        ...(openRouterExtraBody(config) ?? {}),
+      } as OpenAI.Chat.ChatCompletionCreateParamsNonStreaming);
       const raw = completion.choices[0]?.message?.content ?? "";
       return toResult(parseClassify(parseModelJson(raw)));
     } catch {

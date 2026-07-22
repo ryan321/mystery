@@ -1,8 +1,8 @@
-import OpenAI from "openai";
 import {
   TurnModelOutputSchema,
   type TurnModelOutput,
 } from "@mystery/shared";
+import { createOpenRouterClient } from "./client.js";
 import {
   NARRATOR_SYSTEM,
   buildNarratorUserMessage,
@@ -46,14 +46,7 @@ export async function narrateTurn(
     };
   }
 
-  const client = new OpenAI({
-    apiKey: config.apiKey,
-    baseURL: config.baseURL ?? "https://openrouter.ai/api/v1",
-    defaultHeaders: {
-      "HTTP-Referer": "https://mystery.local",
-      "X-Title": "Mystery Game",
-    },
-  });
+  const client = createOpenRouterClient(config);
 
   const completion = await client.chat.completions.create({
     model: config.narratorModel,

@@ -7,6 +7,7 @@ import type { LlmConfig } from "./config.js";
 import {
   createOpenRouterClient,
   completeJsonValidated,
+  openRouterExtraBody,
   type ValidateResult,
 } from "./client.js";
 import type { AttemptLog } from "./retry.js";
@@ -325,6 +326,7 @@ export async function runPerformer(
       user,
       temperature: 0.55,
       maxTransportRetries: 2,
+      extraBody: openRouterExtraBody(config),
       validate: (parsed) => validatePerformer(parsed, args.contextPack),
     });
 
