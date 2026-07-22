@@ -90,6 +90,19 @@ export default function HelpPage() {
           </section>
 
           <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Controls</h2>
+            <p>
+              <span className={styles.kbd}>Enter</span> to send ·{" "}
+              <span className={styles.kbd}>Shift + Enter</span> for a new line.
+            </p>
+            <p>
+              Use the <span className={styles.kbd}>♪</span> button in the top nav
+              for ambience controls, and <span className={styles.kbd}>◐</span>{" "}
+              for theme.
+            </p>
+          </section>
+
+          <section className={styles.section}>
             <h2 className={styles.sectionTitle}>Subscriptions &amp; tiers</h2>
             <p>
               One full mystery, The Blackwood Inheritance, is free to play for
@@ -125,19 +138,6 @@ export default function HelpPage() {
                 billing page
               </Link>
               .
-            </p>
-          </section>
-
-          <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>Controls</h2>
-            <p>
-              <span className={styles.kbd}>Enter</span> to send ·{" "}
-              <span className={styles.kbd}>Shift + Enter</span> for a new line.
-            </p>
-            <p>
-              Use the <span className={styles.kbd}>♪</span> button in the top nav
-              for ambience controls, and <span className={styles.kbd}>◐</span>{" "}
-              for theme.
             </p>
           </section>
 
