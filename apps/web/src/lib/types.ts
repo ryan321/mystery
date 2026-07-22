@@ -12,6 +12,8 @@ export type CaseMeta = {
   tone?: string;
   tags: string[];
   difficulty?: "easy" | "medium" | "hard";
+  /** Shelf band override from the case definition (e.g. "kids"). */
+  sortGroup?: "kids";
   contentWarnings: string[];
   artStyle?: string;
 
@@ -42,6 +44,8 @@ export type CaseSummary = {
   locked?: boolean;
   lockReason?: LockReason;
   requirement?: LockRequirement;
+  /** Effective access tier — drives the gallery shelf bands. */
+  minTier?: string;
   /** ISO instant a seasonal free window ends ("Free until …" badge). */
   freeUntil?: string;
 };

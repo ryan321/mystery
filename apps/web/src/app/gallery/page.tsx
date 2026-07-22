@@ -22,9 +22,6 @@ function difficultyClass(
 type StatusFilter = "all" | "being_played" | "completed" | "not_started";
 type DifficultyFilter = "all" | "easy" | "medium" | "hard";
 
-/** Kid-friendly case — sorts to the end of the Sleuth (easy/medium) shelf. */
-const GALLERY_SLEUTH_LAST_ID = "cant-trick-rick";
-
 export default function GalleryPage() {
   const [cases, setCases] = useState<CaseSummary[]>([]);
   const [loading, setLoading] = useState(true);
@@ -105,15 +102,15 @@ export default function GalleryPage() {
 
       return matchesSearch && matchesTags && matchesStatus && matchesDifficulty;
     });
-    // Shelf order: hard cases (Master Detective tier) go last; within the
-    // Sleuth shelf (easy/medium) the kid case trails the grown-up ones.
-    // Array.sort is stable, so API order survives inside each group.
-    const rank = (c: CaseSummary) =>
-      c.meta.difficulty === "hard"
-        ? 2
-        : c.id === GALLERY_SLEUTH_LAST_ID
-          ? 1
-          : 0;
+    // Shelf bands: main shelf (easy/medium mixed, API order) → sortGroup
+    // bands (e.g. kids) → premium (Difficult) → elite (Genius).
+    // Array.sort is stable, so API order survives inside each band.
+    const rank = (c: CaseSummary) => {
+      if (c.minTier === "elite") return 3;
+      if (c.minTier === "premium") return 2;
+      if (c.meta.sortGroup === "kids") return 1;
+      return 0;
+    };
     return matched.sort((a, b) => rank(a) - rank(b));
   }, [cases, search, selectedTags, statusFilter, difficultyFilter, playStates]);
 

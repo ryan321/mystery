@@ -58,6 +58,12 @@
             "hard"
           ]
         },
+        "sortGroup": {
+          "type": "string",
+          "enum": [
+            "kids"
+          ]
+        },
         "contentWarnings": {
           "type": "array",
           "items": {

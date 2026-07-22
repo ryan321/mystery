@@ -41,6 +41,7 @@ import { BundleError } from "./bundle.js";
 import {
   accessContextFor,
   evaluateAccess,
+  minTierForDifficulty,
   parseAccessPolicy,
   solvedCaseIdsFor,
   TIER_ORDER,
@@ -282,6 +283,10 @@ app.get("/v1/cases", async (c) => {
       locked: !access.playable,
       lockReason: access.lockReason,
       requirement: access.requirement,
+      /** Effective tier (drives gallery shelf bands, even when unlocked). */
+      minTier:
+        row.access.minTier ??
+        minTierForDifficulty(row.definition.meta.difficulty),
       /** Seasonal badge: "Free until …" while a free window is active. */
       freeUntil: access.freeUntil,
     });

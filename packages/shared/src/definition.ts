@@ -612,6 +612,14 @@ export const CaseMetaSchema = z.object({
 
   tags: z.array(z.string()).default([]),
   difficulty: z.enum(["easy", "medium", "hard"]).optional(),
+  /**
+   * Shelf merchandising override: cases with a sortGroup sit in their own
+   * gallery band instead of the main mixed shelf. Band order is fixed by
+   * the client: main shelf (easy/medium mixed) → sortGroup bands →
+   * premium (Difficult) → elite (Genius). Absent = main shelf.
+   * "kids" — junior cases trail the grown-up Sleuth shelf.
+   */
+  sortGroup: z.enum(["kids"]).optional(),
   contentWarnings: z.array(z.string()).default([]),
   /**
    * Shared visual direction for cast portraits (and optional key art).
