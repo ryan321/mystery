@@ -2,7 +2,7 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "blackwood-inheritance",
-  "contentVersion": "0.10.7",
+  "contentVersion": "0.10.8",
   "meta": {
     "title": "The Blackwood Inheritance",
     "premise": "A stormy night, a dead master at the foot of his own stairs, and six weeks of break-ins no one has explained. Everyone in the house had a reason to be angry. Someone had a reason to plan.",
@@ -210,12 +210,6 @@
     {
       "id": "garrick_confessed",
       "description": "Garrick has confessed to striking the blow",
-      "aiVisible": true,
-      "defaultValue": false
-    },
-    {
-      "id": "clara_false_confession",
-      "description": "Clara falsely confessed to protect Ashworth",
       "aiVisible": true,
       "defaultValue": false
     },
@@ -2478,30 +2472,6 @@
         }
       ],
       "narrationHints": "The dent matches the wound the vase never could have made. Whoever swung this buried it in the one ground where fresh digging is invisible — and has been doing his rounds by candle stub ever since."
-    },
-    {
-      "id": "clara_false_confession",
-      "title": "Clara confesses",
-      "once": true,
-      "trigger": "on_turn",
-      "when": {
-        "type": "game_flag",
-        "id": "accused_ashworth",
-        "equals": true
-      },
-      "effects": [
-        {
-          "type": "set_game_flag",
-          "id": "clara_false_confession",
-          "value": true
-        },
-        {
-          "type": "move_character",
-          "characterId": "clara",
-          "toLocationId": "entrance-hall"
-        }
-      ],
-      "narrationHints": "With Ashworth under accusation, Clara breaks in with a confession of her own — SHE quarrelled with her father at the stairs, SHE pushed him. It is brave and it is false: her account puts the vase in the wrong place and the time a half-hour early. She is protecting her fiancé; the lie should be provably wrong, gently."
     },
     {
       "id": "garrick_breaks",
