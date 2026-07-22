@@ -56,7 +56,6 @@ import {
   createSession,
   destroySession,
   effectiveTier,
-  EmailSendError,
   newAnonId,
   publicUser,
   requestMagicLink,
@@ -65,6 +64,7 @@ import {
   verifyMagicLink,
   type UserRow,
 } from "./auth.js";
+import { EmailSendError } from "./email.js";
 import {
   OAUTH_NEXT_COOKIE,
   OAUTH_STATE_COOKIE,

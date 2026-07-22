@@ -15,6 +15,7 @@ import type { Db } from "./db.js";
 import type { Tier } from "./access.js";
 import { TIER_ORDER } from "./access.js";
 import { safeNextPath } from "./google-auth.js";
+import { EmailSendError, renderEmailLayout, renderEmailText, sendEmail } from "./email.js";
 
 export const SESSION_COOKIE = "mystery_session";
 export const ANON_COOKIE = "mystery_anon";
@@ -89,200 +90,30 @@ function normalizeEmail(raw: string): string | null {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : null;
 }
 
-/**
- * Raised when the magic-link email can't be handed off to Resend — a missing
- * key, or a non-2xx from the API (e.g. an unverified/misconfigured MAIL_FROM
- * sender, which Resend rejects with 403). Carries the upstream status/body so
- * the route can log the real cause instead of an opaque 500.
- */
-export class EmailSendError extends Error {
-  constructor(
-    message: string,
-    public readonly status?: number,
-    public readonly detail?: string
-  ) {
-    super(message);
-    this.name = "EmailSendError";
-  }
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
-/**
- * The magic-link email, styled after the site: night-navy ground, a
- * candle-gold bordered panel, serif headline, mono uppercase eyebrows,
- * and the ornamental divider from the landing page. Email-safe: table
- * layout, inline styles, solid-color fallbacks under every gradient, and
- * web fonts (Cinzel) that degrade to Georgia/serif in Gmail & Outlook.
- */
-function magicLinkEmailHtml(link: string): string {
-  const webOrigin = process.env.WEB_ORIGIN ?? "https://mysterytrove.com";
-  // Email-safe logo: the transparent webp gets mangled by image proxies
-  // (Gmail rasterizes the alpha to a black box), so we serve a PNG with
-  // the panel color (#0b1018) baked in — it blends in by construction.
-  const logoUrl = `${webOrigin}/brand/logo-email.png`;
-  const href = escapeHtml(link);
-
-  const candle = "#d4b56a";
-  const candleDim = "#8a7348";
-  const fog = "#9aafc4";
-  const serif = `Cinzel, 'Playfair Display', Georgia, 'Times New Roman', serif`;
-  const mono = `'Courier New', Courier, monospace`;
-
-  // Outlook enforces a minimum cell height, so a background-colored cell
-  // becomes a thick bar; a 1px bottom border stays a hairline everywhere.
-  const divider = `
-      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="220" align="center" style="margin:0 auto;">
-        <tr>
-          <td style="font-size:1px;line-height:1px;border-bottom:1px solid ${candleDim};">&nbsp;</td>
-          <td width="28" align="center" style="color:${candle};font-size:10px;line-height:1;">&#9670;</td>
-          <td style="font-size:1px;line-height:1px;border-bottom:1px solid ${candleDim};">&nbsp;</td>
-        </tr>
-      </table>`;
-
-  return `<!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="dark" />
-  <meta name="supported-color-schemes" content="dark" />
-  <title>A sealed letter arrives</title>
-  <!--[if !mso]><!-->
-  <style>@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap');</style>
-  <!--<![endif]-->
-</head>
-<body style="margin:0;padding:0;background-color:#05080e;">
-  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">
-    Your one-time link to step inside the mystery &mdash; it burns away in 15 minutes.
-  </div>
-  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#05080e;">
-    <tr>
-      <td align="center" style="padding:32px 16px;">
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="560" style="max-width:560px;width:100%;background-color:#0b1018;border:1px solid #2a3a4a;border-top:2px solid ${candle};">
-          <tr>
-            <td align="center" style="padding:40px 40px 8px;">
-              <img src="${logoUrl}" alt="MYSTERY TROVE" width="180"
-                style="display:block;border:0;width:180px;max-width:60%;height:auto;margin:0 auto;color:${candle};font-family:${serif};font-size:18px;letter-spacing:6px;" />
-            </td>
-          </tr>
-          <tr>
-            <td align="center" style="padding:20px 40px 0;">
-              <p style="margin:0;font-family:${mono};font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:${candle};">A sealed letter arrives</p>
-            </td>
-          </tr>
-          <tr>
-            <td align="center" style="padding:18px 40px 0;">
-              <h1 style="margin:0;font-family:${serif};font-size:26px;font-weight:700;line-height:1.3;letter-spacing:1px;text-transform:uppercase;color:#e8dfd0;">A letter arrives for you</h1>
-            </td>
-          </tr>
-          <tr>
-            <td align="center" style="padding:16px 48px 0;">
-              <p style="margin:0;font-family:Georgia, 'Times New Roman', serif;font-size:15px;line-height:1.7;color:${fog};">
-                Someone asked for entry to Mystery Trove under your name. If it was
-                you, the door stands open &mdash; but only for the next fifteen minutes.
-              </p>
-            </td>
-          </tr>
-          <tr>
-            <td align="center" style="padding:28px 40px 0;">
-              <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center">
-                <tr>
-                  <td align="center" bgcolor="${candle}"
-                    style="border:1px solid #e8cd8a;background:${candle};background:linear-gradient(180deg,#e3c47e 0%,${candle} 55%,#b8985a 100%);">
-                    <a href="${href}"
-                      style="display:inline-block;padding:13px 36px;font-family:${serif};font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#12161c;text-decoration:none;">
-                      Step Inside
-                    </a>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <td align="center" style="padding:18px 40px 0;">
-              <p style="margin:0;font-family:${mono};font-size:10px;letter-spacing:2px;text-transform:uppercase;color:${candleDim};">The link burns away in 15 minutes</p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:28px 48px 0;">
-              ${divider}
-            </td>
-          </tr>
-          <tr>
-            <td align="center" style="padding:20px 48px 0;">
-              <a href="${href}" style="font-family:Georgia, 'Times New Roman', serif;font-size:11px;line-height:1.6;color:#5a6a7c;word-break:break-all;">${href}</a>
-            </td>
-          </tr>
-          <tr>
-            <td align="center" style="padding:16px 48px 36px;">
-              <p style="margin:0;font-family:Georgia, 'Times New Roman', serif;font-size:12px;font-style:italic;line-height:1.6;color:#5a6a7c;">
-                If you didn't request this, ignore it &mdash; nothing will follow you.
-              </p>
-            </td>
-          </tr>
-        </table>
-        <p style="margin:20px 0 0;font-family:${mono};font-size:10px;letter-spacing:2px;text-transform:uppercase;color:${candleDim};" align="center">
-          MysteryTrove.com &middot; mysteries you step inside and solve
-        </p>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`;
-}
-
-function magicLinkEmailText(link: string): string {
-  return [
-    "A letter arrives for you.",
-    "",
-    "Someone asked for entry to Mystery Trove under your name. If it was",
-    "you, the door stands open — for the next fifteen minutes.",
-    "",
-    `Step inside: ${link}`,
-    "",
-    "If you didn't request this, ignore it — nothing will follow you.",
-    "",
-    "— MysteryTrove.com · mysteries you step inside and solve",
-  ].join("\n");
-}
-
-async function sendViaResend(args: {
-  to: string;
-  link: string;
-}): Promise<void> {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) throw new EmailSendError("resend_not_configured");
-  const from =
-    process.env.MAIL_FROM ?? "Mystery <onboarding@resend.dev>";
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      authorization: `Bearer ${key}`,
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      from,
-      to: args.to,
-      subject: "A sealed letter arrives",
-      html: magicLinkEmailHtml(args.link),
-      text: magicLinkEmailText(args.link),
-    }),
+export function magicLinkEmailHtml(link: string): string {
+  return renderEmailLayout({
+    preheader:
+      "Your one-time link to step inside the mystery — it burns away in 15 minutes.",
+    eyebrow: "A sealed letter arrives",
+    title: "A letter arrives for you",
+    paragraphs: [
+      "Someone asked for entry to Mystery Trove under your name. If it was you, the door stands open — but only for the next fifteen minutes.",
+    ],
+    cta: { label: "Step Inside", href: link },
+    ctaHint: "The link burns away in 15 minutes",
+    note: "If you didn't request this, ignore it — nothing will follow you.",
   });
-  if (!res.ok) {
-    const body = await res.text().catch(() => "");
-    throw new EmailSendError(
-      `resend_failed_${res.status}`,
-      res.status,
-      body.slice(0, 500)
-    );
-  }
+}
+
+export function magicLinkEmailText(link: string): string {
+  return renderEmailText({
+    title: "A letter arrives for you.",
+    paragraphs: [
+      "Someone asked for entry to Mystery Trove under your name. If it was\nyou, the door stands open — for the next fifteen minutes.",
+    ],
+    cta: { label: "Step inside", href: link },
+    note: "If you didn't request this, ignore it — nothing will follow you.",
+  });
 }
 
 export async function requestMagicLink(
@@ -305,7 +136,12 @@ export async function requestMagicLink(
   )}`;
 
   if (process.env.RESEND_API_KEY) {
-    await sendViaResend({ to: email, link });
+    await sendEmail({
+      to: email,
+      subject: "A sealed letter arrives",
+      html: magicLinkEmailHtml(link),
+      text: magicLinkEmailText(link),
+    });
     return { sent: true };
   }
   // No mailer configured. In production this is a misconfiguration, not a

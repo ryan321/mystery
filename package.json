@@ -11,6 +11,7 @@
     "dev:api": "pnpm run build:packages && pnpm --filter @mystery/api dev",
     "dev:web": "pnpm --filter @mystery/web dev",
     "publish-case": "node apps/api/scripts/publish-case.mjs",
+    "send-email": "pnpm --filter @mystery/api exec tsx scripts/send-email.ts",
     "dev:studio": "pnpm --filter @mystery/studio dev",
     "deploy:api": "fly deploy -c fly.api.toml",
     "deploy:web": "fly deploy -c fly.web.toml",
