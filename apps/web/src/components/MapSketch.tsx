@@ -554,6 +554,10 @@ export default function MapSketch({
         </div>
       ) : null}
 
+      {here ? null : (
+        <p className={styles.elsewhereNote}>You are on another floor.</p>
+      )}
+
       <svg
         ref={svgRef}
         className={styles.paper}
@@ -742,7 +746,9 @@ export default function MapSketch({
             );
           })}
 
-          {/* You-are-here mark, tucked into the room's corner */}
+          {/* You-are-here mark, tucked into the room's corner. The
+              "another floor" notice is HTML above the sheet — inside the
+              pan/zoom group it scales and slides out of view. */}
           {here ? (
             <g className={styles.youAreHere}>
               {(() => {
@@ -759,11 +765,7 @@ export default function MapSketch({
                 );
               })()}
             </g>
-          ) : (
-            <text x={PAD} y={placed.height - 12} className={styles.elsewhere}>
-              You are on another floor.
-            </text>
-          )}
+          ) : null}
         </g>
       </svg>
 

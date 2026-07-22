@@ -169,11 +169,12 @@
   text-transform: uppercase;
 }
 
-.elsewhere {
+.elsewhereNote {
+  margin: 0;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 0.72rem;
   font-style: italic;
-  fill: var(--ink-soft);
+  color: var(--fog);
 }
 
 .legend {
