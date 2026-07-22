@@ -18,13 +18,13 @@
 
 .icon {
   flex-shrink: 0;
-  font-size: 0.7rem;
+  font-size: calc(0.7rem * var(--game-font-scale, 1));
   color: var(--candle);
 }
 
 .text {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: calc(0.68rem * var(--game-font-scale, 1));
   letter-spacing: 0.06em;
   line-height: 1.5;
   color: var(--fog);

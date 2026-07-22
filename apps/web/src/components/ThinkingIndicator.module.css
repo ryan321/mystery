@@ -124,7 +124,7 @@
 
 .label {
   font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 0.78rem;
+  font-size: calc(0.78rem * var(--game-font-scale, 1));
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -133,7 +133,7 @@
 }
 
 .sub {
-  font-size: 0.72rem;
+  font-size: calc(0.72rem * var(--game-font-scale, 1));
   color: var(--fog, #9aafc4);
   letter-spacing: 0.02em;
 }

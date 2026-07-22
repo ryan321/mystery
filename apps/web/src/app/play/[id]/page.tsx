@@ -30,6 +30,10 @@ import {
 } from "../../../lib/api";
 import { markCompleted } from "../../../lib/playState";
 import {
+  GAME_TEXT_SCALES,
+  getGameTextSize,
+} from "../../../lib/readingPrefs";
+import {
   defaultPlayProgressMode,
   effectiveProgressMode,
   getPlayProgressPref,
@@ -204,6 +208,13 @@ export default function PlaythroughPage() {
   /** Atmosphere theme from the case definition (via the briefing). */
   const [theme, setTheme] = useState<AtmosphereTheme>(DEFAULT_THEME);
   const { setPageTheme } = useAmbience();
+
+  // Game text size (Settings page) — applied as a CSS var multiplier on
+  // the shell; 1 on first paint, stored choice lands on mount.
+  const [textScale, setTextScale] = useState(1);
+  useEffect(() => {
+    setTextScale(GAME_TEXT_SCALES[getGameTextSize()]);
+  }, []);
 
   // "Match the scene" music follows this page's theme while it's mounted.
   useEffect(() => {
@@ -654,7 +665,12 @@ export default function PlaythroughPage() {
   return (
     <>
       <Atmosphere theme={theme} />
-      <GameShell left={left} center={center} />
+      <div
+        style={{ "--game-font-scale": textScale } as React.CSSProperties}
+        className={styles.gameFontScope}
+      >
+        <GameShell left={left} center={center} />
+      </div>
 
       <SideDrawer
         side="right"

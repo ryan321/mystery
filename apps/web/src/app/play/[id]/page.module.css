@@ -8,6 +8,11 @@
   padding: 2rem;
 }
 
+/* Carries --game-font-scale down to the shell without adding a layout box. */
+.gameFontScope {
+  display: contents;
+}
+
 .errorText {
   color: #ff8a7a;
   font-size: 1rem;
