@@ -1073,10 +1073,13 @@ app.get("/v1/billing/tiers", async (c) => {
         required: genius.required,
       };
     }
+    // The price stays secret until you qualify for the tier — don't even
+    // leak it in the API to viewers who can't buy it.
+    const shownPrice = card.inviteOnly && !purchasable ? null : price;
     tiers.push({
       tier,
       ...card,
-      price,
+      price: shownPrice,
       configured: Boolean(priceId),
       purchasable,
       ...(requirement ? { requirement } : {}),
