@@ -58,14 +58,14 @@ export type TurnPipelineResult = {
 
 /**
  * Hard ceiling on investigation length. Cost bound, not pacing: every turn
- * is two paid LLM calls, so an endless run is an endless bill. Set at 4×
- * the case's thorough-player band (meta.playtest.maxTurns) with a generous
- * floor — no engaged player meets it; a script or an idler eventually does.
- * The case closes through the normal resolution machinery, so an authored
- * failure ending and wrap-up play out instead of a bare error.
+ * is two paid LLM calls, so an endless run is an endless bill. Floored at 500
+ * (and 4× the case's thorough-player band, meta.playtest.maxTurns, when a case
+ * authors a longer one) — no engaged player meets it; a script or an idler
+ * eventually does. The case closes through the normal resolution machinery, so
+ * an authored failure ending and wrap-up play out instead of a bare error.
  */
 export function turnHardCap(def: MysteryDefinition): number {
-  return Math.max(150, (def.meta.playtest?.maxTurns ?? 45) * 4);
+  return Math.max(500, (def.meta.playtest?.maxTurns ?? 45) * 4);
 }
 
 /**

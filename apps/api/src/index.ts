@@ -804,7 +804,7 @@ PLAYER'S QUESTION: ${question}`;
 const TURN_RATE = {
   per10s: 3, // burst
   per60s: 8, // ~6/min sustained with slack
-  per24h: 300, // ~4 thorough playthroughs in a day
+  per24h: 600, // one full-length run (the 500-turn cap) per day, plus slack
 } as const;
 
 // One in-flight turn per playthrough (per process). Serializes hammering to

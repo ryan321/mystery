@@ -8,15 +8,13 @@ const defWithBand = (maxTurns?: number) =>
   }) as unknown as MysteryDefinition;
 
 describe("turnHardCap", () => {
-  it("defaults to 4x the assumed band when the case declares none", () => {
-    expect(turnHardCap(defWithBand(undefined))).toBe(180);
+  it("floors at 500 when 4x the band is lower", () => {
+    expect(turnHardCap(defWithBand(undefined))).toBe(500); // 45*4=180 → 500
+    expect(turnHardCap(defWithBand(10))).toBe(500); // 40 → 500
+    expect(turnHardCap(defWithBand(70))).toBe(500); // 280 → 500
   });
 
-  it("never drops below the floor for short cases", () => {
-    expect(turnHardCap(defWithBand(10))).toBe(150);
-  });
-
-  it("scales with the case's thorough-player band", () => {
-    expect(turnHardCap(defWithBand(70))).toBe(280);
+  it("scales past the floor for a long authored band", () => {
+    expect(turnHardCap(defWithBand(150))).toBe(600); // 150*4
   });
 });
