@@ -18,6 +18,16 @@ export type AttemptKind =
   | "schema_repair"
   | "soft_retry";
 
+/** Per-request token/cost accounting (OpenRouter usage.include). */
+export type TokenUsage = {
+  promptTokens?: number;
+  completionTokens?: number;
+  /** USD, as reported by OpenRouter. */
+  costUsd?: number;
+  /** Provider that served the request (OpenRouter routing). */
+  provider?: string;
+};
+
 export type AttemptLog = {
   kind: AttemptKind;
   attempt: number;
@@ -25,6 +35,7 @@ export type AttemptLog = {
   failureClass?: FailureClass;
   message?: string;
   latencyMs: number;
+  usage?: TokenUsage;
 };
 
 export class ClassifiedError extends Error {

@@ -4,6 +4,7 @@ import {
   type AttemptKind,
   type AttemptLog,
   type FailureClass,
+  type TokenUsage,
   backoffMs,
   formatSchemaIssues,
   isTransportRetryable,
@@ -89,18 +90,32 @@ async function onceChatJson(args: {
   temperature: number;
   maxTokens?: number;
   extraBody?: Record<string, unknown>;
-}): Promise<string> {
-  // extraBody carries OpenRouter fields (provider routing) the OpenAI SDK
-  // does not type; the SDK serializes unknown params into the request body.
+}): Promise<{ content: string; usage?: TokenUsage }> {
+  // extraBody carries OpenRouter fields (provider routing, reasoning) the
+  // OpenAI SDK does not type; the SDK serializes unknown params into the
+  // request body. usage.include asks OpenRouter to report token counts and
+  // USD cost on the response (ignored by non-OpenRouter backends).
   const completion = await args.client.chat.completions.create({
     model: args.model,
     temperature: args.temperature,
     max_tokens: args.maxTokens ?? DEFAULT_MAX_OUTPUT_TOKENS,
     response_format: { type: "json_object" },
     messages: args.messages,
+    usage: { include: true },
     ...(args.extraBody ?? {}),
   } as OpenAI.Chat.ChatCompletionCreateParamsNonStreaming);
-  return completion.choices[0]?.message?.content ?? "";
+  const u = completion.usage as
+    | (OpenAI.CompletionUsage & { cost?: number })
+    | undefined;
+  const usage: TokenUsage | undefined = u
+    ? {
+        promptTokens: u.prompt_tokens,
+        completionTokens: u.completion_tokens,
+        costUsd: u.cost,
+        provider: (completion as unknown as { provider?: string }).provider,
+      }
+    : undefined;
+  return { content: completion.choices[0]?.message?.content ?? "", usage };
 }
 
 /**
@@ -166,7 +181,7 @@ export async function completeJson(
       transportAttempt === 0 ? "initial" : "transport_retry";
     const t0 = Date.now();
     try {
-      const raw = await onceChatJson({
+      const { content: raw, usage } = await onceChatJson({
         client: args.client,
         model: args.model,
         messages: baseMessages,
@@ -182,6 +197,7 @@ export async function completeJson(
           attempt: transportAttempt,
           ok: true,
           latencyMs: Date.now() - t0,
+          usage,
         });
         return { parsed, raw, attempts };
       } catch (parseErr) {
@@ -192,6 +208,7 @@ export async function completeJson(
           failureClass: "parse",
           message: String(parseErr),
           latencyMs: Date.now() - t0,
+          usage,
         });
 
         if (!allowJsonRepair) {
@@ -204,7 +221,7 @@ export async function completeJson(
         // JSON repair pass (same model, temperature 0)
         const t1 = Date.now();
         try {
-          const repairedRaw = await onceChatJson({
+          const { content: repairedRaw, usage: repairUsage } = await onceChatJson({
             client: args.client,
             model: args.model,
             temperature: 0,
@@ -226,6 +243,7 @@ export async function completeJson(
             attempt: 0,
             ok: true,
             latencyMs: Date.now() - t1,
+            usage: repairUsage,
           });
           return { parsed, raw: repairedRaw, attempts };
         } catch (repairErr) {
@@ -357,7 +375,7 @@ export async function completeJsonValidated<T>(
       const kind: AttemptKind =
         transportAttempt === 0 ? "schema_repair" : "transport_retry";
       try {
-        const raw = await onceChatJson({
+        const { content: raw, usage } = await onceChatJson({
           client: args.client,
           model: args.model,
           temperature: temperature ?? 0,
@@ -380,6 +398,7 @@ export async function completeJsonValidated<T>(
             failureClass: "parse",
             message: "invalid JSON on repair",
             latencyMs: Date.now() - t0,
+            usage,
           });
           throw new ClassifiedError("Repair returned invalid JSON", {
             failureClass: "parse",
@@ -390,6 +409,7 @@ export async function completeJsonValidated<T>(
           attempt: transportAttempt,
           ok: true,
           latencyMs: Date.now() - t0,
+          usage,
         });
         const v = args.validate(parsed);
         if (v.ok) return { value: v.value, raw };
