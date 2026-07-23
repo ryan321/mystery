@@ -311,15 +311,15 @@ export default function PlaythroughPage() {
         "";
       let briefing = data.briefing;
       const briefKey = `mystery:briefing:${id}`;
-      if (briefing) {
-        sessionStorage.setItem(briefKey, JSON.stringify(briefing));
-      } else {
-        try {
+      try {
+        if (briefing) {
+          sessionStorage.setItem(briefKey, JSON.stringify(briefing));
+        } else {
           const raw = sessionStorage.getItem(briefKey);
           if (raw) briefing = JSON.parse(raw) as MysteryBriefing;
-        } catch {
-          /* ignore */
         }
+      } catch {
+        // Private mode / quota — the briefing cache is best-effort.
       }
       setTheme(asTheme(briefing?.theme));
       setLog(buildLog(opening, data.turns, data.playthrough, briefing));
@@ -347,24 +347,29 @@ export default function PlaythroughPage() {
         const pending = getTurnPending(id);
         if (pending && data.playthrough.turnCount < pending.expectedTurnCount) {
           setBusy(true);
-          const deadline = pending.at + PENDING_TURN_TTL_MS;
-          while (!cancelled && Date.now() < deadline) {
-            await new Promise((r) => setTimeout(r, 3000));
-            if (cancelled) return;
-            let next;
-            try {
-              next = await getPlaythrough(id);
-            } catch {
-              continue;
+          try {
+            const deadline = pending.at + PENDING_TURN_TTL_MS;
+            while (!cancelled && Date.now() < deadline) {
+              await new Promise((r) => setTimeout(r, 3000));
+              if (cancelled) return;
+              let next;
+              try {
+                next = await getPlaythrough(id);
+              } catch {
+                continue;
+              }
+              if (cancelled) return;
+              if (next.playthrough.turnCount >= pending.expectedTurnCount) {
+                renderPlaythrough(next);
+                break;
+              }
             }
-            if (cancelled) return;
-            if (next.playthrough.turnCount >= pending.expectedTurnCount) {
-              renderPlaythrough(next);
-              break;
-            }
+            clearTurnPending(id);
+          } finally {
+            // Always clear the spinner — a stuck busy disables the input and
+            // would force a reload. (Skipped only on unmount, where it's moot.)
+            if (!cancelled) setBusy(false);
           }
-          clearTurnPending(id);
-          if (!cancelled) setBusy(false);
         }
       } catch {
         if (!cancelled) setError("Playthrough not found");

@@ -21,7 +21,11 @@ function load(): Record<string, PlayStateEntry> {
 
 function save(state: Record<string, PlayStateEntry>) {
   if (typeof window === "undefined") return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    // Private mode / quota — local play tracking is best-effort.
+  }
 }
 
 export function markBeingPlayed(caseId: string, playthroughId: string) {
@@ -91,7 +95,12 @@ function loadPending(): Record<string, PendingTurn> {
 
 function savePending(state: Record<string, PendingTurn>) {
   if (typeof window === "undefined") return;
-  localStorage.setItem(PENDING_KEY, JSON.stringify(state));
+  try {
+    localStorage.setItem(PENDING_KEY, JSON.stringify(state));
+  } catch {
+    // Private mode / quota: the marker is best-effort — never let a storage
+    // failure throw out of a turn and strand the spinner.
+  }
 }
 
 export function markTurnPending(playthroughId: string, expectedTurnCount: number) {
