@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
+  departureClaimViolations,
   filterDialogueToPresent,
   heuristicPerform,
   narrationPresenceViolations,
+  performerSoftFailure,
 } from "./performer.js";
 
 describe("filterDialogueToPresent", () => {
@@ -106,6 +108,70 @@ describe("narrationPresenceViolations", () => {
       libraryPack
     );
     expect(v).toContain("Mrs. Blackwood");
+  });
+});
+
+describe("departureClaimViolations", () => {
+  it("flags the real prod failure — a butler inventing a city trip", () => {
+    const v = departureClaimViolations(
+      "Mrs. Blackwood is not present at the manor. She left for the city earlier this morning, before the storm set in.",
+      libraryPack
+    );
+    expect(v).toContain("Mrs. Blackwood");
+  });
+
+  it("allows stating the character's actual room (no departure)", () => {
+    const v = departureClaimViolations(
+      "Mrs. Blackwood is in the conservatory with Miss Clara Blackwood.",
+      libraryPack
+    );
+    expect(v).toBeNull();
+  });
+
+  it("does not fire on the player's own movement", () => {
+    const v = departureClaimViolations(
+      "You leave the study and head for the library through the cold corridor.",
+      libraryPack
+    );
+    expect(v).toBeNull();
+  });
+});
+
+describe("performerSoftFailure scans dialogue too", () => {
+  it("catches an invented departure spoken in dialogue", () => {
+    const fail = performerSoftFailure(
+      {
+        narration: "Henshaw sets down the salver and considers your question.",
+        dressing: [],
+        dialogue: [
+          {
+            characterId: "henshaw",
+            characterName: "Henshaw",
+            text: "Mrs. Blackwood left for the city this morning; I cannot produce her.",
+          },
+        ],
+      },
+      libraryPack
+    );
+    expect(fail).toContain("Mrs. Blackwood");
+  });
+
+  it("passes clean dialogue that names the real room", () => {
+    const fail = performerSoftFailure(
+      {
+        narration: "Henshaw sets down the salver and considers your question.",
+        dressing: [],
+        dialogue: [
+          {
+            characterId: "henshaw",
+            characterName: "Henshaw",
+            text: "Mrs. Blackwood is in the conservatory, sir; I can have her sent for.",
+          },
+        ],
+      },
+      libraryPack
+    );
+    expect(fail).toBeNull();
   });
 });
 
