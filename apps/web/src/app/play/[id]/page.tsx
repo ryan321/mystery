@@ -28,7 +28,13 @@ import {
   sendTurn,
   updateNote,
 } from "../../../lib/api";
-import { markCompleted } from "../../../lib/playState";
+import {
+  markCompleted,
+  markTurnPending,
+  clearTurnPending,
+  getTurnPending,
+  PENDING_TURN_TTL_MS,
+} from "../../../lib/playState";
 import {
   GAME_TEXT_SCALES,
   getGameTextSize,
@@ -44,6 +50,7 @@ import { asTheme, DEFAULT_THEME, type AtmosphereTheme } from "../../../lib/theme
 import type {
   MapLocation,
   MysteryBriefing,
+  GetPlaythroughResponse,
   MysteryProgress,
   NotebookEntry,
   PlayerView,
@@ -290,44 +297,75 @@ export default function PlaythroughPage() {
     return () => document.removeEventListener("keydown", onKey);
   }, [openDrawer]);
 
+  // Apply a fetched playthrough to the display (transcript, location, progress,
+  // theme). Used on first load and by the in-flight poll below.
+  const renderPlaythrough = useCallback(
+    (data: GetPlaythroughResponse) => {
+      setPlaythrough(data.playthrough);
+      if (data.playerView) setPlayerView(data.playerView);
+      setLocationName(data.locationName ?? data.playthrough.locationId);
+      if (data.progress) setProgress(data.progress);
+      const opening =
+        sessionStorage.getItem(`mystery:opening:${id}`) ??
+        data.openingNarration ??
+        "";
+      let briefing = data.briefing;
+      const briefKey = `mystery:briefing:${id}`;
+      if (briefing) {
+        sessionStorage.setItem(briefKey, JSON.stringify(briefing));
+      } else {
+        try {
+          const raw = sessionStorage.getItem(briefKey);
+          if (raw) briefing = JSON.parse(raw) as MysteryBriefing;
+        } catch {
+          /* ignore */
+        }
+      }
+      setTheme(asTheme(briefing?.theme));
+      setLog(buildLog(opening, data.turns, data.playthrough, briefing));
+    },
+    [id]
+  );
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
         const data = await getPlaythrough(id);
         if (cancelled) return;
-        setPlaythrough(data.playthrough);
-        if (data.playerView) {
-          setPlayerView(data.playerView);
-          // The opening package greets a fresh investigation (reopenable).
-          if (data.playerView.turnCount === 0) setOpenDrawer("dossier");
-        }
-        setLocationName(data.locationName ?? data.playthrough.locationId);
-        if (data.progress) setProgress(data.progress);
+        renderPlaythrough(data);
+        // First-load only: greet a fresh investigation, load the progress pref.
+        if (data.playerView?.turnCount === 0) setOpenDrawer("dossier");
         const caseMode =
           data.progress?.caseMode ?? data.playthrough.progressUi ?? "off";
         const stored = getPlayProgressPref(data.playthrough.id);
-        setPlayProgressMode(
-          stored ?? defaultPlayProgressMode(caseMode)
-        );
-        const opening =
-          sessionStorage.getItem(`mystery:opening:${id}`) ??
-          data.openingNarration ??
-          "";
-        let briefing = data.briefing;
-        const briefKey = `mystery:briefing:${id}`;
-        if (briefing) {
-          sessionStorage.setItem(briefKey, JSON.stringify(briefing));
-        } else {
-          try {
-            const raw = sessionStorage.getItem(briefKey);
-            if (raw) briefing = JSON.parse(raw) as MysteryBriefing;
-          } catch {
-            /* ignore */
+        setPlayProgressMode(stored ?? defaultPlayProgressMode(caseMode));
+
+        // If we left mid-turn, the server is still resolving it (a turn commits
+        // regardless of the client leaving). Show the spinner and poll until it
+        // lands, so a turn that finished while away appears without a reload.
+        const pending = getTurnPending(id);
+        if (pending && data.playthrough.turnCount < pending.expectedTurnCount) {
+          setBusy(true);
+          const deadline = pending.at + PENDING_TURN_TTL_MS;
+          while (!cancelled && Date.now() < deadline) {
+            await new Promise((r) => setTimeout(r, 3000));
+            if (cancelled) return;
+            let next;
+            try {
+              next = await getPlaythrough(id);
+            } catch {
+              continue;
+            }
+            if (cancelled) return;
+            if (next.playthrough.turnCount >= pending.expectedTurnCount) {
+              renderPlaythrough(next);
+              break;
+            }
           }
+          clearTurnPending(id);
+          if (!cancelled) setBusy(false);
         }
-        setTheme(asTheme(briefing?.theme));
-        setLog(buildLog(opening, data.turns, data.playthrough, briefing));
       } catch {
         if (!cancelled) setError("Playthrough not found");
       }
@@ -335,7 +373,7 @@ export default function PlaythroughPage() {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [id, renderPlaythrough]);
 
   useEffect(() => {
     if (!playthrough) return;
@@ -354,6 +392,9 @@ export default function PlaythroughPage() {
         ...prev,
         { id: `t${ti}-you`, kind: "you", text },
       ]);
+      // Mark the turn in flight so that if we leave and come back before it
+      // resolves, the play page picks it up and polls (see the mount effect).
+      markTurnPending(id, ti + 1);
       try {
         const data = await sendTurn(id, text);
         setPlaythrough(data.playthrough);
@@ -440,6 +481,10 @@ export default function PlaythroughPage() {
       } catch (e) {
         setError(e instanceof Error ? e.message : "Turn failed");
       } finally {
+        // Resolved (or errored) while we're still here — no need to poll on a
+        // future mount. If we'd unmounted, this still runs when the promise
+        // settles; a turn left truly in flight keeps its marker until then.
+        clearTurnPending(id);
         setBusy(false);
       }
     },

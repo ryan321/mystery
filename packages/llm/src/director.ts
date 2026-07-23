@@ -209,6 +209,19 @@ function validateDirector(
   }
 }
 
+/**
+ * Cheap local gate for the physical-action classifier: does the input plausibly
+ * involve force, violence, a hazard, or a physically risky act? Broad on
+ * purpose — a false positive only costs one cheap concurrent aux call, but a
+ * false negative could miss a world→player reaction the director also missed.
+ */
+const PHYSICAL_RE =
+  /\b(hit|strik|punch|slap|shov|push|grab|seiz|snatch|tackl|kick|throw|threw|thrust|attack|assault|fight|fought|forc|wrestl|restrain|choke|strangl|throttle|drag|shake|shook|lunge|smash|smother|pry|wrench|flee|fled|escap|bolt|dive|swing|swung|hurl|barricad|threaten|slam|wield|brandish|beat|whip|lash|trip|shatter|climb|leap|jump|charg|storm|knock)\b/i;
+
+function looksPhysical(input: string): boolean {
+  return PHYSICAL_RE.test(input);
+}
+
 export async function runDirector(
   config: LlmConfig | null,
   args: {
@@ -252,15 +265,23 @@ export async function runDirector(
   // into one. When the director does supply effects, the (small, temp-0)
   // result is discarded. classifyPhysicalAction never rejects; the catch is
   // a belt-and-braces empty result.
-  const classifierPromise = classifyPhysicalAction(config, {
-    playerInput: args.playerInput,
-    present: presentFromPack(args.contextPack),
-    locationIds: locationIdsFromPack(args.contextPack),
-    playerRole: packPlayer?.role,
-  }).catch(() => ({
+  // Only run the physical-action classifier when the input plausibly involves
+  // force / violence / a hazard / a physically risky act. Pure conversation,
+  // inspection, and plain movement never provoke a world→player effect, so skip
+  // the (cheap, concurrent) aux call on those — the common case. Broad by
+  // design: err toward firing, since a false positive only costs one cheap call.
+  const EMPTY_CLASSIFY = {
     physical: { kind: "none" as const },
     worldToPlayer: { active: false, effects: [] },
-  }));
+  };
+  const classifierPromise = looksPhysical(args.playerInput)
+    ? classifyPhysicalAction(config, {
+        playerInput: args.playerInput,
+        present: presentFromPack(args.contextPack),
+        locationIds: locationIdsFromPack(args.contextPack),
+        playerRole: packPlayer?.role,
+      }).catch(() => EMPTY_CLASSIFY)
+    : Promise.resolve(EMPTY_CLASSIFY);
 
   // Cache-friendly layout: stable case block first (byte-identical every
   // turn), volatile turn state after, player input last.
