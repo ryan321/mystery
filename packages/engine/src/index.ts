@@ -26,3 +26,5 @@ export * from "./player-impact.js";
 export * from "./resolve-world-to-player.js";
 export * from "./world-to-player-effects.js";
 export * from "./progress.js";
+export * from "./deductions.js";
+export * from "./items.js";

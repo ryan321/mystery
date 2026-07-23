@@ -7,6 +7,11 @@ import {
   isLocationKnown,
   knownAsFor,
 } from "./identity.js";
+import { fixtureIsLocked } from "./items.js";
+import {
+  computeInvestigation,
+  type Investigation,
+} from "./deductions.js";
 
 /**
  * UI-safe projection of a playthrough (PLAYER_SURFACES.md §5–7).
@@ -78,9 +83,7 @@ export function buildPlayerView(
     .map((i) => ({
       id: i.id,
       name: i.name,
-      locked: i.objectId
-        ? state.objectState[i.objectId]?.locked === true
-        : false,
+      locked: fixtureIsLocked(def, state, i),
     }));
 
   // Dramatis personae grows as the story introduces people: hidden
@@ -106,13 +109,21 @@ export function buildPlayerView(
       };
     });
 
-  const inventory = listInventory(def, state).map((i) => ({
-    id: i.id,
-    name: i.name,
-    description: i.description,
-    condition: i.condition,
-    tags: i.tags,
-  }));
+  const inventory = listInventory(def, state).map((i) => {
+    const meta = def.evidence.find((e) => e.id === i.id);
+    return {
+      id: i.id,
+      name: i.name,
+      description: i.description,
+      condition: i.condition,
+      tags: i.tags,
+      /** True when the item has authored body text (letter, ledger, note). */
+      readable: !!meta?.readable,
+    };
+  });
+
+  // Casebook / leads / readiness — sealed graph projection (may be empty).
+  const investigation: Investigation = computeInvestigation(def, state);
 
   const mapLocations = def.locations
     .filter((l) => isLocationKnown(state, l.id))
@@ -217,6 +228,11 @@ export function buildPlayerView(
       connections,
     },
     notebook: state.notebook,
+    /**
+     * Investigation casebook: open/resolved leads, readiness, help auto-checks.
+     * Spoiler-safe; empty when the case has no deductions graph yet.
+     */
+    investigation,
     time: state.time
       ? { slotId: state.time.slotId, label: timeLabel ?? state.time.slotId }
       : undefined,

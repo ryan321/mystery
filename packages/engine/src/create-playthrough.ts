@@ -79,13 +79,16 @@ export function createInitialPlaythrough(
       dressing: [],
     };
   }
-  // locked containers from inspectables with objectId
+  // locked containers from inspectables (container.locked or legacy key list)
   for (const loc of def.locations) {
     for (const insp of loc.inspectables) {
       if (insp.objectId) {
+        const locked =
+          insp.container?.locked === true ||
+          (insp.onInspect.requiresEvidenceIds?.length ?? 0) > 0;
         objectState[insp.objectId] = {
           stage: "visible",
-          locked: (insp.onInspect.requiresEvidenceIds?.length ?? 0) > 0,
+          locked,
           locationId: loc.id,
           condition: "intact",
           tags: [],

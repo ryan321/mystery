@@ -423,6 +423,37 @@ export type InventoryEntry = {
   description: string;
   condition: string;
   tags: string[];
+  /** Authored body text exists (letter, ledger) — examine to read. */
+  readable?: boolean;
+};
+
+/** Spoiler-safe investigation projection (deduction graph → Casebook/Help). */
+export type InvestigationView = {
+  leads: {
+    id: string;
+    question: string;
+    status: "open" | "resolved";
+    facet: "identity" | "method" | "motive" | "supporting" | "lead";
+  }[];
+  openCount: number;
+  resolvedCount: number;
+  readiness: {
+    identity: boolean;
+    method: boolean;
+    motive: boolean;
+    facetsReady: number;
+    facetsTotal: number;
+    label: string;
+  };
+  help: {
+    exploredKnownLocations: boolean;
+    talkedToEveryoneKnown: boolean;
+  };
+  casebook: {
+    openLeads: { id: string; question: string }[];
+    resolvedLeads: { id: string; question: string }[];
+    cluesNoted: { id: string; label: string; kind: "item" | "testimony" }[];
+  };
 };
 
 export type MapLocation = {
@@ -476,6 +507,8 @@ export type PlayerView = {
   inventory: InventoryEntry[];
   map: MapView;
   notebook: NotebookEntry[];
+  /** Casebook / leads / readiness — empty graph when case has no deductions. */
+  investigation?: InvestigationView;
   time?: { slotId: string; label: string };
   environment: {
     weather: string;

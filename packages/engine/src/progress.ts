@@ -8,6 +8,10 @@ import type {
   MysteryDefinition,
   PlaythroughState,
 } from "@mystery/shared";
+import {
+  computeInvestigation,
+  type Investigation,
+} from "./deductions.js";
 
 export type ProgressDepth =
   | "surface"
@@ -31,7 +35,8 @@ export type MysteryProgress = {
   depthLabel: string;
   /**
    * Coarse structural progress 0–1 (phase + story beats + critical evidence).
-   * Not "how correct your theory is."
+   * Not "how correct your theory is." Inference readiness lives on
+   * `investigation` — never merge those into this fraction.
    */
   fraction: number;
   /**
@@ -46,6 +51,11 @@ export type MysteryProgress = {
   criticalTotal: number;
   /** New unlocks this turn (empty on GET unless we pass events) */
   pulses: ProgressPulse[];
+  /**
+   * Inference path (deduction graph): leads, readiness, casebook, help.
+   * Sibling of structural progress — not a solve bar.
+   */
+  investigation: Investigation;
 };
 
 const DEPTH_LABEL: Record<ProgressDepth, string> = {
@@ -171,6 +181,7 @@ export function computeMysteryProgress(
     criticalHeld: critical.length ? criticalHeld : 0,
     criticalTotal: critical.length,
     pulses,
+    investigation: computeInvestigation(def, state),
   };
 }
 

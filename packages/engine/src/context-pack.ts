@@ -14,6 +14,7 @@ import {
   characterNameKnown,
   knownAsFor,
 } from "./identity.js";
+import { fixtureContents } from "./items.js";
 
 export function buildContextPack(
   def: MysteryDefinition,
@@ -59,9 +60,9 @@ export function buildContextPack(
         narrativeHints: canOpen ? i.onInspect.narrativeHints : undefined,
         locked: locked || (reqEv.length > 0 && !canOpen),
         requiresEvidenceIds: reqEv,
-        alreadyCollectedEvidenceIds: (
-          i.onInspect.revealsEvidenceIds ?? []
-        ).filter((id) => state.evidenceIds.includes(id)),
+        alreadyCollectedEvidenceIds: fixtureContents(i).filter((id) =>
+          state.evidenceIds.includes(id)
+        ),
       };
     });
 

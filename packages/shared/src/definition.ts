@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { StoryBeatSchema, TimeConfigSchema, EnvironmentDefaultsSchema } from "./beats.js";
+import { ConditionSchema } from "./conditions.js";
+import { EffectSchema } from "./effects.js";
 
 /** Flag value stored on a playthrough or set by definition effects. */
 export const FlagValueSchema = z.union([
@@ -216,6 +218,19 @@ export const InspectableSchema = z.object({
   hiddenUntilFlags: FlagRequirementSchema.optional(),
   /** Optional object id for locked containers. */
   objectId: z.string().optional(),
+  /**
+   * First-class container/search affordance (optional; absent = today's
+   * behavior). A fixture that holds items, optionally locked behind a key
+   * item or flag, revealed on open/search.
+   */
+  container: z
+    .object({
+      locked: z.boolean().default(false),
+      unlockRequires: ConditionSchema.optional(),
+      /** Evidence ids revealed when the container is opened/searched. */
+      contains: z.array(z.string()).default([]),
+    })
+    .optional(),
   onInspect: InspectEffectSchema.default({}),
 });
 export type Inspectable = z.infer<typeof InspectableSchema>;
@@ -295,6 +310,21 @@ export const EvidenceItemSchema = z.object({
     })
     .optional(),
   canPresentTo: z.union([z.array(z.string()), z.literal("*")]).optional(),
+  /**
+   * First-class item affordances (all optional; absent = today's behavior).
+   * A carriable item may be read, or used on a target for an authored outcome.
+   */
+  readable: z.object({ text: z.string().min(1) }).optional(),
+  usableOn: z
+    .array(
+      z.object({
+        /** Fixture / item / character id this item acts on (e.g. key → drawer). */
+        targetId: z.string().min(1),
+        requires: ConditionSchema.optional(),
+        outcome: z.array(EffectSchema).default([]),
+      })
+    )
+    .default([]),
   /**
    * Authored red herring — findable and presentable, never required for
    * solution success. Engine does not auto-exclude from inventory.
@@ -386,6 +416,61 @@ export const SolutionSchema = z.object({
   }),
 });
 export type Solution = z.infer<typeof SolutionSchema>;
+
+/**
+ * The deduction graph — how the case can be SOLVED (the inference DAG),
+ * distinct from what happens (beats), what people know (knowledge), and what
+ * is true (canon/solution). SEALED: never sent to a Director/Performer pack.
+ * Only its spoiler-safe projection (open-question text + coarse readiness)
+ * reaches the player. See docs/INVESTIGATION_MODEL.md §3.
+ */
+
+/** One way to reach a deduction. Author ≥2 disjoint supports per node. */
+export const DeductionSupportSchema = z.union([
+  /** A clue held / noted. */
+  z.object({ evidenceId: z.string().min(1) }),
+  /** A character disclosed a knowledge beat to the player. */
+  z.object({
+    knowledge: z.object({
+      characterId: z.string().min(1),
+      beatId: z.string().min(1),
+    }),
+  }),
+  /** A prior deduction is itself a support (chaining). */
+  z.object({ nodeId: z.string().min(1) }),
+  /** Escape hatch: any engine condition (visited, presented, flag, …). */
+  z.object({ condition: ConditionSchema }),
+]);
+export type DeductionSupport = z.infer<typeof DeductionSupportSchema>;
+
+export const DeductionNodeSchema = z.object({
+  id: z.string().min(1),
+  /** SEALED author-facing: the inference in plain terms. Never shown. */
+  claim: z.string().min(1),
+  /** Player-facing: the OPEN QUESTION this raises. The only text that surfaces. */
+  question: z.string().min(1),
+  /**
+   * identity | method | motive → terminal (ties to a rubric fact).
+   * supporting → terminal detail. lead → intermediate deduction.
+   */
+  role: z
+    .enum(["identity", "method", "motive", "supporting", "lead"])
+    .default("lead"),
+  /** For terminal nodes: the solution.rubric.requiredFacts id this establishes. */
+  factId: z.string().optional(),
+  /** Prior node ids that must resolve before this question is even askable. */
+  requires: z.array(z.string()).default([]),
+  /** The ways to reach it (three-clue rule: prefer ≥2 disjoint). */
+  supports: z.array(DeductionSupportSchema).default([]),
+  /** How many supports resolve the node. Default 1. */
+  minSupports: z.number().int().positive().default(1),
+  /**
+   * When the question becomes an OPEN thread. Default (omitted): when every
+   * `requires` node has resolved (a node with no `requires` opens at start).
+   */
+  opensWhen: ConditionSchema.optional(),
+});
+export type DeductionNode = z.infer<typeof DeductionNodeSchema>;
 
 /**
  * How the case closed — especially distinct failure paths.
@@ -704,6 +789,12 @@ export const MysteryDefinitionSchema = z
      * Used for authoring, lint, and future debrief tools.
      */
     canon: CanonSchema.optional(),
+    /**
+     * Sealed deduction graph — how the case can be solved (the inference DAG).
+     * Never sent to a Director/Performer pack; drives derived threads,
+     * readiness, and the reachability audit. See docs/INVESTIGATION_MODEL.md §3.
+     */
+    deductions: z.array(DeductionNodeSchema).default([]),
     endings: z.array(EndingSchema).min(1),
     openingNarration: z.string().min(1),
     /**
@@ -902,6 +993,177 @@ export const MysteryDefinitionSchema = z
           code: z.ZodIssueCode.custom,
           message: `time.startSlotId "${def.time.startSlotId}" not in schedule`,
           path: ["time", "startSlotId"],
+        });
+      }
+    }
+
+    // Fixture contents (container preferred; onInspect.revealsEvidenceIds alias).
+    const worldTargetIds = new Set<string>([
+      ...evidenceIds,
+      ...characterIds,
+      ...locationIds,
+    ]);
+    for (const loc of def.locations) {
+      for (const insp of loc.inspectables) {
+        worldTargetIds.add(insp.id);
+        if (insp.objectId) worldTargetIds.add(insp.objectId);
+        const contents = [
+          ...(insp.container?.contains ?? []),
+          ...(insp.onInspect.revealsEvidenceIds ?? []),
+        ];
+        for (const eid of contents) {
+          if (!evidenceIds.has(eid)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `Inspectable "${insp.id}" contains unknown evidence "${eid}"`,
+              path: ["locations"],
+            });
+          }
+        }
+      }
+    }
+
+    // usableOn targets must be closed-world ids.
+    for (const item of def.evidence) {
+      for (const u of item.usableOn ?? []) {
+        if (!worldTargetIds.has(u.targetId)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `Evidence "${item.id}" usableOn target "${u.targetId}" is not a known fixture/item/character/location`,
+            path: ["evidence"],
+          });
+        }
+      }
+    }
+
+    // Deduction graph integrity (sealed; drives derived threads/readiness).
+    const rubricFactIds = new Set(
+      def.solution.rubric.requiredFacts.map((f) => f.id)
+    );
+    const knowledgeByChar = new Map<string, Set<string>>();
+    for (const c of def.characters) {
+      const ids = new Set<string>();
+      for (const k of [...c.knowledge.private, ...c.knowledge.secrets]) {
+        ids.add(k.id);
+      }
+      knowledgeByChar.set(c.id, ids);
+    }
+    const deductionIds = new Set<string>();
+    for (const node of def.deductions) {
+      if (deductionIds.has(node.id)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Duplicate deduction node id "${node.id}"`,
+          path: ["deductions"],
+        });
+      }
+      deductionIds.add(node.id);
+    }
+    for (const node of def.deductions) {
+      if (node.factId && !rubricFactIds.has(node.factId)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Deduction "${node.id}" factId "${node.factId}" is not a rubric requiredFacts id`,
+          path: ["deductions"],
+        });
+      }
+      if (node.minSupports > node.supports.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Deduction "${node.id}" minSupports (${node.minSupports}) exceeds supports.length (${node.supports.length})`,
+          path: ["deductions"],
+        });
+      }
+      for (const r of node.requires) {
+        if (!deductionIds.has(r)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `Deduction "${node.id}" requires unknown node "${r}"`,
+            path: ["deductions"],
+          });
+        }
+      }
+      for (const s of node.supports) {
+        if ("evidenceId" in s) {
+          if (!evidenceIds.has(s.evidenceId)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `Deduction "${node.id}" support references unknown evidence "${s.evidenceId}"`,
+              path: ["deductions"],
+            });
+          }
+        } else if ("nodeId" in s) {
+          if (!deductionIds.has(s.nodeId)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `Deduction "${node.id}" support references unknown node "${s.nodeId}"`,
+              path: ["deductions"],
+            });
+          }
+          if (s.nodeId === node.id) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `Deduction "${node.id}" cannot support itself via nodeId`,
+              path: ["deductions"],
+            });
+          }
+        } else if ("knowledge" in s) {
+          const beats = knowledgeByChar.get(s.knowledge.characterId);
+          if (!beats) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `Deduction "${node.id}" knowledge support references unknown character "${s.knowledge.characterId}"`,
+              path: ["deductions"],
+            });
+          } else if (!beats.has(s.knowledge.beatId)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `Deduction "${node.id}" knowledge support references unknown beat "${s.knowledge.beatId}" on "${s.knowledge.characterId}"`,
+              path: ["deductions"],
+            });
+          }
+        }
+      }
+    }
+    // requires + nodeId support edges must form a DAG.
+    {
+      const WHITE = 0,
+        GRAY = 1,
+        BLACK = 2;
+      const color = new Map<string, number>();
+      const byId = new Map(def.deductions.map((n) => [n.id, n]));
+      const deps = (id: string): string[] => {
+        const n = byId.get(id);
+        if (!n) return [];
+        const out = [...n.requires];
+        for (const s of n.supports) {
+          if ("nodeId" in s) out.push(s.nodeId);
+        }
+        return out;
+      };
+      let cyclic = false;
+      const visit = (id: string) => {
+        color.set(id, GRAY);
+        for (const r of deps(id)) {
+          if (!byId.has(r)) continue;
+          const c = color.get(r) ?? WHITE;
+          if (c === GRAY) {
+            cyclic = true;
+            return;
+          }
+          if (c === WHITE) visit(r);
+        }
+        color.set(id, BLACK);
+      };
+      for (const n of def.deductions) {
+        if ((color.get(n.id) ?? WHITE) === WHITE) visit(n.id);
+        if (cyclic) break;
+      }
+      if (cyclic) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `deductions graph contains a cycle (requires/nodeId must form a DAG)`,
+          path: ["deductions"],
         });
       }
     }

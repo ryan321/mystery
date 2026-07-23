@@ -43,7 +43,9 @@ export function tryCreateOpenRouterConfig(
 ): LlmConfig | null {
   const apiKey = env.OPENROUTER_API_KEY;
   if (!apiKey) return null;
-  // Both calls use Sonnet 5 by default; override separately only if you want a cheaper director later.
+  // Production (Fly mysterytrove-api, 2026-07): director qwen/qwen3.5-35b-a3b,
+  // narrator deepseek/deepseek-v4-pro, aux google/gemini-2.5-flash — balance of
+  // quality / speed / cost. Defaults below are local-dev fallbacks only.
   const defaultModel = "anthropic/claude-sonnet-5";
   const narratorModel = env.LLM_NARRATOR_MODEL ?? defaultModel;
   const directorModel = env.LLM_DIRECTOR_MODEL ?? env.LLM_NARRATOR_MODEL ?? defaultModel;

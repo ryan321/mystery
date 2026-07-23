@@ -7,6 +7,12 @@ import type {
 } from "@mystery/shared";
 import { authoredFlagKeys, flagsMatch, stripReservedFlags } from "./flags.js";
 import { accusableSuspectIds } from "./accusation.js";
+import {
+  fixtureCanOpen,
+  fixtureContents,
+  matchItemUse,
+  resolveUseTargetId,
+} from "./items.js";
 
 function norm(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
@@ -454,41 +460,49 @@ export function directorIntentsToPatch(
       case "use": {
         const insp = resolveInspectable(def, state, intent);
         if (insp) {
-          const needsFlags = insp.onInspect.requiresFlags;
-          const needsEv = insp.onInspect.requiresEvidenceIds;
-          const flagOk = flagsMatch(state.flags, needsFlags);
-          const evOk =
-            !needsEv?.length ||
-            needsEv.every((id) => state.evidenceIds.includes(id));
-          if (!flagOk || !evOk) {
+          const canOpen = fixtureCanOpen(def, state, insp);
+          if (!canOpen) {
             notes.push(
               `inspect ${insp.id} requirements not met (still attempting)`
             );
           }
-          if (flagOk && evOk) {
-            for (const id of insp.onInspect.revealsEvidenceIds ?? []) {
-              addEvidence.add(id);
+          // Prefer first-class usableOn: held item aimed at this fixture.
+          if (intent.type === "use") {
+            const heldIds = state.evidenceIds;
+            let usedViaAfford = false;
+            for (const hid of heldIds) {
+              const m = matchItemUse(def, state, hid, insp.id);
+              if (m) {
+                patch.useItemId = hid;
+                patch.useTargetId = insp.id;
+                usedViaAfford = true;
+                notes.push(`use ${hid}→${insp.id}`);
+                break;
+              }
             }
-            if (insp.onInspect.setsFlags) {
-              Object.assign(setFlags, insp.onInspect.setsFlags);
-            }
-          } else if (flagOk && needsEv?.length) {
-            for (const id of insp.onInspect.revealsEvidenceIds ?? []) {
-              addEvidence.add(id);
-            }
-            if (insp.onInspect.setsFlags) {
-              Object.assign(setFlags, insp.onInspect.setsFlags);
+            // Legacy: key listed on inspect requirements
+            if (!usedViaAfford) {
+              const needsEv = insp.onInspect.requiresEvidenceIds ?? [];
+              const used = needsEv.find((id) => state.evidenceIds.includes(id));
+              if (used) {
+                patch.useItemId = used;
+                patch.useTargetId = insp.id;
+                notes.push(`use ${used}→${insp.id} (key)`);
+              }
             }
           }
-          // Using a held key on a container also counts as use of that item
-          if (intent.type === "use" && needsEv?.length) {
-            const used = needsEv.find((id) => state.evidenceIds.includes(id));
-            if (used) patch.useItemId = used;
+          if (canOpen) {
+            for (const id of fixtureContents(insp)) {
+              addEvidence.add(id);
+            }
+            if (insp.onInspect.setsFlags) {
+              Object.assign(setFlags, insp.onInspect.setsFlags);
+            }
           }
           notes.push(`inspect→${insp.id}`);
           break;
         }
-        // Inventory-only use/examine (no world target)
+        // Inventory-only use/examine (no world fixture target)
         if (intent.type === "use") {
           const held = def.evidence.filter((e) =>
             state.evidenceIds.includes(e.id)
@@ -502,14 +516,57 @@ export function directorIntentsToPatch(
                 e.id.includes(h.replace(/\s+/g, "-"))
             )?.id;
           }
+          // Item used on another target (character/item) via usableOn
+          const targetId = resolveUseTargetId(
+            def,
+            state,
+            intent.targetHint
+          );
           if (useId && state.evidenceIds.includes(useId)) {
             patch.useItemId = useId;
-            notes.push(`use ${useId}`);
+            if (targetId && targetId !== useId) {
+              patch.useTargetId = targetId;
+              notes.push(`use ${useId}→${targetId}`);
+            } else {
+              notes.push(`use ${useId}`);
+            }
+          } else if (targetId) {
+            // "use key on desk" when evidenceId unresolved — try any held usableOn
+            for (const h of held) {
+              if (matchItemUse(def, state, h.id, targetId)) {
+                patch.useItemId = h.id;
+                patch.useTargetId = targetId;
+                notes.push(`use ${h.id}→${targetId}`);
+                break;
+              }
+            }
+            if (!patch.useItemId) notes.push("use unresolved");
           } else {
             notes.push("use unresolved");
           }
         } else {
-          notes.push("inspect unresolved");
+          // Inspect held item (readable / examine)
+          const held = def.evidence.filter((e) =>
+            state.evidenceIds.includes(e.id)
+          );
+          let examineId =
+            "evidenceId" in intent
+              ? (intent as { evidenceId?: string }).evidenceId
+              : undefined;
+          if (!examineId && intent.targetHint) {
+            const h = intent.targetHint.toLowerCase();
+            examineId = held.find(
+              (e) =>
+                e.name.toLowerCase().includes(h) ||
+                e.id.includes(h.replace(/\s+/g, "-"))
+            )?.id;
+          }
+          if (examineId && state.evidenceIds.includes(examineId)) {
+            patch.examineItemId = examineId;
+            notes.push(`examine→${examineId}`);
+          } else {
+            notes.push("inspect unresolved");
+          }
         }
         break;
       }

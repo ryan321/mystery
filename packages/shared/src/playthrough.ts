@@ -418,6 +418,8 @@ export const StatePatchSchema = z.object({
    */
   examineItemId: z.string().optional(),
   useItemId: z.string().optional(),
+  /** Target of a use (fixture / item / character id) for usableOn outcomes. */
+  useTargetId: z.string().optional(),
   setItemFlags: z
     .record(z.record(FlagValueSchema))
     .optional(), // itemId → flags

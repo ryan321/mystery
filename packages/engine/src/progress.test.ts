@@ -27,6 +27,9 @@ describe("computeMysteryProgress", () => {
     expect(p.fraction).toBeLessThan(0.3);
     expect(p.throughLabel.toLowerCase()).toMatch(/begin|third|half/);
     expect(p.throughCompact).toBeTruthy();
+    // Investigation is a sibling of structural progress (empty graph → empty leads).
+    expect(p.investigation).toBeDefined();
+    expect(p.investigation.leads).toEqual([]);
   });
 
   it("deepens with evidence and emits pulse", () => {

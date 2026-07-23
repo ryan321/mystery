@@ -1,5 +1,6 @@
 import type {
   AccusationExtraction,
+  JustHappened,
   MysteryDefinition,
   PlaythroughState,
   StatePatch,
@@ -14,6 +15,13 @@ import {
 } from "./accusation.js";
 import { enterResolution } from "./resolve-case.js";
 import { ensureObjectState, takeIntoInventory } from "./inventory.js";
+import {
+  fixtureCanOpen,
+  fixtureContents,
+  fixtureYields,
+  matchItemUse,
+} from "./items.js";
+import { applyEffects } from "./effects.js";
 
 export type { AccusationResult };
 export {
@@ -34,6 +42,8 @@ export type PatchValidation = {
    * destination). Lets the performer narrate the transit.
    */
   movedThrough?: string[];
+  /** justHappened from item usableOn outcomes (flags unlocks, etc.). */
+  itemJustHappened?: JustHappened[];
 };
 
 function locationById(def: MysteryDefinition, id: string) {
@@ -153,16 +163,6 @@ export function reachableLocations(
   return out;
 }
 
-function inspectRequirementsMet(
-  state: PlaythroughState,
-  requiresFlags?: Record<string, unknown>,
-  requiresEvidenceIds?: string[]
-): boolean {
-  if (!flagsMatch(state.flags, requiresFlags as never)) return false;
-  if (!holdsEvidence(state, requiresEvidenceIds)) return false;
-  return true;
-}
-
 function evidenceDiscoverableHere(
   def: MysteryDefinition,
   state: PlaythroughState,
@@ -182,20 +182,8 @@ function evidenceDiscoverableHere(
   const loc = locationById(def, locationId);
   const insp = loc?.inspectables.find((i) => i.id === inspectableId);
   if (!insp) return false;
-
-  if (
-    !inspectRequirementsMet(
-      state,
-      insp.onInspect.requiresFlags,
-      insp.onInspect.requiresEvidenceIds
-    )
-  ) {
-    return false;
-  }
-  if (!flagsMatch(state.flags, insp.hiddenUntilFlags)) return false;
-
-  // Key-in-hand (requiresEvidenceIds) opens the container regardless of locked bookkeeping.
-  return insp.onInspect.revealsEvidenceIds?.includes(evidenceId) ?? false;
+  if (!fixtureYields(insp, evidenceId)) return false;
+  return fixtureCanOpen(def, state, insp);
 }
 
 /**
@@ -216,21 +204,10 @@ function applyInspectObjectEffects(
 
   const candidates = preferredInspectableId
     ? loc.inspectables.filter((i) => i.id === preferredInspectableId)
-    : loc.inspectables.filter((i) =>
-        i.onInspect.revealsEvidenceIds?.includes(evidenceId)
-      );
+    : loc.inspectables.filter((i) => fixtureYields(i, evidenceId));
 
   for (const insp of candidates) {
-    if (
-      !inspectRequirementsMet(
-        state,
-        insp.onInspect.requiresFlags,
-        insp.onInspect.requiresEvidenceIds
-      )
-    ) {
-      continue;
-    }
-    if (!flagsMatch(state.flags, insp.hiddenUntilFlags)) continue;
+    if (!fixtureCanOpen(def, state, insp)) continue;
 
     if (insp.objectId) {
       const os = next[insp.objectId] ?? {
@@ -248,7 +225,7 @@ function applyInspectObjectEffects(
         },
       };
     }
-    for (const eid of insp.onInspect.revealsEvidenceIds ?? []) {
+    for (const eid of fixtureContents(insp)) {
       if (eid === evidenceId || state.evidenceIds.includes(eid)) {
         const os = next[eid];
         if (os) {
@@ -261,25 +238,6 @@ function applyInspectObjectEffects(
     }
   }
   return next;
-}
-
-function inspRequirementsAllowLocked(
-  insp: {
-    objectId?: string;
-    onInspect: {
-      requiresFlags?: Record<string, unknown>;
-      requiresEvidenceIds?: string[];
-    };
-  },
-  _objectState: PlaythroughState["objectState"],
-  state: PlaythroughState
-): boolean {
-  // If player holds required keys/tools, treat as openable even if locked flag still true
-  return inspectRequirementsMet(
-    state,
-    insp.onInspect.requiresFlags,
-    insp.onInspect.requiresEvidenceIds
-  );
 }
 
 /**
@@ -408,14 +366,8 @@ export function validateAndApplyPatch(
         const loc = locationById(def, locationId);
         const insp = loc?.inspectables.find(
           (i) =>
-            inspectRequirementsMet(
-              probe(),
-              i.onInspect.requiresFlags,
-              i.onInspect.requiresEvidenceIds
-            ) &&
-            flagsMatch(flags, i.hiddenUntilFlags) &&
-            inspRequirementsAllowLocked(i, objectState, probe()) &&
-            i.onInspect.revealsEvidenceIds?.includes(id)
+            fixtureYields(i, id) &&
+            fixtureCanOpen(def, { ...probe(), flags, objectState }, i)
         );
         if (insp) {
           added.push(id);
@@ -549,6 +501,7 @@ export function validateAndApplyPatch(
     }
   }
 
+  const itemJustHappened: JustHappened[] = [];
   if (patch.useItemId) {
     const id = patch.useItemId;
     if (!evidenceIds.includes(id)) {
@@ -568,6 +521,28 @@ export function validateAndApplyPatch(
         },
       };
       applied.useItemId = id;
+      if (patch.useTargetId) {
+        applied.useTargetId = patch.useTargetId;
+        const match = matchItemUse(
+          def,
+          { ...probe(), evidenceIds, objectState },
+          id,
+          patch.useTargetId
+        );
+        if (match && match.outcome.length) {
+          const r = applyEffects(
+            def,
+            { ...probe(), evidenceIds, objectState, flags },
+            match.outcome
+          );
+          flags = r.state.flags;
+          objectState = r.state.objectState;
+          evidenceIds = r.state.evidenceIds;
+          characterState = r.state.characterState;
+          locationId = r.state.locationId;
+          itemJustHappened.push(...r.justHappened);
+        }
+      }
     }
   }
 
@@ -680,5 +655,13 @@ export function validateAndApplyPatch(
     updatedAt: nowIso,
   };
 
-  return { applied, rejected, nextState, evidenceAdded, accusation, movedThrough };
+  return {
+    applied,
+    rejected,
+    nextState,
+    evidenceAdded,
+    accusation,
+    movedThrough,
+    itemJustHappened: itemJustHappened.length ? itemJustHappened : undefined,
+  };
 }

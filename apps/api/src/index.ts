@@ -12,9 +12,6 @@ import type {
   PlaythroughState,
 } from "@mystery/shared";
 import {
-  createInitialPlaythrough,
-  computeMysteryProgress,
-  buildPlayerView,
   addPlayerNote,
   updatePlayerNote,
   deletePlayerNote,
@@ -37,7 +34,13 @@ import {
   insertFeedback,
   databaseUrl,
 } from "./db.js";
-import { gameFor } from "./games/registry.js";
+import {
+  gameFor,
+  createPlatform,
+  initialStateFor,
+  playerViewFor,
+  progressFor,
+} from "./games/registry.js";
 import { MysteryRegistry } from "./registry.js";
 import { BundleError } from "./bundle.js";
 import {
@@ -107,6 +110,8 @@ const pool = createPool();
 // auto-imported at boot as the dev authoring workspace.
 const registry = new MysteryRegistry(pool);
 const llmConfig = tryCreateOpenRouterConfig();
+/** Shared platform floor injected into every game module. */
+const platform = createPlatform(llmConfig);
 
 export type Identity = {
   userId: string;
@@ -649,23 +654,20 @@ app.post("/v1/playthroughs", async (c) => {
       );
       return c.json({
         playthrough: publicState(open.state, openDef),
-        playerView: openDef ? buildPlayerView(openDef, open.state) : undefined,
+        playerView: openDef ? playerViewFor(openDef, open.state) : undefined,
         openingNarration: open.openingNarration,
         briefing: openDef ? buildBriefing(openDef, open.state) : undefined,
         locationName: openDef?.locations.find(
           (l) => l.id === open.state.locationId
         )?.name,
-        progress: openDef
-          ? computeMysteryProgress(openDef, open.state)
-          : undefined,
+        progress: openDef ? progressFor(openDef, open.state) : undefined,
         resumed: true,
       });
     }
   }
 
   // The game's own opening state, or the shared default.
-  const state =
-    gameFor(caseId).createInitialState?.(def) ?? createInitialPlaythrough(def);
+  const state = initialStateFor(caseId, def);
   await insertPlaythrough(pool, state, def.openingNarration);
   await pool.query(`UPDATE playthroughs SET user_id = $2 WHERE id = $1`, [
     state.id,
@@ -674,11 +676,11 @@ app.post("/v1/playthroughs", async (c) => {
 
   return c.json({
     playthrough: publicState(state, def),
-    playerView: buildPlayerView(def, state),
+    playerView: playerViewFor(def, state),
     openingNarration: def.openingNarration,
     briefing: buildBriefing(def, state),
     locationName: def.locations.find((l) => l.id === state.locationId)?.name,
-    progress: computeMysteryProgress(def, state),
+    progress: progressFor(def, state),
   });
 });
 
@@ -697,7 +699,7 @@ app.get("/v1/playthroughs/:id", async (c) => {
   const closed = ["denouement", "solved", "failed"].includes(row.state.status);
   return c.json({
     playthrough: publicState(row.state, def),
-    playerView: def ? buildPlayerView(def, row.state) : undefined,
+    playerView: def ? playerViewFor(def, row.state) : undefined,
     openingNarration: row.openingNarration,
     // Stage 2 of the ending (§8f): the authored mask-off document,
     // delivered on any closed outcome — losers get the truth too.
@@ -705,7 +707,7 @@ app.get("/v1/playthroughs/:id", async (c) => {
     briefing: def ? buildBriefing(def, row.state) : undefined,
     locationName: def?.locations.find((l) => l.id === row.state.locationId)
       ?.name,
-    progress: def ? computeMysteryProgress(def, row.state) : undefined,
+    progress: def ? progressFor(def, row.state) : undefined,
     turns: turns.map((t) => ({
       turnIndex: t.turn_index,
       playerInput: t.player_input,
@@ -892,7 +894,7 @@ app.post("/v1/playthroughs/:id/turns", async (c) => {
       // integrity boundary, rate limiting (docs/GAME_ARCHITECTURE.md).
       result = await gameFor(state.caseId).runTurn(
         { def, state, playerInput: input },
-        { llmConfig }
+        platform
       );
     } catch (err) {
       console.error("turn pipeline failed", err);
@@ -938,7 +940,7 @@ app.post("/v1/playthroughs/:id/turns", async (c) => {
     narration: result.narration,
     dialogue: result.dialogue,
     playthrough: publicState(committed, def),
-    playerView: buildPlayerView(def, committed),
+    playerView: playerViewFor(def, committed),
     appliedPatch: result.appliedPatch,
     rejected: result.rejected,
     evidenceAdded: result.evidenceAdded,
@@ -947,7 +949,7 @@ app.post("/v1/playthroughs/:id/turns", async (c) => {
     justHappened: result.justHappened.map(({ narrationHints: _hints, ...j }) => j),
     locationName: def.locations.find((l) => l.id === committed.locationId)
       ?.name,
-    progress: computeMysteryProgress(def, committed, {
+    progress: progressFor(def, committed, {
       previous: row.state,
       justHappened: result.justHappened,
       evidenceAdded: result.evidenceAdded,

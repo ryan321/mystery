@@ -1,115 +1,60 @@
 # Game architecture — platform + per-game modules
 
-**Status:** In progress (scaffolding)
-**Date:** 2026-07-23
+**Status:** Implemented (contracts + standardTurn composition)  
+**Date:** 2026-07-23  
+**Canonical contract:** [PLATFORM_GAME_CONTRACT.md](./PLATFORM_GAME_CONTRACT.md)
 
 ## The decision
 
-We are moving from **one shared engine that runs every mystery as a config** to
-**a shared platform that hosts per-mystery game modules**. Each mystery is its
-own game *code*, not a `definition.json` fed through a fixed pipeline.
+We host a **large library of diverse mysteries**. A single shared “uber-engine”
+cannot absorb every nuance without collisions (fix hold for case A, break
+restraint for case B). Each mystery may own **game code** for quality. The
+platform is a **small shared floor**; games compose it.
 
-### Why
+**Player experience first.** Writing code per mystery is fine. Forking the
+entire turn loop per mystery is not — that duplicates bugs and integrity
+holes. Use `standardTurn` + hooks unless the case truly needs a custom loop.
 
-The shared "uber-engine" had two ceilings and one growing risk:
+## The line
 
-- **Config ceiling** — expressing a mystery's specific mechanics as more and
-  more schema flags slowly reinvents a programming language in JSON.
-- **Generic-engine ceiling** — one pipeline trying to be correct for every
-  mystery stays generic: master of none.
-- **Collision risk (the decisive one)** — almost every gameplay failure we hit
-  was *one mystery's* edge case (a hold that should be breakable here but not in
-  the asylum ward; a dawn deadline; presence rules; far-move). Fixing it in the
-  shared engine put **every other mystery at risk**. Concretely: changing "held"
-  semantics to free one trapped player immediately broke the white-room ward's
-  intended restraint. That is the "change the engine for one game, break 100
-  others" failure, and it is structural.
-
-With AI writing the code, "more code" is cheap; **isolation** is the win. A
-change to game X's rules must not be able to touch game Y.
-
-## The line: platform vs. game
-
-Draw it deliberately. The rule of thumb: **isolate where collisions live
-(gameplay/narrative); share where sharing removes risk and has no gameplay
-semantics to collide on (plumbing/security).**
-
-| Concern | Platform (shared library) | Game module (per-mystery, owned) |
+| Concern | Platform | Game module |
 |---|---|---|
-| LLM plumbing (client, retry, streaming, caching, timeouts) | ✅ | |
-| State persistence + turn transaction + optimistic lock | ✅ | |
-| Auth / billing / access / tiers | ✅ | |
-| **Integrity boundary** — playthrough ownership, `RESERVED_FLAGS` solution-leak guard, closed-world id filtering at the API edge | ✅ | |
-| HTTP API surface, studio, bundle/registry | ✅ | |
-| Director logic, prompts, voice, few-shot | | ✅ |
-| Narrator logic, presence/dialogue rules, tone | | ✅ |
-| Movement, restraint, deadlines, beats, pacing | | ✅ |
-| State model & mechanics specific to the mystery | | ✅ |
-
-**The integrity boundary stays on the platform on purpose.** Forking security
-per game = 100 subtly-different IDORs and solution leaks. Those checks have no
-gameplay semantics to collide on, so sharing them is pure upside (fix once,
-every game safe). This is the one place per-game code must *not* reach.
+| LLM plumbing, retry, caching | ✅ | |
+| Persistence, turn transaction | ✅ | |
+| Auth / billing / ownership | ✅ | |
+| Integrity (sealing, closed world, RESERVED_FLAGS) | ✅ | |
+| `standardTurn` helper | ✅ | calls it |
+| Voice, pacing, case-only rules | | ✅ |
+| Optional full custom turn | | ✅ (still uses engine primitives) |
 
 ## The inversion
 
-Today the engine is in charge and runs a definition. Flip it: **each game is in
-charge and *calls* the platform's services.** The platform hands a game module a
-turn request + persisted state + an authenticated LLM client; the game's own
-code decides everything about the turn and hands back a result. The platform
-never reaches into gameplay; the game never reimplements plumbing or security.
-
-## The contract
-
-A game module implements one seam to start — the turn — and will grow:
+The **game owns the turn**. The platform injects `Platform` services; the game
+returns `TurnResult`. The host never hard-codes one mystery’s rules for all.
 
 ```ts
-// apps/api/src/games/types.ts
-export type TurnRequest = {
-  def: MysteryDefinition;      // the loaded, version-pinned definition
-  state: PlaythroughState;     // persisted state for this playthrough
-  playerInput: string;
-};
-
-export type PlatformServices = {
-  llmConfig: LlmConfig | null; // shared LLM plumbing/config; null → heuristic
-};
-
-export type TurnResult = TurnPipelineResult; // narration, dialogue, next state, …
-
-export interface GameModule {
-  readonly id: string;                       // caseId this module serves
-  runTurn(req: TurnRequest, svc: PlatformServices): Promise<TurnResult>;
-  // Future seams as needed: createInitialState, buildPlayerView, buildBriefing,
-  // computeProgress, debrief — each defaulting to the shared implementation
-  // until a game overrides it.
-}
+const platform = createPlatform(llmConfig);
+const game = gameFor(state.caseId);
+const result = await game.runTurn({ def, state, playerInput }, platform);
 ```
 
-The API turns route dispatches through the registry instead of calling one
-pipeline:
+## Code map
 
-```ts
-const game = gameFor(state.caseId);              // per-game module or default
-result = await game.runTurn({ def, state, playerInput }, { llmConfig });
-```
+| File | Role |
+|---|---|
+| `apps/api/src/games/types.ts` | `Platform`, `GameModule`, `TurnResult`, hooks |
+| `apps/api/src/games/standard-turn.ts` | Composable default turn |
+| `apps/api/src/games/registry.ts` | `gameFor`, `createPlatform`, view helpers |
+| `apps/api/src/games/default-game.ts` | Thin default module |
+| `apps/api/src/games/<case>.ts` | Owned modules (voice + hooks) |
+| `packages/engine` | Pure primitives (patch, packs, score, project) |
+| `packages/llm` | Director / performer / client |
 
-## Migration path (incremental, no big-bang)
+## Adding a case
 
-1. **Seam + registry (this pass).** Define `GameModule`, a `gameFor(caseId)`
-   registry, a **default module** that delegates to the current shared pipeline
-   (so nothing breaks), and dispatch the turns route through it.
-2. **Blackwood becomes the first owned module.** Its `runTurn` starts by
-   composing the shared engine + LLM *as libraries*, then progressively pulls
-   the parts it wants to specialize (movement, restraint, prompts, pacing) into
-   its own code — free to diverge because nothing else uses it.
-3. **Each new/reworked mystery is authored as its own module**, starting from a
-   copyable starter (sensible defaults), not a shared runtime dependency.
-4. The engine (`packages/engine`) and LLM (`packages/llm`) packages become
-   **libraries of primitives games call**, not a pipeline that runs them.
+See [PLATFORM_GAME_CONTRACT.md](./PLATFORM_GAME_CONTRACT.md) § Adding a mystery.
 
-## What does NOT change
+## What does not change
 
-The whole platform layer we've hardened this session stays shared and keeps
-improving for every game at once: security fixes, graceful-shutdown, retry/
-caching/latency work, persistence. Games inherit all of it for free.
+Security, sealing, and plumbing stay platform-owned and improve for every game
+at once. Games inherit them by composition, not by copy-paste.

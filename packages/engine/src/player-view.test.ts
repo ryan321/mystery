@@ -166,6 +166,7 @@ describe("buildPlayerView (UI-safe projection)", () => {
       "description",
       "id",
       "name",
+      "readable",
       "tags",
     ]);
   });
