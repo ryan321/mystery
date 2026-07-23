@@ -15,18 +15,24 @@ import styles from "./MapSketch.module.css";
  * authored coordinates fall back to BFS-adjacency placement so connected
  * rooms still land next to each other.
  *
- * The sheet pans/zooms itself (drag, pinch, double-tap) — the page never
- * zooms. Room states: visited (solid ink) / known-unvisited (dashed —
- * "heard of it") / current (you-are-here mark). Tapping a room travels
- * via the normal composer path; the engine still validates the move.
+ * The sheet pans/zooms itself (drag, pinch, wheel, double-tap, +/−
+ * buttons) — the page never zooms. Room states: visited (solid ink) /
+ * known-unvisited (dashed — "heard of it") / current (you-are-here mark).
+ * Tapping a room travels via the normal composer path; the engine still
+ * validates the move.
  */
 
 const UNIT = 100; // px per grid cell — one room per cell, walls shared
-const PAD = 28;
+const PAD = 56;
 const STUB_LEN = 14;
 const DOOR_GAP = 30;
 
 const MAX_ZOOM = 5;
+/** Resting size: a 100-unit room should render at roughly 150px. Without
+ *  this cap, "fit" means stretch-to-drawer-width and a 1-room floor blows
+ *  up to fill the sheet with giant, clipped labels. */
+const FIT_PX_PER_UNIT = 1.5;
+const ZOOM_STEP = 1.6;
 /** Tap-vs-drag threshold (viewBox units) and double-tap window (ms). */
 const MOVE_SLOP = 4;
 const DOUBLE_TAP_MS = 350;
@@ -209,7 +215,6 @@ function edgePoint(r: Rect, theta: number) {
 // ── Pan/zoom gesture state ──────────────────────────────────────────
 
 type View = { k: number; tx: number; ty: number };
-const FIT_VIEW: View = { k: 1, tx: 0, ty: 0 };
 
 type Gesture = {
   /** Active pointers, client coords. */
@@ -377,30 +382,111 @@ export default function MapSketch({
   // The SVG transforms its own content (translate + scale on one <g>);
   // touch-action: none keeps the browser's page zoom out of the way.
   const svgRef = useRef<SVGSVGElement | null>(null);
-  const [view, setView] = useState<View>(FIT_VIEW);
+  const [elemW, setElemW] = useState(0);
+  const [view, setView] = useState<View>({ k: 1, tx: 0, ty: 0 });
   const viewRef = useRef(view);
   const gestureRef = useRef<Gesture>({ pointers: new Map(), base: null, moved: false });
   const suppressClick = useRef(false);
   const lastTap = useRef(0);
   const pendingTravel = useRef<{ timer: number } | null>(null);
 
+  // The SVG stretches the viewBox to the element width, so the resting
+  // scale depends on how many rooms the floor has. Cap it: fit zoom is
+  // min(1, target/device), letting k < 1 shrink a small floor back to a
+  // comfortable size instead of blowing it up to fill the drawer.
+  const fitK =
+    elemW > 0 && placed.width > 0
+      ? Math.min(1, FIT_PX_PER_UNIT / (elemW / placed.width))
+      : 1;
+  const fitKRef = useRef(fitK);
+  fitKRef.current = fitK;
+
   const applyView = (v: View) => {
-    const k = Math.min(MAX_ZOOM, Math.max(1, v.k));
-    // Keep the sheet covering the viewport — no flinging it off-screen.
+    const k = Math.min(MAX_ZOOM, Math.max(fitKRef.current, v.k));
+    // k ≥ 1: keep the sheet covering the paper — no flinging it
+    // off-screen. k < 1: content is smaller than the paper, center it.
+    const clampAxis = (dim: number, t: number) =>
+      k >= 1
+        ? Math.min(0, Math.max(dim * (1 - k), t))
+        : (dim * (1 - k)) / 2;
     const c = {
       k,
-      tx: Math.min(0, Math.max(placed.width * (1 - k), v.tx)),
-      ty: Math.min(0, Math.max(placed.height * (1 - k), v.ty)),
+      tx: clampAxis(placed.width, v.tx),
+      ty: clampAxis(placed.height, v.ty),
     };
     viewRef.current = c;
     setView(c);
   };
+  const applyViewRef = useRef(applyView);
+  applyViewRef.current = applyView;
+
+  const fitView = () =>
+    applyViewRef.current({ k: fitKRef.current, tx: 0, ty: 0 });
+  const fitViewRef = useRef(fitView);
+  fitViewRef.current = fitView;
+
+  // Zoom by `factor` around a client point (cursor / viewport center).
+  const zoomAt = (clientX: number, clientY: number, factor: number) => {
+    const cur = viewRef.current;
+    const p = toViewBox(clientX, clientY);
+    const k = Math.min(
+      MAX_ZOOM,
+      Math.max(fitKRef.current, cur.k * factor)
+    );
+    const ax = (p.x - cur.tx) / cur.k;
+    const ay = (p.y - cur.ty) / cur.k;
+    applyViewRef.current({ k, tx: p.x - k * ax, ty: p.y - k * ay });
+  };
+  const zoomAtRef = useRef(zoomAt);
+  zoomAtRef.current = zoomAt;
+
+  const zoomCenter = (factor: number) => {
+    const r = svgRef.current?.getBoundingClientRect();
+    if (!r) return;
+    zoomAt(r.left + r.width / 2, r.top + r.height / 2, factor);
+  };
+
+  // Track the paper's rendered width (drawer resize, first mount).
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    setElemW(svg.getBoundingClientRect().width);
+    const ro = new ResizeObserver((entries) => {
+      setElemW(entries[0].contentRect.width);
+    });
+    ro.observe(svg);
+    return () => ro.disconnect();
+  }, []);
+
+  // React's onWheel is passive and can't stop the drawer scrolling — a
+  // native non-passive listener lets the wheel zoom the sheet instead.
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      zoomAtRef.current(e.clientX, e.clientY, e.deltaY < 0 ? 1.2 : 1 / 1.2);
+    };
+    svg.addEventListener("wheel", onWheel, { passive: false });
+    return () => svg.removeEventListener("wheel", onWheel);
+  }, []);
 
   // Fit again when the floor (and with it the sheet's bounds) changes.
   useEffect(() => {
-    viewRef.current = FIT_VIEW;
-    setView(FIT_VIEW);
+    fitViewRef.current();
   }, [shownFloor]);
+
+  // A new fit zoom (first measurement, drawer resize) re-clamps the
+  // current view without resetting the player's chosen zoom.
+  const settled = useRef(false);
+  useEffect(() => {
+    if (!settled.current) {
+      settled.current = true;
+      fitViewRef.current();
+      return;
+    }
+    applyViewRef.current(viewRef.current);
+  }, [fitK, placed.width, placed.height]);
 
   const toViewBox = (clientX: number, clientY: number) => {
     const svg = svgRef.current;
@@ -493,11 +579,11 @@ export default function MapSketch({
         cancelPendingTravel();
         suppressClick.current = true;
         const cur = viewRef.current;
-        if (cur.k > 1) {
-          applyView(FIT_VIEW);
+        if (cur.k > fitKRef.current * 1.05) {
+          fitViewRef.current();
         } else {
           const tap = toViewBox(e.clientX, e.clientY);
-          const k = 2.5;
+          const k = Math.min(MAX_ZOOM, fitKRef.current * 3);
           const ax = (tap.x - cur.tx) / cur.k;
           const ay = (tap.y - cur.ty) / cur.k;
           applyView({ k, tx: tap.x - k * ax, ty: tap.y - k * ay });
@@ -558,18 +644,19 @@ export default function MapSketch({
         <p className={styles.elsewhereNote}>You are on another floor.</p>
       )}
 
-      <svg
-        ref={svgRef}
-        className={styles.paper}
-        viewBox={`0 0 ${placed.width} ${placed.height}`}
-        role="img"
-        aria-label="Sketch map of known locations"
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerEnd}
-        onPointerCancel={onPointerEnd}
-        onPointerLeave={onPointerEnd}
-      >
+      <div className={styles.stage}>
+        <svg
+          ref={svgRef}
+          className={styles.paper}
+          viewBox={`0 0 ${placed.width} ${placed.height}`}
+          role="img"
+          aria-label="Sketch map of known locations"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerEnd}
+          onPointerCancel={onPointerEnd}
+          onPointerLeave={onPointerEnd}
+        >
         <g transform={`translate(${view.tx} ${view.ty}) scale(${view.k})`}>
           {/* Dashed paths between non-adjacent rooms — under the buildings,
               so they vanish at the walls instead of crossing the rooms. */}
@@ -767,12 +854,43 @@ export default function MapSketch({
             </g>
           ) : null}
         </g>
-      </svg>
+        </svg>
+
+        <div className={styles.zoomControls}>
+          <button
+            type="button"
+            className={styles.zoomBtn}
+            onClick={() => zoomCenter(ZOOM_STEP)}
+            aria-label="Zoom in"
+            title="Zoom in"
+          >
+            +
+          </button>
+          <button
+            type="button"
+            className={styles.zoomBtn}
+            onClick={() => zoomCenter(1 / ZOOM_STEP)}
+            aria-label="Zoom out"
+            title="Zoom out"
+          >
+            −
+          </button>
+          <button
+            type="button"
+            className={styles.zoomBtn}
+            onClick={fitView}
+            aria-label="Reset map view"
+            title="Reset map view"
+          >
+            Fit
+          </button>
+        </div>
+      </div>
 
       <p className={styles.legend}>
         solid ink — visited · dashed — heard of it · wall gap — open door ·
-        red square — locked · ? — door never taken · pinch or double-tap —
-        zoom
+        red square — locked · ? — door never taken · drag — pan · pinch,
+        double-tap, wheel, or +/− — zoom
       </p>
     </div>
   );

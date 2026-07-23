@@ -58,7 +58,10 @@ export default function HelpPage() {
               </li>
               <li>
                 <strong>Move around.</strong> Go to another room or area. Exits
-                are described in the narration.
+                are described in the narration. In mysteries with multiple
+                locations, you can also open the map (the map button at the top
+                of the game screen) and tap a location to travel there — as long
+                as the way is open to you (not locked or otherwise blocked).
               </li>
               <li>
                 <strong>Present evidence.</strong> Show what you’ve found to

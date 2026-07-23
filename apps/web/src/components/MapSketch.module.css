@@ -35,7 +35,12 @@
 }
 
 /* The detective's paper sketch: sepia sheet, dark ink. */
+.stage {
+  position: relative;
+}
+
 .paper {
+  display: block;
   width: 100%;
   height: auto;
   background:
@@ -49,6 +54,32 @@
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
+}
+
+/* Zoom controls overlaid on the paper's corner — ink-on-paper to match. */
+.zoomControls {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: flex;
+  gap: 4px;
+}
+
+.zoomBtn {
+  min-width: 1.7rem;
+  padding: 0.25rem 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  background: rgba(232, 223, 208, 0.88);
+  border: 1px solid rgba(90, 58, 46, 0.5);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.zoomBtn:hover {
+  background: rgba(222, 210, 190, 0.98);
 }
 
 .room {
