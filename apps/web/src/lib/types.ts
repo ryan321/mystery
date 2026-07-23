@@ -521,6 +521,16 @@ export type PlayerView = {
     suspectNames: string[];
     turnsRemaining: number;
   };
+  /**
+   * Formal accusation ceremony (Accuse button). No form fields — when active,
+   * freeform speech is the charge after the household has been staged.
+   */
+  formalAccusation?: {
+    canBegin: boolean;
+    active: boolean;
+    composerPlaceholder?: string;
+    winHint?: string;
+  };
   ending?: { id: string; when?: string; kind?: string; title?: string };
 };
 

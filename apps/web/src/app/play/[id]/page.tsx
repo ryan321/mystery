@@ -24,6 +24,7 @@ import FeedbackModal from "../../../components/FeedbackModal";
 import {
   addNote,
   assetUrl,
+  beginAccusation,
   deleteNote,
   getPlaythrough,
   sendTurn,
@@ -392,6 +393,89 @@ export default function PlaythroughPage() {
     }
   }, [playthrough]);
 
+  const ingestTurnData = useCallback(
+    (data: Awaited<ReturnType<typeof sendTurn>>, ti: number) => {
+      setPlaythrough(data.playthrough);
+      if (data.playerView) setPlayerView(data.playerView);
+      setLocationName(data.locationName ?? data.playthrough.locationId);
+      if (data.progress) {
+        setProgress(data.progress);
+        const mode = effectiveProgressMode(
+          data.progress.caseMode ?? data.playthrough.progressUi,
+          getPlayProgressPref(data.playthrough.id) ??
+            defaultPlayProgressMode(
+              data.progress.caseMode ?? data.playthrough.progressUi
+            )
+        );
+        if (mode !== "off" && data.progress.pulses?.length) {
+          setToastPulses(data.progress.pulses);
+          setToastKey((k) => k + 1);
+        }
+      }
+      const dialogue = data.dialogue ?? [];
+      setLog((prev) => [
+        ...prev,
+        { id: `t${ti}-n`, kind: "narration" as const, text: data.narration },
+        ...dialogue.map((d, di) => ({
+          id: `t${ti}-d${di}`,
+          kind: "npc" as const,
+          name: d.characterName ?? d.characterId,
+          text: d.text,
+          avatarUrl: portraitFor(data.playthrough, d.characterId),
+        })),
+      ]);
+      if (data.justHappened?.length) {
+        for (const j of data.justHappened) {
+          const jid = j.id ?? "";
+          const summary = (j.summary ?? "").trim();
+          if (!summary) continue;
+          if (
+            jid.startsWith("phase") ||
+            jid.startsWith("player_") ||
+            jid.startsWith("assault_") ||
+            jid.startsWith("world_to_player") ||
+            jid.startsWith("social_pushback_") ||
+            jid.startsWith("misconduct_") ||
+            jid.startsWith("hazard_") ||
+            jid.startsWith("will_") ||
+            jid.startsWith("move_char_") ||
+            jid.startsWith("move_obj_") ||
+            jid === "moved" ||
+            jid === "formal_accusation_scene" ||
+            /phase/i.test(summary) ||
+            /\b(held|restrained|unconscious|knocked down|escape actions?|blocked until free|chemical restraint)\b/i.test(
+              summary
+            )
+          ) {
+            continue;
+          }
+          const playerFacing =
+            jid.startsWith("pulse_") ||
+            jid.startsWith("stolen_") ||
+            jid.startsWith("item_damaged_") ||
+            jid.startsWith("lost_ev_") ||
+            jid.startsWith("boundary_") ||
+            jid === "safe_haven_compromised" ||
+            jid === "ending" ||
+            jid === "midnight_strikes" ||
+            jid === "denouement_start" ||
+            jid === "denouement_end";
+          if (playerFacing) {
+            setLog((prev) => [
+              ...prev,
+              {
+                id: `t${ti}-sys-${jid}`,
+                kind: "system",
+                text: summary,
+              },
+            ]);
+          }
+        }
+      }
+    },
+    []
+  );
+
   const send = useCallback(
     async (text: string) => {
       if (busy || !playthrough) return;
@@ -402,104 +486,45 @@ export default function PlaythroughPage() {
         ...prev,
         { id: `t${ti}-you`, kind: "you", text },
       ]);
-      // Mark the turn in flight so that if we leave and come back before it
-      // resolves, the play page picks it up and polls (see the mount effect).
       markTurnPending(id, ti + 1);
       try {
         const data = await sendTurn(id, text);
-        setPlaythrough(data.playthrough);
-        if (data.playerView) setPlayerView(data.playerView);
-        setLocationName(data.locationName ?? data.playthrough.locationId);
-        if (data.progress) {
-          setProgress(data.progress);
-          const mode = effectiveProgressMode(
-            data.progress.caseMode ?? data.playthrough.progressUi,
-            getPlayProgressPref(data.playthrough.id) ??
-              defaultPlayProgressMode(
-                data.progress.caseMode ?? data.playthrough.progressUi
-              )
-          );
-          if (mode !== "off" && data.progress.pulses?.length) {
-            setToastPulses(data.progress.pulses);
-            setToastKey((k) => k + 1);
-          }
-        }
-        const dialogue = data.dialogue ?? [];
-        setLog((prev) => [
-          ...prev,
-          { id: `t${ti}-n`, kind: "narration", text: data.narration },
-          ...dialogue.map((d, di) => ({
-            id: `t${ti}-d${di}`,
-            kind: "npc" as const,
-            name: d.characterName ?? d.characterId,
-            text: d.text,
-            avatarUrl: portraitFor(data.playthrough, d.characterId),
-          })),
-        ]);
-        if (data.justHappened?.length) {
-          for (const j of data.justHappened) {
-            // Default-deny: engine status (hold, harm, threat, restraint, assault,
-            // force-moves, hazards) is for the AI performer only. Stage it in
-            // narration — never as HUD/system chips in the log.
-            const jid = j.id ?? "";
-            const summary = (j.summary ?? "").trim();
-            if (!summary) continue;
-            if (
-              jid.startsWith("phase") ||
-              jid.startsWith("player_") ||
-              jid.startsWith("assault_") ||
-              jid.startsWith("world_to_player") ||
-              jid.startsWith("social_pushback_") ||
-              jid.startsWith("misconduct_") ||
-              jid.startsWith("hazard_") ||
-              jid.startsWith("will_") ||
-              jid.startsWith("move_char_") ||
-              jid.startsWith("move_obj_") ||
-              jid === "moved" ||
-              /phase/i.test(summary) ||
-              // Safety net: AI/director may put HUD-like control lines in summary
-              /\b(held|restrained|unconscious|knocked down|escape actions?|blocked until free|chemical restraint)\b/i.test(
-                summary
-              )
-            ) {
-              continue;
-            }
-            // Rare log-worthy cues only (boundaries, endings, theft).
-            const playerFacing =
-              jid.startsWith("pulse_") ||
-              jid.startsWith("stolen_") ||
-              jid.startsWith("item_damaged_") ||
-              jid.startsWith("lost_ev_") ||
-              jid.startsWith("boundary_") ||
-              jid === "safe_haven_compromised" ||
-              jid === "ending" ||
-              jid === "midnight_strikes" ||
-              jid === "denouement_start" ||
-              jid === "denouement_end";
-            if (playerFacing) {
-              setLog((prev) => [
-                ...prev,
-                {
-                  id: `t${ti}-sys-${jid}`,
-                  kind: "system",
-                  text: summary,
-                },
-              ]);
-            }
-          }
-        }
+        ingestTurnData(data, ti);
       } catch (e) {
         setError(e instanceof Error ? e.message : "Turn failed");
       } finally {
-        // Resolved (or errored) while we're still here — no need to poll on a
-        // future mount. If we'd unmounted, this still runs when the promise
-        // settles; a turn left truly in flight keeps its marker until then.
         clearTurnPending(id);
         setBusy(false);
       }
     },
-    [busy, id, playthrough]
+    [busy, id, playthrough, ingestTurnData]
   );
+
+  /** Accuse button: stage the formal gathering; next freeform turn is the charge. */
+  const beginAccuse = useCallback(async () => {
+    if (busy || !playthrough) return;
+    const ti = playthrough.turnCount;
+    setBusy(true);
+    setError(null);
+    setLog((prev) => [
+      ...prev,
+      {
+        id: `t${ti}-you`,
+        kind: "you",
+        text: "I am ready to make a formal accusation.",
+      },
+    ]);
+    markTurnPending(id, ti + 1);
+    try {
+      const data = await beginAccusation(id);
+      ingestTurnData(data, ti);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not begin accusation");
+    } finally {
+      clearTurnPending(id);
+      setBusy(false);
+    }
+  }, [busy, id, playthrough, ingestTurnData]);
 
   /** Click a sketched room to walk there — the engine validates the move. */
   const travel = useCallback(
@@ -757,6 +782,20 @@ export default function PlaythroughPage() {
       <Composer
         busy={busy}
         closed={closed}
+        placeholder={
+          playerView?.formalAccusation?.active
+            ? playerView.formalAccusation.composerPlaceholder ??
+              "State your formal accusation — who, how, and why…"
+            : undefined
+        }
+        canAccuse={
+          !closed &&
+          !!playerView?.formalAccusation?.canBegin &&
+          !playerView?.formalAccusation?.active
+        }
+        accuseActive={!!playerView?.formalAccusation?.active}
+        winHint={playerView?.formalAccusation?.winHint}
+        onAccuse={beginAccuse}
         onSend={send}
       />
 

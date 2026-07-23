@@ -449,9 +449,11 @@ export function buildContextPack(
         state.status === "denouement"
           ? "WRAP-UP MODE: The case has been judged (see resolution/ending). Stay interactive: characters react, the accused may confess or rage, household falls out. Stage RETURN TO NORMAL from ending notes — DIEGETICALLY: who acts and why (keys, clerk, boat, morning rounds), never magic unlock because the score succeeded. Winning is truth that rebalances the world through people already in the story. Player may still talk, look, move, and leave. Do NOT treat the mystery as unsolved. Do NOT invent a new killer. Consequences matter."
           : "Investigation mode: solution sealed until judged.",
-      accusations: state.pendingAccusation
-        ? "pendingAccusation is present: the player has voiced a theory but NOT formally committed. Nothing has been judged. Ask in-fiction whether they commit; do not confirm, deny, or resolve the theory."
-        : "Only a formal, confirmed accusation decides the case. Informal theories are conversation, not judgment.",
+      accusations: state.formalAccusationScene?.active
+        ? "formalAccusationScene is ACTIVE: the household has been assembled for a formal charge. The player's next speech IS the formal accusation when they name who/how/why. Stage listening faces; when they commit a theory, judgment will follow from the engine — do not invent the verdict. If they withdraw (never mind), the gathering dissolves."
+        : state.pendingAccusation
+          ? "pendingAccusation is present: the player has voiced a theory but NOT formally committed. Nothing has been judged. Ask in-fiction whether they commit; do not confirm, deny, or resolve the theory."
+          : "Only a formal, confirmed accusation decides the case. Informal theories are conversation, not judgment.",
     },
   };
 

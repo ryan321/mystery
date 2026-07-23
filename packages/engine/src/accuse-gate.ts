@@ -8,6 +8,10 @@ import type {
 import { accusedCharacterIds } from "./accusation.js";
 import { mergeFlags } from "./flags.js";
 import { knownAsFor } from "./identity.js";
+import {
+  clearFormalAccusationScene,
+  isFormalAccusationSceneActive,
+} from "./formal-accusation.js";
 
 /**
  * Explicitly formal wording — judged immediately, no confirmation turn.
@@ -90,8 +94,13 @@ export function applyAccuseGate(
     return { patch, state: next, justHappened, notes };
   }
 
+  // Accuse-button ceremony: once the household is assembled, any voiced
+  // accusation is formal — the player is speaking into a staged charge, not
+  // muttering a theory into the air.
+  const inFormalScene = isFormalAccusationSceneActive(next);
+
   if (patch.accuse) {
-    const formal = FORMAL_RE.test(playerInput);
+    const formal = FORMAL_RE.test(playerInput) || inFormalScene;
     const namedIds = accusedCharacterIds(def, patch.accuse);
     // Re-voicing counts as confirmation only for the same theory; naming a
     // different suspect replaces the pending accusation instead.
@@ -100,7 +109,7 @@ export function applyAccuseGate(
       (namedIds.length === 0 ||
         namedIds.some((id) => pending!.suspectIds.includes(id)));
     if (reaffirmsPending || formal) {
-      // Confirmed (formal wording, or reaffirming while pending): merge and pass through.
+      // Confirmed (formal wording, ceremony scene, or reaffirming while pending).
       const merged = pending
         ? {
             summary: patch.accuse.summary || pending.summary,
@@ -111,8 +120,17 @@ export function applyAccuseGate(
             motive: patch.accuse.motive ?? pending.motive,
           }
         : patch.accuse;
-      next = { ...next, pendingAccusation: undefined };
-      notes.push(formal ? "accuse formal" : "accuse confirmed");
+      next = {
+        ...clearFormalAccusationScene(next),
+        pendingAccusation: undefined,
+      };
+      notes.push(
+        inFormalScene
+          ? "accuse formal (ceremony scene)"
+          : formal
+            ? "accuse formal"
+            : "accuse confirmed"
+      );
       return {
         patch: { ...patch, accuse: merged },
         state: next,
@@ -163,7 +181,10 @@ export function applyAccuseGate(
     const withdraws = WITHDRAW_RE.test(playerInput);
     const confirms = !withdraws && CONFIRM_RE.test(playerInput);
     if (confirms) {
-      next = { ...next, pendingAccusation: undefined };
+      next = {
+        ...clearFormalAccusationScene(next),
+        pendingAccusation: undefined,
+      };
       notes.push("accuse confirmed (pending)");
       return {
         patch: {
@@ -181,7 +202,10 @@ export function applyAccuseGate(
       };
     }
     if (withdraws) {
-      next = { ...next, pendingAccusation: undefined };
+      next = {
+        ...clearFormalAccusationScene(next),
+        pendingAccusation: undefined,
+      };
       justHappened.push({
         id: "accusation_withdrawn",
         summary: "Accusation withdrawn",
@@ -191,6 +215,18 @@ export function applyAccuseGate(
       notes.push("accuse withdrawn");
     }
     // Otherwise the pending accusation quietly persists until expiry.
+  }
+
+  // Cancel ceremony without a pending theory ("never mind" in the hall).
+  if (inFormalScene && WITHDRAW_RE.test(playerInput) && !patch.accuse) {
+    next = clearFormalAccusationScene(next);
+    justHappened.push({
+      id: "formal_accusation_cancelled",
+      summary: "Formal accusation cancelled",
+      narrationHints:
+        "The player steps back; the gathering dissolves. No judgment was made. Return the scene to investigation.",
+    });
+    notes.push("formal accusation scene cancelled");
   }
 
   return { patch, state: next, justHappened, notes };

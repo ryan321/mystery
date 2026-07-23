@@ -8,11 +8,22 @@ export default function Composer({
   closed = false,
   placeholder = "Type what you say or do…",
   onSend,
+  /** Show Accuse button (case active, ceremony not already open). */
+  canAccuse = false,
+  /** Formal accusation ceremony is open — freeform is the charge. */
+  accuseActive = false,
+  winHint,
+  onAccuse,
 }: {
   busy?: boolean;
   closed?: boolean;
   placeholder?: string;
   onSend: (text: string) => void;
+  canAccuse?: boolean;
+  accuseActive?: boolean;
+  /** Short reminder while ceremony is open (who / how / why). */
+  winHint?: string;
+  onAccuse?: () => void;
 }) {
   const [input, setInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -36,12 +47,23 @@ export default function Composer({
 
   return (
     <form
-      className={styles.composer}
+      className={`${styles.composer} ${accuseActive ? styles.accuseMode : ""}`}
       onSubmit={(e) => {
         e.preventDefault();
         submit();
       }}
     >
+      {accuseActive && winHint ? (
+        <p className={styles.accuseHint} role="status">
+          {winHint}
+        </p>
+      ) : null}
+      {accuseActive ? (
+        <p className={styles.accuseBanner} role="status">
+          Formal accusation — the household is listening. State your charge, or
+          say you are not ready.
+        </p>
+      ) : null}
       <div className={styles.frame}>
         <textarea
           ref={textareaRef}
@@ -50,7 +72,11 @@ export default function Composer({
           onChange={(e) => setInput(e.target.value)}
           placeholder={closed ? "The case is closed." : placeholder}
           disabled={disabled}
-          aria-label="What do you say or do?"
+          aria-label={
+            accuseActive
+              ? "State your formal accusation"
+              : "What do you say or do?"
+          }
           maxLength={500}
           rows={1}
           onKeyDown={(e) => {
@@ -60,6 +86,18 @@ export default function Composer({
             }
           }}
         />
+        {canAccuse && onAccuse ? (
+          <button
+            type="button"
+            className={styles.accuse}
+            disabled={disabled}
+            onClick={() => onAccuse()}
+            aria-label="Begin formal accusation"
+            title="Gather the household and make a formal charge"
+          >
+            Accuse
+          </button>
+        ) : null}
         <button
           type="submit"
           className={styles.send}

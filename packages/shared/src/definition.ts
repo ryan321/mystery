@@ -758,15 +758,59 @@ export const WrapUpConfigSchema = z.object({
 export type WrapUpConfig = z.infer<typeof WrapUpConfigSchema>;
 
 /**
+ * Case-specific ceremony when the player opens a formal accusation
+ * (Accuse button). No form fields — stages the room/cast, then freeform speech.
+ */
+export const AccuseStagingSchema = z.object({
+  /**
+   * Where the charge is heard. If set, player (and gathered cast) move here.
+   * Omit → stay in current location.
+   */
+  locationId: z.string().min(1).optional(),
+  /**
+   * Character ids to gather (available, non-victim). Empty/omit = all
+   * available non-victim characters who are known or present.
+   */
+  gatherCharacterIds: z.array(z.string()).optional(),
+  /**
+   * Performer guidance for the staging turn only — household assembles,
+   * player has NOT yet named the culprit. Never spoil the solution.
+   */
+  narrationHints: z
+    .string()
+    .min(1)
+    .default(
+      "A formal accusation is about to be made. Gather those who should hear the charge. The player has not yet spoken their case — stage the assembly, the weight of the moment, and wait. Do not invent a culprit or resolve anything."
+    ),
+  /** Composer placeholder while the scene is open. */
+  composerPlaceholder: z
+    .string()
+    .optional()
+    .default("State your formal accusation — who, how, and why…"),
+  /**
+   * Short player-facing win reminder shown during the scene
+   * (e.g. "Name who killed him, how, and why.").
+   */
+  winHint: z.string().optional(),
+});
+export type AccuseStaging = z.infer<typeof AccuseStagingSchema>;
+
+/**
  * How formal an accusation must be before it is judged.
  * Default: informal theories ("X did it") go pending and must be confirmed;
  * explicitly formal wording ("I accuse X") is judged immediately.
+ * Accuse button uses staging (ceremony) then freeform speech.
  */
 export const AccusePolicySchema = z.object({
   /** Informal accusations require confirmation before scoring. Default true. */
   requireConfirmation: z.boolean().default(true),
   /** How many turns a pending accusation stays confirmable. Default 3. */
   pendingTurns: z.number().int().positive().default(3),
+  /**
+   * Ceremony for the Accuse button: set the scene, then player speaks freeform.
+   * Omit → platform default gathering hints.
+   */
+  staging: AccuseStagingSchema.optional(),
 });
 export type AccusePolicy = z.infer<typeof AccusePolicySchema>;
 
@@ -993,6 +1037,25 @@ export const MysteryDefinitionSchema = z
           code: z.ZodIssueCode.custom,
           message: `time.startSlotId "${def.time.startSlotId}" not in schedule`,
           path: ["time", "startSlotId"],
+        });
+      }
+    }
+
+    // Accuse staging location / gather ids must exist.
+    const staging = def.accusePolicy?.staging;
+    if (staging?.locationId && !locationIds.has(staging.locationId)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `accusePolicy.staging.locationId "${staging.locationId}" is not a location`,
+        path: ["accusePolicy", "staging", "locationId"],
+      });
+    }
+    for (const cid of staging?.gatherCharacterIds ?? []) {
+      if (!characterIds.has(cid)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `accusePolicy.staging.gatherCharacterIds unknown character "${cid}"`,
+          path: ["accusePolicy", "staging", "gatherCharacterIds"],
         });
       }
     }

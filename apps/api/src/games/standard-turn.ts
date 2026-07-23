@@ -46,6 +46,7 @@ import {
   boundaryJustHappened,
   resolveWorldToPlayer,
   itemReadableText,
+  beginFormalAccusation,
 } from "@mystery/engine";
 import {
   runDirector,
@@ -463,6 +464,80 @@ export async function standardTurn(
       intentNotes: notes,
       focusCharacterId,
       beatsFired: allFired,
+    },
+  };
+}
+
+/**
+ * Accuse-button ceremony: assemble the household, stage the room, wait for
+ * freeform charge. No director, no form — one performer call for gathering.
+ */
+export async function runAccusationStaging(
+  req: { def: MysteryDefinition; state: PlaythroughState },
+  platform: Platform,
+  options: StandardTurnOptions = {}
+): Promise<TurnResult> {
+  const { def } = req;
+  if (!isInteractive(req.state) || req.state.status !== "active") {
+    throw new Error("case_not_interactive");
+  }
+
+  const begun = beginFormalAccusation(def, req.state);
+  if (begun.rejected) {
+    throw new Error(begun.rejected);
+  }
+
+  let state = begun.state;
+  const justHappened = [...begun.justHappened];
+  const notes = begun.alreadyActive
+    ? ["formal accusation already active"]
+    : ["formal accusation scene opened"];
+
+  const staticCaseJson = staticCasePackJson(def);
+  const performerPack = buildContextPack(def, state, {
+    justHappened,
+    resolvedIntents: notes,
+  });
+
+  const performer = await runPerformer(platform.llmConfig, {
+    contextPack: performerPack,
+    playerInput:
+      "[The player calls for a formal accusation. They have not yet spoken their charge.]",
+    justHappened,
+    resolvedNotes: notes,
+    staticCaseJson,
+    guidance: options.guidance?.performer,
+  });
+
+  state = revealCoPresentCharacters(def, state).state;
+  const dressed = applyDressing(def, state, performer.output.dressing ?? []);
+  state = dressed.state;
+
+  const committed = {
+    ...state,
+    turnCount: req.state.turnCount + 1,
+    updatedAt: new Date().toISOString(),
+  };
+
+  return {
+    narration: performer.output.narration,
+    dialogue: performer.output.dialogue ?? [],
+    state: committed,
+    appliedPatch: {},
+    rejected: begun.rejected ? [begun.rejected] : [],
+    evidenceAdded: [],
+    justHappened,
+    debug: {
+      directorModel: "—",
+      performerModel: performer.model,
+      directorMock: true,
+      performerMock: performer.mock,
+      performerDegraded: performer.degraded,
+      directorLatencyMs: 0,
+      performerLatencyMs: performer.latencyMs,
+      performerAttempts: performer.attempts?.length,
+      intentNotes: notes,
+      beatsFired: [],
     },
   };
 }

@@ -12,6 +12,7 @@ import {
   computeInvestigation,
   type Investigation,
 } from "./deductions.js";
+import { resolveAccuseStaging } from "./formal-accusation.js";
 
 /**
  * UI-safe projection of a playthrough (PLAYER_SURFACES.md §5–7).
@@ -256,6 +257,23 @@ export function buildPlayerView(
           ),
         }
       : undefined,
+    /**
+     * Formal accusation ceremony (Accuse button). When active, the household
+     * is staged; the composer is for freeform charge speech — no form fields.
+     */
+    formalAccusation: (() => {
+      const staging = resolveAccuseStaging(def);
+      const active = state.formalAccusationScene?.active === true;
+      const canAccuse = state.status === "active";
+      return {
+        /** Player may open the ceremony (case still active). */
+        canBegin: canAccuse && !active,
+        /** Ceremony is open; next freeform input is a formal charge. */
+        active,
+        composerPlaceholder: staging.composerPlaceholder,
+        winHint: staging.winHint,
+      };
+    })(),
     ending:
       state.status !== "active" && state.endingId
         ? (() => {

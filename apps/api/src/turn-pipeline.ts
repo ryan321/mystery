@@ -5,6 +5,7 @@
 export {
   standardTurn,
   runTurnPipeline,
+  runAccusationStaging,
   turnHardCap,
 } from "./games/standard-turn.js";
 export type { TurnResult as TurnPipelineResult } from "./games/types.js";

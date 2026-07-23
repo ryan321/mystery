@@ -91,3 +91,58 @@
 .seal {
   font-size: calc(0.75rem * var(--game-font-scale, 1));
 }
+
+.accuseMode {
+  border-top-color: rgba(180, 70, 60, 0.45);
+  background: rgba(28, 12, 14, 0.85);
+}
+
+.accuseBanner {
+  margin: 0 0 0.45rem;
+  padding: 0.4rem 0.55rem;
+  font-size: calc(0.78rem * var(--game-font-scale, 1));
+  line-height: 1.4;
+  color: #f0d0c8;
+  background: rgba(120, 40, 36, 0.35);
+  border: 1px solid rgba(200, 90, 80, 0.35);
+  border-radius: 3px;
+}
+
+.accuseHint {
+  margin: 0 0 0.35rem;
+  font-size: calc(0.72rem * var(--game-font-scale, 1));
+  line-height: 1.35;
+  color: var(--ink-soft);
+  letter-spacing: 0.02em;
+}
+
+.accuse {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: calc(0.65rem * var(--game-font-scale, 1));
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #f5e6e0;
+  background: linear-gradient(180deg, #8a3a34 0%, #5c2420 55%, #3d1815 100%);
+  border: 1px solid rgba(200, 100, 90, 0.55);
+  border-radius: 3px;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(80, 20, 16, 0.35);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.accuse:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(100, 30, 24, 0.45);
+}
+
+.accuse:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

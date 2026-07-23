@@ -381,6 +381,18 @@ export const PlaythroughStateSchema = z.object({
   playerKnowledge: z.record(PlayerCharacterKnowledgeSchema).default({}),
   /** Informal accusation awaiting formal confirmation (accuse gate). */
   pendingAccusation: PendingAccusationSchema.optional(),
+  /**
+   * Formal accusation ceremony opened by the Accuse button (or equivalent).
+   * Household is staged; the player's next freeform speech is treated as a
+   * formal charge when it names a theory. Cleared on score, withdraw, or cancel.
+   */
+  formalAccusationScene: z
+    .object({
+      active: z.literal(true),
+      openedOnTurn: z.number().int().nonnegative(),
+      locationId: z.string().optional(),
+    })
+    .optional(),
   /** Set when judgment is rendered (accuse / fail beat), even during denouement. */
   resolution: ResolutionSchema.optional(),
   /** Present while status === denouement. */

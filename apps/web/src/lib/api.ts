@@ -155,6 +155,29 @@ export async function sendTurn(
   return json<SendTurnResponse>(res);
 }
 
+/**
+ * Accuse button: open the formal accusation ceremony (gather the household).
+ * No form — the next freeform sendTurn is the charge.
+ */
+export async function beginAccusation(
+  id: string
+): Promise<SendTurnResponse> {
+  let res: Response;
+  try {
+    res = await apiFetch(
+      `/v1/playthroughs/${id}/accuse-begin`,
+      { method: "POST", headers: JSON_HEADERS, body: "{}" },
+      TURN_TIMEOUT_MS
+    );
+  } catch (e) {
+    if (e instanceof DOMException && e.name === "AbortError") {
+      throw new Error("The turn is taking too long — try again in a moment.");
+    }
+    throw e;
+  }
+  return json<SendTurnResponse>(res);
+}
+
 // ── Auth (magic link + session; Google lives at /v1/auth/google) ────────
 
 export type MeResponse = {

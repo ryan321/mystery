@@ -73,7 +73,10 @@ export default function HelpPage() {
               </li>
               <li>
                 <strong>Make an accusation.</strong> Name the culprit whenever
-                you’re ready. You can accuse at any time, even without evidence.
+                you’re ready. Use the Accuse button when you want a formal
+                charge — the household gathers, then you state who, how, and
+                why in your own words (no form). You can also accuse at any
+                time in free text. A wrong formal accusation can end the case.
               </li>
             </ul>
           </section>

@@ -820,6 +820,109 @@ const TURN_RATE = {
 // optimistic turn_count lock in updatePlaythrough is the backstop.
 const turnsInFlight = new Set<string>();
 
+/**
+ * Accuse button — open the formal accusation ceremony (gather cast, set the
+ * scene). No form: the player's *next* freeform turn is the charge.
+ * See packages/engine formal-accusation.ts + accusePolicy.staging.
+ */
+app.post("/v1/playthroughs/:id/accuse-begin", async (c) => {
+  const ident = await identity(c);
+  const row = await getPlaythrough(pool, c.req.param("id"));
+  if (!row || !ownsPlaythrough(row, ident)) {
+    return c.json({ error: "not_found" }, 404);
+  }
+  const state = row.state;
+  if (state.status !== "active") {
+    return c.json(
+      {
+        error: "case_not_active",
+        status: state.status,
+        message: "Formal accusation is only available while the case is open.",
+      },
+      400
+    );
+  }
+
+  const def = await registry.getDefinition(state.caseId, state.contentVersion);
+  if (!def) return c.json({ error: "case_missing" }, 500);
+
+  if (turnsInFlight.has(state.id)) {
+    c.header("Retry-After", "5");
+    return c.json(
+      {
+        error: "turn_in_flight",
+        message: "The previous turn is still resolving.",
+      },
+      429
+    );
+  }
+  turnsInFlight.add(state.id);
+  let result;
+  try {
+    try {
+      const { runAccusationStaging } = await import("./games/standard-turn.js");
+      result = await runAccusationStaging(
+        { def, state },
+        platform
+      );
+    } catch (err) {
+      console.error("accuse-begin failed", err);
+      return c.json(
+        {
+          error: "accuse_begin_failed",
+          message: err instanceof Error ? err.message : "unknown",
+        },
+        500
+      );
+    }
+
+    try {
+      await commitTurn(pool, result.state, {
+        playthroughId: result.state.id,
+        turnIndex: result.state.turnCount,
+        playerInput: "[Accuse]",
+        narration: result.narration,
+        dialogue: result.dialogue,
+        appliedPatch: result.appliedPatch,
+        rejected: result.rejected,
+        evidenceAdded: result.evidenceAdded,
+        model: `staging+${result.debug.performerModel}`,
+        mock: result.debug.performerMock,
+        latencyMs: result.debug.performerLatencyMs,
+      });
+    } catch (err) {
+      if (err instanceof Error && err.message === "playthrough_conflict") {
+        return c.json({ error: "conflict", message: "Stale playthrough" }, 409);
+      }
+      throw err;
+    }
+  } finally {
+    turnsInFlight.delete(state.id);
+  }
+
+  const committed = result.state;
+  return c.json({
+    narration: result.narration,
+    dialogue: result.dialogue,
+    playthrough: publicState(committed, def),
+    playerView: playerViewFor(def, committed),
+    appliedPatch: result.appliedPatch,
+    rejected: result.rejected,
+    evidenceAdded: result.evidenceAdded,
+    justHappened: result.justHappened.map(
+      ({ narrationHints: _hints, ...j }) => j
+    ),
+    locationName: def.locations.find((l) => l.id === committed.locationId)
+      ?.name,
+    progress: progressFor(def, committed, {
+      previous: row.state,
+      justHappened: result.justHappened,
+      evidenceAdded: result.evidenceAdded,
+    }),
+    ...(process.env.NODE_ENV !== "production" ? { _debug: result.debug } : {}),
+  });
+});
+
 app.post("/v1/playthroughs/:id/turns", async (c) => {
   const ident = await identity(c);
   const row = await getPlaythrough(pool, c.req.param("id"));
