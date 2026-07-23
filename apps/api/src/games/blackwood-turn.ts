@@ -83,7 +83,12 @@ const GUIDANCE = {
     "Blackwood is a rain-soaked country-house night. Suspects are grieving, " +
     "guarded, and proud — they resist with cold refusal and social pressure, " +
     "never by physically restraining a police inspector over a conversation. " +
-    "Reserve hold_player/restrain for a genuine, capable threat.",
+    "Reserve hold_player/restrain for a genuine, capable threat. " +
+    "The Inspector holds his ground: servants and suspects are sent for or " +
+    "come to him — he is not marched from room to room because he named or " +
+    "called for someone. Only move him when he says he is going somewhere, or " +
+    "is plainly escorted. A butler or maid may answer a summons and come to " +
+    "him; a guarded suspect need not.",
   performer:
     "Tone: gothic and candle-lit, the storm against the glass; dry, literate, " +
     "never lurid. Keep NPC replies clipped and class-conscious. The night runs " +
