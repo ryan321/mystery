@@ -62,9 +62,31 @@ pnpm deploy:web    # fly deploy -c fly.web.toml
 
 On boot the API runs migrations and auto-imports `content/cases/*`
 (baked into the image) as published bundles — same as local dev.
-Shipping a new mystery = commit the bundle and push (the content path
-triggers the API workflow), or use the upload endpoint /
-`pnpm publish-case` against the live API.
+
+## Shipping content updates
+
+**The boot import only seeds cases that are missing entirely — it does
+NOT upgrade an existing case to a newer `contentVersion`.** (Learned the
+hard way 2026-07-23: a rescaled Blackwood time schedule sat in the image
+across two deploys while prod kept serving the old version.) To ship a
+content change to prod:
+
+1. Bump `contentVersion` in the case's `definition.json` — uploads with a
+   duplicate `(caseId, contentVersion)` are rejected.
+2. Publish against the live API:
+
+   ```bash
+   ADMIN_TOKEN=$(fly ssh console -a mysterytrove-api -C "printenv ADMIN_TOKEN" | tr -d '\r\n') \
+     pnpm publish-case <caseId> --api https://mysterytrove-api.fly.dev --publish
+   ```
+
+   `ADMIN_TOKEN` is a **Fly secret**, not in `.env` — without it the route
+   403s (fail-closed). Omit `--publish` to land as a reviewable draft.
+3. Commit the definition change too, so the image and DB agree.
+
+Existing playthroughs keep the `contentVersion` they started on; only new
+playthroughs pick up the latest published version. Bundle uploads are
+capped at 52MB (`bundle.ts` enforces per-asset caps below that).
 
 ## Custom domains
 
