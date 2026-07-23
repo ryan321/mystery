@@ -36,7 +36,7 @@ import {
   updateNotebook,
   databaseUrl,
 } from "./db.js";
-import { runTurnPipeline } from "./turn-pipeline.js";
+import { gameFor } from "./games/registry.js";
 import { MysteryRegistry } from "./registry.js";
 import { BundleError } from "./bundle.js";
 import {
@@ -884,12 +884,13 @@ app.post("/v1/playthroughs/:id/turns", async (c) => {
   let result;
   try {
     try {
-      result = await runTurnPipeline({
-        def,
-        state,
-        playerInput: input,
-        llmConfig,
-      });
+      // Dispatch to the mystery's own game module (or the shared default);
+      // the platform owns everything around this call — persistence, the
+      // integrity boundary, rate limiting (docs/GAME_ARCHITECTURE.md).
+      result = await gameFor(state.caseId).runTurn(
+        { def, state, playerInput: input },
+        { llmConfig }
+      );
     } catch (err) {
       console.error("turn pipeline failed", err);
       return c.json(
