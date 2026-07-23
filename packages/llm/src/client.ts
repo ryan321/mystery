@@ -317,7 +317,9 @@ export async function completeJson(
 
 export type ValidateResult<T> =
   | { ok: true; value: T }
-  | { ok: false; reason: string; failureClass: FailureClass };
+  // A soft failure carries `value`: the output parsed into T and only bent a
+  // content rule, so the caller may still ship it (see acceptSoftValue).
+  | { ok: false; reason: string; failureClass: FailureClass; value?: T };
 
 export type CompleteJsonValidatedOptions<T> = CompleteJsonOptions & {
   /** Parse + business validation. Called on every successful JSON body. */
@@ -326,12 +328,21 @@ export type CompleteJsonValidatedOptions<T> = CompleteJsonOptions & {
   schemaRepair?: boolean;
   /** One extra full retry after soft failure. Default true. */
   softRetry?: boolean;
+  /**
+   * When the only remaining failure is `soft` and the model still produced a
+   * usable value, return it (softDegraded) instead of throwing. Adapt-to-the-
+   * model: shipping slightly-imperfect real output beats the heuristic. Off by
+   * default — the director's heuristic fallback is better than empty intents.
+   */
+  acceptSoftValue?: boolean;
 };
 
 export type CompleteJsonValidatedResult<T> = {
   value: T;
   raw: string;
   attempts: AttemptLog[];
+  /** True when `value` came from a soft-failed attempt shipped anyway. */
+  softDegraded?: boolean;
 };
 
 /**
@@ -442,6 +453,13 @@ export async function completeJsonValidated<T>(
     });
   };
 
+  // Best usable value from a soft-failed attempt, kept in case every repair
+  // also soft-fails and the caller opted to ship it rather than fall back.
+  let softValue: T | undefined;
+  const noteSoft = (f: ValidateResult<T> & { ok: false }) => {
+    if (f.failureClass === "soft" && f.value !== undefined) softValue = f.value;
+  };
+
   // Pass 1
   let result = await runOnce();
   if ("value" in result) {
@@ -450,6 +468,7 @@ export async function completeJsonValidated<T>(
 
   let fail = result.fail;
   let lastRaw = result.raw;
+  noteSoft(fail);
 
   // Schema repair (wrong shape / zod)
   if (
@@ -471,6 +490,7 @@ export async function completeJsonValidated<T>(
     }
     fail = result.fail;
     lastRaw = result.raw;
+    noteSoft(fail);
   }
 
   // Soft retry (empty narration / useless intents) — full re-ask once
@@ -500,6 +520,21 @@ export async function completeJsonValidated<T>(
       return { value: v.value, raw: softRes.raw, attempts: allAttempts };
     }
     fail = v;
+    lastRaw = softRes.raw;
+    noteSoft(fail);
+  }
+
+  // Adapt-to-the-model: if the only problem left is a soft/content rule and we
+  // still have usable output, ship it rather than collapse to the heuristic —
+  // slightly-imperfect real prose beats robotic fallback. Hard failures
+  // (schema/parse/transport, no usable value) still throw.
+  if (args.acceptSoftValue && softValue !== undefined) {
+    return {
+      value: softValue,
+      raw: lastRaw,
+      attempts: allAttempts,
+      softDegraded: true,
+    };
   }
 
   throw new ClassifiedError(fail.reason, {

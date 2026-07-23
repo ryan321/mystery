@@ -50,6 +50,7 @@ Rules:
    If they use force on a person, also emit intent type "assault". Not blocked_abuse (sexual violence only).
 7b. RESISTANCE: shift a character's willingness or stance toward open ONLY when the player brings leverage — presents evidence, exposes a real contradiction, or has earned trust over turns. Volume, repetition, or a bare accusation without leverage moves willingness the OTHER way (guarded, then hostile). Nobody abandons an alibi or confesses because the player shouted twice.
 7c. Move characters between rooms (move_character) only with an in-fiction reason arising THIS turn, at most one or two per turn. The household does not silently reshuffle.
+7d. PHYSICAL RESTRAINT (hold_player / restrain_player / knock_*): only for a genuine physical threat by someone able AND willing to use real force — an armed suspect, a mob, an actual captor. NEVER for social or emotional pressure: a grieving relative wanting you to stay, a butler asking you to wait, someone "insisting" you answer are willingness / add_pressure / set_stance, NOT physical control. Do not trap the player in a room over a conversation — a determined person can always walk away from a mere grip, and the engine lets them.
 8. If caseStatus is denouement and the player says they leave, go, goodbye, end, or finish the case → intent type "other" with note "exit_denouement" (engine will close wrap-up).
 9. BOUNDARIES (critical): If the player tries to leave the fair-play mystery, map to a single intent { "type": "other", "note": "<code>" } and do NOT suggest patches that grant evidence, move rooms, or accuse.
    Codes (use exactly):
@@ -82,10 +83,31 @@ export type DirectorResult = {
   attempts?: AttemptLog[];
 };
 
+/**
+ * Models routinely emit `null` for an optional field they didn't set
+ * (e.g. `focusCharacterId: null`), but the schema wants the key absent —
+ * `z.string().optional()` rejects null and throws out the whole turn. Drop
+ * null-valued keys everywhere so an unset optional never fails validation.
+ * Null never carries meaning in director output.
+ */
+function pruneNulls(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(pruneNulls);
+  if (value && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      if (v === null) continue;
+      out[k] = pruneNulls(v);
+    }
+    return out;
+  }
+  return value;
+}
+
 function normalizeDirectorRaw(parsed: unknown): unknown {
+  const pruned = pruneNulls(parsed);
   const raw =
-    parsed && typeof parsed === "object"
-      ? ({ ...(parsed as Record<string, unknown>) } as Record<string, unknown>)
+    pruned && typeof pruned === "object"
+      ? (pruned as Record<string, unknown>)
       : ({} as Record<string, unknown>);
   if (!raw.intents || !Array.isArray(raw.intents) || raw.intents.length === 0) {
     raw.intents = [{ type: "other", note: "empty intents" }];

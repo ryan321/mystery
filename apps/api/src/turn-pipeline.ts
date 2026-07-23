@@ -243,6 +243,28 @@ export async function runTurnPipeline(args: {
   simState = worldToPlayer.state;
   justHappened.push(...worldToPlayer.justHappened);
 
+  // Leaving the room breaks any hold — whoever had a grip on the player is in
+  // the room they just left. Clears a "held" state (even one re-applied by this
+  // turn's world→player effects) so a grabbed sleeve can never trap the player
+  // across turns. Genuine incapacitation (restrained/downed/unconscious) blocks
+  // the move upstream, so this only fires when a move actually succeeded.
+  if (applied.setLocationId && simState.playerStatus?.control === "held") {
+    simState = {
+      ...simState,
+      playerStatus: {
+        ...simState.playerStatus,
+        control: "free",
+        controlledBy: undefined,
+      },
+    };
+    justHappened.push({
+      id: "broke_free",
+      summary: "You break free and leave",
+      narrationHints:
+        "The player pulls out of the grip and leaves the room. Narrate breaking away briefly; do not stage a successful hold or block the exit.",
+    });
+  }
+
   // Far-room move: the player named a destination that wasn't an adjacent
   // exit and the engine walked them there through connecting rooms. Tell the
   // performer to narrate the transit and land the scene at the destination —

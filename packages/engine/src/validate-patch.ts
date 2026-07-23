@@ -322,18 +322,22 @@ export function validateAndApplyPatch(
 
   if (patch.setLocationId) {
     const control = state.playerStatus?.control ?? "free";
-    if (control !== "free") {
-      // Physical control blocks voluntary exits; force moves use move_player effects.
+    // A mere grip ("held") never traps a determined person — they break free
+    // and the move succeeds (turn-pipeline clears the hold once they've left
+    // the room). Only genuine incapacitation blocks a voluntary exit, so a
+    // grieving relative grabbing a sleeve can't pin the player in a room turn
+    // after turn. Force-moves still use move_player effects.
+    const incapacitated =
+      control === "downed" ||
+      control === "restrained" ||
+      control === "unconscious";
+    if (incapacitated) {
       const reason =
-        control === "held"
-          ? "You cannot walk away — you are being held."
-          : control === "downed"
-            ? "You cannot leave — you are on the floor."
-            : control === "restrained"
-              ? "You cannot leave — you are restrained."
-              : control === "unconscious"
-                ? "You cannot move — you are unconscious."
-                : "You cannot leave under your own power.";
+        control === "downed"
+          ? "You cannot leave — you are on the floor."
+          : control === "restrained"
+            ? "You cannot leave — you are restrained."
+            : "You cannot move — you are unconscious.";
       rejected.push(reason);
     } else if (legalExit(def, probe(), locationId, patch.setLocationId)) {
       locationId = patch.setLocationId;

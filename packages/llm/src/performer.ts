@@ -341,7 +341,10 @@ function validatePerformer(
     const output = PerformerOutputSchema.parse(normalized);
     const soft = performerSoftFailure(output, contextPack);
     if (soft) {
-      return { ok: false, reason: soft, failureClass: "soft" };
+      // Carry the parsed output: it's valid prose that only bent a content
+      // rule, so runPerformer can ship it (acceptSoftValue) rather than fall
+      // back to the heuristic.
+      return { ok: false, reason: soft, failureClass: "soft", value: output };
     }
     return { ok: true, value: output };
   } catch (err) {
@@ -449,7 +452,7 @@ export async function runPerformer(
   ].join("\n");
 
   try {
-    const { value, attempts } = await completeJsonValidated({
+    const { value, attempts, softDegraded } = await completeJsonValidated({
       client,
       model,
       system: PERFORMER_SYSTEM,
@@ -458,14 +461,24 @@ export async function runPerformer(
       maxTransportRetries: 2,
       extraBody: openRouterExtraBody(config),
       validate: (parsed) => validatePerformer(parsed, args.contextPack),
+      // Ship slightly-imperfect real narration (a soft content violation like a
+      // cross-room mention) rather than collapse to the robotic heuristic — the
+      // heuristic is worse than the prose we'd be discarding. Dialogue from
+      // absent speakers is still stripped below. Only hard failures (unusable
+      // JSON, transport) fall through to the heuristic.
+      acceptSoftValue: true,
     });
 
     const filtered = filterDialogueToPresent(value, args.contextPack);
+    if (softDegraded) {
+      console.warn("performer soft-degraded: shipped LLM prose over heuristic");
+    }
 
     return {
       output: filtered,
       model,
       mock: false,
+      degraded: softDegraded,
       latencyMs: Date.now() - started,
       attempts,
     };

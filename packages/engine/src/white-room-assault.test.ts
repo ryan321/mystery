@@ -80,12 +80,10 @@ describe("white room staff assault", () => {
     expect(beats.state.characterState["bram-holt"]?.locationId).toBe(
       "ward-office"
     );
-    // voluntary leave blocked while held
-    const leave = validateAndApplyPatch(def, beats.state, {
-      setLocationId: "corridor",
-    });
-    expect(leave.applied.setLocationId).toBeUndefined();
-    expect(leave.rejected.some((r) => /held/i.test(r))).toBe(true);
+    // NOTE: "held" is now a breakable grip (a determined player can walk out of
+    // it — see validate-patch move block); only restrained/downed/unconscious
+    // block a voluntary exit. The white-room's genuine-restraint mechanic will
+    // move to `restrained` when it's reworked as its own game module.
   });
 
   it("second assault applies full chemical restraint", () => {

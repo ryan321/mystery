@@ -136,6 +136,20 @@ Implemented in `packages/llm` (`client.ts`, `retry.ts`):
 
 Non-retryable: 401/403, most 400s (wrong model / bad request).
 
+### Four axes every pipeline decision trades against
+
+1. **Correctness** — the turn output is correct AND fun. 2. **Recovery** — resilience to LLM problems. 3. **Speed** — latency the player sees. 4. **Cost** — token/$ per turn.
+
+They couple: **retries link 2↔3↔4** (each retry is a full extra call → linear latency + cost), and **model choice links 1↔3↔4** (better = slower + pricier, an unavoidable product call). So the highest-leverage move is the one below — tolerating model output *avoids* the retry instead of paying for it, improving 1 & 2 while helping 3 & 4. When a change must trade, name the axis it spends.
+
+### Principle: adapt the harness to the model, don't fight it
+
+Be liberal in what we accept from an LLM. Every place we reject a *plausible* model response and fall back to the heuristic, we ship the player worse output than we discarded — and the failure rate stays high forever (real players have seen 40-48% of turns fall to heuristic → no dialogue).
+
+- **Coerce, never reject — for shape.** Normalizers should make almost any plausible JSON valid rather than letting the schema throw: drop nulls (`pruneNulls`), coerce string↔number, wrap scalars into arrays, fuzzy-map near-miss enum values to the nearest legal one (see `db.ts` `sanitizeStateJson` for `characterState`), default missing fields. A model emitting `focusCharacterId: null` for an unset optional must not throw out the whole turn.
+- **Heuristic is the LAST resort, not the answer to a soft violation.** Exhaust light repairs, then *ship the LLM output* even if it bends a soft/style rule; only fall to the heuristic when output is genuinely unusable (empty, unparseable, transport error). E.g. presence: allow *mentions* of off-screen characters; only guard against an absent character being given *dialogue/in-room action*, and strip that line rather than discard the turn.
+- **Boundary — stay strict where the check protects integrity, not style.** Closed-world id allowlists and the `RESERVED_FLAGS` solution-leak guard keep hard-rejecting. Liberal about shape/prose; never about letting the model invent evidence ids or flip `case_solved`.
+
 ## Code
 
 - `packages/llm/src/director.ts` / `performer.ts` / `client.ts` / `retry.ts`
