@@ -286,3 +286,14 @@ export async function deleteNote(
   });
   return json<NoteResponse>(res);
 }
+
+// ── Player feedback (gameplay-screen "Send feedback" modal) ─────────────
+
+export async function submitFeedback(id: string, text: string): Promise<void> {
+  const res = await apiFetch(`/v1/playthroughs/${id}/feedback`, {
+    method: "POST",
+    headers: JSON_HEADERS,
+    body: JSON.stringify({ text }),
+  });
+  await json<{ ok: boolean }>(res);
+}

@@ -34,6 +34,7 @@ import {
   countRecentTurns,
   listTurns,
   updateNotebook,
+  insertFeedback,
   databaseUrl,
 } from "./db.js";
 import { gameFor } from "./games/registry.js";
@@ -1022,6 +1023,41 @@ app.delete("/v1/playthroughs/:id/notes/:noteId", async (c) => {
   } catch (err) {
     return noteError(c, err);
   }
+});
+
+// ── Player feedback (gameplay-screen "Send feedback" modal) ─────────────
+// Inert like player notes: recorded for review, never read back into game
+// state. Captures who sent it, which mystery/run, and how far they were.
+
+const FEEDBACK_MAX_LEN = 2000;
+
+app.post("/v1/playthroughs/:id/feedback", async (c) => {
+  const ident = await identity(c);
+  const row = await getPlaythrough(pool, c.req.param("id"));
+  if (!row || !ownsPlaythrough(row, ident)) {
+    return c.json({ error: "not_found" }, 404);
+  }
+  const body = (await c.req.json().catch(() => ({}))) as { text?: string };
+  const text = String(body.text ?? "").trim();
+  if (!text) return c.json({ error: "feedback_empty" }, 400);
+  if (text.length > FEEDBACK_MAX_LEN) {
+    return c.json({ error: "feedback_too_long" }, 400);
+  }
+  // Cheap bound against spam submissions; 429 reveals nothing about the run.
+  if (
+    rateLimited(`feedback:${ident.userId ?? clientIp(c)}`, 10, 60 * 60_000)
+  ) {
+    c.header("Retry-After", "3600");
+    return c.json({ error: "rate_limited" }, 429);
+  }
+  await insertFeedback(pool, {
+    playthroughId: row.state.id,
+    userId: row.userId ?? ident.userId ?? null,
+    caseId: row.state.caseId,
+    turnCount: row.state.turnCount,
+    feedback: text,
+  });
+  return c.json({ ok: true }, 201);
 });
 
 // ── Auth: magic-link accounts (docs/SUBSCRIPTIONS.md Phase 1) ───────────

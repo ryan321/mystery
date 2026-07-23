@@ -20,12 +20,14 @@ import CastList from "../../../components/CastList";
 import InventoryPanel from "../../../components/InventoryPanel";
 import NotebookPanel from "../../../components/NotebookPanel";
 import DossierContent from "../../../components/DossierContent";
+import FeedbackModal from "../../../components/FeedbackModal";
 import {
   addNote,
   assetUrl,
   deleteNote,
   getPlaythrough,
   sendTurn,
+  submitFeedback,
   updateNote,
 } from "../../../lib/api";
 import {
@@ -197,6 +199,9 @@ export default function PlaythroughPage() {
   const [locationName, setLocationName] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [feedbackBusy, setFeedbackBusy] = useState(false);
+  const [feedbackError, setFeedbackError] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const settingsRef = useRef<HTMLDivElement>(null);
   const settingsBtnRef = useRef<HTMLButtonElement>(null);
@@ -532,6 +537,32 @@ export default function PlaythroughPage() {
     [id, applyNotebook]
   );
 
+  const openFeedback = useCallback(() => {
+    setFeedbackError(null);
+    setFeedbackOpen(true);
+  }, []);
+
+  // Returns success so the modal can show its brief "thanks" state; on
+  // failure the error surfaces inside the modal and the text is kept.
+  const handleSubmitFeedback = useCallback(
+    async (text: string) => {
+      setFeedbackBusy(true);
+      setFeedbackError(null);
+      try {
+        await submitFeedback(id, text);
+        return true;
+      } catch (e) {
+        setFeedbackError(
+          e instanceof Error ? e.message : "Couldn't send feedback — try again."
+        );
+        return false;
+      } finally {
+        setFeedbackBusy(false);
+      }
+    },
+    [id]
+  );
+
   const closed = playthrough
     ? playthrough.status !== "active" && playthrough.status !== "denouement"
     : true;
@@ -621,6 +652,29 @@ export default function PlaythroughPage() {
                 </svg>
               </button>
             ))}
+            <button
+              type="button"
+              className={styles.iconBtn}
+              onClick={openFeedback}
+              aria-label="Send feedback"
+              aria-haspopup="dialog"
+              title="Send feedback"
+            >
+              <svg
+                className={styles.iconSvg}
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+            </button>
             <button
               ref={settingsBtnRef}
               type="button"
@@ -824,6 +878,14 @@ export default function PlaythroughPage() {
           resolution={playthrough.resolution}
         />
       ) : null}
+
+      <FeedbackModal
+        open={feedbackOpen}
+        busy={feedbackBusy}
+        error={feedbackError}
+        onSubmit={handleSubmitFeedback}
+        onClose={() => setFeedbackOpen(false)}
+      />
     </>
   );
 }

@@ -33,6 +33,7 @@ export async function migrate(pool: Db): Promise<void> {
     "004_mysteries.sql",
     "005_billing.sql",
     "006_google_auth.sql",
+    "007_feedback.sql",
   ]) {
     const sql = readFileSync(join(dir, file), "utf8");
     await pool.query(sql);
@@ -503,4 +504,28 @@ export async function listTurns(pool: Db, playthroughId: string) {
     [playthroughId]
   );
   return res.rows;
+}
+
+export type InsertFeedbackArgs = {
+  playthroughId: string;
+  /** Session user id or anon cookie id; null for legacy ownerless runs. */
+  userId: string | null;
+  caseId: string;
+  turnCount: number;
+  feedback: string;
+};
+
+/**
+ * Free-text player feedback from the gameplay screen. Inert like player
+ * notes — never read back into game state, just recorded for review.
+ */
+export async function insertFeedback(
+  pool: Db,
+  args: InsertFeedbackArgs
+): Promise<void> {
+  await pool.query(
+    `INSERT INTO feedback (playthrough_id, user_id, case_id, turn_count, feedback)
+     VALUES ($1,$2,$3,$4,$5)`,
+    [args.playthroughId, args.userId, args.caseId, args.turnCount, args.feedback]
+  );
 }
