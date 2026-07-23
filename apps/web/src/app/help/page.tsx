@@ -99,13 +99,10 @@ export default function HelpPage() {
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>Why turns take a moment</h2>
             <p>
-              Each turn takes around 10–20 seconds. That&rsquo;s not the house
-              freezing — it&rsquo;s the story being written. Behind every
-              response, an AI reads the whole case — the rooms, the people,
-              everything you&rsquo;ve said and done — works out what your move
-              changes, and then writes the scene. We use some of the fastest
-              models in existence, and this is simply how long they take to do
-              it well; there&rsquo;s no dial on our side that hurries them.
+              Turns take around 10–20 seconds. That&rsquo;s how long the AI
+              takes to process a turn and return a response, and there&rsquo;s
+              really nothing we can do about it — we use some of the fastest
+              AIs in existence, but they still have limits.
             </p>
           </section>
 
