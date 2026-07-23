@@ -76,7 +76,7 @@ export async function classifyPhysicalAction(
   if (!config.apiKey) return empty;
 
   const client = createOpenRouterClient(config);
-  const model = config.directorModel ?? config.narratorModel;
+  const model = config.auxModel ?? config.directorModel ?? config.narratorModel;
   const presentLines =
     args.present.length > 0
       ? args.present.map((p) => `- ${p.id}: ${p.name}`).join("\n")
@@ -108,6 +108,7 @@ export async function classifyPhysicalAction(
       system: SYSTEM,
       user,
       temperature: 0,
+      maxTokens: 256,
       maxTransportRetries: 1,
       extraBody: openRouterExtraBody(config),
       validate: (parsed) => {

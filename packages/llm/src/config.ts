@@ -20,6 +20,12 @@ export type LlmConfig = {
   narratorModel: string;
   /** Call #1 — director / intent (defaults to narratorModel) */
   directorModel?: string;
+  /**
+   * Small structured side-calls (classify-physical, extract-accusation) —
+   * narrow deterministic tasks. Point at a cheap/fast model (LLM_AUX_MODEL) to
+   * cut per-turn cost; defaults to the director model (no change if unset).
+   */
+  auxModel?: string;
   /** OpenRouter provider routing; omitted → OpenRouter default routing. */
   provider?: ProviderRouting;
   /**
@@ -41,6 +47,9 @@ export function tryCreateOpenRouterConfig(
   const defaultModel = "anthropic/claude-sonnet-5";
   const narratorModel = env.LLM_NARRATOR_MODEL ?? defaultModel;
   const directorModel = env.LLM_DIRECTOR_MODEL ?? env.LLM_NARRATOR_MODEL ?? defaultModel;
+  // Cheap/fast model for the small structured side-calls; falls back to the
+  // director model so nothing changes until LLM_AUX_MODEL is set.
+  const auxModel = env.LLM_AUX_MODEL ?? directorModel;
 
   // OPENROUTER_PROVIDER_ORDER=deepseek[,other] pins routing for cache hits.
   // Fallbacks stay on unless OPENROUTER_ALLOW_FALLBACKS=false: a provider
@@ -69,6 +78,7 @@ export function tryCreateOpenRouterConfig(
     baseURL: env.OPENROUTER_BASE_URL ?? "https://openrouter.ai/api/v1",
     narratorModel,
     directorModel,
+    auxModel,
     provider,
     reasoning,
   };

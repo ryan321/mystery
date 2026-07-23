@@ -92,7 +92,7 @@ export async function extractAccusationJudgments(
   try {
     const { value } = await completeJsonValidated({
       client: createOpenRouterClient(config),
-      model: config.directorModel ?? config.narratorModel,
+      model: config.auxModel ?? config.directorModel ?? config.narratorModel,
       system: SYSTEM,
       user,
       temperature: 0,

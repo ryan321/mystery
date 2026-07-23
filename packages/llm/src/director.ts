@@ -292,7 +292,8 @@ export async function runDirector(
       system: DIRECTOR_SYSTEM,
       user,
       temperature: 0.2,
-      maxTransportRetries: 2,
+      maxTokens: 700,
+      maxTransportRetries: 1,
       extraBody: openRouterExtraBody(config),
       validate: (parsed) => validateDirector(parsed, args.playerInput),
     });

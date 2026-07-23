@@ -28,6 +28,13 @@ export function createOpenRouterClient(config: LlmConfig): OpenAI {
   const client = new OpenAI({
     apiKey: config.apiKey,
     baseURL,
+    // Our completeJson layer owns retry policy (classifies errors, backs off,
+    // honors Retry-After). The SDK's own retries would stack UNDER ours (up to
+    // 3×3 = 9 hidden HTTP requests) and its 10-min default timeout lets a
+    // single stuck call hang the whole turn. Disable both; a stuck call now
+    // fails fast into our classified-transient path.
+    maxRetries: 0,
+    timeout: 60_000,
     defaultHeaders: {
       "HTTP-Referer": "https://mystery.local",
       "X-Title": "Mystery Game",

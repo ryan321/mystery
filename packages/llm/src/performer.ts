@@ -458,7 +458,11 @@ export async function runPerformer(
       system: PERFORMER_SYSTEM,
       user,
       temperature: 0.55,
-      maxTransportRetries: 2,
+      maxTokens: 1200,
+      // A transient that survives 2 tries rarely clears on a 3rd within the
+      // latency budget; and the performer carries the full pack, so each retry
+      // is an expensive ~30-80s call.
+      maxTransportRetries: 1,
       extraBody: openRouterExtraBody(config),
       validate: (parsed) => validatePerformer(parsed, args.contextPack),
       // Ship slightly-imperfect real narration (a soft content violation like a
@@ -467,6 +471,9 @@ export async function runPerformer(
       // absent speakers is still stripped below. Only hard failures (unusable
       // JSON, transport) fall through to the heuristic.
       acceptSoftValue: true,
+      // acceptSoftValue already ships the soft value, so the soft-retry (a full
+      // extra performer call) is wasted work that rarely fixes a content bend.
+      softRetry: false,
     });
 
     const filtered = filterDialogueToPresent(value, args.contextPack);
