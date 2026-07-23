@@ -119,6 +119,32 @@ describe("directorIntentsToPatch", () => {
     expect(applied.nextState.flags.player_hint).toBe(true);
     expect(notes.some((n) => n.includes("dropped reserved flags"))).toBe(true);
   });
+
+  // Integrity: authored story-progress flags (declared, or set by an inspectable
+  // /beat) flip only via their authored trigger. A director that sets one
+  // directly — e.g. examined_vase before the player inspects the vase — desyncs
+  // the world and can skip a gate or spoil a reveal.
+  it("strips authored progression flags from the director's suggestedPatch", () => {
+    const state = createInitialPlaythrough(def, "t4");
+    const { patch, notes } = directorIntentsToPatch(
+      def,
+      state,
+      {
+        intents: [{ type: "look" }],
+        suggestedPatch: {
+          // examined_vase is authored (declared + set by the vase inspectable);
+          // director_scratch is a flag no authored content owns.
+          setFlags: { examined_vase: true, director_scratch: true },
+        },
+      },
+      "look around and mark the vase examined"
+    );
+    const applied = validateAndApplyPatch(def, state, patch);
+    expect(applied.nextState.flags.examined_vase).not.toBe(true);
+    // A flag the definition does not own still passes through.
+    expect(applied.nextState.flags.director_scratch).toBe(true);
+    expect(notes.some((n) => n.includes("dropped authored flags"))).toBe(true);
+  });
 });
 
 describe("sanitizeWorldToPlayerEffects", () => {
@@ -129,5 +155,14 @@ describe("sanitizeWorldToPlayerEffects", () => {
     ]);
     expect(ok.map((e) => e.id)).toEqual(["player_seen_thing"]);
     expect(rejected.some((r) => r.includes("reserved flag"))).toBe(true);
+  });
+
+  it("rejects set_game_flag targeting an authored progression flag", () => {
+    const { ok, rejected } = sanitizeWorldToPlayerEffects(def, [
+      { type: "set_game_flag", id: "examined_vase", value: true },
+      { type: "set_game_flag", id: "player_seen_thing", value: true },
+    ]);
+    expect(ok.map((e) => e.id)).toEqual(["player_seen_thing"]);
+    expect(rejected.some((r) => r.includes("authored flag"))).toBe(true);
   });
 });

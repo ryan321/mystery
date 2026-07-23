@@ -1,4 +1,8 @@
-import type { FlagRequirement, FlagValue } from "@mystery/shared";
+import type {
+  FlagRequirement,
+  FlagValue,
+  MysteryDefinition,
+} from "@mystery/shared";
 
 /**
  * Flags the engine owns exclusively. They gate the sealed solution
@@ -21,6 +25,39 @@ export function stripReservedFlags(
     else out[key] = value;
   }
   return { flags: out, dropped };
+}
+
+/**
+ * Every flag the definition itself owns: declared flags (def.flags), plus any
+ * flag an inspectable reveal or a beat effect sets. These are authored
+ * story-progress state — each flips only through its authored trigger (the
+ * player inspects the thing, a beat fires). LLM-proposed writes must not touch
+ * them: a director that sets `lantern_found` because the player *mentioned*
+ * digging desyncs the world from what the player has actually done, and can
+ * skip a gate or spoil a reveal. The director's job is to emit the intent that
+ * fires the reveal, never to set its outcome flag. Cheap to recompute per turn;
+ * the definition is small.
+ */
+export function authoredFlagKeys(def: MysteryDefinition): Set<string> {
+  const keys = new Set<string>();
+  for (const f of def.flags ?? []) keys.add(f.id);
+  for (const loc of def.locations ?? []) {
+    for (const insp of loc.inspectables ?? []) {
+      const sets = insp.onInspect?.setsFlags;
+      if (sets) for (const k of Object.keys(sets)) keys.add(k);
+    }
+  }
+  for (const beat of def.beats ?? []) {
+    for (const eff of beat.effects ?? []) {
+      if (
+        (eff.type === "set_game_flag" || eff.type === "set_game_flag_true") &&
+        eff.id != null
+      ) {
+        keys.add(String(eff.id));
+      }
+    }
+  }
+  return keys;
 }
 
 /** Returns true if every required flag key matches the current value. */

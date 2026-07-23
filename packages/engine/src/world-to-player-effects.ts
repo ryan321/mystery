@@ -10,7 +10,7 @@ import type {
   PlaythroughState,
 } from "@mystery/shared";
 import { applyEffects } from "./effects.js";
-import { RESERVED_FLAGS } from "./flags.js";
+import { authoredFlagKeys, RESERVED_FLAGS } from "./flags.js";
 
 /** Effects the director may propose for world→player (and immediate reactions). */
 export const WORLD_TO_PLAYER_EFFECT_TYPES = new Set([
@@ -59,6 +59,7 @@ export function sanitizeWorldToPlayerEffects(
   const locationIds = new Set(def.locations.map((l) => l.id));
   const characterIds = new Set(def.characters.map((c) => c.id));
   const evidenceIds = new Set(def.evidence.map((e) => e.id));
+  const authoredFlags = authoredFlagKeys(def);
 
   for (const raw of effects) {
     if (!raw || typeof raw !== "object") continue;
@@ -69,15 +70,20 @@ export function sanitizeWorldToPlayerEffects(
     }
     const e: Effect = { ...raw, type };
 
-    // Engine-owned flags are off-limits to AI-proposed effects: a set_game_flag
-    // targeting case_solved/case_failed would flip the confession gate and leak
-    // the sealed solution (see flags.ts RESERVED_FLAGS).
-    if (
-      (type === "set_game_flag" || type === "set_game_flag_true") &&
-      RESERVED_FLAGS.has(String((e as { id?: unknown }).id ?? ""))
-    ) {
-      rejected.push(`blocked reserved flag on ${type}`);
-      continue;
+    // Engine-owned and authored flags are off-limits to AI-proposed effects: a
+    // set_game_flag targeting case_solved/case_failed would flip the confession
+    // gate and leak the sealed solution, and one targeting an authored progress
+    // flag would desync the world (see flags.ts RESERVED_FLAGS / authoredFlagKeys).
+    if (type === "set_game_flag" || type === "set_game_flag_true") {
+      const flagId = String((e as { id?: unknown }).id ?? "");
+      if (RESERVED_FLAGS.has(flagId)) {
+        rejected.push(`blocked reserved flag on ${type}`);
+        continue;
+      }
+      if (authoredFlags.has(flagId)) {
+        rejected.push(`blocked authored flag on ${type}`);
+        continue;
+      }
     }
 
     const toLoc = e.toLocationId != null ? String(e.toLocationId) : undefined;

@@ -2,7 +2,7 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "blackwood-inheritance",
-  "contentVersion": "0.10.18",
+  "contentVersion": "0.10.19",
   "meta": {
     "title": "The Blackwood Inheritance",
     "premise": "A stormy night, a dead master at the foot of his own stairs, and six weeks of break-ins no one has explained. Everyone in the house had a reason to be angry. Someone had a reason to plan.",
@@ -683,7 +683,7 @@
           "id": "tool-lean-to",
           "name": "the tool lean-to by the churchyard path",
           "onInspect": {
-            "narrativeHints": "A groundsman's lean-to, tools hung in rough order — rakes, shears, a scythe. The long spade hangs wrong-way-about, wiped in haste rather than cleaned: dark churchyard clay dried hard in the seam of the socket. It comes off its nail easily. Nobody is watching.",
+            "narrativeHints": "A groundsman's lean-to, tools hung in rough order — rakes, shears, a scythe. The long shovel hangs wrong-way-about, wiped in haste rather than cleaned: dark churchyard clay dried hard in the seam of the socket. It comes off its nail easily. Nobody is watching.",
             "revealsEvidenceIds": [
               "garden-spade"
             ]
@@ -794,7 +794,7 @@
           "id": "turned-earth",
           "name": "fresh-turned earth by the wall",
           "onInspect": {
-            "narrativeHints": "The rain has packed the soil hard as a floor; the spade goes through it in minutes. A foot down, wrapped in sacking: a dark lantern, iron and brass, its side deeply dented, scrubbed clean and buried wet. Fresh earth in a churchyard draws no eye — that was the whole idea.",
+            "narrativeHints": "The rain has packed the soil hard as a floor; the shovel goes through it in minutes. A foot down, wrapped in sacking: a dark lantern, iron and brass, its side deeply dented, scrubbed clean and buried wet. Fresh earth in a churchyard draws no eye — that was the whole idea.",
             "requiresEvidenceIds": [
               "garden-spade"
             ],
@@ -2004,8 +2004,8 @@
     },
     {
       "id": "garden-spade",
-      "name": "Groundsman's spade",
-      "description": "The long spade from the grounds lean-to, hung back wrong-way-about and wiped in haste — dark churchyard clay dried hard in the socket seam. Someone dug with it recently, and not in a flowerbed.",
+      "name": "Groundsman's shovel",
+      "description": "The long shovel from the grounds lean-to, hung back wrong-way-about and wiped in haste — dark churchyard clay dried hard in the socket seam. Someone dug with it recently, and not in a flowerbed.",
       "discoverableAt": {
         "locationId": "grounds-east",
         "inspectableId": "tool-lean-to"
@@ -2222,7 +2222,7 @@
       {
         "id": "lantern-burial",
         "at": "Tonight, before dawn",
-        "event": "Garrick scrubs and buries the dented lantern in fresh earth by the churchyard wall, where turned soil draws no eye. He digs with the long spade from the grounds lean-to and hangs it back wrong-way-about, wiped but not clean — churchyard clay left dried in the socket seam.",
+        "event": "Garrick scrubs and buries the dented lantern in fresh earth by the churchyard wall, where turned soil draws no eye. He digs with the long shovel from the grounds lean-to and hangs it back wrong-way-about, wiped but not clean — churchyard clay left dried in the socket seam.",
         "locationId": "cemetery",
         "actorIds": [
           "garrick"

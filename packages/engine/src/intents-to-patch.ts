@@ -5,7 +5,7 @@ import type {
   PlaythroughState,
   StatePatch,
 } from "@mystery/shared";
-import { flagsMatch, stripReservedFlags } from "./flags.js";
+import { authoredFlagKeys, flagsMatch, stripReservedFlags } from "./flags.js";
 import { accusableSuspectIds } from "./accusation.js";
 
 function norm(s: string): string {
@@ -331,12 +331,23 @@ export function directorIntentsToPatch(
   }
   if (director.suggestedPatch?.setFlags) {
     // The director is LLM-driven and prompt-injectable: never let it write
-    // engine-owned flags (case_solved/case_failed would leak the solution).
+    // engine-owned flags (case_solved/case_failed would leak the solution) or
+    // authored story-progress flags (e.g. lantern_found before the player has
+    // actually dug it up — that desyncs the world and can skip a gate). Both
+    // sets flip only via their authored trigger; the director emits the intent,
+    // the engine sets the flag.
     const { flags: safeFlags, dropped } = stripReservedFlags(
       director.suggestedPatch.setFlags
     );
-    Object.assign(setFlags, safeFlags);
+    const authored = authoredFlagKeys(def);
+    const droppedAuthored: string[] = [];
+    for (const [key, value] of Object.entries(safeFlags)) {
+      if (authored.has(key)) droppedAuthored.push(key);
+      else setFlags[key] = value;
+    }
     if (dropped.length) notes.push(`dropped reserved flags: ${dropped.join(", ")}`);
+    if (droppedAuthored.length)
+      notes.push(`dropped authored flags: ${droppedAuthored.join(", ")}`);
   }
   if (director.suggestedPatch?.accuse) {
     patch.accuse = director.suggestedPatch.accuse;
