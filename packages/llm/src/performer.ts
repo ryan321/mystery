@@ -137,8 +137,14 @@ export function narrationPresenceViolations(
 ): string | null {
   if (!contextPack || typeof contextPack !== "object") return null;
   const pack = contextPack as {
-    notPresentCharacters?: { id: string; name: string; storyRole?: string }[];
-    location?: { presentCharacterIds?: string[] };
+    notPresentCharacters?: {
+      id: string;
+      name: string;
+      storyRole?: string;
+      locationId?: string;
+      locationName?: string;
+    }[];
+    location?: { id?: string; presentCharacterIds?: string[] };
   };
   const absent = pack.notPresentCharacters ?? [];
   if (!absent.length) return null;
@@ -148,24 +154,49 @@ export function narrationPresenceViolations(
   const hits: string[] = [];
 
   for (const c of absent) {
-    // Skip pure victims if narration only mentions the body/death abstractly —
-    // still flag if they act like living people (handled via action verbs below).
     const name = c.name?.trim();
     if (!name || name.length < 3) continue;
     const nameLower = name.toLowerCase();
-    if (!lower.includes(nameLower)) {
-      // Also try last token ("Vale" from "Mr. Vale")
-      const parts = name.split(/\s+/);
-      const last = parts[parts.length - 1]!;
-      if (last.length < 4 || !lower.includes(last.toLowerCase())) continue;
-      // last-name only match — require nearby presence verbs
-      if (!hasPresenceVerbNear(text, last)) continue;
-      hits.push(name);
+    const parts = name.split(/\s+/);
+    const last = parts[parts.length - 1]!;
+
+    // Which token does the narration use? Full name, or last token ("Vale"
+    // from "Mr. Vale") when it's long enough to be unambiguous.
+    let token: string | null = null;
+    if (lower.includes(nameLower)) token = name;
+    else if (last.length >= 4 && lower.includes(last.toLowerCase())) token = last;
+    if (!token) continue;
+
+    // Legitimate cross-room reference: every sentence mentioning them also
+    // names their actual room ("Mrs. Blackwood is in the conservatory with
+    // Clara; she will be sent for" narrates the world, not this room).
+    // Summon/far-move turns produce these routinely.
+    if (
+      c.locationId &&
+      c.locationId !== pack.location?.id &&
+      mentionsAnchoredToLocation(text, token, c.locationName)
+    ) {
       continue;
     }
-    // Full name present — always a violation if they're not in the room
-    // (mentions as "elsewhere" still risk; soft-retry will rewrite)
-    if (hasPresenceVerbNear(text, name) || hasPresenceVerbNear(text, name.split(/\s+/).pop()!)) {
+
+    // Victims: the body may be described anywhere en route ("you pass the
+    // sheet covering Mr. Hugo Blackwood") — only flag prose that has them
+    // acting like a living person.
+    if (c.storyRole === "victim") {
+      if (hasLivingActionNear(text, token)) hits.push(name);
+      continue;
+    }
+
+    if (token === last && token !== name) {
+      // last-name only match — require nearby presence verbs
+      if (hasPresenceVerbNear(text, last)) hits.push(name);
+      continue;
+    }
+
+    // Full name present — violation with presence verbs or proximity phrasing
+    // (mentions as "elsewhere" without a location anchor still risk;
+    // soft-retry will rewrite)
+    if (hasPresenceVerbNear(text, name) || hasPresenceVerbNear(text, last)) {
       hits.push(name);
     } else if (
       // "Mrs. Blackwood remains still" / "Behind him, Mr. Vale" without strong verb
@@ -191,6 +222,40 @@ function escapeRegExp(s: string): string {
 }
 
 /** True if name appears near a physical-presence / action verb. */
+/**
+ * True when every sentence mentioning `token` also names the character's own
+ * (other) room — the narration is describing where they are, not putting
+ * them here. Location names like "Blackwood Manor — the conservatory" are
+ * matched by their short tail ("the conservatory").
+ */
+function mentionsAnchoredToLocation(
+  text: string,
+  token: string,
+  locationName?: string
+): boolean {
+  if (!locationName) return false;
+  const short = (locationName.split("—").pop() ?? locationName).trim().toLowerCase();
+  if (short.length < 4) return false;
+  const t = token.toLowerCase();
+  const mentioning = text
+    .split(/(?<=[.!?])\s+/)
+    .filter((s) => s.toLowerCase().includes(t));
+  if (mentioning.length === 0) return false;
+  return mentioning.every((s) => s.toLowerCase().includes(short));
+}
+
+/** Stricter than presence verbs: actions only a living person performs. */
+function hasLivingActionNear(text: string, name: string): boolean {
+  const verbs =
+    "stands?|standing|sits?|sitting|watches?|watching|speaks?|says?|said|whispers?|nods?|glares?|rises?|rising|walks?|steps?|turns?|gazes?|smiles?|breathes?";
+  const n = escapeRegExp(name);
+  const re = new RegExp(
+    `(\\b${n}\\b[^.!?]{0,50}\\b(${verbs})\\b)|(\\b(${verbs})\\b[^.!?]{0,50}\\b${n}\\b)`,
+    "i"
+  );
+  return re.test(text);
+}
+
 function hasPresenceVerbNear(text: string, name: string): boolean {
   const verbs =
     "stands?|standing|sits?|sitting|shifts?|watches?|watching|remains?|lingers?|waits?|waiting|speaks?|says?|said|nods?|glares?|steps?|moves?|turns?|looks?|gazes?|clasps?|draws?|creaking|shoes|gloved|hands|eyes fixed|weight";
@@ -393,13 +458,21 @@ export function heuristicPerform(args: {
   // Player-visible fallback: this narration reaches the player when the
   // AI performer fails, so it must stay diegetic. narrationHints are
   // STAGE DIRECTIONS for the AI (playtest finding: echoing them leaked
-  // "Applied effects: …" and accusation meta into the story) — only the
-  // short human summaries may appear, and never the raw player input or
-  // engine notes.
+  // "Applied effects: …" and accusation meta into the story). Summaries
+  // are only sometimes prose — movement breadcrumbs ("Player moved to X",
+  // "Traveled to X"), effect notations ("Mrs. Blackwood → the library"),
+  // and phase markers ("Wrap-up begins: First light") leaked verbatim in
+  // prod (turn 48, 2026-07-23) and read as broken output. Only clearly
+  // diegetic summaries pass, capped so they can't stack into a wall.
+  const NON_DIEGETIC =
+    /→|\bmoved to\b|^traveled\b|^player\b|^wrap-?up\b|^aftermath\b|^denouement\b|\bbegins:|^applied\b|^effects?\b|^accus|^boundary\b/i;
   const bits: string[] = [];
   if (args.justHappened?.length) {
     for (const j of args.justHappened) {
-      if (j.summary) bits.push(j.summary);
+      const s = j.summary?.trim();
+      if (!s || NON_DIEGETIC.test(s)) continue;
+      bits.push(/[.!?]$/.test(s) ? s : `${s}.`);
+      if (bits.length >= 2) break;
     }
   }
   bits.push(
