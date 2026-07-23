@@ -62,25 +62,34 @@
 .mysteryItem {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.85rem;
   padding: 0.85rem;
   background: var(--glass);
   border: 1px solid rgba(200, 165, 110, 0.15);
   border-radius: 6px;
   backdrop-filter: blur(12px);
-  text-decoration: none;
   color: inherit;
   transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
 .mysteryItem:hover {
   border-color: rgba(212, 181, 106, 0.4);
-  transform: translateX(4px);
+}
+
+/* Image + text: the primary tap target (continue / replay). */
+.mysteryMain {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex: 1;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
 }
 
 .mysteryImage {
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   flex-shrink: 0;
   border-radius: 4px;
   overflow: hidden;
@@ -109,11 +118,19 @@
 
 .mysteryMeta {
   font-size: 0.85rem;
+  line-height: 1.4;
   color: var(--fog);
+  /* Long premises must wrap, not crush the column. Cap at two lines. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .status {
-  flex-shrink: 0;
+  display: inline-block;
+  margin-top: 0.4rem;
   padding: 0.2rem 0.55rem;
   font-family: var(--font-mono);
   font-size: 0.62rem;
@@ -122,6 +139,13 @@
   text-transform: uppercase;
   border-radius: 3px;
   border: 1px solid;
+}
+
+.mysteryActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .statusStarted {
@@ -142,7 +166,8 @@
   font-style: italic;
 }
 
-.action {
+.action,
+.restart {
   flex-shrink: 0;
   padding: 0.5rem 0.9rem;
   font-family: var(--font-mono);
@@ -150,14 +175,55 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  white-space: nowrap;
+  transition: filter 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.action {
   color: var(--ink);
   background: linear-gradient(180deg, #e3c47e 0%, var(--candle) 55%, #b8985a 100%);
   border: 1px solid #e8cd8a;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: filter 0.15s ease;
 }
 
 .action:hover {
   filter: brightness(1.1);
+}
+
+.restart {
+  color: var(--candle-dim);
+  background: transparent;
+  border: 1px solid rgba(230, 238, 246, 0.16);
+}
+
+.restart:hover {
+  color: var(--candle);
+  border-color: rgba(230, 238, 246, 0.32);
+}
+
+.errorNote {
+  margin: 0 0 1rem;
+  color: var(--blood-bright);
+  font-size: 0.9rem;
+}
+
+/* Phones: let the actions drop below the info instead of crushing it. */
+@media (max-width: 560px) {
+  .mysteryItem {
+    flex-wrap: wrap;
+  }
+
+  .mysteryActions {
+    width: 100%;
+    gap: 0.6rem;
+  }
+
+  .action,
+  .restart {
+    flex: 1;
+    padding: 0.6rem 0.9rem;
+  }
 }

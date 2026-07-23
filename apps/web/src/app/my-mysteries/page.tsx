@@ -2,10 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Atmosphere from "../../components/Atmosphere";
-import { coverSrc, listCases, listMyPlaythroughs } from "../../lib/api";
+import ConfirmModal from "../../components/ConfirmModal";
+import { coverSrc, listCases, listMyPlaythroughs, startCase } from "../../lib/api";
+import { getSession } from "../../lib/auth";
 import {
   getAllPlayStates,
+  markBeingPlayed,
   type PlayStateEntry,
   type PlayStatus,
 } from "../../lib/playState";
@@ -20,9 +24,14 @@ function shelfStatus(engineStatus: string): PlayStatus {
 }
 
 export default function MyMysteriesPage() {
+  const router = useRouter();
   const [cases, setCases] = useState<CaseSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [playStates, setPlayStates] = useState<Record<string, PlayStateEntry>>({});
+  /** Case id armed for restart (drives the confirm modal). */
+  const [restartId, setRestartId] = useState<string | null>(null);
+  const [restarting, setRestarting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -82,6 +91,74 @@ export default function MyMysteriesPage() {
 
   const started = cases.filter((c) => playStates[c.id]?.status === "being_played");
   const completed = cases.filter((c) => playStates[c.id]?.status === "completed");
+  const restartCase = restartId
+    ? cases.find((c) => c.id === restartId)
+    : undefined;
+  const restartInProgress =
+    restartId && playStates[restartId]?.status === "being_played";
+
+  async function handleRestart() {
+    if (!restartId) return;
+    if (!getSession()) {
+      router.push(`/signup?next=${encodeURIComponent("/my-mysteries")}`);
+      return;
+    }
+    setRestarting(true);
+    setError(null);
+    try {
+      const data = await startCase(restartId, true);
+      markBeingPlayed(restartId, data.playthrough.id);
+      router.push(`/play/${data.playthrough.id}`);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Failed to restart";
+      if (message === "signin_required") {
+        router.push(`/signup?next=${encodeURIComponent("/my-mysteries")}`);
+        return;
+      }
+      setError(message);
+      setRestarting(false);
+      setRestartId(null);
+    }
+  }
+
+  function renderItem(c: CaseSummary, status: PlayStatus) {
+    const started = status === "being_played";
+    const href = started
+      ? `/play/${playStates[c.id]?.playthroughId ?? ""}`
+      : `/mystery/${c.id}`;
+    return (
+      <div key={c.id} className={styles.mysteryItem}>
+        <Link href={href} className={styles.mysteryMain}>
+          <div className={styles.mysteryImage}>
+            <img src={coverSrc(c)} alt="" />
+          </div>
+          <div className={styles.mysteryInfo}>
+            <div className={styles.mysteryTitle}>{c.meta.title}</div>
+            <div className={styles.mysteryMeta}>{c.meta.premise}</div>
+            <span
+              className={`${styles.status} ${
+                started ? styles.statusStarted : styles.statusCompleted
+              }`}
+            >
+              {started ? "Started" : "Completed"}
+            </span>
+          </div>
+        </Link>
+        <div className={styles.mysteryActions}>
+          <Link href={href} className={styles.action}>
+            {started ? "Continue" : "Replay"}
+          </Link>
+          <button
+            type="button"
+            className={styles.restart}
+            onClick={() => setRestartId(c.id)}
+          >
+            Restart
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -96,6 +173,8 @@ export default function MyMysteriesPage() {
             </p>
           </header>
 
+          {error ? <p className={styles.errorNote}>{error}</p> : null}
+
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>Started</h2>
             {loading ? (
@@ -104,25 +183,7 @@ export default function MyMysteriesPage() {
               <p className={styles.empty}>No mysteries in progress.</p>
             ) : (
               <div className={styles.mysteryList}>
-                {started.map((c) => (
-                  <Link
-                    key={c.id}
-                    href={`/play/${playStates[c.id]?.playthroughId ?? ""}`}
-                    className={styles.mysteryItem}
-                  >
-                    <div className={styles.mysteryImage}>
-                      <img src={coverSrc(c)} alt="" />
-                    </div>
-                    <div className={styles.mysteryInfo}>
-                      <div className={styles.mysteryTitle}>{c.meta.title}</div>
-                      <div className={styles.mysteryMeta}>{c.meta.premise}</div>
-                    </div>
-                    <span className={`${styles.status} ${styles.statusStarted}`}>
-                      Started
-                    </span>
-                    <span className={styles.action}>Continue</span>
-                  </Link>
-                ))}
+                {started.map((c) => renderItem(c, "being_played"))}
               </div>
             )}
           </section>
@@ -135,30 +196,28 @@ export default function MyMysteriesPage() {
               <p className={styles.empty}>No mysteries closed yet.</p>
             ) : (
               <div className={styles.mysteryList}>
-                {completed.map((c) => (
-                  <Link
-                    key={c.id}
-                    href={`/mystery/${c.id}`}
-                    className={styles.mysteryItem}
-                  >
-                    <div className={styles.mysteryImage}>
-                      <img src={coverSrc(c)} alt="" />
-                    </div>
-                    <div className={styles.mysteryInfo}>
-                      <div className={styles.mysteryTitle}>{c.meta.title}</div>
-                      <div className={styles.mysteryMeta}>{c.meta.premise}</div>
-                    </div>
-                    <span className={`${styles.status} ${styles.statusCompleted}`}>
-                      Completed
-                    </span>
-                    <span className={styles.action}>Replay</span>
-                  </Link>
-                ))}
+                {completed.map((c) => renderItem(c, "completed"))}
               </div>
             )}
           </section>
         </div>
       </main>
+
+      <ConfirmModal
+        open={restartId !== null}
+        title="Start over?"
+        message={
+          restartInProgress
+            ? `Your current investigation of “${restartCase?.meta.title ?? "this mystery"}” will be left behind and can’t be continued from where you were.`
+            : `This begins a completely new investigation of “${restartCase?.meta.title ?? "this mystery"}”.`
+        }
+        confirmLabel="Yes, start over"
+        cancelLabel="Cancel"
+        busy={restarting}
+        destructive
+        onConfirm={handleRestart}
+        onCancel={() => setRestartId(null)}
+      />
     </>
   );
 }
