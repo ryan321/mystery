@@ -2,7 +2,7 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "blackwood-inheritance",
-  "contentVersion": "0.10.17",
+  "contentVersion": "0.10.18",
   "meta": {
     "title": "The Blackwood Inheritance",
     "premise": "A stormy night, a dead master at the foot of his own stairs, and six weeks of break-ins no one has explained. Everyone in the house had a reason to be angry. Someone had a reason to plan.",
@@ -99,7 +99,7 @@
   },
   "time": {
     "startSlotId": "just_after_eleven",
-    "minutesPerTurn": 8,
+    "minutesPerTurn": 1,
     "schedule": [
       {
         "id": "just_after_eleven",
@@ -109,32 +109,32 @@
       {
         "id": "late_evening",
         "label": "Late evening",
-        "minutesFromStart": 40
+        "minutesFromStart": 55
       },
       {
         "id": "approaching_midnight",
         "label": "Approaching midnight",
-        "minutesFromStart": 80
+        "minutesFromStart": 115
       },
       {
         "id": "midnight",
         "label": "Midnight",
-        "minutesFromStart": 120
+        "minutesFromStart": 170
       },
       {
         "id": "small_hours",
         "label": "The small hours",
-        "minutesFromStart": 200
+        "minutesFromStart": 280
       },
       {
         "id": "toward_dawn",
         "label": "Toward dawn",
-        "minutesFromStart": 280
+        "minutesFromStart": 395
       },
       {
         "id": "first_light",
         "label": "First light",
-        "minutesFromStart": 340
+        "minutesFromStart": 480
       }
     ]
   },
