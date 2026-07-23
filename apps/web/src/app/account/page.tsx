@@ -161,7 +161,7 @@ export default function AccountPage() {
                   ) : null}
                   {!isPaid ? (
                     <p className={styles.hint}>
-                      You’re on the free plan. The Blackwood Inheritance is yours
+                      You’re on the free plan. The Fall of Alan Thorne is yours
                       to play; subscribe to open more of the Gallery.
                     </p>
                   ) : null}

@@ -141,7 +141,7 @@ export default function SubscribePage() {
             <p className={styles.eyebrow}>Subscription</p>
             <h1 className={styles.title}>Unlock more mysteries</h1>
             <p className={styles.subtitle}>
-              The Blackwood Inheritance, a complete mystery, is free to play.
+              The Fall of Alan Thorne, a complete mystery, is free to play.
               Subscribe to open more of the Gallery.
             </p>
             {signedIn ? (
@@ -334,7 +334,7 @@ export default function SubscribePage() {
                 Is the first mystery really free?
               </summary>
               <p className={styles.faqAnswer}>
-                Yes. The Blackwood Inheritance is a complete mystery, free to
+                Yes. The Fall of Alan Thorne is a complete mystery, free to
                 play start to finish with a free account.
               </p>
             </details>

@@ -176,7 +176,7 @@ export default function HelpPage() {
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>Subscriptions &amp; tiers</h2>
             <p>
-              One full mystery, The Blackwood Inheritance, is free to play for
+              One full mystery, The Fall of Alan Thorne, is free to play for
               everyone with an account. A subscription opens more of the{" "}
               <Link href="/gallery" className={styles.link}>
                 Gallery

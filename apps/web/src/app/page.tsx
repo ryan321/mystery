@@ -12,18 +12,21 @@ import { difficultyLabel } from "../lib/format";
 import type { CaseSummary } from "../lib/types";
 import styles from "./page.module.css";
 
-const FREE_CASE_ID = "blackwood-inheritance";
+/** The free "first case" the hero and closing CTAs point to. */
+const FREE_CASE_ID = "the-fall-of-alan-thorne";
 /** Kid-friendly case always closes the featured row on the landing. */
 const LANDING_LAST_CASE_ID = "cant-trick-rick";
 const FEATURED_COUNT = 6;
 
-// The sample play renders the real gameplay components, so it stays in step
-// with the play screen — portraits included.
+// The sample play is a fictionalized ("Ravenscourt") showcase that reuses a
+// real case's portraits so it stays in step with the play screen. It is a
+// standalone demo, independent of whichever case is currently free.
+const SAMPLE_CASE_ID = "blackwood-inheritance";
 const BUTLER_PORTRAIT = playerAssetUrl(
-  FREE_CASE_ID,
+  SAMPLE_CASE_ID,
   "portraits/henshaw.jpg"
 );
-const GUEST_PORTRAIT = playerAssetUrl(FREE_CASE_ID, "portraits/vale.jpg");
+const GUEST_PORTRAIT = playerAssetUrl(SAMPLE_CASE_ID, "portraits/vale.jpg");
 
 function Ornament() {
   return (

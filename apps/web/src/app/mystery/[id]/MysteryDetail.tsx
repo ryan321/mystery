@@ -31,8 +31,8 @@ function beginPlaythrough(
   }
 }
 
-/** Only The Blackwood Inheritance is free for now. */
-const FREE_CASE_IDS = new Set(["blackwood-inheritance"]);
+/** Only The Fall of Alan Thorne is free for now. */
+const FREE_CASE_IDS = new Set(["the-fall-of-alan-thorne"]);
 
 export default function MysteryDetail() {
   const params = useParams();
