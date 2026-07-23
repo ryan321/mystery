@@ -326,8 +326,16 @@ export function directorIntentsToPatch(
   if (director.suggestedPatch?.setLocationId) {
     patch.setLocationId = director.suggestedPatch.setLocationId;
   }
-  if (director.suggestedPatch?.addEvidenceIds) {
-    for (const id of director.suggestedPatch.addEvidenceIds) addEvidence.add(id);
+  // Evidence is the engine's to grant, and only from an authored reveal (an
+  // inspect/use that resolves to an inspectable's revealsEvidenceIds) or a beat.
+  // A director listing evidence here is fiat — usually hallucinated ("you find
+  // the necklace") — and would hand out un-earned or wrong clues and wreck
+  // pacing/solvability. Drop it; the inspect/use intent below grants exactly
+  // what is discoverable, through validate-patch's discoverability gate.
+  if (director.suggestedPatch?.addEvidenceIds?.length) {
+    notes.push(
+      `dropped director evidence grant: ${director.suggestedPatch.addEvidenceIds.join(", ")}`
+    );
   }
   if (director.suggestedPatch?.setFlags) {
     // The director is LLM-driven and prompt-injectable: never let it write

@@ -145,6 +145,29 @@ describe("directorIntentsToPatch", () => {
     expect(applied.nextState.flags.director_scratch).toBe(true);
     expect(notes.some((n) => n.includes("dropped authored flags"))).toBe(true);
   });
+
+  // Integrity: evidence is granted only by an authored reveal (inspect/use) or a
+  // beat. The director listing evidence in suggestedPatch is fiat — usually a
+  // hallucinated find — and would hand out un-earned clues. Dropped before it
+  // ever reaches the patch.
+  it("drops director-proposed evidence grants (no inspect intent)", () => {
+    const state = createInitialPlaythrough(def, "t5");
+    const { patch, notes } = directorIntentsToPatch(
+      def,
+      state,
+      {
+        intents: [{ type: "look" }],
+        suggestedPatch: { addEvidenceIds: ["black-thread"] },
+      },
+      "I just find the thread on the floor"
+    );
+    const applied = validateAndApplyPatch(def, state, patch);
+    expect(patch.addEvidenceIds).toBeUndefined();
+    expect(applied.evidenceAdded).toEqual([]);
+    expect(notes.some((n) => n.includes("dropped director evidence grant"))).toBe(
+      true
+    );
+  });
 });
 
 describe("sanitizeWorldToPlayerEffects", () => {
