@@ -97,6 +97,19 @@ export default function HelpPage() {
           </section>
 
           <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Why turns take a moment</h2>
+            <p>
+              Each turn takes around 10–20 seconds. That&rsquo;s not the house
+              freezing — it&rsquo;s the story being written. Behind every
+              response, an AI reads the whole case — the rooms, the people,
+              everything you&rsquo;ve said and done — works out what your move
+              changes, and then writes the scene. We use some of the fastest
+              models in existence, and this is simply how long they take to do
+              it well; there&rsquo;s no dial on our side that hurries them.
+            </p>
+          </section>
+
+          <section className={styles.section}>
             <h2 className={styles.sectionTitle}>Subscriptions &amp; tiers</h2>
             <p>
               One full mystery, The Blackwood Inheritance, is free to play for
