@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import Atmosphere from "../../../components/Atmosphere";
 import { useAmbience } from "../../../components/AmbienceProvider";
+import ConfirmModal from "../../../components/ConfirmModal";
 import { assetUrl, coverSrc, getCase, startCase } from "../../../lib/api";
 import { getSession } from "../../../lib/auth";
 import { difficultyLabel, lockLabel, themeTags } from "../../../lib/format";
@@ -41,6 +42,9 @@ export default function MysteryDetail() {
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
   const [restarting, setRestarting] = useState(false);
+  /** Restart confirmation modal. Replaces window.confirm, which is silently
+   *  suppressed in webviews / installed PWAs — the button did nothing there. */
+  const [confirmingRestart, setConfirmingRestart] = useState(false);
   const [error, setError] = useState<string | null>(null);
   /** Bump after local play-state changes so Continue/Restart stay in sync. */
   const [playTick, setPlayTick] = useState(0);
@@ -123,13 +127,8 @@ export default function MysteryDetail() {
   }
 
   async function handleRestart() {
-    const inProgress = playStateStatus === "being_played";
-    const message = inProgress
-      ? "Start this mystery from the beginning? Your current investigation will be left behind and cannot be continued from where you were."
-      : "Start a completely new investigation of this mystery?";
-    if (!window.confirm(message)) return;
     if (requireAccount()) return;
-
+    setConfirmingRestart(false);
     setRestarting(true);
     setError(null);
     try {
@@ -307,7 +306,7 @@ export default function MysteryDetail() {
                         <button
                           type="button"
                           className={styles.btnGhost}
-                          onClick={handleRestart}
+                          onClick={() => setConfirmingRestart(true)}
                           disabled={busy}
                         >
                           {restarting ? "Restarting…" : "Restart"}
@@ -374,6 +373,22 @@ export default function MysteryDetail() {
           ) : null}
         </div>
       </main>
+
+      <ConfirmModal
+        open={confirmingRestart}
+        title="Start over?"
+        message={
+          playStateStatus === "being_played"
+            ? "Your current investigation will be left behind and can’t be continued from where you were."
+            : "This begins a completely new investigation of this mystery."
+        }
+        confirmLabel="Yes, start over"
+        cancelLabel="Keep playing"
+        busy={restarting}
+        destructive
+        onConfirm={handleRestart}
+        onCancel={() => setConfirmingRestart(false)}
+      />
     </>
   );
 }
