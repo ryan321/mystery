@@ -100,9 +100,9 @@ export default function HelpPage() {
             <h2 className={styles.sectionTitle}>Why turns take a moment</h2>
             <p>
               Turns take around 10–20 seconds. That&rsquo;s how long the AI
-              takes to process a turn and return a response, and there&rsquo;s
-              really nothing we can do about it — we use some of the fastest
-              AIs in existence, but they still have limits.
+              takes to process a turn and return a response, and the AIs
+              can&rsquo;t go faster — we use some of the fastest AIs in
+              existence, but they still have limits.
             </p>
           </section>
 
