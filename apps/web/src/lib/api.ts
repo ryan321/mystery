@@ -49,10 +49,37 @@ export function playerAssetUrl(
 /**
  * All API calls carry credentials: the session cookie lives on the API
  * origin, and playthroughs/notes belong to the signed-in account.
+ *
+ * `timeoutMs` arms an AbortController so a stuck request fails predictably
+ * instead of hanging forever (turns are the case that matters — see sendTurn).
  */
-async function apiFetch(path: string, init: RequestInit = {}): Promise<Response> {
-  return fetch(`${API}${path}`, { credentials: "include", ...init });
+async function apiFetch(
+  path: string,
+  init: RequestInit = {},
+  timeoutMs?: number
+): Promise<Response> {
+  if (!timeoutMs) {
+    return fetch(`${API}${path}`, { credentials: "include", ...init });
+  }
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(`${API}${path}`, {
+      credentials: "include",
+      ...init,
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timer);
+  }
 }
+
+/**
+ * A turn is two LLM calls and normally returns in well under a minute; past
+ * this it's a stuck connection (a crashed machine mid-turn, a dead socket).
+ * Bound it so the UI shows a retry prompt instead of an endless spinner.
+ */
+const TURN_TIMEOUT_MS = 120_000;
 
 async function json<T>(res: Response): Promise<T> {
   // Parse defensively: an upstream (proxy/CDN) failure or empty body isn't
@@ -109,11 +136,22 @@ export async function sendTurn(
   id: string,
   input: string
 ): Promise<SendTurnResponse> {
-  const res = await apiFetch(`/v1/playthroughs/${id}/turns`, {
-    method: "POST",
-    headers: JSON_HEADERS,
-    body: JSON.stringify({ input }),
-  });
+  let res: Response;
+  try {
+    res = await apiFetch(
+      `/v1/playthroughs/${id}/turns`,
+      { method: "POST", headers: JSON_HEADERS, body: JSON.stringify({ input }) },
+      TURN_TIMEOUT_MS
+    );
+  } catch (e) {
+    // Aborted by the deadline (or a dropped connection): surface a retryable
+    // message rather than the raw AbortError. The turn may have committed
+    // server-side, so reloading the playthrough will show it.
+    if (e instanceof DOMException && e.name === "AbortError") {
+      throw new Error("The turn is taking too long — try again in a moment.");
+    }
+    throw e;
+  }
   return json<SendTurnResponse>(res);
 }
 
