@@ -22,6 +22,14 @@ export function buildContextPack(
     focusCharacterId?: string;
     justHappened?: { id: string; summary: string; narrationHints?: string }[];
     resolvedIntents?: string[];
+    /**
+     * Director pack: drop the heavy acting-detail fields the director never
+     * reads (per-character slices, social surface, static figures, the
+     * deprecated evidenceHeld). The director runs first on every turn's serial
+     * path, so trimming its prompt is the biggest per-turn cost+latency win.
+     * The performer keeps the full pack.
+     */
+    lean?: boolean;
   }
 ) {
   const location = def.locations.find((l) => l.id === state.locationId);
@@ -190,7 +198,7 @@ export function buildContextPack(
     def.time?.schedule.find((s) => s.id === state.time?.slotId)?.label ??
     state.time?.slotId;
 
-  return {
+  const pack = {
     caseMeta: {
       title: def.meta.title,
       tone: def.meta.tone ?? "",
@@ -445,6 +453,22 @@ export function buildContextPack(
         : "Only a formal, confirmed accusation decides the case. Informal theories are conversation, not judgment.",
     },
   };
+
+  if (options?.lean) {
+    // Director-only slim pack: drop the heavy acting fields it never reads
+    // (evidenceHeld stays — the heuristic director resolves held evidence).
+    // Typed as the full pack since the director never reads the omitted fields,
+    // so the performer and other full-pack callers keep their types intact.
+    const {
+      charactersHereDetailed: _chd,
+      activeCharacter: _ac,
+      socialSurface: _ss,
+      figures: _fig,
+      ...leanPack
+    } = pack;
+    return leanPack as typeof pack;
+  }
+  return pack;
 }
 
 function characterSlice(

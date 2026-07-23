@@ -118,7 +118,10 @@ export async function runTurnPipeline(args: {
   // If tick ended the investigation (e.g. murdered on clock), still allow
   // denouement interaction with this input — strip investigate-only intents later.
 
-  const directorPack = buildContextPack(def, state);
+  // Director gets the lean pack — it never reads the heavy acting-detail
+  // fields, and it runs first on the serial path, so trimming its prompt is
+  // the biggest per-turn cost+latency win. The performer keeps the full pack.
+  const directorPack = buildContextPack(def, state, { lean: true });
   // Byte-identical every turn — enables provider prompt-prefix caching.
   const staticCaseJson = staticCasePackJson(def);
 

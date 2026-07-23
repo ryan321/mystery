@@ -534,6 +534,18 @@ export function filterDialogueToPresent(
   return { ...output, dialogue };
 }
 
+/** A willingness-appropriate deflection so a fallback isn't dead silence. */
+function heuristicReply(willingness?: string): string {
+  switch (willingness) {
+    case "hostile":
+      return "I've nothing to say to you.";
+    case "guarded":
+      return "I don't see what business that is of yours.";
+    default: // open (and any unknown)
+      return "Ask what you like — I'll tell you what I can.";
+  }
+}
+
 export function heuristicPerform(args: {
   contextPack: unknown;
   playerInput: string;
@@ -541,7 +553,12 @@ export function heuristicPerform(args: {
   resolvedNotes?: string[];
 }): PerformerOutput {
   const pack = args.contextPack as {
-    location?: { name?: string; description?: string };
+    location?: {
+      name?: string;
+      description?: string;
+      presentCharacterIds?: string[];
+    };
+    activeCharacter?: { id?: string; name?: string; willingness?: string };
   };
   // Player-visible fallback: this narration reaches the player when the
   // AI performer fails, so it must stay diegetic. narrationHints are
@@ -563,6 +580,26 @@ export function heuristicPerform(args: {
       if (bits.length >= 2) break;
     }
   }
+  // The addressed, present character answers — even a fallback mid-conversation
+  // must not be dead silence (the reported "characters wouldn't talk"). Closed-
+  // world: only a person actually in the room, one willingness-appropriate line;
+  // the real performer handles substance. Silent/fled: a narration beat, not a
+  // spoken line.
+  const dialogue: PerformerOutput["dialogue"] = [];
+  const ac = pack.activeCharacter;
+  const present = new Set(pack.location?.presentCharacterIds ?? []);
+  if (ac?.id && ac.name && present.has(ac.id)) {
+    if (ac.willingness === "silent" || ac.willingness === "fled") {
+      bits.push(`${ac.name} holds their silence, giving you nothing.`);
+    } else {
+      dialogue.push({
+        characterId: ac.id,
+        characterName: ac.name,
+        text: heuristicReply(ac.willingness),
+      });
+    }
+  }
+
   bits.push(
     pack.location?.description
       ? `You are in ${pack.location.name}. ${pack.location.description}`
@@ -570,7 +607,7 @@ export function heuristicPerform(args: {
   );
   return {
     narration: bits.join(" "),
-    dialogue: [],
+    dialogue,
     dressing: [],
   };
 }
