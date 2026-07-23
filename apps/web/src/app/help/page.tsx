@@ -72,11 +72,71 @@ export default function HelpPage() {
                 items on the right objects.
               </li>
               <li>
-                <strong>Make an accusation.</strong> Name the culprit whenever
-                you’re ready. Use the Accuse button when you want a formal
-                charge — the household gathers, then you state who, how, and
-                why in your own words (no form). You can also accuse at any
-                time in free text. A wrong formal accusation can end the case.
+                <strong>Make an accusation.</strong> When you think you know the
+                truth, bring a formal charge (see below). That is how you solve
+                the case.
+              </li>
+            </ul>
+          </section>
+
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Making an accusation</h2>
+            <p>
+              Solving a mystery means making a <strong>formal accusation</strong>
+              — naming who is responsible, and usually how and why. The case is
+              scored against the authored solution, not against whether you
+              collected every clue (though evidence still shapes the ending).
+            </p>
+            <h3 className={styles.subhead}>The Accuse button (recommended)</h3>
+            <ol className={styles.steps}>
+              <li>
+                Tap <strong>Accuse</strong> next to the send button while the
+                case is open.
+              </li>
+              <li>
+                The game <strong>sets the scene</strong>: the household (or
+                whoever should hear the charge) gathers. You are not filling
+                out a form — you are about to speak into a real moment.
+              </li>
+              <li>
+                In plain language, state your case:{" "}
+                <em>who</em> did it, <em>how</em> it was done, and{" "}
+                <em>why</em>. Example: “I accuse Margaret Ashmere. She shot him
+                from the hall below the gallery because he was abusing her
+                granddaughter and the police would not help.”
+              </li>
+              <li>
+                Send as usual. If the charge is clear, the case is judged and
+                the aftermath begins. If you only float a theory, the game may
+                ask you to confirm before it counts.
+              </li>
+            </ol>
+            <p>
+              If you open Accuse by mistake, say you are not ready (for example,{" "}
+              “never mind” or “not yet”) and the gathering dissolves with no
+              judgment.
+            </p>
+            <h3 className={styles.subhead}>Without the button</h3>
+            <p>
+              You can still accuse in free text at any time, for example:{" "}
+              “I accuse Henshaw of the murder.” Formal wording like that is
+              treated as a real charge. Casual talk (“I think it might be Vale”)
+              is usually just conversation until you commit.
+            </p>
+            <h3 className={styles.subhead}>What counts as solving</h3>
+            <ul>
+              <li>
+                <strong>Who</strong> — name the culprit clearly.
+              </li>
+              <li>
+                <strong>How and why</strong> — most cases also need enough of
+                the method and motive for the charge to hold. Say them in your
+                own words.
+              </li>
+              <li>
+                You may accuse <strong>before</strong> you have every piece of
+                evidence. A correct theory can still win; a wrong formal
+                accusation can end the case.
               </li>
             </ul>
           </section>
@@ -90,14 +150,15 @@ export default function HelpPage() {
               </li>
               <li>
                 Evidence matters for pacing and endings, but a correct accusation
-                can solve the mystery even without it.
+                can solve the mystery even without every clue.
               </li>
               <li>
-                Wrong accusations have consequences. The house remembers.
+                Wrong formal accusations have consequences. Be sure before you
+                commit.
               </li>
               <li>
-                A mystery can be lost: by running out of time, pushing the wrong
-                person, or letting the killer act.
+                A mystery can be lost: by a wrong charge, running out of time,
+                pushing the wrong person, or letting the killer act.
               </li>
             </ul>
           </section>

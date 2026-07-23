@@ -56,6 +56,14 @@
   color: var(--paper);
 }
 
+.subhead {
+  margin: 1rem 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--paper);
+}
+
 .section p {
   margin: 0 0 0.75rem;
   color: var(--fog);
@@ -66,8 +74,10 @@
   margin-bottom: 0;
 }
 
-.section ul {
-  margin: 0;
+.section ul,
+.section ol,
+.steps {
+  margin: 0 0 0.75rem;
   padding-left: 1.25rem;
   color: var(--fog);
   line-height: 1.65;
