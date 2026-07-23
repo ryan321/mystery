@@ -313,7 +313,10 @@ for (const path of [
   "/v1/admin/*", // tier comps
   "/v1/invitations", // mint
   "/v1/invitations/*", // validate
-  "/v1/mysteries/*", // publish/access/grants (NOT the bare upload route)
+  // Hono's `/*` also matches the bare path itself, so "/v1/mysteries/*"
+  // would put this 1MB cap on the 52MB bundle-upload route (prod 413,
+  // 2026-07-23). `:caseId` requires a segment, excluding bare /v1/mysteries.
+  "/v1/mysteries/:caseId/*", // publish/access/grants
 ]) {
   app.use(path, jsonBodyLimit);
 }
