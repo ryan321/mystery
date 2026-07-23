@@ -1,0 +1,1524 @@
+{
+  "$schema": "../definition.schema.json",
+  "schemaVersion": "1.5",
+  "id": "the-fall-of-alan-thorne",
+  "contentVersion": "0.1.2",
+  "meta": {
+    "title": "The Fall of Alan Thorne",
+    "premise": "At Greymoor House a trusted nephew lies dead under the gallery after midnight. A fall, a shot, a half-burned note, and a household that cannot agree what it heard. Murder has already sat down among them — and someone must name the truth the police may not want to hear.",
+    "tone": "gothic country-house whodunit, moral weight, quiet dread",
+    "tags": [
+      "Manor",
+      "Family",
+      "Murder",
+      "Classic"
+    ],
+    "difficulty": "medium",
+    "progressUi": "subtle",
+    "contentWarnings": [
+      "murder",
+      "domestic abuse",
+      "gun violence",
+      "corruption"
+    ],
+    "artStyle": "Edwardian country-house oil portrait, head-and-shoulders, lamplight and oak, muted greens and umber, consistent painted style for every cast member",
+    "setting": "Greymoor House, a rain-dark country mansion. Night after a fatal fall from the upper gallery.",
+    "summary": "Alan Thorne — charming nephew, estate manager, friend of the local constable — is dead on the flagstones of the great hall. Some heard a gunshot; some only a crash. Constable Rudge is already on the scene, steering the story toward accident or a frightened girl. You must learn who fired, from where, and why — before the house buries the truth with him.",
+    "theMystery": "Who killed Alan Thorne, how was he killed on the gallery at midnight, and why?",
+    "playtest": {
+      "minTurns": 15,
+      "maxTurns": 45,
+      "minEvidenceCoverage": 0.7
+    }
+  },
+  "player": {
+    "personaId": "inspector-merriweather",
+    "displayName": "Inspector Merriweather",
+    "fullName": "Inspector Thomas Merriweather",
+    "addressAs": "Inspector",
+    "pronouns": "he/him",
+    "role": "County inspector sent to Greymoor after a reported fatal fall",
+    "authority": "official",
+    "gender": "man",
+    "age": "late forties",
+    "appearance": "Weathered, steady eyes, notebook habit",
+    "clothing": "Dark coat still damp from the drive, plain suit",
+    "background": "A methodical county inspector known for preferring evidence over local friendships.",
+    "publicPerception": "An outside official Rudge would rather manage than obey.",
+    "voiceNotes": "Dry, precise, not cruel",
+    "performanceNotes": "NPCs call him Inspector. Rudge is obstructive. The household is shaken. Stay second person for the player.",
+    "startingLocationId": "great-hall",
+    "startingEvidenceIds": [],
+    "startingKnowledge": "You were called after midnight: Alan Thorne fell from the upper gallery of Greymoor House and is dead in the great hall. Constable George Rudge arrived first and is already managing the scene. The house belongs to elderly Mrs. Margaret Ashmere, who uses a wheelchair. Thorne was her nephew and managed the estate. His wife Helen and son Julian are here, along with staff and a business partner. Some say they heard a shot; others only a crash. Your job is to establish what happened.",
+    "objective": "Determine who killed Alan Thorne, how, and why — then make a formal accusation that will hold.",
+    "briefing": {
+      "form": "dossier",
+      "title": "Greymoor House — night call",
+      "sections": [
+        {
+          "heading": "The call",
+          "text": "Fatal fall reported at Greymoor House after midnight. Victim: Alan Thorne, middle-aged, estate manager. Body in the great hall beneath the upper gallery. Constable Rudge is already present."
+        },
+        {
+          "heading": "The household",
+          "text": "Mrs. Margaret Ashmere (owner, wheelchair). Miss Eliza Ashmere (granddaughter). Mrs. Helen Thorne (widow). Mr. Julian Thorne (son). Staff: Alden the butler, Rose Nettles the maid, Mrs. Briggs the cook. Guest: Mr. Conrad Hale, business partner. Local: Constable George Rudge."
+        },
+        {
+          "heading": "Your task",
+          "text": "Examine the body and the house. Question everyone. When you are ready, use Accuse to gather the household and state who is responsible, how, and why. A wrong formal charge can end the case."
+        }
+      ]
+    }
+  },
+  "openingNarration": "Greymoor House smells of wax, rain, and shock. In the great hall, under the dark gallery, Alan Thorne lies where he fell — a respectable man in a ruined heap. Constable Rudge has already taken a position near the body, as if the flagstones were his. Along the ground-floor family wing, a door stays shut. Voices disagree about what they heard: a shot, a crash, one sound or two. Mrs. Ashmere sits very still in her chair — the same chair she can roll from her room into this hall. The house is waiting for you to look.",
+  "phases": [
+    {
+      "id": "arrival",
+      "description": "Body and first accounts"
+    },
+    {
+      "id": "deepening",
+      "description": "Note, pad, fear"
+    },
+    {
+      "id": "crisis",
+      "description": "Eliza speaks; gun found"
+    },
+    {
+      "id": "confrontation",
+      "description": "Formal accusation"
+    },
+    {
+      "id": "denouement",
+      "description": "Aftermath"
+    }
+  ],
+  "wrapUp": {
+    "enabled": true,
+    "maxTurns": 8,
+    "allowEarlyExit": true,
+    "performanceNotes": "Judgment lands hard. If Margaret is named rightly: protective and terrible — Eliza safe but not simple; Helen shattered; Rudge compromised; arrest or quiet custody. If wrong: Rudge may seize the narrative. Stage RETURN TO NORMAL diegetically. No new killer."
+  },
+  "time": {
+    "startSlotId": "after_midnight",
+    "minutesPerTurn": 10,
+    "schedule": [
+      {
+        "id": "after_midnight",
+        "label": "After midnight",
+        "minutesFromStart": 0
+      },
+      {
+        "id": "small_hours",
+        "label": "The small hours",
+        "minutesFromStart": 50
+      },
+      {
+        "id": "toward_dawn",
+        "label": "Toward dawn",
+        "minutesFromStart": 100
+      }
+    ]
+  },
+  "environment": {
+    "weather": "rain",
+    "weatherIntensity": "steady",
+    "light": "lamplight",
+    "ambient": "tense",
+    "crowd": "none",
+    "flags": {}
+  },
+  "accusePolicy": {
+    "requireConfirmation": true,
+    "pendingTurns": 3,
+    "staging": {
+      "locationId": "great-hall",
+      "gatherCharacterIds": [
+        "margaret-ashmere",
+        "eliza-ashmere",
+        "helen-thorne",
+        "julian-thorne",
+        "alden",
+        "rose-nettles",
+        "briggs",
+        "rudge",
+        "conrad-hale"
+      ],
+      "narrationHints": "Formal accusation in the great hall under the gallery where Thorne died. Gather the household. Faces, lamplight, Rudge watchful. The player has NOT yet stated their charge — stage the assembly and wait. Reveal nothing about guilt.",
+      "composerPlaceholder": "State your formal accusation — who killed Alan Thorne, how, and why…",
+      "winHint": "Name who killed Alan Thorne, how he died (shot from below / the fall), and why."
+    }
+  },
+  "flags": [
+    {
+      "id": "examined_body",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "eliza_door_open",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
+      "id": "eliza_cracked",
+      "aiVisible": true,
+      "defaultValue": false
+    }
+  ],
+  "locations": [
+    {
+      "id": "great-hall",
+      "name": "Great hall",
+      "description": "A high dark hall of oak and stone. The upper gallery runs along one side; the railing is old iron. Lamps make islands of light. Alan Thorne lies on the flagstones where he fell. Constable Rudge looms nearby as if on duty to the dead man rather than to the truth.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 0,
+        "y": 0,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "entrance",
+          "label": "to the entrance"
+        },
+        {
+          "toLocationId": "drawing-room",
+          "label": "to the drawing room"
+        },
+        {
+          "toLocationId": "upper-gallery",
+          "label": "up to the gallery"
+        },
+        {
+          "toLocationId": "kitchen",
+          "label": "toward the kitchen passage"
+        },
+        {
+          "toLocationId": "margaret-room",
+          "label": "to Mrs. Ashmere's room"
+        },
+        {
+          "toLocationId": "outside-eliza-door",
+          "label": "to Miss Ashmere's door"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "thorne-body",
+          "name": "Alan Thorne's body",
+          "onInspect": {
+            "narrativeHints": "Impact injuries from the fall — and a gunshot wound low in the chest. The angle of entry is unmistakable: the bullet came from BELOW, upward, as if fired from the hall floor toward a man at the gallery rail. This was not a pure fall and not a shot from someone standing beside him on the gallery.",
+            "revealsEvidenceIds": [
+              "body-wound"
+            ],
+            "setsFlags": {
+              "examined_body": true
+            }
+          }
+        },
+        {
+          "id": "gallery-rail-from-below",
+          "name": "underside of the gallery rail",
+          "onInspect": {
+            "narrativeHints": "From the floor, a faint fresh scar on the iron underside — consistent with a shot fired upward from the hall."
+          }
+        },
+        {
+          "id": "hall-floor-dust",
+          "name": "dust and scuff near the hall center",
+          "onInspect": {
+            "narrativeHints": "Wheel marks and a scuff where a chair might have been positioned with a clear line to the gallery rail. Easy to miss in the shock."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "rudge"
+        },
+        {
+          "characterId": "alden"
+        },
+        {
+          "characterId": "margaret-ashmere"
+        }
+      ]
+    },
+    {
+      "id": "entrance",
+      "name": "Entrance",
+      "description": "Wet stone, coats, a stand for umbrellas. The rain still frets at the glass. The drive is dark; no one is leaving easily tonight. A damp greatcoat hangs with a constable’s oilskin — Rudge arrived first.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": -2,
+        "y": 0,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "great-hall",
+          "label": "into the great hall"
+        },
+        {
+          "toLocationId": "drawing-room",
+          "label": "to the drawing room"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "coat-stand",
+          "name": "coat stand",
+          "onInspect": {
+            "narrativeHints": "Thorne’s outdoor coat is missing from its usual peg — he never went out tonight. Rudge’s oilskin drips on the flags. Julian’s light city coat looks unused to rain."
+          }
+        },
+        {
+          "id": "drive-glass",
+          "name": "glass by the drive",
+          "onInspect": {
+            "narrativeHints": "No carriage lights. The road is a black ribbon. Whatever happens at Greymoor stays until morning."
+          }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "drawing-room",
+      "name": "Drawing room",
+      "description": "Fire low, brandy on a tray, voices kept careful. Helen Thorne sits very upright. Julian paces. Conrad Hale stands apart, jaw tight.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 2,
+        "y": 0,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "great-hall",
+          "label": "to the great hall"
+        },
+        {
+          "toLocationId": "entrance",
+          "label": "to the entrance"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "brandy-tray",
+          "name": "brandy tray",
+          "onInspect": {
+            "narrativeHints": "Helen has not touched hers. Julian has. Hale watches the door as if waiting for a different kind of accounting."
+          }
+        },
+        {
+          "id": "julian-discarded-letter",
+          "name": "Julian's crumpled letter",
+          "onInspect": {
+            "narrativeHints": "A draft letter from Julian to a London solicitor: he wants the estate settled, his father “out of the way of my life” — meaning money and freedom, not a gun. Ugly, not a confession of murder from the hall.",
+            "revealsEvidenceIds": [
+              "julian-letter"
+            ]
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "helen-thorne"
+        },
+        {
+          "characterId": "julian-thorne"
+        },
+        {
+          "characterId": "conrad-hale"
+        }
+      ]
+    },
+    {
+      "id": "kitchen",
+      "name": "Kitchen",
+      "description": "Warmth and copper. Mrs. Briggs pretends work is still possible. Rose Nettles has red eyes and a cloth twisted in her hands.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 0,
+        "y": 2,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "great-hall",
+          "label": "back to the great hall"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "kitchen-hearth",
+          "name": "kitchen hearth",
+          "onInspect": {
+            "narrativeHints": "Briggs says she heard a great crash through the walls — not a shot, she insists, only the fall. Distance and pots make liars of ears."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "briggs"
+        },
+        {
+          "characterId": "rose-nettles"
+        }
+      ]
+    },
+    {
+      "id": "upper-gallery",
+      "name": "Upper gallery",
+      "description": "A narrow walk above the hall. The rail is cold iron. Midnight air from a cracked window. This is where Alan Thorne stood before he fell.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 0,
+        "y": 0,
+        "floor": 1
+      },
+      "exits": [
+        {
+          "toLocationId": "great-hall",
+          "label": "down to the great hall"
+        },
+        {
+          "toLocationId": "upper-corridor",
+          "label": "along the corridor"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "gallery-rail",
+          "name": "gallery rail",
+          "onInspect": {
+            "narrativeHints": "No sign of a struggle between two men at the rail. A scuff where someone might have leaned out over the drop. The hall floor is a long way down."
+          }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "upper-corridor",
+      "name": "Upper corridor",
+      "description": "The private rooms above the hall — guest and manager quarters. Lamplight thin. Soft carpet: someone could pass at midnight without waking the house.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 2,
+        "y": 0,
+        "floor": 1
+      },
+      "exits": [
+        {
+          "toLocationId": "upper-gallery",
+          "label": "to the gallery"
+        },
+        {
+          "toLocationId": "alan-room",
+          "label": "to Alan Thorne's room"
+        },
+        {
+          "toLocationId": "hale-room",
+          "label": "to Hale's guest room"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "corridor-lamp",
+          "name": "corridor lamp",
+          "onInspect": {
+            "narrativeHints": "The flame pulls in the draft from the gallery end. Doors: Alan Thorne’s room and Hale’s guest room. The Ashmere women keep their rooms on the ground floor, by the hall — stairs and a chair do not mix."
+          }
+        },
+        {
+          "id": "corridor-runner",
+          "name": "carpet runner",
+          "onInspect": {
+            "narrativeHints": "No blood trail upstairs. Whatever happened to Alan ended in the hall below, not along this passage."
+          }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "outside-eliza-door",
+      "name": "Outside Eliza's door",
+      "description": "Off the great hall, the ground-floor family wing ends at Miss Ashmere’s door. The wood is plain oak; the bolt is drawn from inside. If you stand close you can hear her breathe. She will not open for Constable Rudge, and she will not open for empty comfort — only for proof that you understand the note was Alan’s.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 1,
+        "y": -1.5,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "great-hall",
+          "label": "back to the great hall"
+        },
+        {
+          "toLocationId": "margaret-room",
+          "label": "to Mrs. Ashmere's room"
+        },
+        {
+          "toLocationId": "eliza-room",
+          "label": "into Eliza's room",
+          "startsClosed": true
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "eliza-door",
+          "name": "Eliza's locked door",
+          "onInspect": {
+            "narrativeHints": "Bolted from inside. Knock and her voice is tight: if you are with Rudge, go away. Present the half-burned note or the notepad indentations — proof the midnight order was his — and she may let you in. She will not open while the constable stands here."
+          }
+        }
+      ],
+      "charactersPresent": [
+        {
+          "characterId": "eliza-ashmere"
+        }
+      ]
+    },
+    {
+      "id": "eliza-room",
+      "name": "Eliza's room",
+      "description": "A young woman’s ground-floor room held too carefully — near her grandmother, away from the stairs. Curtains drawn. A chair under the window as if she watches the drive. Once the door is open, she can speak if she trusts you.",
+      "startsAccessible": true,
+      "knownAtStart": false,
+      "map": {
+        "x": 2,
+        "y": -2,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "outside-eliza-door",
+          "label": "out to the passage"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "eliza-window-seat",
+          "name": "window seat",
+          "onInspect": {
+            "narrativeHints": "She has been sitting here often. No gun. No blood. Fear lives in the neatness."
+          }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "margaret-room",
+      "name": "Mrs. Ashmere's room",
+      "description": "Ground floor, off the great hall — no stairs between her chair and the flagstones. Orderly, spare, a wheelchair’s familiar tracks in the rug. A fireplace with ash that was stirred too carefully. This is where Margaret Ashmere keeps what she cannot say.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": -1,
+        "y": -1.5,
+        "floor": 0
+      },
+      "exits": [
+        {
+          "toLocationId": "great-hall",
+          "label": "to the great hall"
+        },
+        {
+          "toLocationId": "outside-eliza-door",
+          "label": "to Miss Ashmere's door"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "margaret-fireplace",
+          "name": "fireplace",
+          "onInspect": {
+            "narrativeHints": "Among the ash, a folded note charred at the edges but still readable. A threatening order: be alone on the upper gallery at midnight — or worse will follow. Someone tried to burn it and failed.",
+            "revealsEvidenceIds": [
+              "charred-note"
+            ]
+          }
+        },
+        {
+          "id": "margaret-wardrobe",
+          "name": "wardrobe lining",
+          "onInspect": {
+            "narrativeHints": "Behind hanging coats, a cloth wrap. Inside: a small revolver, recently fired. Hidden where only someone living in this room would put it.",
+            "revealsEvidenceIds": [
+              "gallery-gun"
+            ]
+          }
+        },
+        {
+          "id": "wheelchair-corner",
+          "name": "wheelchair and lap robe",
+          "onInspect": {
+            "narrativeHints": "The chair is ordinary and well used. From this room to the hall is a short roll, not a climb. A lap robe could conceal a small weapon. No miracle of mobility is required to fire from a seated height in the hall."
+          }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "alan-room",
+      "name": "Alan Thorne's room",
+      "description": "A manager’s room: ledgers, a neat desk, the smell of tobacco. Respectable on the surface. The desk blotter and drawers may not be.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 2,
+        "y": 1,
+        "floor": 1
+      },
+      "exits": [
+        {
+          "toLocationId": "upper-corridor",
+          "label": "to the corridor"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "alan-desk-pad",
+          "name": "desk notepad",
+          "onInspect": {
+            "narrativeHints": "The top sheet is blank, but under raking light the indentations from a harder hand show through — the same words as the half-burned note: gallery, midnight, alone, the threat. He wrote it here.",
+            "revealsEvidenceIds": [
+              "notepad-indentations"
+            ]
+          }
+        },
+        {
+          "id": "alan-drawer",
+          "name": "locked desk drawer",
+          "onInspect": {
+            "narrativeHints": "Forced open with care: a black ledger of payments and names that do not belong in honest estate work. Illegal dealings — enough to buy a constable’s friendship.",
+            "revealsEvidenceIds": [
+              "shady-ledger"
+            ]
+          }
+        }
+      ],
+      "charactersPresent": []
+    },
+    {
+      "id": "hale-room",
+      "name": "Conrad Hale's guest room",
+      "description": "A temporary room for a man who came about money and stayed for a death. Papers on the side table.",
+      "startsAccessible": true,
+      "knownAtStart": true,
+      "map": {
+        "x": 4,
+        "y": 0,
+        "floor": 1
+      },
+      "exits": [
+        {
+          "toLocationId": "upper-corridor",
+          "label": "to the corridor"
+        }
+      ],
+      "inspectables": [
+        {
+          "id": "hale-papers",
+          "name": "Hale's open portfolio",
+          "onInspect": {
+            "narrativeHints": "Notes in Hale’s hand: he had only just discovered Thorne’s double books. Anger, not grief. He came to confront a partner — not to shoot a man from a hall floor."
+          }
+        }
+      ],
+      "charactersPresent": []
+    }
+  ],
+  "relationships": [
+    {
+      "id": "margaret_protects_eliza",
+      "fromId": "margaret-ashmere",
+      "toId": "eliza-ashmere",
+      "type": "family",
+      "label": "grandmother; fierce protector",
+      "strength": 3,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "alan_manages_house",
+      "fromId": "alan-thorne",
+      "toId": "margaret-ashmere",
+      "type": "family",
+      "label": "nephew; managed the estate",
+      "strength": 2,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "helen_loved_alan",
+      "fromId": "helen-thorne",
+      "toId": "alan-thorne",
+      "type": "spouse",
+      "label": "wife; believed the public man",
+      "strength": 3,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "julian_wants_inheritance",
+      "fromId": "julian-thorne",
+      "toId": "alan-thorne",
+      "type": "family",
+      "label": "son; impatient for money and freedom",
+      "strength": 2,
+      "public": true,
+      "knownToPlayerByDefault": true
+    },
+    {
+      "id": "rudge_pocket_alan",
+      "fromId": "rudge",
+      "toId": "alan-thorne",
+      "type": "business",
+      "label": "corrupt protection",
+      "strength": 2,
+      "public": false,
+      "knownToPlayerByDefault": false
+    },
+    {
+      "id": "hale_partner_alan",
+      "fromId": "conrad-hale",
+      "toId": "alan-thorne",
+      "type": "business",
+      "label": "business partner; newly betrayed",
+      "strength": 2,
+      "public": true,
+      "knownToPlayerByDefault": true
+    }
+  ],
+  "characters": [
+    {
+      "id": "alan-thorne",
+      "name": "Alan Thorne",
+      "introducedAs": "Alan Thorne",
+      "nameKnownAtStart": true,
+      "knownAtStart": true,
+      "shortBio": "Dead. Charming nephew. Estate manager.",
+      "cardTitle": "The deceased — estate manager",
+      "voice": "Silent now",
+      "defaultLocationId": "great-hall",
+      "defaultWillingness": "silent",
+      "availableByDefault": false,
+      "storyRole": "victim",
+      "knowledge": {
+        "public": "Middle-aged, respected, friend of Constable Rudge. Managed Greymoor for Mrs. Ashmere. Found dead under the gallery after midnight.",
+        "private": [],
+        "secrets": []
+      },
+      "defenses": [],
+      "portrait": "portraits/alan-thorne.jpg"
+    },
+    {
+      "id": "helen-thorne",
+      "name": "Helen Thorne",
+      "introducedAs": "Mrs. Thorne",
+      "nameKnownAtStart": true,
+      "knownAtStart": true,
+      "shortBio": "Widow; loved the public man; did not know the rest.",
+      "cardTitle": "Alan’s wife",
+      "voice": "Controlled grief; defends his name",
+      "defaultLocationId": "drawing-room",
+      "defaultWillingness": "guarded",
+      "storyRole": "witness",
+      "knowledge": {
+        "public": "She loved her husband. She cannot believe anyone in the family would harm him. She thinks of Eliza as difficult, not endangered.",
+        "private": [
+          {
+            "id": "helen-defends-alan",
+            "content": "Alan was tired, dutiful, kind to her. She never saw him raise a hand. If you blacken him without proof, she will fight you with tears and loyalty."
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "My husband was a good man.",
+        "You are upsetting the house for nothing."
+      ],
+      "portrait": "portraits/helen-thorne.jpg"
+    },
+    {
+      "id": "julian-thorne",
+      "name": "Julian Thorne",
+      "introducedAs": "Julian",
+      "nameKnownAtStart": true,
+      "knownAtStart": true,
+      "shortBio": "Son; arrogant; inheritance-minded.",
+      "cardTitle": "Alan’s son",
+      "voice": "Impatient, superior, bored by Greymoor",
+      "defaultLocationId": "drawing-room",
+      "defaultWillingness": "guarded",
+      "storyRole": "suspect",
+      "knowledge": {
+        "public": "He made no secret of wanting his freedom and his father’s money. He and Alan argued. He could climb any stair in the house.",
+        "private": [
+          {
+            "id": "julian-alibi",
+            "content": "He was in the drawing room with his mother when the crash came — or so he and Helen both say. He did not fire from the hall floor."
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "I wanted him out of my life, not shot like a dog.",
+        "Look at the girl. She hated him."
+      ],
+      "portrait": "portraits/julian-thorne.jpg"
+    },
+    {
+      "id": "margaret-ashmere",
+      "name": "Margaret Ashmere",
+      "introducedAs": "Mrs. Ashmere",
+      "nameKnownAtStart": true,
+      "knownAtStart": true,
+      "shortBio": "Elderly owner of Greymoor; wheelchair; iron quiet.",
+      "cardTitle": "Owner of Greymoor House",
+      "voice": "Soft, precise, never raises her voice",
+      "defaultLocationId": "great-hall",
+      "defaultWillingness": "guarded",
+      "storyRole": "suspect",
+      "knowledge": {
+        "public": "She owns Greymoor. She uses a wheelchair. Alan was her nephew and managed the practical life of the house. She seems devastated and physically incapable of violence.",
+        "private": [
+          {
+            "id": "margaret-grief-mask",
+            "content": "She will speak of Alan as a blow to the house. She will not volunteer the note, the gun, or the gallery."
+          }
+        ],
+        "secrets": [
+          {
+            "id": "margaret-did-it",
+            "content": "SEALED: She found Alan’s note to Eliza, knew the police would not help, took a revolver in her lap, waited in the dark hall, called him to the rail, and shot upward. She never threw him.",
+            "requiresFlags": {
+              "case_solved": true
+            }
+          }
+        ]
+      },
+      "defenses": [
+        "I could not have thrown a man from a gallery.",
+        "I loved this house and what little family I have left."
+      ],
+      "portrait": "portraits/margaret-ashmere.jpg"
+    },
+    {
+      "id": "eliza-ashmere",
+      "name": "Eliza Ashmere",
+      "introducedAs": "Miss Ashmere",
+      "nameKnownAtStart": true,
+      "knownAtStart": true,
+      "shortBio": "Orphaned granddaughter; door locked; terrified.",
+      "cardTitle": "Granddaughter of the house",
+      "voice": "Quiet, careful, flinches at heavy steps",
+      "defaultLocationId": "outside-eliza-door",
+      "defaultWillingness": "guarded",
+      "storyRole": "suspect",
+      "knowledge": {
+        "public": "She keeps to her room. She will not open for Constable Rudge. She looks like a girl with something to hide.",
+        "private": [
+          {
+            "id": "eliza-door-refuse",
+            "content": "She is on the other side of the bolted door (or just inside once open). Through the wood: if you are with Rudge, go away. She needs proof you understand the midnight note was Alan’s weapon against her."
+          }
+        ],
+        "secrets": [
+          {
+            "id": "eliza-full-crack",
+            "content": "Alan has been threatening and physically abusing her. She went to the police once; they did not believe her — or it came to nothing, and she believes Rudge would only protect him. She did NOT kill Alan. Grandmother found out about the abuse and the failed report. There was another note — midnight, gallery, alone. Grandmother found it and said she would handle it. Eliza is protecting Margaret even now.",
+            "requiresEvidenceIds": [
+              "charred-note"
+            ]
+          },
+          {
+            "id": "eliza-full-crack-pad",
+            "content": "Alan has been threatening and physically abusing her. She went to the police once; they did not believe her. She did NOT kill him. Grandmother found out, found the midnight gallery note, and said she would handle it. (Same truth — unlocked via the notepad path.)",
+            "requiresEvidenceIds": [
+              "notepad-indentations"
+            ]
+          },
+          {
+            "id": "eliza-plot-b",
+            "content": "She overheard fragments of Alan’s illegal business — payments, names, Rudge’s grin. He told her silence was survival for that too.",
+            "requiresEvidenceIds": [
+              "charred-note",
+              "shady-ledger"
+            ]
+          }
+        ]
+      },
+      "defenses": [
+        "I did not kill him.",
+        "You do not understand what he was."
+      ],
+      "portrait": "portraits/eliza-ashmere.jpg"
+    },
+    {
+      "id": "alden",
+      "name": "Mr. Alden",
+      "introducedAs": "Alden",
+      "nameKnownAtStart": true,
+      "knownAtStart": true,
+      "shortBio": "Butler; understatement; house first.",
+      "cardTitle": "Butler",
+      "voice": "Measured, formal",
+      "defaultLocationId": "great-hall",
+      "defaultWillingness": "open",
+      "storyRole": "witness",
+      "knowledge": {
+        "public": "He has served Greymoor for years. He heard a sharp sound and a crash; he cannot swear they were one thing or two. He found the hall in chaos and sent for the constable.",
+        "private": [
+          {
+            "id": "alden-sounds",
+            "content": "From the service passage: a crack like a shot, almost at once the heavier crash. Echoes in this house lie. He will not invent a culprit."
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [],
+      "portrait": "portraits/alden.jpg"
+    },
+    {
+      "id": "briggs",
+      "name": "Mrs. Briggs",
+      "introducedAs": "Mrs. Briggs",
+      "nameKnownAtStart": true,
+      "knownAtStart": true,
+      "shortBio": "Cook; heard a crash, not a shot.",
+      "cardTitle": "Cook",
+      "voice": "Blunt, warm to Eliza",
+      "defaultLocationId": "kitchen",
+      "defaultWillingness": "open",
+      "storyRole": "witness",
+      "knowledge": {
+        "public": "She heard a great crash through the kitchen walls. She insists it was not a gun — only the fall. She is fond of Eliza and distrusts men who shout.",
+        "private": [
+          {
+            "id": "briggs-crash-only",
+            "content": "Distance and pans: she heard one heavy crash. She will argue with anyone who says shot. Honest disagreement, not conspiracy."
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [],
+      "portrait": "portraits/briggs.jpg"
+    },
+    {
+      "id": "rose-nettles",
+      "name": "Rose Nettles",
+      "introducedAs": "Rose",
+      "nameKnownAtStart": true,
+      "knownAtStart": true,
+      "shortBio": "Maid; saw the wrist; girl is terrified of Thorne.",
+      "cardTitle": "Housemaid",
+      "voice": "Hesitant, honest when pressed gently",
+      "defaultLocationId": "kitchen",
+      "defaultWillingness": "open",
+      "storyRole": "witness",
+      "knowledge": {
+        "public": "She works hard and sees more than she is paid to say. She is frightened of Constable Rudge’s temper.",
+        "private": [
+          {
+            "id": "rose-wrist-grip",
+            "content": "She once saw Mr. Thorne grip Miss Eliza’s wrist so hard the girl went white. Eliza is terrified of him — not shy, terrified. Rose thinks he mistreated her. She has no proof of murder and will not accuse Mrs. Ashmere of anything."
+          },
+          {
+            "id": "rose-sounds",
+            "content": "From the back stair she thought she heard two sounds — a sharp one, then the fall. She is not sure."
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [],
+      "portrait": "portraits/rose-nettles.jpg"
+    },
+    {
+      "id": "conrad-hale",
+      "name": "Conrad Hale",
+      "introducedAs": "Mr. Hale",
+      "nameKnownAtStart": true,
+      "knownAtStart": true,
+      "shortBio": "Business partner; discovered the double books; furious.",
+      "cardTitle": "Business partner",
+      "voice": "Cold, clipped, betrayed",
+      "defaultLocationId": "drawing-room",
+      "defaultWillingness": "guarded",
+      "storyRole": "suspect",
+      "knowledge": {
+        "public": "He came about a partnership dispute. He had only recently learned Alan was cheating him with illegal side dealings.",
+        "private": [
+          {
+            "id": "hale-anger",
+            "content": "He wanted a reckoning in paper and coin, not a body under a gallery. He was in the drawing room when the crash came. He will point you at the ledgers if pressed — not at a gun."
+          }
+        ],
+        "secrets": []
+      },
+      "defenses": [
+        "I came to dissolve a partnership, not to commit murder.",
+        "Follow the money if you want truth — but I did not kill him."
+      ],
+      "portrait": "portraits/conrad-hale.jpg"
+    },
+    {
+      "id": "rudge",
+      "name": "Constable George Rudge",
+      "introducedAs": "Constable Rudge",
+      "nameKnownAtStart": true,
+      "knownAtStart": true,
+      "shortBio": "Local constable; corrupt; shields Thorne’s dealings.",
+      "cardTitle": "Local constable",
+      "voice": "Hearty, obstructive, false friendliness",
+      "defaultLocationId": "great-hall",
+      "defaultWillingness": "guarded",
+      "storyRole": "support",
+      "knowledge": {
+        "public": "He arrived first. He speaks of accident, of a hysterical girl, of not stirring scandal. He was Alan Thorne’s friend.",
+        "private": [
+          {
+            "id": "rudge-deflect",
+            "content": "He steers you toward fall, or Eliza, or Julian. He does not want Thorne’s private business opened. Eliza goes silent when he is near — he notices and likes it."
+          }
+        ],
+        "secrets": [
+          {
+            "id": "rudge-on-the-take",
+            "content": "He took money or favours to look away from Thorne’s illegal dealings. That is why a complaint from Eliza never thrived.",
+            "requiresEvidenceIds": [
+              "shady-ledger"
+            ]
+          }
+        ]
+      },
+      "defenses": [
+        "Mind the living, Inspector. The dead man was decent.",
+        "The girl’s always been trouble."
+      ],
+      "portrait": "portraits/rudge.jpg"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "body-wound",
+      "name": "Gunshot wound (from below)",
+      "description": "Alan Thorne was shot. The bullet entered from below — fired upward from the great hall toward a man at the gallery rail — and he fell. Not a pure accident; not a gallery-level duel.",
+      "discoverableAt": {
+        "locationId": "great-hall",
+        "inspectableId": "thorne-body"
+      },
+      "canPresentTo": [
+        "margaret-ashmere",
+        "eliza-ashmere",
+        "rudge",
+        "helen-thorne",
+        "julian-thorne",
+        "alden",
+        "rose-nettles",
+        "conrad-hale"
+      ]
+    },
+    {
+      "id": "charred-note",
+      "name": "Half-burned threatening note",
+      "description": "Recovered from Mrs. Ashmere’s fireplace: charred but readable. Orders someone to be alone on the upper gallery at midnight under threat. She tried to burn it.",
+      "discoverableAt": {
+        "locationId": "margaret-room",
+        "inspectableId": "margaret-fireplace"
+      },
+      "canPresentTo": [
+        "eliza-ashmere",
+        "margaret-ashmere",
+        "helen-thorne",
+        "rose-nettles",
+        "rudge"
+      ],
+      "readable": {
+        "text": "You will be alone on the upper gallery at midnight. Tell no one. If you speak again outside this house, you will regret it more than last time. — You know who."
+      }
+    },
+    {
+      "id": "notepad-indentations",
+      "name": "Notepad indentations",
+      "description": "From Alan Thorne’s desk pad: pen pressure shows the same midnight gallery threat as the half-burned note. He wrote it.",
+      "discoverableAt": {
+        "locationId": "alan-room",
+        "inspectableId": "alan-desk-pad"
+      },
+      "canPresentTo": [
+        "eliza-ashmere",
+        "margaret-ashmere",
+        "helen-thorne",
+        "rudge",
+        "rose-nettles"
+      ]
+    },
+    {
+      "id": "gallery-gun",
+      "name": "Small revolver",
+      "description": "Hidden in Mrs. Ashmere’s wardrobe. Recently fired. Fits a shot from a seated height in the hall.",
+      "discoverableAt": {
+        "locationId": "margaret-room",
+        "inspectableId": "margaret-wardrobe"
+      },
+      "canPresentTo": [
+        "margaret-ashmere",
+        "rudge",
+        "eliza-ashmere",
+        "helen-thorne"
+      ]
+    },
+    {
+      "id": "shady-ledger",
+      "name": "Black ledger of illegal dealings",
+      "description": "From Thorne’s drawer: payments and names that buy silence — including a path to a constable’s friendship. Reinforces why the law failed Eliza; not a second killer.",
+      "discoverableAt": {
+        "locationId": "alan-room",
+        "inspectableId": "alan-drawer"
+      },
+      "canPresentTo": [
+        "conrad-hale",
+        "rudge",
+        "margaret-ashmere",
+        "eliza-ashmere",
+        "helen-thorne"
+      ],
+      "redHerring": false
+    },
+    {
+      "id": "julian-letter",
+      "name": "Julian's inheritance letter",
+      "description": "Julian wants the estate settled and his father out of his way financially. Suggests motive for a quarrel, not a shot from the great hall floor.",
+      "discoverableAt": {
+        "locationId": "drawing-room",
+        "inspectableId": "julian-discarded-letter"
+      },
+      "canPresentTo": [
+        "julian-thorne",
+        "helen-thorne",
+        "rudge"
+      ],
+      "redHerring": true
+    }
+  ],
+  "deductions": [
+    {
+      "id": "not-simple-fall",
+      "claim": "Alan was shot; not a pure fall.",
+      "question": "Did Alan Thorne only fall, or was he shot?",
+      "role": "lead",
+      "requires": [],
+      "supports": [
+        {
+          "evidenceId": "body-wound"
+        }
+      ],
+      "minSupports": 1
+    },
+    {
+      "id": "shot-from-below",
+      "claim": "The shot came from the great hall upward.",
+      "question": "From where was the gun fired?",
+      "role": "lead",
+      "requires": [
+        "not-simple-fall"
+      ],
+      "supports": [
+        {
+          "evidenceId": "body-wound"
+        }
+      ],
+      "minSupports": 1
+    },
+    {
+      "id": "maid-wrist-fear",
+      "claim": "Alan mistreated Eliza; she is terrified of him.",
+      "question": "Was someone in the house afraid of Alan Thorne for a reason?",
+      "role": "lead",
+      "requires": [],
+      "supports": [
+        {
+          "knowledge": {
+            "characterId": "rose-nettles",
+            "beatId": "rose-wrist-grip"
+          }
+        }
+      ],
+      "minSupports": 1
+    },
+    {
+      "id": "charred-note-found",
+      "claim": "Margaret had the note and tried to burn it; a midnight gallery meeting was ordered.",
+      "question": "Why is there a half-burned note about a midnight gallery meeting in Mrs. Ashmere’s fireplace?",
+      "role": "lead",
+      "requires": [],
+      "supports": [
+        {
+          "evidenceId": "charred-note"
+        }
+      ],
+      "minSupports": 1
+    },
+    {
+      "id": "he-wrote-the-note",
+      "claim": "Alan wrote the threatening note himself.",
+      "question": "Who wrote the threatening midnight note?",
+      "role": "lead",
+      "requires": [
+        "charred-note-found"
+      ],
+      "supports": [
+        {
+          "evidenceId": "notepad-indentations"
+        }
+      ],
+      "minSupports": 1
+    },
+    {
+      "id": "girl-unlock-testimony",
+      "claim": "Abuse, police failed, Eliza did not kill him; Margaret found out and said she would handle the note.",
+      "question": "What is Eliza Ashmere hiding behind her locked door?",
+      "role": "lead",
+      "requires": [
+        "he-wrote-the-note"
+      ],
+      "supports": [
+        {
+          "knowledge": {
+            "characterId": "eliza-ashmere",
+            "beatId": "eliza-full-crack"
+          }
+        },
+        {
+          "knowledge": {
+            "characterId": "eliza-ashmere",
+            "beatId": "eliza-full-crack-pad"
+          }
+        }
+      ],
+      "minSupports": 1
+    },
+    {
+      "id": "gun-in-her-room",
+      "claim": "The murder weapon is hidden in Margaret’s room.",
+      "question": "Who had the weapon that matches a shot from the hall?",
+      "role": "lead",
+      "requires": [],
+      "supports": [
+        {
+          "evidenceId": "gallery-gun"
+        }
+      ],
+      "minSupports": 1
+    },
+    {
+      "id": "shady-dealings",
+      "claim": "Alan ran illegal dealings that bought protection.",
+      "question": "What else was Alan Thorne mixed up in?",
+      "role": "lead",
+      "requires": [],
+      "supports": [
+        {
+          "evidenceId": "shady-ledger"
+        }
+      ],
+      "minSupports": 1
+    },
+    {
+      "id": "method-terminal",
+      "claim": "Shot from below; fell from the gallery.",
+      "question": "How did Alan Thorne die?",
+      "role": "method",
+      "factId": "method",
+      "requires": [
+        "shot-from-below"
+      ],
+      "supports": [
+        {
+          "nodeId": "shot-from-below"
+        },
+        {
+          "evidenceId": "gallery-gun"
+        }
+      ],
+      "minSupports": 2
+    },
+    {
+      "id": "motive-terminal",
+      "claim": "Margaret killed him to stop his abuse of Eliza when the police had failed.",
+      "question": "Why was Alan Thorne killed?",
+      "role": "motive",
+      "factId": "motive",
+      "requires": [
+        "girl-unlock-testimony"
+      ],
+      "supports": [
+        {
+          "nodeId": "girl-unlock-testimony"
+        },
+        {
+          "nodeId": "he-wrote-the-note"
+        }
+      ],
+      "minSupports": 2
+    },
+    {
+      "id": "identity-terminal",
+      "claim": "Margaret Ashmere shot him from the hall.",
+      "question": "Who killed Alan Thorne?",
+      "role": "identity",
+      "factId": "killer",
+      "requires": [
+        "shot-from-below",
+        "charred-note-found"
+      ],
+      "supports": [
+        {
+          "evidenceId": "gallery-gun"
+        },
+        {
+          "nodeId": "girl-unlock-testimony"
+        },
+        {
+          "evidenceId": "charred-note"
+        }
+      ],
+      "minSupports": 2
+    }
+  ],
+  "beats": [
+    {
+      "id": "eliza_opens_on_note",
+      "once": true,
+      "trigger": "on_present",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "or",
+            "of": [
+              {
+                "type": "presented",
+                "evidenceId": "charred-note",
+                "toCharacterId": "eliza-ashmere"
+              },
+              {
+                "type": "presented",
+                "evidenceId": "notepad-indentations",
+                "toCharacterId": "eliza-ashmere"
+              }
+            ]
+          },
+          {
+            "type": "not",
+            "of": {
+              "type": "character_at",
+              "characterId": "rudge",
+              "locationId": "outside-eliza-door"
+            }
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_exit_open",
+          "from": "outside-eliza-door",
+          "to": "eliza-room",
+          "value": true
+        },
+        {
+          "type": "set_game_flag",
+          "id": "eliza_door_open",
+          "value": true
+        },
+        {
+          "type": "set_willingness",
+          "characterId": "eliza-ashmere",
+          "value": "open"
+        },
+        {
+          "type": "move_character",
+          "characterId": "eliza-ashmere",
+          "toLocationId": "eliza-room"
+        },
+        {
+          "type": "set_phase",
+          "phaseId": "deepening"
+        }
+      ],
+      "narrationHints": "After a long silence the bolt slides. Eliza opens the door enough to see your face and the paper in your hand. Rudge is not in this ground-floor wing. She lets you into her room. She is ready to speak if you ask gently about Alan, the note, and the police."
+    },
+    {
+      "id": "body_examined_phase",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "body-wound"
+      },
+      "effects": [
+        {
+          "type": "set_phase",
+          "phaseId": "deepening"
+        }
+      ],
+      "narrationHints": "The wound from below rewrites the night. Someone fired from the hall."
+    },
+    {
+      "id": "crisis_on_gun",
+      "once": true,
+      "trigger": "on_discover",
+      "when": {
+        "type": "has_evidence",
+        "evidenceId": "gallery-gun"
+      },
+      "effects": [
+        {
+          "type": "set_phase",
+          "phaseId": "crisis"
+        },
+        {
+          "type": "set_game_flag",
+          "id": "eliza_cracked",
+          "value": true
+        }
+      ],
+      "narrationHints": "The revolver in Mrs. Ashmere’s wardrobe ends the fairy tale of the helpless chair. The charge is almost ready — if you have the girl’s story and the note path."
+    }
+  ],
+  "solution": {
+    "summary": "Margaret Ashmere found Alan Thorne’s threatening note to Eliza, knew the police would not protect the girl, waited in the dark great hall with a revolver concealed at her wheelchair, called him to the gallery rail, and shot upward. He fell. She never threw him. She killed him to stop his abuse when the law had already failed.",
+    "guiltyPartyIds": [
+      "margaret-ashmere"
+    ],
+    "method": "Shot from the great hall floor upward into Alan on the gallery rail; he fell to the flagstones. Bullet and fall.",
+    "motive": "To protect Eliza from Alan’s ongoing abuse and midnight threats after the police failed the girl; Margaret chose execution over a system she believed was on his side.",
+    "criticalEvidenceIds": [
+      "body-wound",
+      "charred-note",
+      "notepad-indentations",
+      "gallery-gun"
+    ],
+    "rubric": {
+      "allowWithoutEvidence": true,
+      "successPolicy": "identity_plus_one",
+      "partialCredit": true,
+      "requiredFacts": [
+        {
+          "id": "killer",
+          "role": "identity",
+          "description": "Margaret Ashmere shot Alan Thorne",
+          "matchHints": [
+            "margaret",
+            "ashmere",
+            "mrs ashmere",
+            "grandmother",
+            "old lady",
+            "wheelchair"
+          ]
+        },
+        {
+          "id": "method",
+          "role": "method",
+          "description": "Shot from below; fell from the gallery",
+          "matchHints": [
+            "shot",
+            "gun",
+            "from below",
+            "upward",
+            "gallery",
+            "hall",
+            "rail",
+            "fell",
+            "revolver"
+          ]
+        },
+        {
+          "id": "motive",
+          "role": "motive",
+          "description": "Protect Eliza from abuse when police failed",
+          "matchHints": [
+            "eliza",
+            "abuse",
+            "protect",
+            "granddaughter",
+            "note",
+            "police",
+            "rudge",
+            "threat",
+            "midnight"
+          ]
+        }
+      ]
+    }
+  },
+  "canon": {
+    "timeline": [
+      {
+        "at": "Earlier that day",
+        "event": "Alan leaves Eliza a note ordering her to the gallery at midnight."
+      },
+      {
+        "at": "Evening",
+        "event": "Margaret finds the note; decides the police will not help."
+      },
+      {
+        "at": "Near midnight",
+        "event": "Alan waits on the gallery. Margaret is in the dark hall with a gun. She shoots upward; he falls."
+      },
+      {
+        "at": "After midnight",
+        "event": "Household hears shot and/or crash. Rudge is summoned. You arrive."
+      }
+    ],
+    "notes": "Sealed truth for authors. Note misread: he wrote it to Eliza. Margaret is killer. Plot B ledger reinforces corruption only."
+  },
+  "revelation": "Alan Thorne was not a good man who fell by chance. He had been abusing Eliza Ashmere and used a midnight note to summon her alone to the upper gallery. Margaret Ashmere found that note. She had already learned that a complaint to the police would not save the girl — not with Constable Rudge in Alan’s pocket and illegal money greasing the silence. She took a revolver, waited in the dark great hall, drew him to the rail, and shot upward. He fell. She never needed to throw him. The half-burned note in her fireplace, the indentations on his pad, Eliza’s testimony, and the gun in Margaret’s wardrobe are the path to that truth. Helen loved a mask. Julian wanted money. Hale wanted a partnership settled. Only Margaret chose blood to buy Eliza a future.",
+  "endings": [
+    {
+      "id": "success_earned",
+      "when": "success",
+      "kind": "solved",
+      "title": "The charge holds",
+      "templateNotes": "Margaret is named. The hall is quiet. Eliza is not simple-safe but the abuse is spoken. Helen breaks. Rudge’s friendship with the dead man stinks in the open. Stage diegetic aftermath: custody, the girl’s future, the weight of a protective murder. Do not invent a different killer."
+    },
+    {
+      "id": "success_lucky",
+      "when": "success",
+      "kind": "lucky_solve",
+      "title": "A thin but true charge",
+      "templateNotes": "The player named Margaret with little evidence path. Still correct. Aftermath colder, less fully understood by the house, but the truth stands."
+    },
+    {
+      "id": "partial",
+      "when": "partial",
+      "kind": "partial",
+      "title": "Half the truth",
+      "templateNotes": "Something right, something missing. The house unsettled. Rudge may still twist the narrative. Leave room for the gap the player left."
+    },
+    {
+      "id": "wrong_accusation",
+      "when": "failure",
+      "kind": "wrong_accusation",
+      "title": "The wrong name",
+      "templateNotes": "A false charge lands. Eliza may be crushed if named; Julian scapegoated; Margaret silent with her gun still hidden. Rudge pleased. Moral ruin of a wrong formal accusation."
+    },
+    {
+      "id": "time_failed",
+      "when": "failure",
+      "kind": "time_expired",
+      "title": "Dawn without answers",
+      "templateNotes": "Morning and official machinery take the case from you. The house closes ranks. Truth optional and buried."
+    }
+  ]
+}

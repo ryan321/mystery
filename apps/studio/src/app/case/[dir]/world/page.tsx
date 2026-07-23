@@ -1,5 +1,6 @@
 import { loadCase, assetUrl } from "@/lib/content";
 import { conditionToText } from "@/lib/prose";
+import WorldMap, { type WorldRoom } from "./WorldMap";
 
 export const dynamic = "force-dynamic";
 
@@ -15,94 +16,32 @@ export default async function WorldPage({
   }
   const def = loaded.def;
 
-  // Sketch map from authored grid coords
-  const mapped = def.locations.filter((l) => l.map);
-  const CELL = 170;
-  const PAD = 40;
-  const xs = mapped.map((l) => l.map!.x);
-  const ys = mapped.map((l) => l.map!.y);
-  const minX = Math.min(...xs, 0);
-  const minY = Math.min(...ys, 0);
-  const W = (Math.max(...xs, 0) - minX + 1) * CELL + PAD * 2;
-  const H = (Math.max(...ys, 0) - minY + 1) * CELL + PAD * 2;
-  const px = (x: number) => PAD + (x - minX) * CELL + CELL / 2;
-  const py = (y: number) => PAD + (y - minY) * CELL + CELL / 2;
+  // Floor plan — normalize the authored def into what the map draws.
+  const startId = def.player.startingLocationId;
+  const worldRooms: WorldRoom[] = def.locations.map((l) => ({
+    id: l.id,
+    name: l.name,
+    x: l.map?.x,
+    y: l.map?.y,
+    floor: l.map?.floor,
+    hasCoords: !!l.map,
+    knownAtStart: !!l.knownAtStart,
+    sealed: l.startsAccessible === false,
+    isStart: l.id === startId,
+    exits: (l.exits ?? []).map((e) => ({
+      to: e.toLocationId,
+      gated:
+        !!e.startsClosed || (e.requiresEvidenceIds?.length ?? 0) > 0,
+    })),
+  }));
 
   return (
     <>
-      {mapped.length > 0 && (
+      {def.locations.length > 0 && (
         <div className="section">
-          <h3>Sketch map</h3>
-          <div className="panel" style={{ overflowX: "auto" }}>
-            <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ maxWidth: W }}>
-              {def.locations.flatMap((l) =>
-                (l.exits ?? []).map((e) => {
-                  const to = def.locations.find(
-                    (x) => x.id === e.toLocationId
-                  );
-                  if (!l.map || !to?.map) return null;
-                  return (
-                    <line
-                      key={`${l.id}->${e.toLocationId}`}
-                      x1={px(l.map.x)}
-                      y1={py(l.map.y)}
-                      x2={px(to.map.x)}
-                      y2={py(to.map.y)}
-                      stroke={e.startsClosed ? "#59607080" : "#8b93a3"}
-                      strokeWidth={1.5}
-                      strokeDasharray={
-                        e.startsClosed || e.requiresEvidenceIds?.length
-                          ? "5 4"
-                          : undefined
-                      }
-                    />
-                  );
-                })
-              )}
-              {mapped.map((l) => (
-                <g key={l.id}>
-                  <rect
-                    x={px(l.map!.x) - 62}
-                    y={py(l.map!.y) - 30}
-                    width={124}
-                    height={60}
-                    rx={7}
-                    fill="#1b1f27"
-                    stroke={
-                      l.id === def.player.startingLocationId
-                        ? "#d9a441"
-                        : "#3a4150"
-                    }
-                    strokeWidth={1.8}
-                    strokeDasharray={l.knownAtStart === false ? undefined : undefined}
-                  />
-                  <text
-                    x={px(l.map!.x)}
-                    y={py(l.map!.y) - 2}
-                    textAnchor="middle"
-                    fontSize="12"
-                    fill="#e3e6ec"
-                  >
-                    {l.name.replace(/^.*—\s*/, "").slice(0, 20)}
-                  </text>
-                  <text
-                    x={px(l.map!.x)}
-                    y={py(l.map!.y) + 15}
-                    textAnchor="middle"
-                    fontSize="9.5"
-                    fill="#8b93a3"
-                  >
-                    {[
-                      l.map!.floor != null ? `floor ${l.map!.floor}` : null,
-                      l.knownAtStart ? "known at start" : null,
-                      l.id === def.player.startingLocationId ? "start" : null,
-                    ]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </text>
-                </g>
-              ))}
-            </svg>
+          <h3>Floor plan</h3>
+          <div className="panel">
+            <WorldMap rooms={worldRooms} />
           </div>
         </div>
       )}

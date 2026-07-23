@@ -1,8 +1,12 @@
 # Greymoor Gallery — mystery kernel
 
-**Status:** Kernel only (matches sealed story as given).  
+**Status:** Implemented as case `the-fall-of-alan-thorne`  
+**Title in product:** **The Fall of Alan Thorne**  
 **Date:** 2026-07-23  
-**Guide:** [CREATING_MYSTERIES.md](../CREATING_MYSTERIES.md)
+**Guide:** [CREATING_MYSTERIES.md](../CREATING_MYSTERIES.md)  
+**Definition:** `content/cases/the-fall-of-alan-thorne/definition.json`
+
+Victim name: **Alan Thorne**. House: **Greymoor House**.
 
 This supersedes earlier Greymoor drafts that invented accident/help-task plots. **This document follows the author’s truth below.**
 
@@ -10,8 +14,8 @@ This supersedes earlier Greymoor drafts that invented accident/help-task plots. 
 
 ## Working title
 
-**Greymoor Gallery**  
-*(working; mansion + upper gallery + midnight)*
+**The Fall of Alan Thorne**  
+*(house: Greymoor; upper gallery + midnight)*
 
 ---
 

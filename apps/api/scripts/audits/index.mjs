@@ -2,12 +2,12 @@
 /**
  * Per-dimension mystery audits — objective where possible, rubric'd where not.
  *
- *   pnpm audit --case blackwood-inheritance                 # all five
- *   pnpm audit --case blackwood-inheritance --audit clues,locations
- *   pnpm audit --case blackwood-inheritance --no-llm        # deterministic checks only
+ *   pnpm audits --case blackwood-inheritance                 # all audits
+ *   pnpm audits --case blackwood-inheritance --audit clues,locations,deductions
+ *   pnpm audits --case blackwood-inheritance --no-llm        # deterministic only
  *
- * Audits: crime | realism | characters | locations | clues | persona |
- * opening | ending | details
+ * Audits: crime | realism | characters | locations | clues | deductions |
+ * persona | opening | ending | details
  * Each saves playtests/<case>/audit-<name>-<version>-<stamp>.json and prints
  * a report. Exit 1 if any audit grades FAIL.
  */
@@ -19,6 +19,7 @@ import { runRealismAudit } from "./realism.mjs";
 import { runCharactersAudit } from "./characters.mjs";
 import { runLocationsAudit } from "./locations.mjs";
 import { runCluesAudit } from "./clues.mjs";
+import { runDeductionsAudit } from "./deductions.mjs";
 import { runPersonaAudit } from "./persona.mjs";
 import { runOpeningAudit } from "./opening.mjs";
 import { runEndingAudit } from "./ending.mjs";
@@ -35,16 +36,30 @@ for (let i = 2; i < process.argv.length; i++) {
   }
 }
 if (!args.case) {
-  console.error("Usage: pnpm audit --case <caseId> [--audit crime,realism,characters,locations,clues,persona,opening,ending,details] [--no-llm]");
+  console.error(
+    "Usage: pnpm audits --case <caseId> [--audit crime,realism,characters,locations,clues,deductions,persona,opening,ending,details] [--no-llm]"
+  );
   process.exit(1);
 }
 
 const caseDir = join(repoRoot, "content/cases", args.case);
 const def = JSON.parse(readFileSync(join(caseDir, "definition.json"), "utf8"));
 const llm = args["no-llm"] !== "true";
-const wanted = (args.audit ?? "all") === "all"
-  ? ["crime", "realism", "characters", "locations", "clues", "persona", "opening", "ending", "details"]
-  : args.audit.split(",").map((s) => s.trim());
+const wanted =
+  (args.audit ?? "all") === "all"
+    ? [
+        "crime",
+        "realism",
+        "characters",
+        "locations",
+        "clues",
+        "deductions",
+        "persona",
+        "opening",
+        "ending",
+        "details",
+      ]
+    : args.audit.split(",").map((s) => s.trim());
 
 const RUNNERS = {
   crime: () => runCrimeAudit(def, { llm }),
@@ -52,6 +67,7 @@ const RUNNERS = {
   characters: () => runCharactersAudit(def, { llm, caseDir }),
   locations: () => runLocationsAudit(def, { llm }),
   clues: () => runCluesAudit(def),
+  deductions: () => runDeductionsAudit(def),
   persona: () => runPersonaAudit(def, { llm }),
   opening: () => runOpeningAudit(def, { llm }),
   ending: () => runEndingAudit(def, { llm }),

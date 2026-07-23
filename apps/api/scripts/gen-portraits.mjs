@@ -42,15 +42,35 @@ const defPath = join(caseDir, "definition.json");
 const def = JSON.parse(readFileSync(defPath, "utf8"));
 const only = args.only ? new Set(args.only.split(",").map((s) => s.trim())) : null;
 
-const refPath = join(caseDir, args.ref ?? "portraits/henshaw.jpg");
+function resolveRefPath() {
+  const candidates = [
+    args.ref,
+    join(caseDir, "portraits", "_style-ref.jpg"),
+    join(caseDir, "portraits", "henshaw.jpg"),
+    // Fall back to Blackwood style anchor when a new case has no ref yet.
+    join(repoRoot, "content/cases/blackwood-inheritance/portraits/henshaw.jpg"),
+  ].filter(Boolean);
+  for (const c of candidates) {
+    const p = c.startsWith("/") ? c : join(caseDir, c);
+    if (existsSync(p)) return p;
+    if (existsSync(c)) return c;
+  }
+  throw new Error(
+    "No style-reference portrait found. Pass --ref path/to/portrait.jpg"
+  );
+}
+const refPath = resolveRefPath();
 const refB64 = readFileSync(refPath).toString("base64");
 mkdirSync(join(caseDir, "portraits"), { recursive: true });
+console.log(`Style reference: ${refPath}`);
 
 /**
  * Subject descriptions — physical only, derived from the authored cast.
  * Plate = the brass nameplate text, matching the set's plain style.
+ * Keyed by character id (works across cases).
  */
 const SUBJECTS = {
+  // ── Blackwood Inheritance ───────────────────────────────────────────
   ashworth: {
     plate: "Mr. Ashworth",
     desc: "a junior barrister of about twenty-eight, good family; earnest, slightly stiff bearing; clean-shaven, careful grooming, dark hair; black frock coat, high wing collar, dark cravat",
@@ -87,14 +107,73 @@ const SUBJECTS = {
     plate: "Dora",
     desc: "a young housemaid of about nineteen from the village; quick quiet face, a touch nervous; black uniform dress with white apron and white maid's cap",
   },
+  // ── The Fall of Alan Thorne (Greymoor House) ────────────────────────
+  "margaret-ashmere": {
+    plate: "Mrs. Ashmere",
+    desc: "an elderly gentlewoman of about seventy-two in a wheeled chair, carved chair-back just visible behind her shoulders; white hair under a lace cap, composed iron-quiet face, pale sharp eyes that miss little; black silk mourning dress, dark shawl, no jewelry but a wedding band",
+  },
+  "eliza-ashmere": {
+    plate: "Miss Ashmere",
+    desc: "a young woman of about twenty, orphaned granddaughter; pale careful face, dark hair simply dressed, eyes that flinch from contact yet stay intelligent; modest high-necked grey day dress, small brooch, no show of wealth",
+  },
+  "alan-thorne": {
+    plate: "Mr. Thorne",
+    desc: "a middle-aged estate manager of about forty-eight, charming respectable nephew; clean-shaven, well-groomed dark hair greying at temples, confident smiling mouth that does not reach the eyes; good country suit, waistcoat, neat cravat",
+  },
+  "helen-thorne": {
+    plate: "Mrs. Thorne",
+    desc: "a gentlewoman of about forty-five, the manager's wife; soft grief-ready face, kind eyes, hair neatly pinned; dark silk dress suitable for evening, small pearl earrings, loyal and unhardened",
+  },
+  "julian-thorne": {
+    plate: "Julian Thorne",
+    desc: "a young man of about twenty-three, arrogant heir; handsome bored face, carefully cut fair-dark hair, faintly sneering mouth; fashionable town suit a little too fine for the country, silk tie",
+  },
+  alden: {
+    plate: "Alden",
+    desc: "a manor butler of about sixty; spare upright bearing, silver hair, impassive trained face; black tailcoat, white tie, white waistcoat, the perfect servant",
+  },
+  "rose-nettles": {
+    plate: "Rose",
+    desc: "a young housemaid of about twenty-one from the village; open honest face, red-rimmed eyes, dark hair under a white cap; black uniform dress, white apron",
+  },
+  briggs: {
+    plate: "Mrs. Briggs",
+    desc: "a manor cook of about fifty-eight; broad capable face, warm but blunt, grey-streaked hair under a cook's cap; print dress, white apron, sleeves rolled as if interrupted at work",
+  },
+  rudge: {
+    plate: "Constable Rudge",
+    desc: "a local constable of about fifty, heavy-set, false hearty smile, shrewd small eyes; dark police tunic of the period, helmet strap suggestion, thick moustache",
+  },
+  "conrad-hale": {
+    plate: "Mr. Hale",
+    desc: "a city businessman of about fifty, recently betrayed partner; lean hard face, cold eyes, clean-shaven jaw set in anger; dark city suit, stiff collar, no country ease",
+  },
 };
 
+/**
+ * Portraits are full-bleed painted subjects only — NO picture frames,
+ * mats, brass nameplates, or wall/candle "hanging portrait" chrome.
+ * See docs/PORTRAITS.md.
+ */
 function buildPrompt(plate, desc) {
-  return `Create a new portrait in EXACTLY the same style as the attached reference painting — same artist's hand, same composition. Style contract: ${def.meta.artStyle}.
-Reproduce faithfully from the reference: the same aged ornate dark-wood frame with carved corners, the same dark damask-papered wall behind the frame, the same candle glow at the right edge, the same small brass nameplate centered on the frame's bottom rail.
-The brass nameplate must read exactly: "${plate}"
-Subject of the painting (head-and-shoulders, Victorian 1890s England): ${desc}.
-Square image, 1024x1024. No modern elements. No text anywhere except the nameplate.`;
+  const era =
+    /Edwardian|Victorian|1890|1900|manor|country-house/i.test(
+      def.meta?.artStyle ?? ""
+    )
+      ? "Edwardian/Victorian England country-house society"
+      : "period costume matching the style contract";
+  return `Create a new character portrait in EXACTLY the same paint style as the attached reference — same artist's hand, brushwork, and palette. Style contract: ${def.meta.artStyle}.
+
+CRITICAL composition rules (docs/PORTRAITS.md):
+- Full-bleed painted portrait ONLY. The painted subject and backdrop touch all four edges of the image.
+- NO wooden picture frame, NO ornate border, NO mat, NO brass nameplate, NO damask wall behind a frame, NO candle sitting beside a frame.
+- Plain dark painted backdrop behind the figure (oil/portrait studio darkness), not a framed painting on a wall.
+- Head-and-shoulders, facing viewer. Square 1024x1024.
+- No text anywhere in the image (names live in the UI, not on the art).
+
+Subject (${era}): ${desc}.
+Character label for authoring only (do not paint this text): ${plate}.
+No modern elements.`;
 }
 
 /** --deframe: edit an existing portrait — strip frame/wall/nameplate. */
