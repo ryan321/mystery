@@ -370,6 +370,8 @@ export async function runPerformer(
      * compact with static duplicates stripped.
      */
     staticCaseJson?: string;
+    /** Per-game narrator guidance appended to the prompt (game-module seam). */
+    guidance?: string;
   }
 ): Promise<PerformerResult> {
   const started = Date.now();
@@ -445,6 +447,7 @@ export async function runPerformer(
     "## Just happened (must reflect)",
     promptJson(args.justHappened ?? []),
     "",
+    ...(args.guidance ? [`## This game's narration notes`, args.guidance, ""] : []),
     "Return performer JSON only (narration + dialogue). No state patches.",
     "Remember: only people in SCENE PRESENCE / presentCharacterIds are physically here.",
     "SPEECH SPLIT: Player words → narration with quotes. NPC words → dialogue[] only (never quote full NPC lines in narration; body language only).",

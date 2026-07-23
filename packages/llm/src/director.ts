@@ -220,6 +220,8 @@ export async function runDirector(
      * compact with static duplicates stripped.
      */
     staticCaseJson?: string;
+    /** Per-game director guidance appended to the prompt (game-module seam). */
+    guidance?: string;
   }
 ): Promise<DirectorResult> {
   const started = Date.now();
@@ -276,6 +278,7 @@ export async function runDirector(
     args.boundaryHint
       ? `\n## Boundary pre-scan (engine)\nPossible boundary: ${args.boundaryHint}. If this matches the player's intent, emit other with that blocked_* note and no suggestedPatch.\n`
       : "",
+    args.guidance ? `\n## This game's direction notes\n${args.guidance}\n` : "",
     "",
     "Return director JSON. When the world should act ON the player, set worldToPlayer.active=true and compose engine effects (do not invent new effect types or ids).",
     ...(args.staticCaseJson

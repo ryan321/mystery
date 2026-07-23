@@ -31,12 +31,24 @@ export type PlatformServices = {
 export type TurnResult = TurnPipelineResult;
 
 /**
- * A hosted mystery. The platform dispatches a turn to `runTurn`; the module
- * decides everything about it and returns the result. The platform commits the
- * state and enforces the integrity boundary around this call.
+ * A hosted mystery. The platform dispatches lifecycle events to the module; the
+ * module decides everything about gameplay and returns results. The platform
+ * commits state and enforces the integrity boundary around these calls.
+ *
+ * `runTurn` is the required seam. The optional seams let a game own more of its
+ * lifecycle as it needs to; each defaults to the shared platform implementation
+ * when a game doesn't override it, so modules stay as small as they want.
  */
 export interface GameModule {
   /** The caseId this module serves. */
   readonly id: string;
+
+  /** Resolve one turn: player input → narration/dialogue/next state. */
   runTurn(req: TurnRequest, svc: PlatformServices): Promise<TurnResult>;
+
+  /**
+   * The opening state for a new playthrough. Omit → the shared default
+   * (`createInitialPlaythrough`). Override to seed game-specific state.
+   */
+  createInitialState?(def: MysteryDefinition): PlaythroughState;
 }

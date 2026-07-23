@@ -662,7 +662,9 @@ app.post("/v1/playthroughs", async (c) => {
     }
   }
 
-  const state = createInitialPlaythrough(def);
+  // The game's own opening state, or the shared default.
+  const state =
+    gameFor(caseId).createInitialState?.(def) ?? createInitialPlaythrough(def);
   await insertPlaythrough(pool, state, def.openingNarration);
   await pool.query(`UPDATE playthroughs SET user_id = $2 WHERE id = $1`, [
     state.id,

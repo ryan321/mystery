@@ -82,6 +82,12 @@ export async function runTurnPipeline(args: {
   state: PlaythroughState;
   playerInput: string;
   llmConfig: LlmConfig | null;
+  /**
+   * Per-game prompt guidance appended to the director / performer prompts —
+   * the seam a game module uses to own its voice, mechanics emphasis, and
+   * pacing without forking the pipeline.
+   */
+  guidance?: { director?: string; performer?: string };
 }): Promise<TurnPipelineResult> {
   const { def, playerInput, llmConfig } = args;
   if (!isInteractive(args.state)) {
@@ -124,6 +130,7 @@ export async function runTurnPipeline(args: {
     playerInput,
     boundaryHint: localBoundary?.kind ?? null,
     staticCaseJson,
+    guidance: args.guidance?.director,
   });
 
   let { patch, focusCharacterId, notes } = directorIntentsToPatch(
@@ -428,6 +435,7 @@ export async function runTurnPipeline(args: {
     justHappened,
     resolvedNotes: notes,
     staticCaseJson,
+    guidance: args.guidance?.performer,
   });
 
   // Meeting someone reveals them: characters sharing the player's location
