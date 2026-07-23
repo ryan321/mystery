@@ -143,12 +143,16 @@ export async function runBlackwoodTurn(args: {
   // Blackwood is "solve before first light." As the clock crosses into its
   // final slots, feed the narrator a pressure cue so the player feels dawn
   // coming before it ends the case. Owned here, not in the shared engine.
-  const slotId = state.time?.slotId ?? "";
-  if (state.status === "active" && PRE_DAWN_SLOTS[slotId]) {
+  // Fire once on ENTERING a pre-dawn slot (edge-triggered), not every turn in
+  // it — else the narrator gets the same "dawn presses" refrain repeatedly.
+  const dawnSlot = (state.time?.reachedSlotIdsThisTurn ?? []).find(
+    (s) => PRE_DAWN_SLOTS[s]
+  );
+  if (state.status === "active" && dawnSlot) {
     justHappened.push({
       id: "dawn_pressure",
       summary: "The night presses toward dawn",
-      narrationHints: PRE_DAWN_SLOTS[slotId],
+      narrationHints: PRE_DAWN_SLOTS[dawnSlot],
     });
   }
 
@@ -292,7 +296,11 @@ export async function runBlackwoodTurn(args: {
   // turn's world→player effects) so a grabbed sleeve can never trap the player
   // across turns. Genuine incapacitation (restrained/downed/unconscious) blocks
   // the move upstream, so this only fires when a move actually succeeded.
-  if (applied.setLocationId && simState.playerStatus?.control === "held") {
+  if (
+    applied.setLocationId &&
+    applied.setLocationId !== args.state.locationId &&
+    simState.playerStatus?.control === "held"
+  ) {
     simState = {
       ...simState,
       playerStatus: {

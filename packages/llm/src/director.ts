@@ -91,7 +91,10 @@ export type DirectorResult = {
  * Null never carries meaning in director output.
  */
 function pruneNulls(value: unknown): unknown {
-  if (Array.isArray(value)) return value.map(pruneNulls);
+  // Drop null array elements too (e.g. intents:[null, {...}]) — a retained null
+  // would fail the schema and burn a repair round; null never carries meaning.
+  if (Array.isArray(value))
+    return value.filter((v) => v !== null).map(pruneNulls);
   if (value && typeof value === "object") {
     const out: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(value as Record<string, unknown>)) {

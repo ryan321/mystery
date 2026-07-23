@@ -108,7 +108,9 @@ export async function classifyPhysicalAction(
       system: SYSTEM,
       user,
       temperature: 0,
-      maxTokens: 256,
+      // 400 covers a multi-effect result + summary so it doesn't truncate into
+      // the 600-token fallback call.
+      maxTokens: 400,
       maxTransportRetries: 1,
       extraBody: openRouterExtraBody(config),
       validate: (parsed) => {

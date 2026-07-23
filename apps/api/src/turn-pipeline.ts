@@ -258,7 +258,11 @@ export async function runTurnPipeline(args: {
   // turn's world→player effects) so a grabbed sleeve can never trap the player
   // across turns. Genuine incapacitation (restrained/downed/unconscious) blocks
   // the move upstream, so this only fires when a move actually succeeded.
-  if (applied.setLocationId && simState.playerStatus?.control === "held") {
+  if (
+    applied.setLocationId &&
+    applied.setLocationId !== args.state.locationId &&
+    simState.playerStatus?.control === "held"
+  ) {
     simState = {
       ...simState,
       playerStatus: {

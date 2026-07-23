@@ -341,10 +341,18 @@ function validatePerformer(
     const output = PerformerOutputSchema.parse(normalized);
     const soft = performerSoftFailure(output, contextPack);
     if (soft) {
-      // Carry the parsed output: it's valid prose that only bent a content
-      // rule, so runPerformer can ship it (acceptSoftValue) rather than fall
-      // back to the heuristic.
-      return { ok: false, reason: soft, failureClass: "soft", value: output };
+      // A cross-room *mention* is cosmetic — carry the value so runPerformer
+      // ships the prose (acceptSoftValue) rather than the robotic heuristic.
+      // But a fabricated *departure* ("she left for the city" when she's
+      // upstairs) is a world-state contradiction that misleads the player;
+      // withhold the value so it can't ship — it falls through to the heuristic.
+      const isDeparture = /departure/i.test(soft);
+      return {
+        ok: false,
+        reason: soft,
+        failureClass: "soft",
+        value: isDeparture ? undefined : output,
+      };
     }
     return { ok: true, value: output };
   } catch (err) {
@@ -461,7 +469,10 @@ export async function runPerformer(
       system: PERFORMER_SYSTEM,
       user,
       temperature: 0.55,
-      maxTokens: 1200,
+      // Ceiling only bills actual usage. Typical narration is ~350 tokens, but
+      // denouement/multi-confession turns reach ~700 + dialogue — 1500 keeps
+      // the richest turns from truncating into a parse failure.
+      maxTokens: 1500,
       // A transient that survives 2 tries rarely clears on a 3rd within the
       // latency budget; and the performer carries the full pack, so each retry
       // is an expensive ~30-80s call.

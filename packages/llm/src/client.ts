@@ -34,7 +34,10 @@ export function createOpenRouterClient(config: LlmConfig): OpenAI {
     // single stuck call hang the whole turn. Disable both; a stuck call now
     // fails fast into our classified-transient path.
     maxRetries: 0,
-    timeout: 60_000,
+    // Only bites a genuinely slow/stuck call; current turns run ~8s, but give
+    // headroom for the slow tail so a valid long generation isn't aborted and
+    // misclassified as a transient retry.
+    timeout: 90_000,
     defaultHeaders: {
       "HTTP-Referer": "https://mystery.local",
       "X-Title": "Mystery Game",
