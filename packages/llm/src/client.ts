@@ -37,13 +37,17 @@ export function createOpenRouterClient(config: LlmConfig): OpenAI {
 }
 
 /**
- * OpenRouter-specific request body fields (provider routing) for a config.
- * Spread into chat.completions.create params; undefined when not configured.
+ * OpenRouter-specific request body fields (provider routing, reasoning
+ * control) for a config. Spread into chat.completions.create params;
+ * undefined when nothing is configured.
  */
 export function openRouterExtraBody(
   config: LlmConfig
 ): Record<string, unknown> | undefined {
-  return config.provider ? { provider: config.provider } : undefined;
+  const body: Record<string, unknown> = {};
+  if (config.provider) body.provider = config.provider;
+  if (config.reasoning) body.reasoning = config.reasoning;
+  return Object.keys(body).length > 0 ? body : undefined;
 }
 
 /**

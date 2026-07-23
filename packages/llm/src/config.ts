@@ -22,6 +22,14 @@ export type LlmConfig = {
   directorModel?: string;
   /** OpenRouter provider routing; omitted → OpenRouter default routing. */
   provider?: ProviderRouting;
+  /**
+   * OpenRouter unified reasoning control. Defaults to { enabled: false }:
+   * many open-weight models (Qwen3.5, Kimi K2.5) reason by default, which
+   * multiplies output tokens ~5-15x and can consume the whole max_tokens
+   * budget before any JSON appears — a 230s turn in prod. Turns are
+   * latency-bound; reasoning is opt-in via LLM_REASONING_ENABLED=true.
+   */
+  reasoning?: { enabled: boolean };
 };
 
 export function tryCreateOpenRouterConfig(
@@ -52,12 +60,17 @@ export function tryCreateOpenRouterConfig(
     if (providerSort) provider.sort = providerSort;
   }
 
+  // Reasoning off unless explicitly re-enabled (see LlmConfig.reasoning).
+  const reasoning =
+    env.LLM_REASONING_ENABLED === "true" ? undefined : { enabled: false };
+
   return {
     apiKey,
     baseURL: env.OPENROUTER_BASE_URL ?? "https://openrouter.ai/api/v1",
     narratorModel,
     directorModel,
     provider,
+    reasoning,
   };
 }
 

@@ -1,8 +1,9 @@
+import type OpenAI from "openai";
 import {
   TurnModelOutputSchema,
   type TurnModelOutput,
 } from "@mystery/shared";
-import { createOpenRouterClient } from "./client.js";
+import { createOpenRouterClient, openRouterExtraBody } from "./client.js";
 import {
   NARRATOR_SYSTEM,
   buildNarratorUserMessage,
@@ -60,7 +61,8 @@ export async function narrateTurn(
         content: buildNarratorUserMessage(args),
       },
     ],
-  });
+    ...(openRouterExtraBody(config) ?? {}),
+  } as OpenAI.Chat.ChatCompletionCreateParamsNonStreaming);
 
   const raw = completion.choices[0]?.message?.content ?? "";
   let parsed: unknown;
@@ -86,7 +88,8 @@ export async function narrateTurn(
             "Your previous reply was not valid JSON. Reply again with ONLY a valid JSON object matching the schema.",
         },
       ],
-    });
+      ...(openRouterExtraBody(config) ?? {}),
+    } as OpenAI.Chat.ChatCompletionCreateParamsNonStreaming);
     const repaired = repair.choices[0]?.message?.content ?? "{}";
     parsed = JSON.parse(repaired);
   }
