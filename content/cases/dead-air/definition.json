@@ -26,7 +26,7 @@
     "artStyle": "Realistic cinematic photography aboard a cold deep-space freighter — naturalistic skin and fabric, shallow depth of field, a gunmetal-and-void-blue palette lit by a single amber warning key light; practical 25th-century crew uniforms; head-and-shoulders character portraits, consistent lens and lighting across the whole cast, full bleed, no picture frame",
     "setting": "2094. Deep space, aboard the cargo hauler Erebus, bound across the system toward a remote human colony that lives and dies by its terraforming. Three crew — now two, and the ship holds course.",
     "summary": "The freighter Erebus is nine days out from a colony waiting on the atmospheric gear in her hold when the alarms wake you: an exterior airlock has cycled, and the engineer is a shrinking shape in the black. The log says security officer Mara Kade opened the hatch. She says she was three compartments aft and never touched it — and half the ship's eyes went blind while it happened. You are the pilot; the death is yours to file, and the ship's law acts on whatever you write. Bring him back, read the ship, and find out what actually happened before the Erebus decides for you.",
-    "theMystery": "Who opened the airlock on the engineer, how did he really die, and is the only other soul aboard lying?",
+    "theMystery": "Who opened the airlock on the engineer, how did he die, and is the only other soul aboard lying?",
     "playtest": {
       "minTurns": 16,
       "maxTurns": 48,
@@ -45,7 +45,7 @@
     "startingLocationId": "control-room",
     "startingEvidenceIds": [],
     "startingKnowledge": "The Erebus is a three-person cargo hauler nine days out from a remote colony; her manifest lists classified industrial equipment for the colony's atmospheric infrastructure. Ninety minutes ago the master alarm woke you: an exterior airlock cycled with no work order. Exterior cameras show engineer Elias Venn's body drifting away from the ship. The airlock record says the hatch opened under security officer Mara Kade's credentials. Kade denies it — she says she was in an aft compartment and never went near the lock — and parts of the surveillance system were down while it happened. There is no one else aboard. Kade wants the body recovered before it drifts past reach; she says an unexplained death makes the navigation system suspend the whole mission until it's resolved. You are the pilot; your death report is what the ship's law will act on. Your own service record, like hers, is partly sealed — so proving who you are is not as simple as it should be.",
-    "objective": "Recover Elias Venn's body, read the ship, and establish what actually happened to him — who opened the airlock, how he really died, and why — then state it in a formal accusation.",
+    "objective": "Recover Elias Venn's body, read the ship, and establish what happened to him — who opened the airlock, how he died, and why — then state it in a formal accusation.",
     "briefing": {
       "form": "dossier",
       "title": "Erebus — master alarm log",
@@ -334,7 +334,7 @@
     {
       "id": "medbay",
       "name": "Medbay",
-      "description": "A two-berth medbay, tidy to the point of loneliness. The autopsy drawer, the diagnostic scanner, a cabinet of measured doses. Once Venn is aboard, this cold little room is where the first lie comes apart.",
+      "description": "A two-berth medbay, tidy to the point of loneliness. The autopsy drawer, the diagnostic scanner, a cabinet of measured doses. Once Venn is aboard, this cold little room is where the body tells its own story.",
       "startsAccessible": true,
       "knownAtStart": true,
       "map": {
@@ -379,7 +379,7 @@
     {
       "id": "engineering",
       "name": "Engineering",
-      "description": "Venn's domain: the reactor trunk, the service-arm cradle, his console still logged in under a ghost's hand. Everything here is labelled, ordered, finished — the workspace of a man who put his affairs in order. The ship breathes because of this room. So does the lie about how she went silent.",
+      "description": "Venn's domain: the reactor trunk, the service-arm cradle, his console still logged in under a ghost's hand. Everything here is labelled, ordered, finished — the workspace of a man who kept his machinery as ordered as his thoughts. The ship breathes because of this room. So, most likely, does the answer to how she went silent.",
       "startsAccessible": true,
       "knownAtStart": true,
       "map": {
@@ -431,7 +431,7 @@
     {
       "id": "cargo-hold",
       "name": "Sealed cargo hold",
-      "description": "The aft hold, classified and cold, its manifest promising atmospheric infrastructure for a colony that will breathe easier for it. The crates are the right shape for that lie. Up close, they are the wrong thing entirely.",
+      "description": "The aft hold, classified and cold, its manifest promising atmospheric infrastructure for a colony that will breathe easier for it. The crates are sealed, stacked, and silent, row on row, exactly as many as the manifest lists.",
       "startsAccessible": true,
       "knownAtStart": true,
       "map": {
@@ -547,7 +547,7 @@
       "introducedAs": "Elias Venn",
       "nameKnownAtStart": true,
       "knownAtStart": true,
-      "shortBio": "The engineer. Dead in the dark before the airlock ever opened.",
+      "shortBio": "The engineer who kept the Erebus breathing — now the body drifting in the black beyond a cycled airlock.",
       "cardTitle": "The deceased — ship's engineer",
       "voice": "Silent now; speaks only in the logs he left",
       "defaultLocationId": "airlock-vestibule",
@@ -576,7 +576,7 @@
       "introducedAs": "Mara Kade",
       "nameKnownAtStart": true,
       "knownAtStart": true,
-      "shortBio": "Ship's security officer — calm, capable, and the name on the airlock that killed the engineer. She swears she never touched it, and helps you prove it, a little too eagerly to be simple grief.",
+      "shortBio": "Ship's security officer — calm, capable, and the name on the airlock that killed the engineer. She swears she never touched it, and helps you prove it.",
       "cardTitle": "Ship's security officer",
       "voice": "Calm, competent, disarming; helpful in a way that is always steering",
       "defaultLocationId": "control-room",
@@ -1070,7 +1070,7 @@
     {
       "id": "motive-terminal",
       "claim": "He died to force the mandated homicide inspection, because he'd found the weapon.",
-      "question": "Why would Elias stage his own murder?",
+      "question": "Why would this death be staged as a murder at all?",
       "role": "motive",
       "factId": "motive",
       "requires": [
