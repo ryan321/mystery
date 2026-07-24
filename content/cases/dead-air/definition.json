@@ -146,7 +146,8 @@
       ],
       "narrationHints": "The formal statement happens in the control room, the only place the flight log can be signed — and the only other living soul aboard is Mara Kade, so she is your audience and your witness both. Bring her in and let the pilot stand ready to state what happened to Elias Venn. The pilot has NOT yet spoken the charge — stage the quiet, Kade watchful at the flight console, the black at the ports — and wait. Reveal nothing about guilt; do not tip the ending.",
       "composerPlaceholder": "State it plainly — what happened to Elias Venn: who, how, and why…",
-      "winHint": "Say what really happened to Elias Venn: that he staged his own death and framed Kade, how he did it, why he did it — and what the Erebus is actually carrying."
+      "winHint": "Say what really happened to Elias Venn: that he staged his own death and framed Kade, how he did it, why he did it — and what the Erebus is actually carrying.",
+      "confirmPrompt": "You'll put it to Mara Kade, here in the control room — the only other soul left aboard, your witness and your audience both. On your next turn you'll say what really happened to Elias Venn: who, how, and why. You can still hold back, but there's nowhere on this ship to take it back."
     }
   },
   "flags": [

@@ -530,6 +530,8 @@ export type PlayerView = {
     active: boolean;
     composerPlaceholder?: string;
     winHint?: string;
+    /** Case-specific copy for the "Make a formal accusation?" confirm dialog. */
+    confirmPrompt?: string;
   };
   ending?: { id: string; when?: string; kind?: string; title?: string };
 };

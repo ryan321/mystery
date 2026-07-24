@@ -156,6 +156,8 @@ Never put “must have evidence X” on the success gate. Investigation still **
 
 **Confirmation gate (implemented).** Because a wrong accusation ends the case, informal theories are not judged on first utterance. "Vale did it" goes **pending** (`pendingAccusation` in state + ContextPack); the performer asks in-fiction whether the player commits. Formal wording ("I accuse Vale") or confirming/re-voicing the same theory releases it for scoring; withdrawal or expiry (default 3 turns) clears it. Per-case config: `accusePolicy: { requireConfirmation, pendingTurns }`. Scoring is **negation-aware** — "it wasn't Vale" never counts as naming Vale.
 
+**Accuse-button ceremony (implemented).** The Accuse button opens a staged confrontation instead of free text: a confirm dialog, then the engine gathers the cast into place and treats the next line as the charge. Authored per case under `accusePolicy.staging` (`locationId`, `gatherCharacterIds`, and the player-facing `confirmPrompt` / `composerPlaceholder` / `winHint` plus the performer-only `narrationHints`). Any omitted field falls back to a case-neutral default. See **CASE_AUTHORING.md → §11** for how to write each field (tense, voice, no spoilers).
+
 **Generic accusation flags (implemented).** Naming suspects sets `accused_<characterId>` (pending or scored) and `falsely_accused_<characterId>` (scored + innocent) game flags, so cases author reactions ("Henshaw freezes after being falsely accused") as ordinary beats — no engine hardcodes.
 
 ### 3.1c Failure (losing is part of the design)

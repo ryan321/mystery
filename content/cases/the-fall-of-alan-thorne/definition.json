@@ -146,7 +146,8 @@
       ],
       "narrationHints": "Formal accusation in the great hall under the gallery where Thorne died. Gather the household. Faces, lamplight, Rudge watchful. The player has NOT yet stated their charge — stage the assembly and wait. Reveal nothing about guilt.",
       "composerPlaceholder": "State your formal accusation — who killed Alan Thorne, how, and why…",
-      "winHint": "Name who killed Alan Thorne, how he died (shot from below / the fall), and why."
+      "winHint": "Name who killed Alan Thorne, how he died (shot from below / the fall), and why.",
+      "confirmPrompt": "The household will gather in the Great Hall — under the gallery where Alan Thorne fell — to hear your charge. On your next turn you'll name who is responsible, how, and why. You can still hold back once they've assembled, but every eye will be on you."
     }
   },
   "flags": [

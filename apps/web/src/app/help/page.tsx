@@ -33,6 +33,23 @@ export default function HelpPage() {
               “Follow the footprint to the library.”
             </p>
             <p>
+              You’re a character in the scene, not a user typing commands at a
+              computer — so you don’t need to talk <em>to the AI</em> or narrate
+              yourself from the outside. Speak <em>to</em> people directly, and
+              describe what you actually do.
+            </p>
+            <p className={styles.example}>
+              Instead of “Have Henshaw bring me the letter,” say “Henshaw, would
+              you bring me the letter?” · Instead of “Is there anything unusual
+              in the room?” try “I search the room for anything out of the
+              ordinary.”
+            </p>
+            <p>
+              Both styles work — the game understands either — but staying in
+              character keeps you inside the story and usually earns a richer
+              reply.
+            </p>
+            <p>
               Press <span className={styles.kbd}>Enter</span> to send, or{" "}
               <span className={styles.kbd}>Shift + Enter</span> for a new line.
               The <span className={styles.kbd}>♪</span> and{" "}
@@ -90,11 +107,17 @@ export default function HelpPage() {
             <h3 className={styles.subhead}>The Accuse button (recommended)</h3>
             <ol className={styles.steps}>
               <li>
-                Tap <strong>Accuse</strong> next to the send button while the
-                case is open.
+                Tap <strong>Accuse</strong> at the top of the game screen — the
+                red button in the toolbar, next to the dossier and map icons
+                (on a phone it shows as a red gavel icon).
               </li>
               <li>
-                The game <strong>sets the scene</strong>: the household (or
+                The game <strong>asks you to confirm</strong> before anything
+                happens. Choose <strong>Gather them</strong> to go ahead, or{" "}
+                <strong>Not yet</strong> to keep investigating.
+              </li>
+              <li>
+                It then <strong>sets the scene</strong>: the household (or
                 whoever should hear the charge) gathers. You are not filling
                 out a form — you are about to speak into a real moment.
               </li>
@@ -112,9 +135,10 @@ export default function HelpPage() {
               </li>
             </ol>
             <p>
-              If you open Accuse by mistake, say you are not ready (for example,{" "}
-              “never mind” or “not yet”) and the gathering dissolves with no
-              judgment.
+              If you tap Accuse by mistake, choose <strong>Not yet</strong> on
+              the confirmation. Even after the household has gathered, you can
+              say you are not ready (for example, “never mind” or “not yet”) and
+              the gathering dissolves with no judgment.
             </p>
             <h3 className={styles.subhead}>Without the button</h3>
             <p>

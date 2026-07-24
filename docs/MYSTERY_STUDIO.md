@@ -24,6 +24,7 @@ pnpm dev:studio    # http://localhost:3100
 | Relationships | Directed SVG graph — gold solid = public edge, dashed = private, ◉ = known to player at start — plus an edges table. |
 | World | Sketch map drawn from `locations[].map` coords, exits, inspectables, evidence table (critical / red-herring), time schedule, hazards, accuse policy. |
 | Beats | Triggered beats and synthetic entrance beats rendered as plot language ("when the player first enters the vault → reveal…"). |
+| Accuse | The whole accusation flow: how the player opens it (button ceremony vs. free text), **what gets set up** (resolved staging — where the charge is heard, who is gathered, the confirm-dialog line authored-vs-default, composer/win-hint copy, performer cue), how the charge is judged (guilty party, success policy, rubric facts), and **how it ends** — every ending grouped by the accusation outcome that reaches it (correct / partly right / wrong), plus endings reached other ways. |
 | Art | Everything visual in one place: art direction (`meta.artStyle`), cover, portrait grid, location art — with **missing-asset callouts** for anything referenced-but-absent or absent-but-expected. |
 | Edit JSON | Raw definition editor with live schema validation; **Save is disabled until the definition parses**. |
 

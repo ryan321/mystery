@@ -363,6 +363,35 @@
                 "objectId": {
                   "type": "string"
                 },
+                "container": {
+                  "type": "object",
+                  "properties": {
+                    "locked": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "unlockRequires": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type"
+                      ],
+                      "additionalProperties": true
+                    },
+                    "contains": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "default": []
+                    }
+                  },
+                  "additionalProperties": false
+                },
                 "onInspect": {
                   "type": "object",
                   "properties": {
@@ -869,6 +898,226 @@
               }
             ]
           },
+          "readable": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "text"
+            ],
+            "additionalProperties": false
+          },
+          "usableOn": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "targetId": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "requires": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ],
+                  "additionalProperties": true
+                },
+                "outcome": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": [
+                          "boolean",
+                          "string",
+                          "number"
+                        ]
+                      },
+                      "phaseId": {
+                        "type": "string"
+                      },
+                      "clockId": {
+                        "type": "string"
+                      },
+                      "turns": {
+                        "type": "number"
+                      },
+                      "beatId": {
+                        "type": "string"
+                      },
+                      "delayTurns": {
+                        "type": "number"
+                      },
+                      "outcome": {
+                        "type": "string",
+                        "enum": [
+                          "success",
+                          "partial",
+                          "failure"
+                        ]
+                      },
+                      "endingId": {
+                        "type": "string"
+                      },
+                      "endingKind": {
+                        "type": "string"
+                      },
+                      "kind": {
+                        "type": "string"
+                      },
+                      "toSlotId": {
+                        "type": "string"
+                      },
+                      "byMinutes": {
+                        "type": "number"
+                      },
+                      "weather": {
+                        "type": "string"
+                      },
+                      "intensity": {
+                        "type": "string"
+                      },
+                      "light": {
+                        "type": "string"
+                      },
+                      "level": {
+                        "type": "string"
+                      },
+                      "ambient": {
+                        "type": "string"
+                      },
+                      "tag": {
+                        "type": "string"
+                      },
+                      "characterId": {
+                        "type": "string"
+                      },
+                      "by": {
+                        "type": "number"
+                      },
+                      "toLocationId": {
+                        "type": "string"
+                      },
+                      "knowledgeId": {
+                        "type": "string"
+                      },
+                      "objectId": {
+                        "type": "string"
+                      },
+                      "evidenceId": {
+                        "type": "string"
+                      },
+                      "locationId": {
+                        "type": "string"
+                      },
+                      "from": {
+                        "type": "string"
+                      },
+                      "to": {
+                        "type": "string"
+                      },
+                      "text": {
+                        "type": "string"
+                      },
+                      "threat": {
+                        "type": "string"
+                      },
+                      "toLocationIdForObject": {
+                        "type": "string"
+                      },
+                      "force": {
+                        "type": "boolean"
+                      },
+                      "relationshipId": {
+                        "type": "string"
+                      },
+                      "fromId": {
+                        "type": "string"
+                      },
+                      "toId": {
+                        "type": "string"
+                      },
+                      "strength": {
+                        "type": "number"
+                      },
+                      "knownToPlayer": {
+                        "type": "boolean"
+                      },
+                      "active": {
+                        "type": "boolean"
+                      },
+                      "label": {
+                        "type": "string"
+                      },
+                      "itemId": {
+                        "type": "string"
+                      },
+                      "condition": {
+                        "type": "string"
+                      },
+                      "holder": {
+                        "type": "string"
+                      },
+                      "control": {
+                        "type": "string"
+                      },
+                      "controlledBy": {
+                        "type": "string"
+                      },
+                      "byCharacterId": {
+                        "type": "string"
+                      },
+                      "preferItemIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "exceptItemIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "anyHeld": {
+                        "type": "boolean"
+                      },
+                      "stage": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "type"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "default": []
+                }
+              },
+              "required": [
+                "targetId"
+              ],
+              "additionalProperties": false
+            },
+            "default": []
+          },
           "redHerring": {
             "type": "boolean",
             "default": false
@@ -1053,6 +1302,153 @@
       },
       "additionalProperties": false
     },
+    "deductions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "claim": {
+            "type": "string",
+            "minLength": 1
+          },
+          "question": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "identity",
+              "method",
+              "motive",
+              "supporting",
+              "lead"
+            ],
+            "default": "lead"
+          },
+          "factId": {
+            "type": "string"
+          },
+          "requires": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": []
+          },
+          "supports": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "evidenceId": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "evidenceId"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "knowledge": {
+                      "type": "object",
+                      "properties": {
+                        "characterId": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "beatId": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "characterId",
+                        "beatId"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "knowledge"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "nodeId": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "nodeId"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "condition": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type"
+                      ],
+                      "additionalProperties": true
+                    }
+                  },
+                  "required": [
+                    "condition"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "default": []
+          },
+          "minSupports": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "default": 1
+          },
+          "opensWhen": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "id",
+          "claim",
+          "question"
+        ],
+        "additionalProperties": false
+      },
+      "default": []
+    },
     "endings": {
       "type": "array",
       "items": {
@@ -1185,6 +1581,37 @@
           "type": "integer",
           "exclusiveMinimum": 0,
           "default": 3
+        },
+        "staging": {
+          "type": "object",
+          "properties": {
+            "locationId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "gatherCharacterIds": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "narrationHints": {
+              "type": "string",
+              "minLength": 1,
+              "default": "A formal accusation is about to be made. Gather those who should hear the charge. The player has not yet spoken their case — stage the assembly, the weight of the moment, and wait. Do not invent a culprit or resolve anything."
+            },
+            "composerPlaceholder": {
+              "type": "string",
+              "default": "State your formal accusation — who, how, and why…"
+            },
+            "winHint": {
+              "type": "string"
+            },
+            "confirmPrompt": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": false

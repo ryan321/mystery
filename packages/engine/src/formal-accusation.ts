@@ -30,6 +30,15 @@ export type BeginFormalAccusationResult = {
   rejected?: string;
 };
 
+/**
+ * Case-neutral fallback for the Accuse confirm dialog — used when a case does
+ * not author its own `confirmPrompt`. Deliberately says nothing about a
+ * "household" or a "hall" so it reads correctly for any setting (a manor, a
+ * two-hander on a spaceship, a street corner).
+ */
+export const DEFAULT_ACCUSE_CONFIRM_PROMPT =
+  "Everyone who should hear it will be gathered, and you'll make your case — naming who is responsible, how, and why. You can still hold back once they've assembled, but every eye will be on you.";
+
 function defaultStaging(def: MysteryDefinition) {
   return {
     locationId: undefined as string | undefined,
@@ -43,6 +52,8 @@ function defaultStaging(def: MysteryDefinition) {
     winHint:
       def.accusePolicy?.staging?.winHint ??
       "Name who is responsible, and enough of how and why for the charge to hold.",
+    confirmPrompt:
+      def.accusePolicy?.staging?.confirmPrompt ?? DEFAULT_ACCUSE_CONFIRM_PROMPT,
   };
 }
 
@@ -56,6 +67,7 @@ export function resolveAccuseStaging(def: MysteryDefinition) {
     narrationHints: s?.narrationHints?.trim() || d.narrationHints,
     composerPlaceholder: s?.composerPlaceholder ?? d.composerPlaceholder,
     winHint: s?.winHint ?? d.winHint,
+    confirmPrompt: s?.confirmPrompt?.trim() || d.confirmPrompt,
   };
 }
 

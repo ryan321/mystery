@@ -9,6 +9,7 @@
     "test": "echo \"no studio tests\""
   },
   "dependencies": {
+    "@mystery/engine": "workspace:*",
     "@mystery/shared": "workspace:*",
     "next": "^15.2.3",
     "react": "^19.0.0",

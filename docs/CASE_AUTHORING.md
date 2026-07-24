@@ -592,6 +592,81 @@ Informal accusations ("Vale did it") are **not judged immediately**: they go pen
 
 Both fields optional; defaults shown. Set `requireConfirmation: false` for judge-on-first-utterance.
 
+### Accuse-button ceremony (`accusePolicy.staging`)
+
+The **Accuse** button (top of the play toolbar) opens a formal ceremony instead
+of relying on free text. The player confirms in a dialog, the engine **stages
+the scene** — moves them (and the cast who should hear it) into place — and then
+their next free-text line *is* the charge. `staging` authors that moment. All
+fields optional; omit `staging` entirely for platform defaults.
+
+```json
+"accusePolicy": {
+  "requireConfirmation": true,
+  "pendingTurns": 3,
+  "staging": {
+    "locationId": "great-hall",
+    "gatherCharacterIds": ["margaret-ashmere", "eliza-ashmere", "rudge"],
+    "confirmPrompt": "The household will gather in the Great Hall — under the gallery where Alan Thorne fell — to hear your charge. On your next turn you'll name who is responsible, how, and why. You can still hold back once they've assembled, but every eye will be on you.",
+    "composerPlaceholder": "State your formal accusation — who killed Alan Thorne, how, and why…",
+    "winHint": "Name who killed Alan Thorne, how he died, and why.",
+    "narrationHints": "Formal accusation in the great hall under the gallery where Thorne died. Gather the household. Faces, lamplight, Rudge watchful. The player has NOT yet stated their charge — stage the assembly and wait. Reveal nothing about guilt."
+  }
+}
+```
+
+| Field | Shown to | Purpose |
+|-------|----------|---------|
+| `locationId` | — | Where the charge is heard. Player + gathered cast are moved here. Omit → stays in the current room. |
+| `gatherCharacterIds` | — | Who assembles (available, non-victim). Omit/empty → **all** non-victim characters. |
+| `confirmPrompt` | player (confirm dialog) | The "Make a formal accusation?" body. Omit → a case-neutral default. |
+| `composerPlaceholder` | player (input hint, scene open) | What to type once the household is assembled. |
+| `winHint` | player (reminder, scene open) | The facets the charge must hit. |
+| `narrationHints` | **performer only** (never the player) | Stage directions for the assembly turn. |
+
+**How to write the authored text.** The whole point of these fields is that the
+ceremony reads in *this* case's voice — a manor gathering its household in the
+hall is not a two-hander putting it to the one other soul aboard a ship. Write
+per case, never generically:
+
+- **`confirmPrompt`** — this is a *pre-commit* "are you sure?", so write it in
+  the **future / conditional tense**: "the household **will** gather…",
+  "**you'll** name who is responsible." Name **who** assembles and **where**, in
+  the case's own idiom (a household in the Great Hall; a lone witness in the
+  control room). Convey the weight and that they can still hold back. Two or
+  three sentences. **Never name the culprit or reveal any solution fact** — the
+  player has not spoken yet. Omit it and a neutral fallback is used ("Everyone
+  who should hear it will be gathered, and you'll make your case…"), which is
+  correct anywhere but flat — author it whenever tone matters.
+- **`composerPlaceholder`** — a short imperative naming the victim and the
+  who/how/why to state ("State it plainly — what happened to Elias Venn: who,
+  how, and why…"). No spoilers.
+- **`winHint`** — one line naming the facets the charge must land (who + enough
+  of how and why). It reminds; it does not answer.
+- **`narrationHints`** — the only author-facing field here: stage directions to
+  the performer for the *assembly* turn. Present-tense stage directions are
+  fine. Set the room, the faces, the silence. State explicitly that the player
+  has **not** yet named anyone, and that the performer must **not** resolve the
+  case or reveal guilt this turn — it only stages and waits.
+
+A **two-hander** shows the contrast — small cast, intimate room, singular
+witness:
+
+```json
+"staging": {
+  "locationId": "control-room",
+  "gatherCharacterIds": ["mara-kade"],
+  "confirmPrompt": "You'll put it to Mara Kade, here in the control room — the only other soul left aboard, your witness and your audience both. On your next turn you'll say what really happened to Elias Venn: who, how, and why. You can still hold back, but there's nowhere on this ship to take it back.",
+  "composerPlaceholder": "State it plainly — what happened to Elias Venn: who, how, and why…",
+  "winHint": "Say what really happened to Elias Venn: who, how, and why.",
+  "narrationHints": "The statement happens in the control room, Kade watchful at the console, the black at the ports. The pilot has NOT yet spoken the charge — stage the quiet and wait. Reveal nothing about guilt; do not tip the ending."
+}
+```
+
+> **Review it in Studio → the case's *Accuse* tab.** It resolves `staging`
+> exactly as the engine will (who gathers, where, the confirm line authored vs.
+> default) and maps every ending to the accusation outcome that reaches it.
+
 ### Generic accusation flags (react in beats)
 
 The engine sets game flags whenever suspects are named — no engine hardcodes per case:

@@ -272,6 +272,8 @@ export function buildPlayerView(
         active,
         composerPlaceholder: staging.composerPlaceholder,
         winHint: staging.winHint,
+        /** Case-specific line for the "Make a formal accusation?" confirm dialog. */
+        confirmPrompt: staging.confirmPrompt,
       };
     })(),
     ending:

@@ -118,6 +118,46 @@
   pointer-events: none;
 }
 
+/* Accuse — the story's primary action, so it reads apart from the drawer
+   icons: red-accented, labelled, and set off with a little breathing room. */
+.accuseBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 2rem;
+  margin-right: 0.35rem;
+  padding: 0 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #f5e6e0;
+  background: linear-gradient(180deg, #8a3a34 0%, #5c2420 55%, #3d1815 100%);
+  border: 1px solid rgba(200, 100, 90, 0.55);
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(80, 20, 16, 0.3);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.accuseBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(100, 30, 24, 0.45);
+}
+
+.accuseBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.accuseLabel {
+  pointer-events: none;
+}
+
 /* Fixed so the mahogany frame overflow:hidden cannot clip the menu */
 .settingsPanel {
   position: fixed;
@@ -217,8 +257,40 @@
     height: 1.9rem;
   }
 
+  /* No room for a labelled pill beside the icon row on phones — collapse the
+     Accuse button to an icon-only square that matches its siblings. The
+     confirm modal spells out the action once tapped. */
+  .accuseBtn {
+    width: 1.9rem;
+    height: 1.9rem;
+    margin-right: 0.15rem;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .accuseLabel {
+    display: none;
+  }
+
   .logWrap {
     padding: 0.85rem 0.85rem 0.75rem;
+  }
+}
+
+/* Legacy narrow phones (~320px): the extra Accuse button makes nine controls,
+   which the fixed-size icon row can't fit at full size — shave them a touch so
+   the row still clears the screen edge instead of overflowing. */
+@media (max-width: 360px) {
+  .chromeActions {
+    gap: 0.22rem;
+  }
+  .iconBtn,
+  .accuseBtn {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+  .accuseBtn {
+    margin-right: 0.1rem;
   }
 }
 

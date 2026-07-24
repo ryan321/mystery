@@ -21,6 +21,7 @@ import InventoryPanel from "../../../components/InventoryPanel";
 import NotebookPanel from "../../../components/NotebookPanel";
 import DossierContent from "../../../components/DossierContent";
 import FeedbackModal from "../../../components/FeedbackModal";
+import ConfirmModal from "../../../components/ConfirmModal";
 import {
   addNote,
   assetUrl,
@@ -191,6 +192,38 @@ const SURFACE_BUTTONS: {
   },
 ];
 
+/**
+ * True when a typed line clearly means "I want to open the formal accusation
+ * ceremony" (e.g. "I want to make an accusation", "let me accuse") rather than
+ * an actual charge against a named suspect. Used to pop the Accuse confirm
+ * modal from the composer, so typing intent makes it as clear as the button
+ * that you're entering accuse mode.
+ *
+ * Deliberately conservative: a miss is harmless — the text just sends to the
+ * engine as usual — so we only fire on unambiguous intent, never on a real
+ * charge ("I accuse Margaret"), a negation ("not ready to accuse"), or a
+ * question ("how do I accuse?").
+ */
+export function looksLikeAccuseIntent(text: string): boolean {
+  const t = text.trim().toLowerCase();
+  if (!t || t.length > 140) return false;
+  // Negation / not-yet / hypothetical — let these flow to the engine untouched.
+  if (
+    /\b(not|don'?t|do not|never|won'?t|would ?n'?t|isn'?t|ain'?t|can'?t|cannot|rather not|no longer|maybe|might|if i|what if|how do i|should i|when can)\b/.test(
+      t
+    )
+  )
+    return false;
+  // "...make / begin / start / ready for ... a/an/my/the (formal) accusation"
+  const nounIntent =
+    /\b(make|making|begin|beginning|start|starting|do|give|open|bring|ready for|ready to make|like to make|want to make|wish to make|time for)\b[^.?!]{0,40}\baccusation\b/;
+  // Bare intent to accuse with NO target named after it:
+  // "I'm ready to accuse", "let me accuse", "I'll accuse", "time to accuse".
+  const bareAccuse =
+    /\b(ready|want|wish|would like|going|time|let me|let'?s|i'?ll|i will|prepared|i'?d)\b[^.?!]{0,20}?\b(?:to\s+)?accuse\b\s*(now|them all|everyone|the household|the crew)?\s*[.?!]*$/;
+  return nounIntent.test(t) || bareAccuse.test(t);
+}
+
 export default function PlaythroughPage() {
   const params = useParams();
   const id = String(params.id);
@@ -200,6 +233,8 @@ export default function PlaythroughPage() {
   const [locationName, setLocationName] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /** Accuse confirmation modal — the header button opens it before staging. */
+  const [confirmingAccuse, setConfirmingAccuse] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackBusy, setFeedbackBusy] = useState(false);
   const [feedbackError, setFeedbackError] = useState<string | null>(null);
@@ -592,6 +627,24 @@ export default function PlaythroughPage() {
     ? playthrough.status !== "active" && playthrough.status !== "denouement"
     : true;
 
+  // Accuse lives in the header now. Show it only while the case is open and the
+  // ceremony has not already been staged.
+  const canAccuse =
+    !closed &&
+    !!playerView?.formalAccusation?.canBegin &&
+    !playerView?.formalAccusation?.active;
+
+  // Typing an intent to accuse ("I want to make an accusation") opens the same
+  // confirm modal as the button, so entering accuse mode is unmistakable. A
+  // real charge, a negation, or a question falls through to a normal turn.
+  const submitFromComposer = (text: string) => {
+    if (canAccuse && looksLikeAccuseIntent(text)) {
+      setConfirmingAccuse(true);
+      return;
+    }
+    void send(text);
+  };
+
   const caseProgressMode =
     progress?.caseMode ?? playthrough?.progressUi ?? "off";
   const progressMode = effectiveProgressMode(
@@ -646,6 +699,37 @@ export default function PlaythroughPage() {
             {playerView?.title ?? "Case"}
           </div>
           <div className={styles.chromeActions} ref={settingsRef}>
+            {canAccuse ? (
+              <button
+                type="button"
+                className={styles.accuseBtn}
+                onClick={() => setConfirmingAccuse(true)}
+                disabled={busy}
+                aria-label="Make a formal accusation"
+                title="Gather the household and make a formal charge"
+              >
+                <svg
+                  className={styles.iconSvg}
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden
+                >
+                  {/* Gavel: mallet head, handle, and sound block. */}
+                  <path d="m13.5 4.5 6 6" />
+                  <path d="M15 3.5 20.5 9 18 11.5 12.5 6z" />
+                  <path d="m11 7.5 5.5 5.5" />
+                  <path d="M14 10.5 5.5 19" />
+                  <path d="M3.5 21h7" />
+                </svg>
+                <span className={styles.accuseLabel}>Accuse</span>
+              </button>
+            ) : null}
             {SURFACE_BUTTONS.map(({ kind, label, icon, mobileOnly }) => (
               <button
                 key={kind}
@@ -788,15 +872,9 @@ export default function PlaythroughPage() {
               "State your formal accusation — who, how, and why…"
             : undefined
         }
-        canAccuse={
-          !closed &&
-          !!playerView?.formalAccusation?.canBegin &&
-          !playerView?.formalAccusation?.active
-        }
         accuseActive={!!playerView?.formalAccusation?.active}
         winHint={playerView?.formalAccusation?.winHint}
-        onAccuse={beginAccuse}
-        onSend={send}
+        onSend={submitFromComposer}
       />
 
       {progressMode !== "off" ? (
@@ -924,6 +1002,23 @@ export default function PlaythroughPage() {
         error={feedbackError}
         onSubmit={handleSubmitFeedback}
         onClose={() => setFeedbackOpen(false)}
+      />
+
+      <ConfirmModal
+        open={confirmingAccuse}
+        title="Make a formal accusation?"
+        message={
+          playerView?.formalAccusation?.confirmPrompt ??
+          "Everyone who should hear it will be gathered, and you'll make your case — naming who is responsible, how, and why. You can still hold back once they've assembled, but every eye will be on you."
+        }
+        confirmLabel="Gather them"
+        cancelLabel="Not yet"
+        busy={busy}
+        onConfirm={() => {
+          setConfirmingAccuse(false);
+          void beginAccuse();
+        }}
+        onCancel={() => setConfirmingAccuse(false)}
       />
     </>
   );

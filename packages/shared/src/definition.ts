@@ -792,6 +792,14 @@ export const AccuseStagingSchema = z.object({
    * (e.g. "Name who killed him, how, and why.").
    */
   winHint: z.string().optional(),
+  /**
+   * Player-facing line in the "Make a formal accusation?" confirm dialog,
+   * describing what is about to happen in this case's own terms (who gathers,
+   * where). Omit → a case-neutral default is used. Never spoil the solution.
+   * e.g. "The household gathers in the Great Hall to hear your charge…" or,
+   * on a two-hander, "You put it to Mara Kade, here in the control room."
+   */
+  confirmPrompt: z.string().optional(),
 });
 export type AccuseStaging = z.infer<typeof AccuseStagingSchema>;
 
