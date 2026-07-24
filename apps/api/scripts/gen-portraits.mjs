@@ -148,6 +148,48 @@ const SUBJECTS = {
     plate: "Mr. Hale",
     desc: "a city businessman of about fifty, recently betrayed partner; lean hard face, cold eyes, clean-shaven jaw set in anger; dark city suit, stiff collar, no country ease",
   },
+  // ── Chain of Custody (freighter Erebus) ─────────────────────────────
+  "mara-kade": {
+    plate: "Mara Kade",
+    desc: "a ship's security officer of about thirty-eight; composed, watchful face, level dark eyes that give nothing away, close-cropped practical hair; charcoal deep-space duty jumpsuit with a small security flash at the collar, sleeves pushed to the forearms; cold void-blue backdrop with a single amber warning key light",
+  },
+  "elias-venn": {
+    plate: "Elias Venn",
+    desc: "a ship's engineer of about forty-five; tired, thoughtful face lined around the eyes, grey-flecked stubble, hair going grey at the temples; worn engineer's coverall with tool loops and a faded ship patch; cold void-blue backdrop with a single amber warning key light",
+  },
+  // ── The Vanishing CEO (Aster Systems, 51st floor) ───────────────────
+  serrano: {
+    plate: "Daniel Serrano",
+    desc: "a tech founder and CEO of about fifty, polished and commanding; olive-skinned Latino man, lean angular CLEAN-SHAVEN face (no beard) with a practiced easy smile that stops short of the eyes, silver-and-black hair swept back neatly, no glasses; a crisp charcoal suit over an open-collared white shirt, no tie, expensive minimalism; cool charcoal-and-glass backdrop with distant city-light bokeh and a cold blue key light",
+  },
+  whitfield: {
+    plate: "Simone Whitfield",
+    desc: "a chief revenue officer of about forty-two, polished and relentless; sharp confident face, warm brown skin, dark hair pulled back sleek, assessing eyes; a tailored deep-navy blazer over a silk shell, one fine gold earring; cool charcoal-and-glass backdrop with distant city-light bokeh and a cold blue key light",
+  },
+  cho: {
+    plate: "Evelyn Cho",
+    desc: "a chief financial officer of about forty-five, precise and composed; East Asian features, controlled intelligent face, black hair in a neat shoulder-length cut, rimless glasses; a crisp slate-grey suit jacket over a high-necked blouse; cool charcoal-and-glass backdrop with distant city-light bokeh and a cold blue key light",
+  },
+  okafor: {
+    plate: "Devin Okafor",
+    desc: "a chief technology officer of about forty, blunt and literal; dark-skinned Black man, close-cropped hair, short beard, tired direct eyes behind matte-black glasses; a charcoal quarter-zip over a dark tee, no suit, engineer's plainness; cool charcoal-and-glass backdrop with distant city-light bokeh and a cold blue key light",
+  },
+  danforth: {
+    plate: "Claire Danforth",
+    desc: "a general counsel of about fifty, careful and guarded; fair lined face, pale watchful eyes, ash-blond hair in a controlled bob; a severe dark-charcoal suit jacket over a white blouse, a thin silver necklace; cool charcoal-and-glass backdrop with distant city-light bokeh and a cold blue key light",
+  },
+  brandt: {
+    plate: "Owen Brandt",
+    desc: "a chief operating officer of about fifty-two, genial and heavy-set; ruddy affable face faintly sweating, thinning grey hair, anxious eyes above a forced smile; a rumpled mid-blue dress shirt with a loosened tie and sleeves half-rolled; cool charcoal-and-glass backdrop with distant city-light bokeh and a cold blue key light",
+  },
+  nadia: {
+    plate: "Nadia Sokolov",
+    desc: "an executive assistant of about thirty, devoted and shaken; pale Eastern-European features, red-rimmed grieving eyes, light-brown hair falling loose from a neat clip; a soft dark cardigan over a plain blouse, a small pendant; cool charcoal-and-glass backdrop with distant city-light bokeh and a cold blue key light",
+  },
+  delgado: {
+    plate: "Frank Delgado",
+    desc: "a night-security lead of about forty-five, steady and procedural; solid Latino man, weathered calm face, short greying hair, a neat moustache; a black security uniform polo with a small radio clip and a lanyard; cool charcoal-and-glass backdrop with distant city-light bokeh and a cold blue key light",
+  },
 };
 
 /**
@@ -156,12 +198,18 @@ const SUBJECTS = {
  * See docs/PORTRAITS.md.
  */
 function buildPrompt(plate, desc) {
-  const era =
-    /Edwardian|Victorian|1890|1900|manor|country-house/i.test(
-      def.meta?.artStyle ?? ""
-    )
-      ? "Edwardian/Victorian England country-house society"
+  const styleText = def.meta?.artStyle ?? "";
+  const isPeriod = /Edwardian|Victorian|1890|1900|manor|country-house/i.test(styleText);
+  // Present-day corporate/office cases must NOT be forced into period costume.
+  const isModern = /corporate|executive|glass-tower|boardroom|present[- ]day|modern mystery/i.test(styleText);
+  const era = isPeriod
+    ? "Edwardian/Victorian England country-house society"
+    : isModern
+      ? "present-day corporate executive"
       : "period costume matching the style contract";
+  const eraTail = isModern
+    ? "Contemporary business attire; no period costume; no visible modern gadgets, phones, or logos."
+    : "No modern elements.";
   return `Create a new character portrait in EXACTLY the same paint style as the attached reference — same artist's hand, brushwork, and palette. Style contract: ${def.meta.artStyle}.
 
 CRITICAL composition rules (docs/PORTRAITS.md):
@@ -173,7 +221,7 @@ CRITICAL composition rules (docs/PORTRAITS.md):
 
 Subject (${era}): ${desc}.
 Character label for authoring only (do not paint this text): ${plate}.
-No modern elements.`;
+${eraTail}`;
 }
 
 /** --deframe: edit an existing portrait — strip frame/wall/nameplate. */
