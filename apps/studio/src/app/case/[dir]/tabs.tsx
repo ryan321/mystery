@@ -9,6 +9,7 @@ const TABS = [
   ["relationships", "Relationships"],
   ["world", "World"],
   ["beats", "Beats"],
+  ["solution", "Solution"],
   ["art", "Art"],
   ["edit", "Edit JSON"],
 ] as const;
