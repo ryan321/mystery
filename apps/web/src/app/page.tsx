@@ -12,8 +12,12 @@ import { difficultyLabel } from "../lib/format";
 import type { CaseSummary } from "../lib/types";
 import styles from "./page.module.css";
 
-/** The free "first case" the hero and closing CTAs point to. */
+/** The free "first case" the hero and closing CTAs point to; it also leads
+ *  the featured row. */
 const FREE_CASE_ID = "the-fall-of-alan-thorne";
+/** The former free flagship — no longer featured on the landing (it still
+ *  lives in the full gallery), now that Alan Thorne leads. */
+const FORMER_FREE_CASE_ID = "blackwood-inheritance";
 /** Kid-friendly case always closes the featured row on the landing. */
 const LANDING_LAST_CASE_ID = "cant-trick-rick";
 const FEATURED_COUNT = 6;
@@ -56,12 +60,21 @@ export default function LandingPage() {
     };
   }, []);
 
-  // API order for the first slots; the pinned case is always included,
-  // always closing the row.
+  // The free flagship (Alan Thorne) leads the row; the kid-friendly case
+  // always closes it. The former free case (Blackwood) is dropped here —
+  // it still lives in the full gallery. API order fills the middle.
+  const lead = cases.find((c) => c.id === FREE_CASE_ID);
   const pinned = cases.find((c) => c.id === LANDING_LAST_CASE_ID);
-  const rest = cases.filter((c) => c.id !== LANDING_LAST_CASE_ID);
+  const skip = new Set([
+    FREE_CASE_ID,
+    FORMER_FREE_CASE_ID,
+    LANDING_LAST_CASE_ID,
+  ]);
+  const rest = cases.filter((c) => !skip.has(c.id));
+  const midCount = FEATURED_COUNT - (lead ? 1 : 0) - (pinned ? 1 : 0);
   const featured = [
-    ...rest.slice(0, pinned ? FEATURED_COUNT - 1 : FEATURED_COUNT),
+    ...(lead ? [lead] : []),
+    ...rest.slice(0, Math.max(0, midCount)),
     ...(pinned ? [pinned] : []),
   ];
 

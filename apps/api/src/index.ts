@@ -610,7 +610,7 @@ app.get("/v1/playthroughs", async (c) => {
 app.post("/v1/playthroughs", async (c) => {
   const body = await c.req.json().catch(() => ({}));
   const caseId =
-    (body as { caseId?: string }).caseId ?? "blackwood-inheritance";
+    (body as { caseId?: string }).caseId ?? "the-fall-of-alan-thorne";
 
   // The hard access gate: entitlement is checked at start, then the
   // playthrough is grandfathered (a lapsed tier never bricks a run).

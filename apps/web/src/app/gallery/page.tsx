@@ -19,6 +19,11 @@ function difficultyClass(
   return styles.difficultyEasy;
 }
 
+/** The free case leads the gallery — pinned ahead of every band. */
+const FEATURED_CASE_ID = "the-fall-of-alan-thorne";
+/** The former free flagship — sinks to the bottom of the main shelf. */
+const DEMOTED_CASE_ID = "blackwood-inheritance";
+
 type StatusFilter = "all" | "being_played" | "completed" | "not_started";
 type DifficultyFilter = "all" | "easy" | "medium" | "hard";
 
@@ -42,16 +47,21 @@ export default function GalleryPage() {
         if (!cancelled) {
           setCases([
             {
-              id: "blackwood-inheritance",
-              contentVersion: "0.8.0",
+              id: "the-fall-of-alan-thorne",
+              contentVersion: "0.1.2",
               meta: {
-                title: "The Blackwood Inheritance",
+                title: "The Fall of Alan Thorne",
                 premise:
-                  "A stormy night, a locked manor, and a body at the foot of the stairs. The family was already at each other’s throats.",
-                tone: "gothic manor whodunit, tense and formal",
-                tags: ["Manor", "Family", "Storm", "Classic"],
-                difficulty: "easy",
-                contentWarnings: ["murder", "violence"],
+                  "At Greymoor House a trusted nephew lies dead under the gallery after midnight. A fall, a shot, a half-burned note, and a household that cannot agree what it heard.",
+                tone: "gothic country-house whodunit, moral weight, quiet dread",
+                tags: ["Manor", "Family", "Murder", "Classic"],
+                difficulty: "medium",
+                contentWarnings: [
+                  "murder",
+                  "domestic abuse",
+                  "gun violence",
+                  "corruption",
+                ],
               },
             },
           ]);
@@ -106,9 +116,11 @@ export default function GalleryPage() {
     // bands (e.g. kids) → premium (Difficult) → elite (Genius).
     // Array.sort is stable, so API order survives inside each band.
     const rank = (c: CaseSummary) => {
+      if (c.id === FEATURED_CASE_ID) return -1;
       if (c.minTier === "elite") return 3;
       if (c.minTier === "premium") return 2;
       if (c.meta.sortGroup === "kids") return 1;
+      if (c.id === DEMOTED_CASE_ID) return 0.5; // sink below the main shelf
       return 0;
     };
     return matched.sort((a, b) => rank(a) - rank(b));
