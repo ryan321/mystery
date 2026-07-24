@@ -2,10 +2,10 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "the-fall-of-alan-thorne",
-  "contentVersion": "0.1.3",
+  "contentVersion": "0.1.4",
   "meta": {
     "title": "The Fall of Alan Thorne",
-    "premise": "At Greymoor House, Alan Thorne lies dead on the floor, having fallen from the upper gallery hours after midnight. No one under its roof can agree on what they heard — and the police may prefer the quiet answer to the true one. Someone must prove what really happened before the house closes ranks.",
+    "premise": "At Greymoor House, Alan Thorne lies dead on the floor, having fallen from the upper gallery in the middle of the night. No one under its roof can agree on what they heard — and the police may prefer the quiet answer to the true one. Someone must prove what really happened before the house closes ranks.",
     "tone": "gothic country-house whodunit, moral weight, quiet dread",
     "tags": [
       "Manor",
@@ -795,6 +795,10 @@
           {
             "id": "margaret-grief-mask",
             "content": "She will speak of Alan as a blow to the house. She will not volunteer the note, the gun, or the gallery."
+          },
+          {
+            "id": "margaret-why-so-fast",
+            "content": "If pressed on how she reached the body first — before Alden and the servants, when everyone assumes she cannot move quickly — she does not account for her whereabouts. She only says, evenly, that she is not so helpless as people suppose: she can move quickly when she must. She leaves it there and will not be drawn further. She still names no gallery, no note, no gun."
           }
         ],
         "secrets": [
@@ -882,6 +886,10 @@
           {
             "id": "alden-sounds",
             "content": "From the service passage: a crack like a shot, almost at once the heavier crash. Echoes in this house lie. He will not invent a culprit."
+          },
+          {
+            "id": "alden-margaret-first",
+            "content": "When he reached the great hall he found Mrs. Ashmere already there in her chair, close to the fallen man — before him, before any of the servants. Her room is down the family passage and she cannot move quickly; in all his years he has never known her to reach anywhere first. It has quietly troubled him. He will state it plainly if asked, but he will not turn it into an accusation."
           }
         ],
         "secrets": []
@@ -1273,6 +1281,22 @@
       "minSupports": 2
     },
     {
+      "id": "margaret-there-too-fast",
+      "claim": "Margaret was already present when Alan fell — she reached the body first despite seeming unable to move quickly.",
+      "question": "How was Mrs. Ashmere first to the body when everyone believes she cannot move quickly?",
+      "role": "lead",
+      "requires": [],
+      "supports": [
+        {
+          "knowledge": {
+            "characterId": "alden",
+            "beatId": "alden-margaret-first"
+          }
+        }
+      ],
+      "minSupports": 1
+    },
+    {
       "id": "identity-terminal",
       "claim": "Margaret Ashmere shot him from the hall.",
       "question": "Who killed Alan Thorne?",
@@ -1291,6 +1315,9 @@
         },
         {
           "evidenceId": "charred-note"
+        },
+        {
+          "nodeId": "margaret-there-too-fast"
         }
       ],
       "minSupports": 2
@@ -1478,7 +1505,7 @@
       },
       {
         "at": "After midnight",
-        "event": "Household hears shot and/or crash. Rudge is summoned. You arrive."
+        "event": "Household hears shot and/or crash. Alden reaches the great hall and finds Margaret already there by the body — she never left the hall after firing. Rudge is summoned. You arrive."
       }
     ],
     "notes": "Sealed truth for authors. Note misread: he wrote it to Eliza. Margaret is killer. Plot B ledger reinforces corruption only."
