@@ -276,7 +276,7 @@
     {
       "id": "ceo-office",
       "name": "Daniel Serrano's office",
-      "description": "A corner office of glass and dark wood, the city on two sides. The chair behind the desk is pushed back. There is a great deal of blood down one side of the desk and the floor beside it — and, now, no body at all. Claire Danforth stands just inside the door, arms folded, keeping the room the way the law says to keep it. A private washroom opens off one side; a coat closet off the other.",
+      "description": "A corner office of glass and dark wood, the city on two sides. The chair behind the desk is pushed back. There is a great deal of blood down one side of the desk and the floor beside it, and a grayish matter spattered across the blotter that looks sickeningly like brain tissue — and, now, no body at all. This is where he was found. Claire Danforth stands just inside the door, arms folded, keeping the room the way the law says to keep it. A coat closet stands open to one side; low beneath the windows, a return-air grille sits not quite flush with the wall.",
       "startsAccessible": true,
       "knownAtStart": true,
       "map": {
@@ -299,7 +299,7 @@
           "id": "desk-scene",
           "name": "the desk and the blood",
           "onInspect": {
-            "narrativeHints": "Up close the blood is wrong. It sits in a broad even smear with no spray, no arc, no droplets thrown by an impact — more painted than spilled — and where it has dried it dried tacky and bright, not brown. It smells faintly of greasepaint under the copper. There is no weapon anywhere, nothing knocked over, no drag mark leading out. The chair and the stain look arranged: a tableau meant to be read from the doorway, not examined. Tucked half under the blotter, as if dropped in a struggle, is a printed email.",
+            "narrativeHints": "Up close the blood is wrong. It sits in a broad even smear with no spray, no arc, no droplets thrown by an impact — more painted than spilled — and where it has dried it dried tacky and bright, not brown. It smells faintly of greasepaint under the copper. The gray lump on the blotter that reads as brain matter from the doorway is worse under a close eye, not better: too even, faintly rubbery, the wrong dull shade — special-effects gore, not tissue. There is no weapon anywhere, nothing knocked over, no drag mark leading out. The chair and the stain look arranged: a tableau meant to be read from the doorway, not examined. Tucked half under the blotter, as if dropped in a struggle, is a printed email.",
             "revealsEvidenceIds": [
               "staged-scene",
               "threat-email"
@@ -310,10 +310,10 @@
           }
         },
         {
-          "id": "private-washroom",
-          "name": "the private washroom",
+          "id": "office-vent",
+          "name": "the return-air grille below the windows",
           "onInspect": {
-            "narrativeHints": "The basin has been used and wiped. In the bin, under a paper towel: a curl of flesh-toned latex with a torn adhesive backing, a smear of the same bright stage-blood on a cloth, and an empty tube labelled for theatrical prosthetic work. Someone built a wound in here and cleaned up after.",
+            "narrativeHints": "Low on the wall beneath the windows, a return-air grille sits not quite flush — one corner screw backed out, the louvres loose. Work it free and a taped plastic bundle slides out of the duct: a curl of flesh-toned latex with a torn adhesive backing, a cloth smeared with the same bright stage-blood, a tin of gray special-effects gore scraped nearly empty, an empty tube labelled for theatrical prosthetic work, and a small folding mirror. Someone built a wound here in the office, wore it, and hid the makings where a room hunting for a killer would never think to look. Easy to miss unless you were really searching.",
             "revealsEvidenceIds": [
               "prosthetic-trace"
             ]
@@ -587,7 +587,7 @@
         "secrets": [
           {
             "id": "serrano-truth",
-            "content": "SEALED: There was no murder. Daniel invented Meridian's revenue by round-tripping Aster's own money through Brightline Advisory, inflating the company to sell it to Wardell. Wardell's diligence demanded the exact records that would expose him and tonight's meeting would let his executives compare pieces and see it whole. He built a prosthetic wound and stage blood in his washroom, arranged himself to be seen dead from the doorway, relied on no one daring to touch a crime scene, and when the group left to call security he got up and walked down the service stair, whose alarm he'd killed at 10:52. He faked his death so investigators would ask who killed him instead of why he vanished, so the deal would die in confusion, and so his own executives would take the suspicion. He got away.",
+            "content": "SEALED: There was no murder. Daniel invented Meridian's revenue by round-tripping Aster's own money through Brightline Advisory, inflating the company to sell it to Wardell. Wardell's diligence demanded the exact records that would expose him and tonight's meeting would let his executives compare pieces and see it whole. He built a prosthetic wound and stage blood alone in his office, arranged himself behind the desk to be seen dead from the doorway, relied on no one daring to touch a crime scene, and when the group left to call security he got up and walked down the service stair, whose alarm he'd killed at 10:52. He faked his death so investigators would ask who killed him instead of why he vanished, so the deal would die in confusion, and so his own executives would take the suspicion. He got away.",
             "requiresFlags": {
               "case_solved": true
             }
@@ -927,10 +927,10 @@
     {
       "id": "prosthetic-trace",
       "name": "Prosthetic wound remnants",
-      "description": "From the office washroom bin: a curl of flesh-toned latex with torn adhesive, a cloth smeared with the same bright stage-blood, and an empty tube of theatrical prosthetic supply. The wound was built, worn, and removed here.",
+      "description": "Hidden behind the return-air grille in Daniel's office, taped up inside the duct: a curl of flesh-toned latex with torn adhesive, a cloth smeared with the same bright stage-blood, a near-empty tin of gray special-effects gore (the 'brain matter' on the desk), an empty tube of theatrical prosthetic supply, and a small folding mirror. The wound was built, worn, and deliberately concealed here — in his own office.",
       "discoverableAt": {
         "locationId": "ceo-office",
-        "inspectableId": "private-washroom"
+        "inspectableId": "office-vent"
       },
       "canPresentTo": [
         "danforth",
@@ -1170,6 +1170,9 @@
       "supports": [
         {
           "evidenceId": "staged-scene"
+        },
+        {
+          "evidenceId": "prosthetic-trace"
         }
       ],
       "minSupports": 1
@@ -1624,7 +1627,7 @@
     }
   ],
   "solution": {
-    "summary": "There was no murder. Daniel Serrano faked his own death. He had inflated Aster by inventing its biggest customer, Meridian — round-tripping the company's own cash out through Brightline Advisory and back as fake Meridian revenue — to sell the company to Wardell for a fortune. Wardell's confirmatory diligence demanded the original contracts, real usage records, payment documentation, and a direct call with Meridian: the exact things that would expose Meridian as fiction, and the late-night meeting would let his walled-off executives finally compare pieces and see it. Hours from exposure, Daniel built a prosthetic head wound and stage blood in his office washroom, arranged himself to be read as dead from the doorway, and trusted that no one would touch a crime scene. When the group left to call security, he got up, walked out the service stair whose alarm he'd disabled at 10:52, and was gone down fifty-one flights and out the loading dock, unlogged. He staged the death so the world would ask who killed him instead of why he disappeared, so the deal would collapse in confusion, and so his own executives would wear the suspicion. He escaped.",
+    "summary": "There was no murder. Daniel Serrano faked his own death. He had inflated Aster by inventing its biggest customer, Meridian — round-tripping the company's own cash out through Brightline Advisory and back as fake Meridian revenue — to sell the company to Wardell for a fortune. Wardell's confirmatory diligence demanded the original contracts, real usage records, payment documentation, and a direct call with Meridian: the exact things that would expose Meridian as fiction, and the late-night meeting would let his walled-off executives finally compare pieces and see it. Hours from exposure, Daniel built a prosthetic head wound and stage blood alone in his office, arranged himself behind the desk to be read as dead from the doorway, and trusted that no one would touch a crime scene. When the group left to call security, he got up, walked out the service stair whose alarm he'd disabled at 10:52, and was gone down fifty-one flights and out the loading dock, unlogged. He staged the death so the world would ask who killed him instead of why he disappeared, so the deal would collapse in confusion, and so his own executives would wear the suspicion. He escaped.",
     "guiltyPartyIds": [
       "serrano"
     ],
@@ -1758,7 +1761,7 @@
       },
       {
         "at": "Just before the meeting",
-        "event": "In his washroom Daniel builds a prosthetic head wound and stage blood, arranges himself behind the desk to be read as dead from the doorway, and plants Owen's ultimatum email by the body.",
+        "event": "Alone in his office Daniel builds a prosthetic head wound and stage blood, arranges himself behind the desk to be read as dead from the doorway, and plants Owen's ultimatum email by the body.",
         "actorIds": [
           "serrano"
         ]

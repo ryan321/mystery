@@ -7,7 +7,7 @@
  *   pnpm audits --case blackwood-inheritance --no-llm        # deterministic only
  *
  * Audits: crime | realism | characters | locations | clues | deductions |
- * persona | opening | ending | details
+ * findability | persona | opening | ending | details
  * Each saves playtests/<case>/audit-<name>-<version>-<stamp>.json and prints
  * a report. Exit 1 if any audit grades FAIL.
  */
@@ -20,6 +20,7 @@ import { runCharactersAudit } from "./characters.mjs";
 import { runLocationsAudit } from "./locations.mjs";
 import { runCluesAudit } from "./clues.mjs";
 import { runDeductionsAudit } from "./deductions.mjs";
+import { runFindabilityAudit } from "./findability.mjs";
 import { runPersonaAudit } from "./persona.mjs";
 import { runOpeningAudit } from "./opening.mjs";
 import { runEndingAudit } from "./ending.mjs";
@@ -37,7 +38,7 @@ for (let i = 2; i < process.argv.length; i++) {
 }
 if (!args.case) {
   console.error(
-    "Usage: pnpm audits --case <caseId> [--audit crime,realism,characters,locations,clues,deductions,persona,opening,ending,details] [--no-llm]"
+    "Usage: pnpm audits --case <caseId> [--audit crime,realism,characters,locations,clues,deductions,findability,persona,opening,ending,details] [--no-llm]"
   );
   process.exit(1);
 }
@@ -54,6 +55,7 @@ const wanted =
         "locations",
         "clues",
         "deductions",
+        "findability",
         "persona",
         "opening",
         "ending",
@@ -68,6 +70,7 @@ const RUNNERS = {
   locations: () => runLocationsAudit(def, { llm }),
   clues: () => runCluesAudit(def),
   deductions: () => runDeductionsAudit(def),
+  findability: () => runFindabilityAudit(def),
   persona: () => runPersonaAudit(def, { llm }),
   opening: () => runOpeningAudit(def, { llm }),
   ending: () => runEndingAudit(def, { llm }),
