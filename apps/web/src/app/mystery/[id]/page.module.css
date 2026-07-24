@@ -460,3 +460,21 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* On phones the 21:9 hero is too short to hold the caption: the absolutely
+   positioned text overflowed the top of the card and clipped the "Mystery"
+   eyebrow, while the caption covered most of the cover art. Show the image at
+   a taller ratio and drop the caption into normal flow beneath it. */
+@media (max-width: 640px) {
+  .heroImage {
+    aspect-ratio: 4 / 3;
+  }
+  .heroOverlay {
+    display: none;
+  }
+  .heroContent {
+    position: static;
+    padding: 1rem 1.25rem 1.25rem;
+    background: var(--glass);
+  }
+}
