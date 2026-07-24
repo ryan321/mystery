@@ -2,10 +2,10 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "hostile-takeover",
-  "contentVersion": "0.3.0",
+  "contentVersion": "0.3.1",
   "meta": {
     "title": "Hostile Takeover",
-    "premise": "Hours before his company is bought for a fortune, the CEO turns up dead behind his desk — and by the time anyone comes back with security, the body is gone from a floor no one has left. You are the VP of Marketing, the one executive with no idea how the money actually works, and you have until the seven o'clock signing to explain a murder that gets stranger the closer you look.",
+    "premise": "Hours before his company is sold for a fortune, the founder and CEO turns up dead behind his desk — on an executive floor that badge-locked at eleven and hasn't let anyone out since. You are the VP of Marketing, the one person in the building with no idea how the money really works, and you have until the seven o'clock signing to work out who killed him — before the deal closes on a dead man.",
     "theme": "noir",
     "tone": "corporate noir, glass and cold money, an impossible crime dressed in a merger",
     "tags": [
@@ -18,13 +18,13 @@
     "progressUi": "subtle",
     "contentWarnings": [
       "apparent murder",
-      "fraud",
-      "staged death"
+      "graphic injury (described)",
+      "corporate fraud"
     ],
     "artStyle": "Corporate noir portrait, head-and-shoulders, cool glass-tower blue and charcoal, executive fashion, the same after-midnight boardroom lighting for every cast member, modern mystery game NPC portrait",
     "setting": "The fifty-first floor of Aster Systems, present day — boardroom, executive offices, and a sealed elevator lobby, the night before a billion-dollar acquisition closes. The city is a grid of cold light below.",
-    "summary": "Aster Systems signs itself over to the Wardell Group at seven this morning. Tonight, hours early, Wardell's lawyers flagged something in the numbers and the whole leadership team was pulled onto the sealed executive floor to resolve it. The founder and CEO — the man who kept every department in its own lane — never came to the meeting. When the others opened his office door, you were in the doorway too: slumped behind the desk, blood down one side of his face, obviously dead. Nobody touched him. You went as a group to call security. When you came back, the office was empty. Now five terrified executives, a loyal assistant, and a night guard are locked on a floor with you, each holding one piece of a company that never quite added up — and dawn is coming.",
-    "theMystery": "Who killed the CEO, how did a dead man vanish from a sealed floor, and what does any of it have to do with the deal closing at seven?",
+    "summary": "Aster Systems signs itself over to the Wardell Group at seven this morning. Tonight, hours early, Wardell's lawyers flagged something in the numbers and the whole leadership team was pulled onto the sealed executive floor to resolve it. The founder and CEO — the man who kept every department in its own lane — never came to the meeting. When the others opened his office door, you were in the doorway too: slumped behind the desk, blood down one side of his face, obviously dead. Claire pulled the door shut before anyone could step closer — a crime scene, untouched until the police come. Now five terrified executives, a loyal assistant, and a night guard are locked on a floor with you, a dead founder behind a closed door, each of them holding one piece of a company that never quite added up — and dawn is coming.",
+    "theMystery": "The founder is dead on a floor no one can leave, hours before his company sells for a fortune, and you are the one executive with no idea how any of it works — you have until the seven o'clock signing to find out who killed him.",
     "playtest": {
       "minTurns": 15,
       "maxTurns": 45,
@@ -40,18 +40,18 @@
     "authority": "professional",
     "clothing": "The clothes you came back into the office in at midnight — a blazer, a badge on a lanyard, a phone you keep checking",
     "publicPerception": "A peer, not a threat. The others talk to you as a colleague who runs the brand, not the books. It never occurred to Daniel to hide anything from you, because you were never close enough to the numbers to see the seams — and that, tonight, is exactly why they'll open up to you when they won't open up to each other.",
-    "performanceNotes": "NPCs treat the player as a fellow executive — the VP of Marketing — and speak as colleagues under shock. Never invent a name, face, age, gender, or history for the player; narration is second person throughout. The player has NO investigative authority: no badge powers, no right to search, only peer pressure, shared fear, and the fact that someone has to make sense of this before seven. THE PHYSICAL CLUE SET IS CLOSED: never invent additional evidence — no extra cameras, dropped weapons, fibers, unlisted files, or secret rooms. Searches beyond the authored inspectables find plausible corporate emptiness. Never confirm the player's theory in narration: suspicion stays the player's own until the accusation is formally judged. NOBODY USES FORCE: obstruction on this floor is social, procedural, and legal — nobody restrains or blocks the player; doors are barred by authorization, never by bodies. Above all, do not let any character state that the CEO is alive or faked anything — the whole cast believes he was murdered; that flip must be earned by the player from the evidence.",
+    "performanceNotes": "NPCs treat the player as a fellow executive — the VP of Marketing — and speak as colleagues under shock. Never invent a name, face, age, gender, or history for the player; narration is second person throughout. The player has NO investigative authority: no badge powers, no right to search, only peer pressure, shared fear, and the fact that someone has to make sense of this before seven. THE PHYSICAL CLUE SET IS CLOSED: never invent additional evidence — no extra cameras, dropped weapons, fibers, unlisted files, or secret rooms. Searches beyond the authored inspectables find plausible corporate emptiness. Never confirm the player's theory in narration: suspicion stays the player's own until the accusation is formally judged. NOBODY USES FORCE: obstruction on this floor is social, procedural, and legal — nobody restrains or blocks the player; doors are barred by authorization, never by bodies. THE CEO'S OFFICE STARTS OFF-LIMITS: until the story opens it, the leadership has agreed it is a sealed crime scene — if the player heads there, Claire (or whoever is nearest) intercepts and refuses: don't go in, don't disturb the scene, we wait for the police. NEVER let the player enter the office early or examine Daniel's body up close before then — that is the whole reason no one has seen through the wound. Above all, do not let any character state that the CEO is alive or faked anything — the whole cast believes he was murdered; that flip must be earned by the player from the evidence.",
     "startingLocationId": "boardroom",
     "startingEvidenceIds": [],
-    "startingKnowledge": "You are the VP of Marketing at Aster Systems. At seven this morning the Wardell Group closes its acquisition of Aster — the deal that makes everyone on this floor rich. Late tonight Wardell's diligence lawyers raised a last-minute concern about the numbers, and CEO Daniel Serrano called the leadership team in to kill it before the signing. Daniel never came to the boardroom. When the group finally opened his office, you saw him dead behind his desk — blood, open eyes, motionless. Claire Danforth said not to touch anything and everyone left together to call security and the police. When you came back the office was empty: no body, no blood trail. The floor has been badge-sealed since eleven and the logs say no one has left. Still up here with you: CRO Simone Whitfield, CFO Evelyn Cho, CTO Devin Okafor, general counsel Claire Danforth, COO Owen Brandt, Daniel's assistant Nadia Sokolov, and night-security lead Frank Delgado. You know the brand cold and the money not at all — Daniel kept every department walled off from the others.",
-    "objective": "Before the seven o'clock signing, work out what actually happened to Daniel Serrano — whether there was even a murder, how a body left a sealed floor, and why — then state it to the room in a way that holds.",
+    "startingKnowledge": "You are the VP of Marketing at Aster Systems. At seven this morning the Wardell Group closes its acquisition of Aster — the deal that makes everyone on this floor rich. Late tonight Wardell's diligence lawyers raised a last-minute concern about the numbers, and CEO Daniel Serrano called the leadership team in to kill it before the signing. Daniel never came to the boardroom. When the group finally opened his office, you saw him dead behind his desk — blood, a wound too awful to look at twice, open eyes, motionless. Claire Danforth said the words crime scene, pulled the door shut, and insisted no one go in or touch anything until the police arrive; you all backed out and called down for security. The floor has been badge-sealed since eleven and the logs say no one has left. Still up here with you: CRO Simone Whitfield, CFO Evelyn Cho, CTO Devin Okafor, general counsel Claire Danforth, COO Owen Brandt, Daniel's assistant Nadia Sokolov, and night-security lead Frank Delgado. You know the brand cold and the money not at all — Daniel kept every department walled off from the others.",
+    "objective": "Before the seven o'clock signing, find out who killed Daniel Serrano — then make the case to the room in a way that holds.",
     "briefing": {
       "form": "dossier",
       "title": "Aster Systems — the sealed floor, 12:40 a.m.",
       "sections": [
         {
           "heading": "The night",
-          "text": "The Wardell acquisition closes at 7:00 a.m. Sometime after eleven, Wardell's diligence team flagged a discrepancy and asked for original documents; Daniel Serrano called the leadership team in to resolve it before the signing call. He never joined the meeting. The team found him dead in his office, left as a group to raise the alarm, and returned to an empty room. There is no body. The elevator bank and fire stairs badge-locked at 11:00; the logs show no one has left the fifty-first floor since."
+          "text": "The Wardell acquisition closes at 7:00 a.m. Sometime after eleven, Wardell's diligence team flagged a discrepancy and asked for original documents; Daniel Serrano called the leadership team in to resolve it before the signing call. He never joined the meeting. The team found him dead in his office; Claire Danforth sealed the door as a crime scene and everyone backed out to raise the alarm. His office stays shut, undisturbed, until the police arrive — and on a sealed floor, the police are taking their time. The elevator bank and fire stairs badge-locked at 11:00; the logs show no one has left the fifty-first floor since."
         },
         {
           "heading": "The people",
@@ -64,11 +64,11 @@
       ]
     }
   },
-  "openingNarration": "Aster's fifty-first floor was built to host a signing, not a wake. Wardell buys the company at seven; tonight, hours early, their lawyers flagged something in the numbers and the whole leadership team was dragged in to fix it. Daniel Serrano — founder, chief executive, the man with every answer — never walked into the boardroom. When the others finally opened his office door, you were in the doorway too: Daniel behind his desk, blood down one side of his face, eyes open, not moving. Claire said the words crime scene and no one touched him. You went as a group to call security and the police. When you came back, the office was empty. No body. No blood on the floor. The badges locked the floor at eleven and the logs swear no one has left. Six people are still up here with you, and every one of them has started doing the arithmetic of who was where. Below the glass, the city keeps its lights on. Dawn is coming.",
+  "openingNarration": "Aster's fifty-first floor was built to host a signing, not a wake. Wardell buys the company at seven; tonight, hours early, their lawyers flagged something in the numbers and the whole leadership team was dragged in to fix it. Daniel Serrano — founder, chief executive, the man with every answer — never walked into the boardroom. When the others finally opened his office door, you were in the doorway too: Daniel behind his desk, blood down one side of his face, a wound too terrible to look at twice, eyes open, not moving. Claire said the words crime scene before anyone could step closer and pulled the door shut — no one goes in, no one touches anything, until the police come. So you all backed out and called down for security. The elevators and stairs badge-locked at eleven; nobody has come or gone. Now six of you wait on a sealed floor with a dead founder behind a closed door, a billion-dollar deal unravelling by the minute, and the police somewhere far below. Every one of them has started doing the arithmetic of who was where. Dawn is coming.",
   "phases": [
     {
       "id": "arrival",
-      "description": "The empty office and the first frightened accounts"
+      "description": "A dead founder behind a sealed door, and the first frightened accounts"
     },
     {
       "id": "deepening",
@@ -147,6 +147,11 @@
   },
   "flags": [
     {
+      "id": "body_vanished",
+      "aiVisible": true,
+      "defaultValue": false
+    },
+    {
       "id": "examined_scene",
       "aiVisible": true,
       "defaultValue": false
@@ -171,7 +176,7 @@
     {
       "id": "boardroom",
       "name": "Boardroom",
-      "description": "A long glass table under recessed light, the city fifty-one floors down. This is where the leadership team was waiting when Daniel never came. Screens are still lit with a half-open deal room. Wardell's last-minute diligence request sits printed at the head of the table, where Daniel's chair is empty. Doors lead out to the elevator lobby, to Daniel's office, to the finance suite, to the ops room, and past the assistant's desk.",
+      "description": "A long glass table under recessed light, the city fifty-one floors down. This is where the leadership team was waiting when Daniel never came, and where they have drifted back to wait for the police. Screens are still lit with a half-open deal room. Wardell's last-minute diligence request sits printed at the head of the table, where Daniel's chair is empty. Doors lead out to the elevator lobby, to the finance suite, to the ops room, and past the assistant's desk. Daniel's office opens off the far end — its door pulled shut, the crime scene Claire will not let anyone disturb until the police come.",
       "startsAccessible": true,
       "knownAtStart": true,
       "map": {
@@ -186,7 +191,8 @@
         },
         {
           "toLocationId": "ceo-office",
-          "label": "to Daniel's office"
+          "label": "to Daniel's office (sealed)",
+          "startsClosed": true
         },
         {
           "toLocationId": "finance-suite",
@@ -223,6 +229,9 @@
       "charactersPresent": [
         {
           "characterId": "whitfield"
+        },
+        {
+          "characterId": "danforth"
         }
       ]
     },
@@ -276,7 +285,7 @@
     {
       "id": "ceo-office",
       "name": "Daniel Serrano's office",
-      "description": "A corner office of glass and dark wood, the city on two sides. The chair behind the desk is pushed back. There is a great deal of blood down one side of the desk and the floor beside it, and a grayish matter spattered across the blotter that looks sickeningly like brain tissue — and, now, no body at all. This is where he was found. Claire Danforth stands just inside the door, arms folded, keeping the room the way the law says to keep it. A coat closet stands open to one side; low beneath the windows, a return-air grille sits not quite flush with the wall.",
+      "description": "A corner office of glass and dark wood, the city on two sides. The chair behind the desk is pushed back. Blood is smeared down one side of the desk and across the floor, and a grayish matter on the blotter looks sickeningly like brain tissue. This is where the leadership found Daniel dead within the hour, and where they left him when they sealed the door. A coat closet stands open to one side; low beneath the windows, a return-air grille sits not quite flush with the wall.",
       "startsAccessible": true,
       "knownAtStart": true,
       "map": {
@@ -298,6 +307,9 @@
         {
           "id": "desk-scene",
           "name": "the desk and the blood",
+          "hiddenUntilFlags": {
+            "body_vanished": true
+          },
           "onInspect": {
             "narrativeHints": "Up close the blood is wrong. It sits in a broad even smear with no spray, no arc, no droplets thrown by an impact — more painted than spilled — and where it has dried it dried tacky and bright, not brown. It smells faintly of greasepaint under the copper. The gray lump on the blotter that reads as brain matter from the doorway is worse under a close eye, not better: too even, faintly rubbery, the wrong dull shade — special-effects gore, not tissue. There is no weapon anywhere, nothing knocked over, no drag mark leading out. The chair and the stain look arranged: a tableau meant to be read from the doorway, not examined. Tucked half under the blotter, as if dropped in a struggle, is a printed email.",
             "revealsEvidenceIds": [
@@ -312,6 +324,9 @@
         {
           "id": "office-vent",
           "name": "the return-air grille below the windows",
+          "hiddenUntilFlags": {
+            "body_vanished": true
+          },
           "onInspect": {
             "narrativeHints": "Low on the wall beneath the windows, a return-air grille sits not quite flush — one corner screw backed out, the louvres loose. Work it free and a taped plastic bundle slides out of the duct: a curl of flesh-toned latex with a torn adhesive backing, a cloth smeared with the same bright stage-blood, a tin of gray special-effects gore scraped nearly empty, an empty tube labelled for theatrical prosthetic work, and a small folding mirror. Someone built a wound here in the office, wore it, and hid the makings where a room hunting for a killer would never think to look. Easy to miss unless you were really searching.",
             "revealsEvidenceIds": [
@@ -322,6 +337,9 @@
         {
           "id": "office-closet",
           "name": "the coat closet",
+          "hiddenUntilFlags": {
+            "body_vanished": true
+          },
           "onInspect": {
             "narrativeHints": "Daniel's usual overcoat is gone from its hanger. In its place, shoved to the back: a slit-open courier box, packing for a change of plain, anonymous clothes, and the empty stiff envelope a passport is mailed in. A luggage tag with no name. He dressed to be no one and walk a long way.",
             "revealsEvidenceIds": [
@@ -332,6 +350,9 @@
         {
           "id": "desk-computer",
           "name": "Daniel's computer and desk drawers",
+          "hiddenUntilFlags": {
+            "body_vanished": true
+          },
           "onInspect": {
             "narrativeHints": "The machine is logged in and half-wiped: personal folders emptied to the trash, mail archive exported and deleted, browser history scrubbed. One thing survived in the print queue — a confirmation, timestamped 10:41 p.m., of a large wire from Daniel's personal accounts to somewhere offshore. The locked bottom drawer has been forced from the inside and holds a slim folder of Meridian contracts.",
             "revealsEvidenceIds": [
@@ -341,11 +362,7 @@
           }
         }
       ],
-      "charactersPresent": [
-        {
-          "characterId": "danforth"
-        }
-      ]
+      "charactersPresent": []
     },
     {
       "id": "assistant-desk",
@@ -365,7 +382,8 @@
         },
         {
           "toLocationId": "ceo-office",
-          "label": "into Daniel's office"
+          "label": "into Daniel's office (sealed)",
+          "startsClosed": true
         }
       ],
       "inspectables": [
@@ -574,15 +592,15 @@
       "introducedAs": "Daniel Serrano",
       "nameKnownAtStart": true,
       "knownAtStart": true,
-      "shortBio": "Founder and CEO of Aster. The man with every answer, dead behind his desk — and then not there at all.",
-      "cardTitle": "Founder & CEO — the vanished",
+      "shortBio": "Founder and CEO of Aster. The man with every answer, found dead behind his desk the night his company was to be sold.",
+      "cardTitle": "Founder & CEO",
       "voice": "Absent",
       "defaultLocationId": "ceo-office",
       "defaultWillingness": "silent",
       "availableByDefault": false,
       "storyRole": "victim",
       "knowledge": {
-        "public": "Founder and chief executive of Aster Systems. Charismatic, controlling, kept every department separate and reported directly on the company's biggest customer himself. Found dead in his office hours before the Wardell signing; the body is gone.",
+        "public": "Founder and chief executive of Aster Systems. Charismatic, controlling, kept every department separate and reported directly on the company's biggest customer himself. Found dead in his office hours before the Wardell signing.",
         "private": [],
         "secrets": [
           {
@@ -603,7 +621,7 @@
       "introducedAs": "Simone",
       "nameKnownAtStart": true,
       "knownAtStart": true,
-      "shortBio": "Chief Revenue Officer, polished and relentless, who closed most of Aster's real customers herself. She was never allowed near the founder's biggest account and told herself not to mind the easy commission. Tonight she wants the deal saved, and fears how her afternoon shouting match with Daniel looks.",
+      "shortBio": "Chief Revenue Officer, polished and relentless, who closed most of Aster's customers herself. She was never allowed near the founder's biggest account and told herself not to mind the easy commission. Tonight she wants the deal saved, and fears how her afternoon shouting match with Daniel looks.",
       "cardTitle": "Chief Revenue Officer",
       "voice": "Polished, fast, quietly furious under the fear",
       "defaultLocationId": "boardroom",
@@ -681,7 +699,7 @@
       "introducedAs": "Devin",
       "nameKnownAtStart": true,
       "knownAtStart": true,
-      "shortBio": "The blunt engineer who built Aster's platform and reads its data literally, with an engineer's contempt for anything hand-waved. He noticed the top account barely uses the product, was told to drop it, and did. He was in Daniel's office late tonight, and he knows exactly how that looks.",
+      "shortBio": "The blunt engineer who built Aster's platform and reads its data literally, with an engineer's contempt for anything hand-waved. He raised a question about the numbers once, was told to drop it, and did. He was in Daniel's office late tonight, and he knows exactly how that looks.",
       "cardTitle": "Chief Technology Officer",
       "voice": "Blunt, literal, engineer's contempt for hand-waving",
       "defaultLocationId": "ops-room",
@@ -720,10 +738,10 @@
       "introducedAs": "Claire",
       "nameKnownAtStart": true,
       "knownAtStart": true,
-      "shortBio": "General counsel, careful with every word, who invoked the crime scene and has guarded the office ever since. It has long galled her that Daniel kept certain contracts off her desk — and now the buyer wants signed originals she has never once seen, which frightens her more than she will admit.",
+      "shortBio": "General counsel, careful with every word, who invoked the crime scene and has guarded the office ever since. It has long galled her that Daniel kept parts of the business off her desk — and the diligence questions now landing frighten her more than she will admit.",
       "cardTitle": "General Counsel",
       "voice": "Measured, lawyerly, guards every word",
-      "defaultLocationId": "ceo-office",
+      "defaultLocationId": "boardroom",
       "defaultWillingness": "guarded",
       "storyRole": "suspect",
       "knowledge": {
@@ -759,14 +777,14 @@
       "introducedAs": "Owen",
       "nameKnownAtStart": true,
       "knownAtStart": true,
-      "shortBio": "The operations chief, genial and eager to please, who approved what the founder told him to approve and signed where he was told to sign. A loyal company man, now sweating under questions about vendor payments, and getting loud in a way that reads as guilt even when it isn't.",
+      "shortBio": "The operations chief, genial and eager to please, who approved what the founder told him to approve and signed where he was told to sign. A loyal company man, now sweating under questions about vendor payments and getting loud in a way that reads as guilt.",
       "cardTitle": "Chief Operating Officer",
       "voice": "Genial, sweating, a company man who followed instructions",
       "defaultLocationId": "ops-room",
       "defaultWillingness": "guarded",
       "storyRole": "suspect",
       "knowledge": {
-        "public": "He runs operations and vendors and approved the outgoing payments to Brightline Advisory. When people start looking at those payments tonight, he gets loud and defensive, which reads as guilt.",
+        "public": "He runs operations and vendors and approved the company's large outside-vendor payments. When people start looking at those payments tonight, he gets loud and defensive, which reads as guilt.",
         "private": [
           {
             "id": "brandt-consulting",
@@ -850,7 +868,7 @@
       "introducedAs": "Frank",
       "nameKnownAtStart": true,
       "knownAtStart": true,
-      "shortBio": "Night-security lead. Keeper of the badge logs that make the crime impossible — and of the one door they don't cover.",
+      "shortBio": "Night-security lead. Keeper of the badge logs that make the crime look impossible, and proud of a board that has never once shown a soul slipping past him.",
       "cardTitle": "Night-security lead",
       "voice": "Steady, procedural, a little defensive about his floor",
       "defaultLocationId": "reception",
@@ -1382,6 +1400,60 @@
     }
   ],
   "beats": [
+    {
+      "id": "office_unseals",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "and",
+        "of": [
+          {
+            "type": "case_active"
+          },
+          {
+            "type": "turn_at_least",
+            "n": 3
+          }
+        ]
+      },
+      "effects": [
+        {
+          "type": "set_exit_open",
+          "from": "boardroom",
+          "to": "ceo-office",
+          "value": true
+        },
+        {
+          "type": "set_exit_open",
+          "from": "assistant-desk",
+          "to": "ceo-office",
+          "value": true
+        }
+      ],
+      "narrationHints": "The waiting has become unbearable. The police are still held up far below, the deal is dying by the minute, and the not-knowing is worse than any rule. Claire finally relents — someone should make sure, she says; someone should see. The office is no longer barred to you. If you want to go back in, you can. Do NOT reveal what is or isn't inside; only that the door is open now."
+    },
+    {
+      "id": "body_vanishes",
+      "once": true,
+      "trigger": "on_turn",
+      "when": {
+        "type": "player_at",
+        "locationId": "ceo-office"
+      },
+      "effects": [
+        {
+          "type": "set_game_flag",
+          "id": "body_vanished",
+          "value": true
+        },
+        {
+          "type": "append_location_description",
+          "locationId": "ceo-office",
+          "text": "The body is gone — no drag mark, no sound, nowhere on a sealed floor it could have gone. Daniel Serrano has vanished from the room he died in."
+        }
+      ],
+      "narrationHints": "The player steps into the sealed office expecting a body and a horror show. The chair is pushed back, the blood is still smeared down the desk and across the floor, the gray matter still on the blotter — but Daniel is gone. No body. Nothing dragged, nothing disturbed, nowhere on a badge-locked floor a corpse could have gone. Let the impossibility land: a dead man has vanished from the one room everyone agreed no one would enter. This is the night's first impossible fact, and it should hit hard."
+    },
     {
       "id": "scene_examined",
       "once": true,
