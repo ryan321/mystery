@@ -2,7 +2,7 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "the-fall-of-alan-thorne",
-  "contentVersion": "0.1.4",
+  "contentVersion": "0.1.5",
   "meta": {
     "title": "The Fall of Alan Thorne",
     "premise": "At Greymoor House, Alan Thorne lies dead on the floor, having fallen from the upper gallery in the middle of the night. No one under its roof can agree on what they heard — and the police may prefer the quiet answer to the true one. Someone must prove what really happened before the house closes ranks.",
@@ -170,7 +170,7 @@
     {
       "id": "great-hall",
       "name": "Great hall",
-      "description": "A high dark hall of oak and stone. The upper gallery runs along one side; the railing is old iron. Lamps make islands of light. Alan Thorne lies on the flagstones where he fell. Constable Rudge looms nearby as if on duty to the dead man rather than to the truth.",
+      "description": "A high dark hall of oak and stone. A broad oak staircase climbs one wall to the upper gallery that runs along that side; the gallery railing above is old iron. Lamps make islands of light. Alan Thorne lies on the flagstones where he fell, at the foot of the drop from the gallery. Constable Rudge looms nearby as if on duty to the dead man rather than to the truth.",
       "startsAccessible": true,
       "knownAtStart": true,
       "map": {
@@ -189,7 +189,7 @@
         },
         {
           "toLocationId": "upper-gallery",
-          "label": "up to the gallery"
+          "label": "up the stairs to the gallery"
         },
         {
           "toLocationId": "kitchen",
@@ -374,7 +374,7 @@
     {
       "id": "upper-gallery",
       "name": "Upper gallery",
-      "description": "A narrow walk above the hall. The rail is cold iron. Midnight air from a cracked window. This is where Alan Thorne stood before he fell.",
+      "description": "A narrow walk above the hall, where the broad oak staircase drops back down to the flagstones below. The rail is cold iron. Midnight air from a cracked window. This is where Alan Thorne stood before he fell.",
       "startsAccessible": true,
       "knownAtStart": true,
       "map": {
@@ -385,7 +385,7 @@
       "exits": [
         {
           "toLocationId": "great-hall",
-          "label": "down to the great hall"
+          "label": "down the stairs to the great hall"
         },
         {
           "toLocationId": "upper-corridor",
