@@ -5,7 +5,7 @@
   "contentVersion": "0.3.0",
   "meta": {
     "title": "Dead Air",
-    "premise": "Three people crossed the dark toward a colony that needed them. Now the engineer is drifting dead beyond the hull, an airlock that should never have opened stands cycled, and the only other living soul aboard swears the security log that damns her is a lie. Between the body and the cargo is a truth worth more than a life — and the ship will not stop.",
+    "premise": "Three people crossed the dark toward a colony that needed them. Now the engineer is drifting dead beyond the hull, an airlock that should never have opened stands cycled, and the only other living soul aboard swears the security log that damns her is a lie. Between the body and a signed flight log is a truth worth more than a life — and the ship will not stop.",
     "theme": "station",
     "tone": "cold deep-space tragedy, procedural dread, a two-hander in a tin can",
     "tags": [
@@ -14,7 +14,7 @@
       "Isolated",
       "Tragedy"
     ],
-    "difficulty": "hard",
+    "difficulty": "medium",
     "progressUi": "subtle",
     "contentWarnings": [
       "suicide",
@@ -26,7 +26,7 @@
     "artStyle": "Realistic cinematic photography aboard a cold deep-space freighter — naturalistic skin and fabric, shallow depth of field, a gunmetal-and-void-blue palette lit by a single amber warning key light; practical 25th-century crew uniforms; head-and-shoulders character portraits, consistent lens and lighting across the whole cast, full bleed, no picture frame",
     "setting": "2094. Deep space, aboard the cargo hauler Erebus, bound across the system toward a remote human colony that lives and dies by its terraforming. Three crew — now two, and the ship holds course.",
     "summary": "The freighter Erebus is nine days out from a colony waiting on the atmospheric gear in her hold when the alarms wake you: an exterior airlock has cycled, and the engineer is a shrinking shape in the black. The log says security officer Mara Kade opened the hatch. She says she was three compartments aft and never touched it — and half the ship's eyes went blind while it happened. You are the pilot; the death is yours to file, and the ship's law acts on whatever you write. Bring him back, read the ship, and find out what actually happened before the Erebus decides for you.",
-    "theMystery": "Who opened the airlock on the engineer, how did he actually die, and what is the Erebus carrying?",
+    "theMystery": "Who opened the airlock on the engineer, how did he really die, and is the only other soul aboard lying?",
     "playtest": {
       "minTurns": 16,
       "maxTurns": 48,
@@ -903,6 +903,9 @@
       "supports": [
         {
           "evidenceId": "airlock-cycle-log"
+        },
+        {
+          "evidenceId": "console-trace"
         }
       ],
       "minSupports": 1
