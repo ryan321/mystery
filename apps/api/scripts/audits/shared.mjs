@@ -18,7 +18,7 @@ export function auditModel() {
   );
 }
 
-export async function askJson(prompt) {
+export async function askJson(prompt, opts = {}) {
   const key = process.env.OPENROUTER_API_KEY;
   if (!key) throw new Error("OPENROUTER_API_KEY missing from .env");
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -27,7 +27,7 @@ export async function askJson(prompt) {
     body: JSON.stringify({
       model: auditModel(),
       messages: [{ role: "user", content: prompt }],
-      temperature: 0.2,
+      temperature: opts.temperature ?? 0.2,
       response_format: { type: "json_object" },
     }),
   });

@@ -121,6 +121,11 @@ export async function runSpoilerAudit(def, { llm = true } = {}) {
   const note = (severity, text) => findings.push({ severity, text });
 
   const front = frontMatter(def);
+  const early = earlyVisible(def);
+  // Everything a player can read without earning a discovery: the narration
+  // front matter AND the cast cards / known-location descriptions. Both the
+  // deterministic word/phrase checks and the LLM scan run over all of it.
+  const scanned = [...front, ...early];
 
   // Distinctive (≥3-word) answer phrases from the rubric. Single/short hints
   // ("airlock", "colony", "his own", "no murder") legitimately live in the
@@ -136,7 +141,7 @@ export async function runSpoilerAudit(def, { llm = true } = {}) {
   // ── 1. reveal words / answer phrases in front matter ──────────────────
   const revealHits = [];
   const phraseHits = [];
-  for (const { field, text } of front) {
+  for (const { field, text } of scanned) {
     for (const w of REVEAL_WORDS) if (containsTerm(text, w)) revealHits.push({ field, term: w });
     for (const ph of answerPhrases) if (containsTerm(text, ph)) phraseHits.push({ field, term: ph });
   }
@@ -149,7 +154,7 @@ export async function runSpoilerAudit(def, { llm = true } = {}) {
             .slice(0, 6)
             .map((h) => `${h.field}: "${h.term}"`)
             .join("; ")
-        : "no twist words or answer phrases in premise/theMystery/objective/opening/briefing",
+        : "no twist words or answer phrases in front matter or cast cards",
   });
   for (const h of revealHits) {
     note("high", `front matter "${h.field}" reveals the twist: contains "${h.term}"`);
@@ -171,6 +176,10 @@ export async function runSpoilerAudit(def, { llm = true } = {}) {
     .filter(Boolean)
     .join("  ");
   const sealedShingles = shingles(sealedText, 7);
+  // Only the NARRATION front matter is checked for copied solution prose:
+  // cast cards and location descriptions legitimately share factual wording
+  // with the sealed solution (which explains the world's own clues and
+  // characters), so scanning them here just flags fair clues as leaks.
   const copied = [];
   for (const { field, text } of front) {
     for (const s of shingles(text, 7)) {
@@ -209,7 +218,7 @@ export async function runSpoilerAudit(def, { llm = true } = {}) {
   // ── 4. LLM scan for subtle "points at a secret" leaks ─────────────────
   let report = null;
   if (llm) {
-    const surfaces = [...front, ...earlyVisible(def)];
+    const surfaces = scanned;
     report = await askJson(`You audit an interactive mystery for SPOILERS in player-facing copy.
 
 A spoiler is any player-facing text that reveals, states, or steers the player toward a
@@ -245,6 +254,14 @@ ${JSON.stringify(def.player?.startingKnowledge ?? "")}
 PLAYER-FACING COPY TO AUDIT (field → text):
 ${JSON.stringify(surfaces, null, 1)}
 
+BE EXHAUSTIVE. Work through EVERY field in the list one by one, and test each field against
+EVERY secret in the sealed solution above (guilt, method, motive, and the twist). Report ALL
+genuine leaks — however small, however many — not just the most obvious few; a single missed
+span ships a spoiler. Pay special attention to cast-card bios and titles (character.*.shortBio,
+cardTitle, public), which leak plot facts as easily as the narration does. When you think you
+are done, re-scan the whole list once more for anything you skipped. It is better to over-report
+a borderline span (mark it low) than to miss a real leak.
+
 For each genuine leak, quote the exact offending span and say which secret it gives away.
 Reply JSON:
 {
@@ -252,7 +269,7 @@ Reply JSON:
    {"field": "<field id>", "quote": "<exact offending text>", "reveals": "<the secret it tips>", "severity": "high|medium|low", "fix": "<how to de-spoiler it>"}
  ],
  "overall": "clean|leaky"
-}`);
+}`, { temperature: 0 });
     const leaks = report?.leaks ?? [];
     checks.push({
       check: "llm_spoiler_scan",
