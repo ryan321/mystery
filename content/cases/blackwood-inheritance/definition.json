@@ -2,7 +2,7 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "blackwood-inheritance",
-  "contentVersion": "0.10.19",
+  "contentVersion": "0.10.20",
   "meta": {
     "title": "The Blackwood Inheritance",
     "premise": "A stormy night, a dead master at the foot of his own stairs, and six weeks of break-ins no one has explained. Everyone in the house had a reason to be angry. Someone had a reason to plan.",
