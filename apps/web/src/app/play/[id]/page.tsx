@@ -204,7 +204,7 @@ const SURFACE_BUTTONS: {
  * charge ("I accuse Margaret"), a negation ("not ready to accuse"), or a
  * question ("how do I accuse?").
  */
-export function looksLikeAccuseIntent(text: string): boolean {
+function looksLikeAccuseIntent(text: string): boolean {
   const t = text.trim().toLowerCase();
   if (!t || t.length > 140) return false;
   // Negation / not-yet / hypothetical — let these flow to the engine untouched.
