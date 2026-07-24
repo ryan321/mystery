@@ -2,10 +2,10 @@
   "$schema": "../definition.schema.json",
   "schemaVersion": "1.5",
   "id": "the-fall-of-alan-thorne",
-  "contentVersion": "0.1.2",
+  "contentVersion": "0.1.3",
   "meta": {
     "title": "The Fall of Alan Thorne",
-    "premise": "At Greymoor House a trusted nephew lies dead under the gallery after midnight. A fall, a shot, a half-burned note, and a household that cannot agree what it heard. Murder has already sat down among them — and someone must name the truth the police may not want to hear.",
+    "premise": "At Greymoor House, Alan Thorne lies dead on the floor, having fallen from the upper gallery hours after midnight. No one under its roof can agree on what they heard — and the police may prefer the quiet answer to the true one. Someone must prove what really happened before the house closes ranks.",
     "tone": "gothic country-house whodunit, moral weight, quiet dread",
     "tags": [
       "Manor",

@@ -52,7 +52,7 @@ export default function GalleryPage() {
               meta: {
                 title: "The Fall of Alan Thorne",
                 premise:
-                  "At Greymoor House a trusted nephew lies dead under the gallery after midnight. A fall, a shot, a half-burned note, and a household that cannot agree what it heard.",
+                  "At Greymoor House, Alan Thorne lies dead on the floor, having fallen from the upper gallery hours after midnight. No one under its roof can agree on what they heard.",
                 tone: "gothic country-house whodunit, moral weight, quiet dread",
                 tags: ["Manor", "Family", "Murder", "Classic"],
                 difficulty: "medium",
